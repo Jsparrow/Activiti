@@ -37,7 +37,8 @@ public class SignalEventHandler extends AbstractEventHandler {
 
   public static final String EVENT_HANDLER_TYPE = "signal";
 
-  public String getEventHandlerType() {
+  @Override
+public String getEventHandlerType() {
     return EVENT_HANDLER_TYPE;
   }
 
@@ -60,11 +61,11 @@ public class SignalEventHandler extends AbstractEventHandler {
       ProcessDefinition processDefinition = ProcessDefinitionUtil.getProcessDefinition(processDefinitionId);
       
       if (processDefinition == null) {
-        throw new ActivitiObjectNotFoundException("No process definition found for id '" + processDefinitionId + "'", ProcessDefinition.class);
+        throw new ActivitiObjectNotFoundException(new StringBuilder().append("No process definition found for id '").append(processDefinitionId).append("'").toString(), ProcessDefinition.class);
       }
       
       if (processDefinition.isSuspended()) {
-        throw new ActivitiException("Could not handle signal: process definition with id: " + processDefinitionId + " is suspended");
+        throw new ActivitiException(new StringBuilder().append("Could not handle signal: process definition with id: ").append(processDefinitionId).append(" is suspended").toString());
       }
       
       org.activiti.bpmn.model.Process process = ProcessDefinitionUtil.getProcess(processDefinitionId);
@@ -108,17 +109,16 @@ public class SignalEventHandler extends AbstractEventHandler {
                                      String signalName, 
                                      Object payload,
                                      CommandContext commandContext) {
-    if (commandContext.getProcessEngineConfiguration()
+    if (!commandContext.getProcessEngineConfiguration()
                       .getEventDispatcher()
                       .isEnabled()) {
-        
-      ActivitiSignalEvent signalEvent = ActivitiEventBuilder.createActivitiySignalledEvent(execution,
+		return;
+	}
+	ActivitiSignalEvent signalEvent = ActivitiEventBuilder.createActivitiySignalledEvent(execution,
                                                                                            signalName,
                                                                                            payload);
-        
-      Context.getProcessEngineConfiguration().getEventDispatcher()
+	Context.getProcessEngineConfiguration().getEventDispatcher()
                                              .dispatchEvent(signalEvent);
-    }
   }
   
 }

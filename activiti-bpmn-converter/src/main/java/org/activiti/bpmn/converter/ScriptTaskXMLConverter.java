@@ -31,14 +31,15 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ScriptTaskXMLConverter extends BaseBpmnXMLConverter {
 
-  protected Map<String, BaseChildElementParser> childParserMap = new HashMap<String, BaseChildElementParser>();
+  protected Map<String, BaseChildElementParser> childParserMap = new HashMap<>();
 
   public ScriptTaskXMLConverter() {
     ScriptTextParser scriptTextParser = new ScriptTextParser();
     childParserMap.put(scriptTextParser.getElementName(), scriptTextParser);
   }
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return ScriptTask.class;
   }
 
@@ -75,10 +76,11 @@ public class ScriptTaskXMLConverter extends BaseBpmnXMLConverter {
   @Override
   protected void writeAdditionalChildElements(BaseElement element, BpmnModel model, XMLStreamWriter xtw) throws Exception {
     ScriptTask scriptTask = (ScriptTask) element;
-    if (StringUtils.isNotEmpty(scriptTask.getScript())) {
-      xtw.writeStartElement(ATTRIBUTE_TASK_SCRIPT_TEXT);
-      xtw.writeCData(scriptTask.getScript());
-      xtw.writeEndElement();
-    }
+    if (!StringUtils.isNotEmpty(scriptTask.getScript())) {
+		return;
+	}
+	xtw.writeStartElement(ATTRIBUTE_TASK_SCRIPT_TEXT);
+	xtw.writeCData(scriptTask.getScript());
+	xtw.writeEndElement();
   }
 }

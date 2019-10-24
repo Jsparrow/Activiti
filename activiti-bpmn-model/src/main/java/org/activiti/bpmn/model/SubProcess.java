@@ -22,12 +22,13 @@ import org.apache.commons.lang3.StringUtils;
 
 public class SubProcess extends Activity implements FlowElementsContainer {
 
-  protected Map<String, FlowElement> flowElementMap = new LinkedHashMap<String, FlowElement>();
-  protected List<FlowElement> flowElementList = new ArrayList<FlowElement>();
-  protected List<Artifact> artifactList = new ArrayList<Artifact>();
-  protected List<ValuedDataObject> dataObjects = new ArrayList<ValuedDataObject>();
+  protected Map<String, FlowElement> flowElementMap = new LinkedHashMap<>();
+  protected List<FlowElement> flowElementList = new ArrayList<>();
+  protected List<Artifact> artifactList = new ArrayList<>();
+  protected List<ValuedDataObject> dataObjects = new ArrayList<>();
 
-  public FlowElement getFlowElement(String id) {
+  @Override
+public FlowElement getFlowElement(String id) {
     FlowElement foundElement = null;
     if (StringUtils.isNotEmpty(id)) {
       foundElement = flowElementMap.get(id);
@@ -35,51 +36,60 @@ public class SubProcess extends Activity implements FlowElementsContainer {
     return foundElement;
   }
 
-  public Collection<FlowElement> getFlowElements() {
+  @Override
+public Collection<FlowElement> getFlowElements() {
     return flowElementList;
   }
 
-  public void addFlowElement(FlowElement element) {
+  @Override
+public void addFlowElement(FlowElement element) {
     flowElementList.add(element);
     element.setParentContainer(this);
     if(element instanceof FlowElementsContainer){
       flowElementMap.putAll(((FlowElementsContainer) element).getFlowElementMap());
     }
-    if (StringUtils.isNotEmpty(element.getId())) {
-      flowElementMap.put(element.getId(), element);
-      if (getParentContainer() != null) {
+    if (!StringUtils.isNotEmpty(element.getId())) {
+		return;
+	}
+	flowElementMap.put(element.getId(), element);
+	if (getParentContainer() != null) {
         getParentContainer().addFlowElementToMap(element);
       }
-    }
   }
 
-  public void addFlowElementToMap(FlowElement element) {
-    if (element != null && StringUtils.isNotEmpty(element.getId())) {
-      flowElementMap.put(element.getId(), element);
-      if (getParentContainer() != null) {
+  @Override
+public void addFlowElementToMap(FlowElement element) {
+    if (!(element != null && StringUtils.isNotEmpty(element.getId()))) {
+		return;
+	}
+	flowElementMap.put(element.getId(), element);
+	if (getParentContainer() != null) {
         getParentContainer().addFlowElementToMap(element);
       }
-    }
   }
   
-  public void removeFlowElement(String elementId) {
+  @Override
+public void removeFlowElement(String elementId) {
     FlowElement element = getFlowElement(elementId);
-    if (element != null) {
-      flowElementList.remove(element);
-      flowElementMap.remove(elementId);
-      if (element.getParentContainer() != null) {
+    if (element == null) {
+		return;
+	}
+	flowElementList.remove(element);
+	flowElementMap.remove(elementId);
+	if (element.getParentContainer() != null) {
         element.getParentContainer().removeFlowElementFromMap(elementId);
       }
-    }
   }
   
-  public void removeFlowElementFromMap(String elementId) {
+  @Override
+public void removeFlowElementFromMap(String elementId) {
     if (StringUtils.isNotEmpty(elementId)) {
       flowElementMap.remove(elementId);
     }
   }
   
-  public Map<String, FlowElement> getFlowElementMap() {
+  @Override
+public Map<String, FlowElement> getFlowElementMap() {
     return flowElementMap;
   }
 
@@ -91,33 +101,32 @@ public class SubProcess extends Activity implements FlowElementsContainer {
     return flowElementMap.containsKey(id);
   }
 
-  public Artifact getArtifact(String id) {
-    Artifact foundArtifact = null;
-    for (Artifact artifact : artifactList) {
-      if (id.equals(artifact.getId())) {
-        foundArtifact = artifact;
-        break;
-      }
-    }
+  @Override
+public Artifact getArtifact(String id) {
+    Artifact foundArtifact = artifactList.stream().filter(artifact -> id.equals(artifact.getId())).findFirst().orElse(null);
     return foundArtifact;
   }
 
-  public Collection<Artifact> getArtifacts() {
+  @Override
+public Collection<Artifact> getArtifacts() {
     return artifactList;
   }
 
-  public void addArtifact(Artifact artifact) {
+  @Override
+public void addArtifact(Artifact artifact) {
     artifactList.add(artifact);
   }
 
-  public void removeArtifact(String artifactId) {
+  @Override
+public void removeArtifact(String artifactId) {
     Artifact artifact = getArtifact(artifactId);
     if (artifact != null) {
       artifactList.remove(artifact);
     }
   }
 
-  public SubProcess clone() {
+  @Override
+public SubProcess clone() {
     SubProcess clone = new SubProcess();
     clone.setValues(this);
     return clone;
@@ -127,11 +136,11 @@ public class SubProcess extends Activity implements FlowElementsContainer {
     super.setValues(otherElement);
 
     /*
-     * This is required because data objects in Designer have no DI info and are added as properties, not flow elements
-     * 
-     * Determine the differences between the 2 elements' data object
-     */
-    for (ValuedDataObject thisObject : getDataObjects()) {
+	     * This is required because data objects in Designer have no DI info and are added as properties, not flow elements
+	     * 
+	     * Determine the differences between the 2 elements' data object
+	     */
+	getDataObjects().forEach(thisObject -> {
       boolean exists = false;
       for (ValuedDataObject otherObject : otherElement.getDataObjects()) {
         if (thisObject.getId().equals(otherObject.getId())) {
@@ -142,30 +151,25 @@ public class SubProcess extends Activity implements FlowElementsContainer {
         // missing object
         removeFlowElement(thisObject.getId());
       }
-    }
+    });
 
-    dataObjects = new ArrayList<ValuedDataObject>();
+    dataObjects = new ArrayList<>();
     if (otherElement.getDataObjects() != null && !otherElement.getDataObjects().isEmpty()) {
-      for (ValuedDataObject dataObject : otherElement.getDataObjects()) {
-        ValuedDataObject clone = dataObject.clone();
-        dataObjects.add(clone);
-        // add it to the list of FlowElements
+      otherElement.getDataObjects().stream().map(ValuedDataObject::clone).forEach(clone -> {
+		dataObjects.add(clone);
+		// add it to the list of FlowElements
         // if it is already there, remove it first so order is same as
         // data object list
         removeFlowElement(clone.getId());
-        addFlowElement(clone);
-      }
+		addFlowElement(clone);
+	});
     }
     
     flowElementList.clear();
-    for (FlowElement flowElement : otherElement.getFlowElements()) {
-      addFlowElement(flowElement);
-    }
+    otherElement.getFlowElements().forEach(this::addFlowElement);
     
     artifactList.clear();
-    for (Artifact artifact : otherElement.getArtifacts()) {
-      addArtifact(artifact);
-    }
+    otherElement.getArtifacts().forEach(this::addArtifact);
   }
 
   public List<ValuedDataObject> getDataObjects() {

@@ -24,11 +24,13 @@ import org.activiti.engine.task.Task;
  */
 public class JsonTaskConverter extends JsonObjectConverter<Task> {
 
-  public Task toObject(Reader reader) {
+  @Override
+public Task toObject(Reader reader) {
     throw new ActivitiException("not yet implemented");
   }
 
-  public JSONObject toJsonObject(Task task) {
+  @Override
+public JSONObject toJsonObject(Task task) {
     TaskEntity taskEntity = (TaskEntity) task;
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("id", taskEntity.getId());

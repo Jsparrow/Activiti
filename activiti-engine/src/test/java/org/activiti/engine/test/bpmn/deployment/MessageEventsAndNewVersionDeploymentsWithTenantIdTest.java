@@ -24,6 +24,8 @@ import org.activiti.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A test specifically written to test how events (start/boundary) are handled 
@@ -33,7 +35,10 @@ import org.activiti.engine.task.Task;
  */
 public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends PluggableActivitiTestCase {
   
-  private static final String TEST_PROCESS_GLOBAL_BOUNDARY_MESSAGE = 
+  private static final Logger logger = LoggerFactory
+			.getLogger(MessageEventsAndNewVersionDeploymentsWithTenantIdTest.class);
+
+private static final String TEST_PROCESS_GLOBAL_BOUNDARY_MESSAGE = 
       "org/activiti/engine/test/bpmn/deployment/MessageEventsAndNewVersionDeploymentsTest.testGlobalMessageBoundaryEvent.bpmn20.xml";
   
   private static final String TEST_PROCESS_START_MESSAGE = 
@@ -68,9 +73,7 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
     List<Task> tasks = taskService.createTaskQuery().list();
     assertEquals(2, tasks.size());
     
-    for (Task task : tasks) {
-      assertEquals("Task after message", task.getName());
-    }
+    tasks.forEach(task -> assertEquals("Task after message", task.getName()));
     
     cleanup(deploymentId1, deploymentId2);
   }
@@ -196,7 +199,8 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
     try {
       runtimeService.startProcessInstanceByMessageAndTenantId("myStartMessage", TENANT_ID);
       fail();
-    } catch (Exception e) { }
+    } catch (Exception e) {
+		logger.error(e.getMessage(), e); }
     assertEquals(1, runtimeService.createProcessInstanceQuery().count());
     assertEventSubscriptionsCount(0);
     
@@ -215,7 +219,9 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
   }
   
   public void testDeleteDeploymentWithStartMessageEvents1() {
-    String deploymentId1, deploymentId2, deploymentId3;
+    String deploymentId1;
+	String deploymentId2;
+	String deploymentId3;
     deploymentId1 = deployStartMessageTestProcess();
     deploymentId2 = deployProcessWithoutEvents();
     deploymentId3 = deployStartMessageTestProcess();
@@ -268,7 +274,8 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
     try {
       runtimeService.startProcessInstanceByMessageAndTenantId("myStartMessage", TENANT_ID);
       fail();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+		logger.error(e.getMessage(), e);}
     assertEquals(0, runtimeService.createExecutionQuery().count());
     repositoryService.deleteDeployment(deploymentId2, true);
     assertEventSubscriptionsCount(1); // the first is now the one with the signal
@@ -286,7 +293,8 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
     try {
       runtimeService.startProcessInstanceByMessageAndTenantId("myStartMessage", TENANT_ID);
       fail();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+		logger.error(e.getMessage(), e);}
     assertEquals(0, runtimeService.createExecutionQuery().count());
     
     repositoryService.deleteDeployment(deploymentId2, true);
@@ -294,14 +302,16 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
     try {
       runtimeService.startProcessInstanceByMessageAndTenantId("myStartMessage", TENANT_ID);
       fail();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+		logger.error(e.getMessage(), e);}
     assertEquals(0, runtimeService.createExecutionQuery().count());
     
     repositoryService.deleteDeployment(deploymentId1, true);
     try {
       runtimeService.startProcessInstanceByMessageAndTenantId("myStartMessage", TENANT_ID);
       fail();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+		logger.error(e.getMessage(), e);}
     assertEquals(0, runtimeService.createExecutionQuery().count());
     cleanup(deploymentId4);
   }
@@ -314,7 +324,8 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
     try {
       runtimeService.startProcessInstanceByMessageAndTenantId("myStartMessage", TENANT_ID);
       fail();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+		logger.error(e.getMessage(), e);}
     assertEquals(0, runtimeService.createExecutionQuery().count());
     
     repositoryService.deleteDeployment(deploymentId2, true);
@@ -322,7 +333,8 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
     try {
       runtimeService.startProcessInstanceByMessageAndTenantId("myStartMessage", TENANT_ID);
       fail();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+		logger.error(e.getMessage(), e);}
     assertEquals(0, runtimeService.createExecutionQuery().count());
     
     repositoryService.deleteDeployment(deploymentId4, true);
@@ -354,7 +366,8 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
     try {
       runtimeService.startProcessInstanceByMessageAndTenantId("myStartMessage", TENANT_ID);
       fail();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+		logger.error(e.getMessage(), e);}
     assertEquals(2, runtimeService.createProcessInstanceQuery().count());
     assertEventSubscriptionsCount(2); // 2 boundary events remain
     
@@ -369,7 +382,8 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
     try {
       runtimeService.startProcessInstanceByMessageAndTenantId("myStartMessage", TENANT_ID);
       fail();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+		logger.error(e.getMessage(), e);}
     assertEquals(2, runtimeService.createProcessInstanceQuery().count()); // -1, cause process instance of deploymentId3 is gone too
     assertEventSubscriptionsCount(2); // The 2 boundary remains
     
@@ -414,7 +428,8 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
     try {
       runtimeService.startProcessInstanceByMessageAndTenantId("myMessage", TENANT_ID);
       fail();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+		logger.error(e.getMessage(), e);}
     
     cleanup(deploymentId1, deploymentId2);
   }
@@ -460,8 +475,7 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
   }
   
   private List<String> getExecutionIdsForMessageEventSubscription(final String messageName) {
-    return managementService.executeCommand(new Command<List<String>>() {
-      public List<String> execute(CommandContext commandContext) {
+    return managementService.executeCommand((CommandContext commandContext) -> {
         EventSubscriptionQueryImpl query = new EventSubscriptionQueryImpl(commandContext);
         query.eventType("message");
         query.eventName(messageName);
@@ -469,38 +483,31 @@ public class MessageEventsAndNewVersionDeploymentsWithTenantIdTest extends Plugg
         query.orderByCreated().desc();
         List<EventSubscriptionEntity> eventSubscriptions = query.list();
         
-        List<String> executionIds = new ArrayList<String>();
-        for (EventSubscriptionEntity eventSubscription : eventSubscriptions) {
-          executionIds.add(eventSubscription.getExecutionId());
-        }
+        List<String> executionIds = new ArrayList<>();
+        eventSubscriptions.forEach(eventSubscription -> executionIds.add(eventSubscription.getExecutionId()));
         return executionIds;
-      }
-    });
+      });
   }
   
   private List<EventSubscriptionEntity> getAllEventSubscriptions() {
-    return managementService.executeCommand(new Command<List<EventSubscriptionEntity>>() {
-      public List<EventSubscriptionEntity> execute(CommandContext commandContext) {
+    return managementService.executeCommand((CommandContext commandContext) -> {
         EventSubscriptionQueryImpl query = new EventSubscriptionQueryImpl(commandContext);
         query.tenantId(TENANT_ID);
         query.orderByCreated().desc();
         
         List<EventSubscriptionEntity> eventSubscriptionEntities = query.list();
-        for (EventSubscriptionEntity entity : eventSubscriptionEntities) {
+        eventSubscriptionEntities.forEach(entity -> {
           assertEquals("message", entity.getEventType());
           assertNotNull(entity.getProcessDefinitionId());
-        }
+        });
         return eventSubscriptionEntities;
-      }
-    });
+      });
   }
   
   private void assertReceiveMessage(String messageName, int executionIdsCount) {
     List<String> executionIds =getExecutionIdsForMessageEventSubscription(messageName);
     assertEquals(executionIdsCount, executionIds.size());
-    for (String executionId : executionIds) {
-      runtimeService.messageEventReceived(messageName, executionId);
-    }
+    executionIds.forEach(executionId -> runtimeService.messageEventReceived(messageName, executionId));
   }
   
   private void assertEventSubscriptionsCount(long count) {

@@ -271,13 +271,13 @@ public class DatabaseEventLoggerTest extends PluggableActivitiTestCase {
     }
 
     // Completing two tasks
-    for (Task task : taskService.createTaskQuery().list()) {
+	taskService.createTaskQuery().list().forEach(task -> {
       Authentication.setAuthenticatedUserId(task.getAssignee());
-      Map<String, Object> varMap = new HashMap<String, Object>();
+      Map<String, Object> varMap = new HashMap<>();
       varMap.put("test", "test");
       taskService.complete(task.getId(), varMap);
       Authentication.setAuthenticatedUserId(null);
-    }
+    });
 
     // Verify events
     eventLogEntries = managementService.getEventLogEntries(lastLogNr, 100L);
@@ -409,9 +409,7 @@ public class DatabaseEventLoggerTest extends PluggableActivitiTestCase {
     }
 
     // Cleanup
-    for (EventLogEntry eventLogEntry : managementService.getEventLogEntries(null, null)) {
-      managementService.deleteEventLogEntry(eventLogEntry.getLogNumber());
-    }
+	managementService.getEventLogEntries(null, null).forEach(eventLogEntry -> managementService.deleteEventLogEntry(eventLogEntry.getLogNumber()));
 
     repositoryService.deleteDeployment(deploymentId, true);
 
@@ -509,13 +507,11 @@ public class DatabaseEventLoggerTest extends PluggableActivitiTestCase {
     repositoryService.deleteDeployment(deploymentId, true);
 
     // Cleanup
-    for (EventLogEntry eventLogEntry : managementService.getEventLogEntries(null, null)) {
-      managementService.deleteEventLogEntry(eventLogEntry.getLogNumber());
-    }
+	managementService.getEventLogEntries(null, null).forEach(eventLogEntry -> managementService.deleteEventLogEntry(eventLogEntry.getLogNumber()));
 
   }
 
-  public void testStandaloneTaskEvents() throws JsonParseException, JsonMappingException, IOException {
+  public void testStandaloneTaskEvents() throws IOException {
 
     Task task = taskService.newTask();
     task.setAssignee("kermit");
@@ -543,9 +539,7 @@ public class DatabaseEventLoggerTest extends PluggableActivitiTestCase {
 
     // Cleanup
     taskService.deleteTask(task.getId(), true);
-    for (EventLogEntry eventLogEntry : managementService.getEventLogEntries(null, null)) {
-      managementService.deleteEventLogEntry(eventLogEntry.getLogNumber());
-    }
+    managementService.getEventLogEntries(null, null).forEach(eventLogEntry -> managementService.deleteEventLogEntry(eventLogEntry.getLogNumber()));
 
   }
 

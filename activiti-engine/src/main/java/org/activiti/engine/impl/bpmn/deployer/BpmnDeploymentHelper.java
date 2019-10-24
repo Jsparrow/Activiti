@@ -49,7 +49,7 @@ public class BpmnDeploymentHelper  {
    */
   public void verifyProcessDefinitionsDoNotShareKeys(
       Collection<ProcessDefinitionEntity> processDefinitions) {
-    Set<String> keySet = new LinkedHashSet<String>();
+    Set<String> keySet = new LinkedHashSet<>();
     for (ProcessDefinitionEntity processDefinition : processDefinitions) {
       if (keySet.contains(processDefinition.getKey())) {
         throw new ActivitiException(
@@ -69,7 +69,7 @@ public class BpmnDeploymentHelper  {
     String tenantId = deployment.getTenantId();
     String deploymentId = deployment.getId();
 
-    for (ProcessDefinitionEntity processDefinition : processDefinitions) {
+    processDefinitions.forEach(processDefinition -> {
       
       // Backwards compatibility
       if (engineVersion != null) {
@@ -82,17 +82,17 @@ public class BpmnDeploymentHelper  {
       }
 
       processDefinition.setDeploymentId(deploymentId);
-    }
+    });
   }
 
   /**
    * Updates all the process definition entities to have the correct resource names.
    */
   public void setResourceNamesOnProcessDefinitions(ParsedDeployment parsedDeployment) {
-    for (ProcessDefinitionEntity processDefinition : parsedDeployment.getAllProcessDefinitions()) {
+    parsedDeployment.getAllProcessDefinitions().forEach(processDefinition -> {
       String resourceName = parsedDeployment.getResourceForProcessDefinition(processDefinition).getName();
       processDefinition.setResourceName(resourceName);
-    }
+    });
   }
 
   /**
@@ -161,10 +161,6 @@ public class BpmnDeploymentHelper  {
     timerManager.scheduleTimers(processDefinition, process);
   }
 
-  enum ExpressionType {
-    USER, GROUP
-  }
-
   /**
    * @param processDefinition
    */
@@ -174,43 +170,45 @@ public class BpmnDeploymentHelper  {
     addAuthorizationsFromIterator(commandContext, process.getCandidateStarterUsers(), processDefinition, ExpressionType.USER);
     addAuthorizationsFromIterator(commandContext, process.getCandidateStarterGroups(), processDefinition, ExpressionType.GROUP);
   }
-  
-  protected void addAuthorizationsFromIterator(CommandContext commandContext, List<String> expressions, 
+
+protected void addAuthorizationsFromIterator(CommandContext commandContext, List<String> expressions, 
       ProcessDefinitionEntity processDefinition, ExpressionType expressionType) {
     
-    if (expressions != null) {
-      Iterator<String> iterator = expressions.iterator();
-      while (iterator.hasNext()) {
-        @SuppressWarnings("cast")
-        String expression = iterator.next();
+    if (expressions == null) {
+		return;
+	}
+	expressions.forEach(expression -> {
         IdentityLinkEntity identityLink = commandContext.getIdentityLinkEntityManager().create();
         identityLink.setProcessDef(processDefinition);
-        if (expressionType.equals(ExpressionType.USER)) {
+        if (expressionType == ExpressionType.USER) {
           identityLink.setUserId(expression);
-        } else if (expressionType.equals(ExpressionType.GROUP)) {
+        } else if (expressionType == ExpressionType.GROUP) {
           identityLink.setGroupId(expression);
         }
         identityLink.setType(IdentityLinkType.CANDIDATE);
         commandContext.getIdentityLinkEntityManager().insert(identityLink);
-      }
-    }
+      });
     
   }
 
-  public TimerManager getTimerManager() {
+public TimerManager getTimerManager() {
     return timerManager;
   }
 
-  public void setTimerManager(TimerManager timerManager) {
+public void setTimerManager(TimerManager timerManager) {
     this.timerManager = timerManager;
   }
 
-  public EventSubscriptionManager getEventSubscriptionManager() {
+public EventSubscriptionManager getEventSubscriptionManager() {
     return eventSubscriptionManager;
   }
 
-  public void setEventSubscriptionManager(EventSubscriptionManager eventSubscriptionManager) {
+public void setEventSubscriptionManager(EventSubscriptionManager eventSubscriptionManager) {
     this.eventSubscriptionManager = eventSubscriptionManager;
+  }
+
+enum ExpressionType {
+    USER, GROUP
   }
 }
 

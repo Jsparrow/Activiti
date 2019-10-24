@@ -21,37 +21,37 @@ public class ThrowMessage {
     private Optional<String> businessKey = Optional.empty();
     private Optional<String> correlationKey = Optional.empty();
 
-    private ThrowMessage(ThrowMessagBuilder builder) {
+    public ThrowMessage(String name) {
+        this.name = name;
+    }
+
+	ThrowMessage() {
+    }
+
+	private ThrowMessage(ThrowMessagBuilder builder) {
         this.name = builder.name;
         this.payload = builder.payload;
         this.businessKey = builder.businessKey;
         this.correlationKey = builder.correlationKey;
     }
 
-    ThrowMessage() {
-    }
-
-    public ThrowMessage(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
+	public String getName() {
         return name;
     }
-    
-    public Optional<Map<String, Object>> getPayload() {
+
+	public Optional<Map<String, Object>> getPayload() {
         return payload;
     }
 
-    public Optional<String> getBusinessKey() {
+	public Optional<String> getBusinessKey() {
         return businessKey;
     }
 
-    public Optional<String> getCorrelationKey() {
+	public Optional<String> getCorrelationKey() {
         return correlationKey;
     }
 
-    /**
+	/**
      * Creates builder to build {@link ThrowMessage}.
      * @return created builder
      */
@@ -59,7 +59,7 @@ public class ThrowMessage {
         return new ThrowMessagBuilder();
     }
 
-    /**
+	/**
      * Definition of a stage for staged builder.
      */
     public interface INameStage {
@@ -69,7 +69,7 @@ public class ThrowMessage {
         * @param name field to set
         * @return builder
         */
-        public IBuildStage name(String name);
+        IBuildStage name(String name);
     }
 
     /**
@@ -82,27 +82,27 @@ public class ThrowMessage {
         * @param payload field to set
         * @return builder
         */
-        public IBuildStage payload(Optional<Map<String, Object>> payload);
+        IBuildStage payload(Optional<Map<String, Object>> payload);
 
         /**
         * Builder method for businessKey parameter.
         * @param businessKey field to set
         * @return builder
         */
-        public IBuildStage businessKey(Optional<String> businessKey);
+        IBuildStage businessKey(Optional<String> businessKey);
 
         /**
         * Builder method for correlationKey parameter.
         * @param correlationKey field to set
         * @return builder
         */
-        public IBuildStage correlationKey(Optional<String> correlationKey);
+        IBuildStage correlationKey(Optional<String> correlationKey);
 
         /**
         * Builder method of the builder.
         * @return built class
         */
-        public ThrowMessage build();
+        ThrowMessage build();
     }
 
     /**

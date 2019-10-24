@@ -30,37 +30,49 @@ public class CommentEntityImpl extends AbstractEntityNoRevision implements Comme
 
   private static final long serialVersionUID = 1L;
 
-  // If comments would be removable, revision needs to be added!
+public static String MESSAGE_PARTS_MARKER = "_|_";
+
+public static Pattern MESSAGE_PARTS_MARKER_REGEX = Pattern.compile("_\\|_");
+
+// If comments would be removable, revision needs to be added!
 
   protected String type;
-  protected String userId;
-  protected Date time;
-  protected String taskId;
-  protected String processInstanceId;
-  protected String action;
-  protected String message;
-  protected String fullMessage;
-  
-  public CommentEntityImpl() {
+
+protected String userId;
+
+protected Date time;
+
+protected String taskId;
+
+protected String processInstanceId;
+
+protected String action;
+
+protected String message;
+
+protected String fullMessage;
+
+public CommentEntityImpl() {
     
   }
 
-  public Object getPersistentState() {
+@Override
+public Object getPersistentState() {
     return CommentEntityImpl.class;
   }
 
-  public byte[] getFullMessageBytes() {
+@Override
+public byte[] getFullMessageBytes() {
     return (fullMessage != null ? fullMessage.getBytes() : null);
   }
 
-  public void setFullMessageBytes(byte[] fullMessageBytes) {
+@Override
+public void setFullMessageBytes(byte[] fullMessageBytes) {
     fullMessage = (fullMessageBytes != null ? new String(fullMessageBytes) : null);
   }
 
-  public static String MESSAGE_PARTS_MARKER = "_|_";
-  public static Pattern MESSAGE_PARTS_MARKER_REGEX = Pattern.compile("_\\|_");
-
-  public void setMessage(String[] messageParts) {
+@Override
+public void setMessage(String[] messageParts) {
     StringBuilder stringBuilder = new StringBuilder();
     for (String part : messageParts) {
       if (part != null) {
@@ -77,11 +89,12 @@ public class CommentEntityImpl extends AbstractEntityNoRevision implements Comme
     message = stringBuilder.toString();
   }
 
-  public List<String> getMessageParts() {
+@Override
+public List<String> getMessageParts() {
     if (message == null) {
       return null;
     }
-    List<String> messageParts = new ArrayList<String>();
+    List<String> messageParts = new ArrayList<>();
 
     String[] parts = MESSAGE_PARTS_MARKER_REGEX.split(message);
     for (String part : parts) {
@@ -94,70 +107,86 @@ public class CommentEntityImpl extends AbstractEntityNoRevision implements Comme
     return messageParts;
   }
 
-  // getters and setters
+// getters and setters
   // //////////////////////////////////////////////////////
 
-  public String getUserId() {
+  @Override
+public String getUserId() {
     return userId;
   }
 
-  public void setUserId(String userId) {
+@Override
+public void setUserId(String userId) {
     this.userId = userId;
   }
 
-  public String getTaskId() {
+@Override
+public String getTaskId() {
     return taskId;
   }
 
-  public void setTaskId(String taskId) {
+@Override
+public void setTaskId(String taskId) {
     this.taskId = taskId;
   }
 
-  public String getMessage() {
+@Override
+public String getMessage() {
     return message;
   }
 
-  public void setMessage(String message) {
+@Override
+public void setMessage(String message) {
     this.message = message;
   }
 
-  public Date getTime() {
+@Override
+public Date getTime() {
     return time;
   }
 
-  public void setTime(Date time) {
+@Override
+public void setTime(Date time) {
     this.time = time;
   }
 
-  public String getProcessInstanceId() {
+@Override
+public String getProcessInstanceId() {
     return processInstanceId;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
+@Override
+public void setProcessInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
   }
 
-  public String getType() {
+@Override
+public String getType() {
     return type;
   }
 
-  public void setType(String type) {
+@Override
+public void setType(String type) {
     this.type = type;
   }
 
-  public String getFullMessage() {
+@Override
+public String getFullMessage() {
     return fullMessage;
   }
 
-  public void setFullMessage(String fullMessage) {
+@Override
+public void setFullMessage(String fullMessage) {
     this.fullMessage = fullMessage;
   }
 
-  public String getAction() {
+@Override
+public String getAction() {
     return action;
   }
 
-  public void setAction(String action) {
+@Override
+public void setAction(String action) {
     this.action = action;
   }
 }

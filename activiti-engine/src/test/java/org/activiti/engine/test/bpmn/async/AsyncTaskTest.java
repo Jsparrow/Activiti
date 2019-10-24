@@ -26,6 +26,8 @@ import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.test.Deployment;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -33,7 +35,8 @@ import org.junit.Assert;
  */
 public class AsyncTaskTest extends PluggableActivitiTestCase {
 
-  public static boolean INVOCATION;
+  private static final Logger logger = LoggerFactory.getLogger(AsyncTaskTest.class);
+public static boolean INVOCATION;
 
   @Deployment
   public void testAsyncServiceNoListeners() {
@@ -113,6 +116,7 @@ public class AsyncTaskTest extends PluggableActivitiTestCase {
       managementService.executeJob(job.getId());
       fail();
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
       // exception expected
     }
 
@@ -241,18 +245,18 @@ public class AsyncTaskTest extends PluggableActivitiTestCase {
     
     assertProcessEnded(processInstance.getId());
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      List<HistoricVariableInstance> variables = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstance.getId()).list();
-      assertEquals(3, variables.size());
-      
-      Object historyValue = null;
-      for (HistoricVariableInstance variable : variables) {
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	List<HistoricVariableInstance> variables = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstance.getId()).list();
+	assertEquals(3, variables.size());
+	Object historyValue = null;
+	for (HistoricVariableInstance variable : variables) {
         if ("variableSetInExecutionListener".equals(variable.getVariableName())) {
           historyValue = variable.getValue();
         }
       }
-      assertEquals("firstValue", historyValue);
-    }
+	assertEquals("firstValue", historyValue);
   }
 
   @Deployment
@@ -355,15 +359,16 @@ public class AsyncTaskTest extends PluggableActivitiTestCase {
     // the job is done
     assertEquals(0, managementService.createJobQuery().processInstanceId(processInstance.getId()).count());
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
           .processInstanceId(processInstance.getId())
           .list();
-      
-      int startCount = 0;
-      int taskCount = 0;
-      int endCount = 0;
-      for (HistoricActivityInstance historicActivityInstance : historicActivities) {
+	int startCount = 0;
+	int taskCount = 0;
+	int endCount = 0;
+	for (HistoricActivityInstance historicActivityInstance : historicActivities) {
         if ("task".equals(historicActivityInstance.getActivityId())) {
           taskCount++;
         
@@ -377,11 +382,9 @@ public class AsyncTaskTest extends PluggableActivitiTestCase {
           Assert.fail("Unexpected activity found " + historicActivityInstance.getActivityId());
         }
       }
-      
-      assertEquals(1, startCount);
-      assertEquals(3, taskCount);
-      assertEquals(1, endCount);
-    }
+	assertEquals(1, startCount);
+	assertEquals(3, taskCount);
+	assertEquals(1, endCount);
   }
   
   @Deployment
@@ -389,15 +392,16 @@ public class AsyncTaskTest extends PluggableActivitiTestCase {
     // start process
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("asyncTask");
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
           .processInstanceId(processInstance.getId())
           .list();
-      
-      int startCount = 0;
-      int taskCount = 0;
-      int endCount = 0;
-      for (HistoricActivityInstance historicActivityInstance : historicActivities) {
+	int startCount = 0;
+	int taskCount = 0;
+	int endCount = 0;
+	for (HistoricActivityInstance historicActivityInstance : historicActivities) {
         if ("task".equals(historicActivityInstance.getActivityId())) {
           taskCount++;
         
@@ -411,11 +415,9 @@ public class AsyncTaskTest extends PluggableActivitiTestCase {
           Assert.fail("Unexpected activity found " + historicActivityInstance.getActivityId());
         }
       }
-      
-      assertEquals(1, startCount);
-      assertEquals(3, taskCount);
-      assertEquals(1, endCount);
-    }
+	assertEquals(1, startCount);
+	assertEquals(3, taskCount);
+	assertEquals(1, endCount);
   }
   
   @Deployment
@@ -440,15 +442,16 @@ public class AsyncTaskTest extends PluggableActivitiTestCase {
     // the job is done
     assertEquals(0, managementService.createJobQuery().processInstanceId(processInstance.getId()).count());
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
           .processInstanceId(processInstance.getId())
           .list();
-      
-      int startCount = 0;
-      int taskCount = 0;
-      int endCount = 0;
-      for (HistoricActivityInstance historicActivityInstance : historicActivities) {
+	int startCount = 0;
+	int taskCount = 0;
+	int endCount = 0;
+	for (HistoricActivityInstance historicActivityInstance : historicActivities) {
         if ("task".equals(historicActivityInstance.getActivityId())) {
           taskCount++;
         
@@ -462,11 +465,9 @@ public class AsyncTaskTest extends PluggableActivitiTestCase {
           Assert.fail("Unexpected activity found " + historicActivityInstance.getActivityId());
         }
       }
-      
-      assertEquals(1, startCount);
-      assertEquals(3, taskCount);
-      assertEquals(1, endCount);
-    }
+	assertEquals(1, startCount);
+	assertEquals(3, taskCount);
+	assertEquals(1, endCount);
   }
   
   @Deployment
@@ -474,15 +475,16 @@ public class AsyncTaskTest extends PluggableActivitiTestCase {
     // start process
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("asyncTask");
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
           .processInstanceId(processInstance.getId())
           .list();
-      
-      int startCount = 0;
-      int taskCount = 0;
-      int endCount = 0;
-      for (HistoricActivityInstance historicActivityInstance : historicActivities) {
+	int startCount = 0;
+	int taskCount = 0;
+	int endCount = 0;
+	for (HistoricActivityInstance historicActivityInstance : historicActivities) {
         if ("task".equals(historicActivityInstance.getActivityId())) {
           taskCount++;
         
@@ -496,11 +498,9 @@ public class AsyncTaskTest extends PluggableActivitiTestCase {
           Assert.fail("Unexpected activity found " + historicActivityInstance.getActivityId());
         }
       }
-      
-      assertEquals(1, startCount);
-      assertEquals(3, taskCount);
-      assertEquals(1, endCount);
-    }
+	assertEquals(1, startCount);
+	assertEquals(3, taskCount);
+	assertEquals(1, endCount);
   }
 
   private void waitForAllExecutionsToComplete(long timeout, long sleep) throws InterruptedException {
@@ -511,8 +511,9 @@ public class AsyncTaskTest extends PluggableActivitiTestCase {
           counter += sleep;
           
           // timeout 
-          if(counter > timeout) 
-              fail("Should have finished all process executions within " + timeout + " ms");
+          if(counter > timeout) {
+			fail(new StringBuilder().append("Should have finished all process executions within ").append(timeout).append(" ms").toString());
+		}
       }
   }
   

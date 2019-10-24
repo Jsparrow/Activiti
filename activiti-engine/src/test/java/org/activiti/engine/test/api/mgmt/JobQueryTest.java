@@ -33,6 +33,8 @@ import org.activiti.engine.runtime.JobQuery;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.TimerJobQuery;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -40,28 +42,27 @@ import org.activiti.engine.test.Deployment;
  */
 public class JobQueryTest extends PluggableActivitiTestCase {
 
-  private String deploymentId;
-  private String messageId;
-  private CommandExecutor commandExecutor;
-  private JobEntity jobEntity;
+  private static final Logger logger = LoggerFactory.getLogger(JobQueryTest.class);
+private static final long ONE_HOUR = 60L * 60L * 1000L;
+private static final long ONE_SECOND = 1000L;
+private static final String EXCEPTION_MESSAGE = "problem evaluating script: javax.script.ScriptException: java.lang.RuntimeException: This is an exception thrown from scriptTask";
+private String deploymentId;
+private String messageId;
+private CommandExecutor commandExecutor;
+private JobEntity jobEntity;
+private Date testStartTime;
+private Date timerOneFireTime;
+private Date timerTwoFireTime;
+private Date timerThreeFireTime;
+private String processInstanceIdOne;
+private String processInstanceIdTwo;
+private String processInstanceIdThree;
 
-  private Date testStartTime;
-  private Date timerOneFireTime;
-  private Date timerTwoFireTime;
-  private Date timerThreeFireTime;
-
-  private String processInstanceIdOne;
-  private String processInstanceIdTwo;
-  private String processInstanceIdThree;
-
-  private static final long ONE_HOUR = 60L * 60L * 1000L;
-  private static final long ONE_SECOND = 1000L;
-  private static final String EXCEPTION_MESSAGE = "problem evaluating script: javax.script.ScriptException: java.lang.RuntimeException: This is an exception thrown from scriptTask";
-
-  /**
+/**
    * Setup will create - 3 process instances, each with one timer, each firing at t1/t2/t3 + 1 hour (see process) - 1 message
    */
-  protected void setUp() throws Exception {
+  @Override
+protected void setUp() throws Exception {
     super.setUp();
 
     this.commandExecutor = processEngineConfiguration.getCommandExecutor();
@@ -94,25 +95,23 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     timerThreeFireTime = new Date(t3.getTime() + ONE_HOUR);
 
     // Create one message
-    messageId = commandExecutor.execute(new Command<String>() {
-      public String execute(CommandContext commandContext) {
+    messageId = commandExecutor.execute((CommandContext commandContext) -> {
         JobEntity message = commandContext.getJobEntityManager().create();
         message.setJobType(Job.JOB_TYPE_MESSAGE);
         message.setRetries(3);
         commandContext.getJobManager().scheduleAsyncJob(message);
         return message.getId();
-      }
-    });
+      });
   }
 
-  @Override
+@Override
   protected void tearDown() throws Exception {
     repositoryService.deleteDeployment(deploymentId, true);
     commandExecutor.execute(new CancelJobsCmd(messageId));
     super.tearDown();
   }
 
-  public void testQueryByNoCriteria() {
+public void testQueryByNoCriteria() {
     JobQuery query = managementService.createJobQuery();
     verifyQueryResults(query, 1);
     
@@ -120,12 +119,12 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     verifyQueryResults(timerQuery, 3);
   }
 
-  public void testQueryByProcessInstanceId() {
+public void testQueryByProcessInstanceId() {
     TimerJobQuery query = managementService.createTimerJobQuery().processInstanceId(processInstanceIdOne);
     verifyQueryResults(query, 1);
   }
 
-  public void testQueryByInvalidProcessInstanceId() {
+public void testQueryByInvalidProcessInstanceId() {
     TimerJobQuery query = managementService.createTimerJobQuery().processInstanceId("invalid");
     verifyQueryResults(query, 0);
 
@@ -133,17 +132,18 @@ public class JobQueryTest extends PluggableActivitiTestCase {
       managementService.createJobQuery().processInstanceId(null);
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
-  public void testQueryByExecutionId() {
+public void testQueryByExecutionId() {
     Job job = managementService.createTimerJobQuery().processInstanceId(processInstanceIdOne).singleResult();
     TimerJobQuery query = managementService.createTimerJobQuery().executionId(job.getExecutionId());
     assertEquals(query.singleResult().getId(), job.getId());
     verifyQueryResults(query, 1);
   }
 
-  public void testQueryByInvalidExecutionId() {
+public void testQueryByInvalidExecutionId() {
     JobQuery query = managementService.createJobQuery().executionId("invalid");
     verifyQueryResults(query, 0);
     
@@ -154,16 +154,18 @@ public class JobQueryTest extends PluggableActivitiTestCase {
       managementService.createJobQuery().executionId(null).list();
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
     
     try {
       managementService.createTimerJobQuery().executionId(null).list();
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
-  public void testQueryByRetriesLeft() {
+public void testQueryByRetriesLeft() {
     JobQuery query = managementService.createJobQuery();
     verifyQueryResults(query, 1);
     
@@ -179,7 +181,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     verifyQueryResults(timerQuery, 2);
   }
 
-  public void testQueryByExecutable() {
+public void testQueryByExecutable() {
     processEngineConfiguration.getClock().setCurrentTime(new Date(timerThreeFireTime.getTime() + ONE_SECOND)); // all obs should be executable at t3 + 1hour.1second
     JobQuery query = managementService.createJobQuery();
     verifyQueryResults(query, 1);
@@ -207,7 +209,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     verifyQueryResults(timerQuery, 0);
   }
 
-  public void testQueryByOnlyTimers() {
+public void testQueryByOnlyTimers() {
     JobQuery query = managementService.createJobQuery().timers();
     verifyQueryResults(query, 0);
     
@@ -215,12 +217,12 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     verifyQueryResults(timerQuery, 3);
   }
 
-  public void testQueryByOnlyMessages() {
+public void testQueryByOnlyMessages() {
     JobQuery query = managementService.createJobQuery().messages();
     verifyQueryResults(query, 1);
   }
 
-  public void testInvalidOnlyTimersUsage() {
+public void testInvalidOnlyTimersUsage() {
     try {
       managementService.createJobQuery().timers().messages().list();
       fail();
@@ -229,7 +231,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     }
   }
 
-  public void testQueryByDuedateLowerThan() {
+public void testQueryByDuedateLowerThan() {
     JobQuery query = managementService.createJobQuery().duedateLowerThan(testStartTime);
     verifyQueryResults(query, 0);
     
@@ -246,7 +248,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     verifyQueryResults(timerQuery, 3);
   }
 
-  public void testQueryByDuedateHigherThan() {
+public void testQueryByDuedateHigherThan() {
     JobQuery query = managementService.createJobQuery().duedateHigherThan(testStartTime);
     verifyQueryResults(query, 0);
     
@@ -269,7 +271,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     verifyQueryResults(timerQuery, 0);
   }
 
-  @Deployment(resources = { "org/activiti/engine/test/api/mgmt/ManagementServiceTest.testGetJobExceptionStacktrace.bpmn20.xml" })
+@Deployment(resources = { "org/activiti/engine/test/api/mgmt/ManagementServiceTest.testGetJobExceptionStacktrace.bpmn20.xml" })
   public void testQueryByException() {
     TimerJobQuery query = managementService.createTimerJobQuery().withException();
     verifyQueryResults(query, 0);
@@ -280,7 +282,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     verifyFailedJob(query, processInstance);
   }
 
-  @Deployment(resources = { "org/activiti/engine/test/api/mgmt/ManagementServiceTest.testGetJobExceptionStacktrace.bpmn20.xml" })
+@Deployment(resources = { "org/activiti/engine/test/api/mgmt/ManagementServiceTest.testGetJobExceptionStacktrace.bpmn20.xml" })
   public void testQueryByExceptionMessage() {
     TimerJobQuery query = managementService.createTimerJobQuery().exceptionMessage(EXCEPTION_MESSAGE);
     verifyQueryResults(query, 0);
@@ -291,7 +293,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     verifyFailedJob(query, processInstance);
   }
 
-  @Deployment(resources = { "org/activiti/engine/test/api/mgmt/ManagementServiceTest.testGetJobExceptionStacktrace.bpmn20.xml" })
+@Deployment(resources = { "org/activiti/engine/test/api/mgmt/ManagementServiceTest.testGetJobExceptionStacktrace.bpmn20.xml" })
   public void testQueryByExceptionMessageEmpty() {
     JobQuery query = managementService.createJobQuery().exceptionMessage("");
     verifyQueryResults(query, 0);
@@ -302,7 +304,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     verifyQueryResults(query, 0);
   }
 
-  public void testQueryByExceptionMessageNull() {
+public void testQueryByExceptionMessageNull() {
     try {
       managementService.createJobQuery().exceptionMessage(null);
       fail("ActivitiException expected");
@@ -311,7 +313,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     }
   }
 
-  public void testJobQueryWithExceptions() throws Throwable {
+public void testJobQueryWithExceptions() throws Throwable {
 
     createJobWithoutExceptionMsg();
 
@@ -337,7 +339,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
 
   }
 
-  // sorting //////////////////////////////////////////
+// sorting //////////////////////////////////////////
 
   public void testQuerySorting() {
     // asc
@@ -384,7 +386,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     assertEquals(processInstanceIdOne, jobs.get(2).getProcessInstanceId());
   }
 
-  public void testQueryInvalidSortingUsage() {
+public void testQueryInvalidSortingUsage() {
     try {
       managementService.createJobQuery().orderByJobId().list();
       fail();
@@ -400,14 +402,14 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     }
   }
 
-  // helper ////////////////////////////////////////////////////////////
+// helper ////////////////////////////////////////////////////////////
 
   private void setRetries(final String processInstanceId, final int retries) {
     final Job job = managementService.createTimerJobQuery().processInstanceId(processInstanceId).singleResult();
     managementService.setTimerJobRetries(job.getId(), retries);
   }
 
-  private ProcessInstance startProcessInstanceWithFailingJob() {
+private ProcessInstance startProcessInstanceWithFailingJob() {
     // start a process with a failing job
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("exceptionInJobExecution");
 
@@ -429,7 +431,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     return processInstance;
   }
 
-  private void verifyFailedJob(TimerJobQuery query, ProcessInstance processInstance) {
+private void verifyFailedJob(TimerJobQuery query, ProcessInstance processInstance) {
     verifyQueryResults(query, 1);
 
     Job failedJob = query.singleResult();
@@ -438,8 +440,8 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     assertNotNull(failedJob.getExceptionMessage());
     assertTextPresent(EXCEPTION_MESSAGE, failedJob.getExceptionMessage());
   }
-  
-  private void verifyQueryResults(JobQuery query, int countExpected) {
+
+private void verifyQueryResults(JobQuery query, int countExpected) {
     assertEquals(countExpected, query.list().size());
     assertEquals(countExpected, query.count());
 
@@ -452,15 +454,16 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     }
   }
 
-  private void verifySingleResultFails(JobQuery query) {
+private void verifySingleResultFails(JobQuery query) {
     try {
       query.singleResult();
       fail();
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
-  private void verifyQueryResults(TimerJobQuery query, int countExpected) {
+private void verifyQueryResults(TimerJobQuery query, int countExpected) {
     assertEquals(countExpected, query.list().size());
     assertEquals(countExpected, query.count());
 
@@ -473,18 +476,18 @@ public class JobQueryTest extends PluggableActivitiTestCase {
     }
   }
 
-  private void verifySingleResultFails(TimerJobQuery query) {
+private void verifySingleResultFails(TimerJobQuery query) {
     try {
       query.singleResult();
       fail();
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
-  private void createJobWithoutExceptionMsg() {
+private void createJobWithoutExceptionMsg() {
     CommandExecutor commandExecutor = processEngineConfiguration.getCommandExecutor();
-    commandExecutor.execute(new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    commandExecutor.execute((CommandContext commandContext) -> {
         jobEntity = commandContext.getJobEntityManager().create();
         jobEntity.setJobType(Job.JOB_TYPE_MESSAGE);
         jobEntity.setLockOwner(UUID.randomUUID().toString());
@@ -492,7 +495,7 @@ public class JobQueryTest extends PluggableActivitiTestCase {
         
         StringWriter stringWriter = new StringWriter();
         NullPointerException exception = new NullPointerException();
-        exception.printStackTrace(new PrintWriter(stringWriter));
+        logger.error(exception.getMessage(), exception);
         jobEntity.setExceptionStacktrace(stringWriter.toString());
 
         commandContext.getJobEntityManager().insert(jobEntity);
@@ -501,15 +504,13 @@ public class JobQueryTest extends PluggableActivitiTestCase {
 
         return null;
 
-      }
-    });
+      });
 
   }
 
-  private void createJobWithoutExceptionStacktrace() {
+private void createJobWithoutExceptionStacktrace() {
     CommandExecutor commandExecutor = processEngineConfiguration.getCommandExecutor();
-    commandExecutor.execute(new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    commandExecutor.execute((CommandContext commandContext) -> {
         jobEntity = commandContext.getJobEntityManager().create();
         jobEntity.setJobType(Job.JOB_TYPE_MESSAGE);
         jobEntity.setLockOwner(UUID.randomUUID().toString());
@@ -523,20 +524,17 @@ public class JobQueryTest extends PluggableActivitiTestCase {
 
         return null;
 
-      }
-    });
+      });
 
   }
 
-  private void deleteJobInDatabase() {
+private void deleteJobInDatabase() {
     CommandExecutor commandExecutor = processEngineConfiguration.getCommandExecutor();
-    commandExecutor.execute(new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    commandExecutor.execute((CommandContext commandContext) -> {
 
         commandContext.getJobEntityManager().delete(jobEntity.getId());
         return null;
-      }
-    });
+      });
   }
 
 }

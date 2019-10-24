@@ -29,16 +29,16 @@ public class UserTask extends Task {
   protected String businessCalendarName;
   protected String category;
   protected String extensionId;
-  protected List<String> candidateUsers = new ArrayList<String>();
-  protected List<String> candidateGroups = new ArrayList<String>();
-  protected List<FormProperty> formProperties = new ArrayList<FormProperty>();
-  protected List<ActivitiListener> taskListeners = new ArrayList<ActivitiListener>();
+  protected List<String> candidateUsers = new ArrayList<>();
+  protected List<String> candidateGroups = new ArrayList<>();
+  protected List<FormProperty> formProperties = new ArrayList<>();
+  protected List<ActivitiListener> taskListeners = new ArrayList<>();
   protected String skipExpression;
 
-  protected Map<String, Set<String>> customUserIdentityLinks = new HashMap<String, Set<String>>(); 
-  protected Map<String, Set<String>> customGroupIdentityLinks = new HashMap<String, Set<String>>();
+  protected Map<String, Set<String>> customUserIdentityLinks = new HashMap<>(); 
+  protected Map<String, Set<String>> customGroupIdentityLinks = new HashMap<>();
   
-  protected List<CustomProperty> customProperties = new ArrayList<CustomProperty>();
+  protected List<CustomProperty> customProperties = new ArrayList<>();
 
   public String getAssignee() {
     return assignee;
@@ -143,7 +143,7 @@ public class UserTask extends Task {
     Set<String> userIdentitySet = customUserIdentityLinks.get(type);
 
     if (userIdentitySet == null) {
-      userIdentitySet = new HashSet<String>();
+      userIdentitySet = new HashSet<>();
       customUserIdentityLinks.put(type, userIdentitySet);
     }
 
@@ -154,7 +154,7 @@ public class UserTask extends Task {
     Set<String> groupIdentitySet = customGroupIdentityLinks.get(type);
 
     if (groupIdentitySet == null) {
-      groupIdentitySet = new HashSet<String>();
+      groupIdentitySet = new HashSet<>();
       customGroupIdentityLinks.put(type, groupIdentitySet);
     }
 
@@ -192,7 +192,8 @@ public class UserTask extends Task {
     this.skipExpression = skipExpression;
   }
 
-  public UserTask clone() {
+  @Override
+public UserTask clone() {
     UserTask clone = new UserTask();
     clone.setValues(this);
     return clone;
@@ -209,24 +210,20 @@ public class UserTask extends Task {
     setExtensionId(otherElement.getExtensionId());
     setSkipExpression(otherElement.getSkipExpression());
     
-    setCandidateGroups(new ArrayList<String>(otherElement.getCandidateGroups()));
-    setCandidateUsers(new ArrayList<String>(otherElement.getCandidateUsers()));
+    setCandidateGroups(new ArrayList<>(otherElement.getCandidateGroups()));
+    setCandidateUsers(new ArrayList<>(otherElement.getCandidateUsers()));
 
     setCustomGroupIdentityLinks(otherElement.customGroupIdentityLinks);
     setCustomUserIdentityLinks(otherElement.customUserIdentityLinks);
 
-    formProperties = new ArrayList<FormProperty>();
+    formProperties = new ArrayList<>();
     if (otherElement.getFormProperties() != null && !otherElement.getFormProperties().isEmpty()) {
-      for (FormProperty property : otherElement.getFormProperties()) {
-        formProperties.add(property.clone());
-      }
+      otherElement.getFormProperties().forEach(property -> formProperties.add(property.clone()));
     }
 
-    taskListeners = new ArrayList<ActivitiListener>();
+    taskListeners = new ArrayList<>();
     if (otherElement.getTaskListeners() != null && !otherElement.getTaskListeners().isEmpty()) {
-      for (ActivitiListener listener : otherElement.getTaskListeners()) {
-        taskListeners.add(listener.clone());
-      }
+      otherElement.getTaskListeners().forEach(listener -> taskListeners.add(listener.clone()));
     }
   }
 }

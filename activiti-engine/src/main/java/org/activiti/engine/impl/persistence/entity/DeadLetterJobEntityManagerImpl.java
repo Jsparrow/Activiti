@@ -140,7 +140,8 @@ public class DeadLetterJobEntityManagerImpl extends AbstractEntityManager<DeadLe
         return newJobEntity;
     }
 
-    protected DeadLetterJobDataManager getDataManager() {
+    @Override
+	protected DeadLetterJobDataManager getDataManager() {
         return jobDataManager;
     }
 

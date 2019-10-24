@@ -57,7 +57,7 @@ public class MessageIntermediateEventTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testSingleIntermediateMessageExpressionEvent() {
-    Map<String, Object> variableMap = new HashMap<String, Object>();
+    Map<String, Object> variableMap = new HashMap<>();
     variableMap.put("myMessageName", "testMessage");
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("process", variableMap);
 
@@ -79,7 +79,7 @@ public class MessageIntermediateEventTest extends PluggableActivitiTestCase {
 
   @Deployment(resources = "org/activiti/engine/test/bpmn/event/message/MessageIntermediateEventTest.testSingleIntermediateMessageExpressionEvent.bpmn20.xml")
   public void testSingleIntermediateMessageExpressionEventWithNullExpressionShouldFail() {
-    Map<String, Object> variableMap = new HashMap<String, Object>();
+    Map<String, Object> variableMap = new HashMap<>();
     variableMap.put("myMessageName", null);
 
       Throwable throwable = catchThrowable(() -> runtimeService.startProcessInstanceByKey("process",

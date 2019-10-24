@@ -14,20 +14,24 @@ package org.activiti.engine.test.bpmn.event.end;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class EndEventTestJavaDelegate implements JavaDelegate {
 
-  public static int timesCalled;
+  private static final Logger logger = LoggerFactory.getLogger(EndEventTestJavaDelegate.class);
+public static int timesCalled;
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     timesCalled++;
     try {
       Thread.sleep(3000L);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(), e);
     }
   }
 

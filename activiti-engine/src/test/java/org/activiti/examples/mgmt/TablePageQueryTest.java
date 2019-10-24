@@ -69,7 +69,7 @@ public class TablePageQueryTest extends PluggableActivitiTestCase {
 
     // mybatis will return the correct case for postgres table columns from
     // version 3.0.6 on
-    if (processEngineConfiguration.getDatabaseType().equals("postgres")) {
+    if ("postgres".equals(processEngineConfiguration.getDatabaseType())) {
       columnKey = "name_";
     }
 
@@ -79,7 +79,7 @@ public class TablePageQueryTest extends PluggableActivitiTestCase {
   }
 
   private List<String> generateDummyTasks(int nrOfTasks) {
-    ArrayList<String> taskIds = new ArrayList<String>();
+    ArrayList<String> taskIds = new ArrayList<>();
     for (int i = 0; i < nrOfTasks; i++) {
       Task task = taskService.newTask();
       task.setName(((char) ('A' + i)) + "");

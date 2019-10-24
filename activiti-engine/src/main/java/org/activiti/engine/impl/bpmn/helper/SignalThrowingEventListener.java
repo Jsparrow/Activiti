@@ -36,16 +36,16 @@ public class SignalThrowingEventListener extends BaseDelegateEventListener {
 
   @Override
   public void onEvent(ActivitiEvent event) {
-    if (isValidEvent(event)) {
-
-      if (event.getProcessInstanceId() == null && processInstanceScope) {
+    if (!isValidEvent(event)) {
+		return;
+	}
+	if (event.getProcessInstanceId() == null && processInstanceScope) {
         throw new ActivitiIllegalArgumentException("Cannot throw process-instance scoped signal, since the dispatched event is not part of an ongoing process instance");
       }
-
-      CommandContext commandContext = Context.getCommandContext();
-      EventSubscriptionEntityManager eventSubscriptionEntityManager = commandContext.getEventSubscriptionEntityManager();
-      List<SignalEventSubscriptionEntity> subscriptionEntities = null;
-      if (processInstanceScope) {
+	CommandContext commandContext = Context.getCommandContext();
+	EventSubscriptionEntityManager eventSubscriptionEntityManager = commandContext.getEventSubscriptionEntityManager();
+	List<SignalEventSubscriptionEntity> subscriptionEntities = null;
+	if (processInstanceScope) {
         subscriptionEntities = eventSubscriptionEntityManager.findSignalEventSubscriptionsByProcessInstanceAndEventName(event.getProcessInstanceId(), signalName);
       } else {
         String tenantId = null;
@@ -55,11 +55,7 @@ public class SignalThrowingEventListener extends BaseDelegateEventListener {
         }
         subscriptionEntities = eventSubscriptionEntityManager.findSignalEventSubscriptionsByEventName(signalName, tenantId);
       }
-
-      for (SignalEventSubscriptionEntity signalEventSubscriptionEntity : subscriptionEntities) {
-        eventSubscriptionEntityManager.eventReceived(signalEventSubscriptionEntity, null, false);
-      }
-    }
+	subscriptionEntities.forEach(signalEventSubscriptionEntity -> eventSubscriptionEntityManager.eventReceived(signalEventSubscriptionEntity, null, false));
   }
 
   public void setSignalName(String signalName) {

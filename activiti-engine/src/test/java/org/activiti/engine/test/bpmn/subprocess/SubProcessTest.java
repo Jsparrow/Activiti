@@ -79,13 +79,13 @@ public class SubProcessTest extends PluggableActivitiTestCase {
     assertEquals("Fix escalated problem", escalationTask.getName());
     
     // Verify history for task that was killed
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskName("Task in subprocess").singleResult();
-      assertNotNull(historicTaskInstance.getEndTime());
-      
-      HistoricActivityInstance historicActivityInstance = historyService.createHistoricActivityInstanceQuery().activityId("subProcessTask").singleResult();
-      assertNotNull(historicActivityInstance.getEndTime());
-    }
+	if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskName("Task in subprocess").singleResult();
+	assertNotNull(historicTaskInstance.getEndTime());
+	HistoricActivityInstance historicActivityInstance = historyService.createHistoricActivityInstanceQuery().activityId("subProcessTask").singleResult();
+	assertNotNull(historicActivityInstance.getEndTime());
   }
 
   /**

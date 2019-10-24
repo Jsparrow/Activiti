@@ -42,15 +42,13 @@ public class AsyncJobAddedNotification implements CommandContextCloseListener {
   public void closed(CommandContext commandContext) {
     CommandExecutor commandExecutor = commandContext.getProcessEngineConfiguration().getCommandExecutor(); 
     CommandConfig commandConfig = new CommandConfig(false, TransactionPropagation.REQUIRES_NEW); 
-    commandExecutor.execute(commandConfig, new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    commandExecutor.execute(commandConfig, (CommandContext commandContext1) -> {
         if (log.isTraceEnabled()) {
           log.trace("notifying job executor of new job");
         }
         asyncExecutor.executeAsyncJob(job);
         return null;
-      }
-    });
+      });
   }
 
   @Override

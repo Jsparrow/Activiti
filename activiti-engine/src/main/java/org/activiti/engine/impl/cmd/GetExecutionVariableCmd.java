@@ -38,7 +38,8 @@ public class GetExecutionVariableCmd implements Command<Object>, Serializable {
     this.isLocal = isLocal;
   }
 
-  public Object execute(CommandContext commandContext) {
+  @Override
+public Object execute(CommandContext commandContext) {
     if (executionId == null) {
       throw new ActivitiIllegalArgumentException("executionId is null");
     }
@@ -49,7 +50,7 @@ public class GetExecutionVariableCmd implements Command<Object>, Serializable {
     ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(executionId);
 
     if (execution == null) {
-      throw new ActivitiObjectNotFoundException("execution " + executionId + " doesn't exist", Execution.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("execution ").append(executionId).append(" doesn't exist").toString(), Execution.class);
     }
     
     Object value;

@@ -41,15 +41,18 @@ public class JsonType implements VariableType {
     this.javaClassFieldForJackson = javaClassFieldForJackson;
   }
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return "json";
   }
 
-  public boolean isCachable() {
+  @Override
+public boolean isCachable() {
     return true;
   }
 
-  public Object getValue(ValueFields valueFields) {
+  @Override
+public Object getValue(ValueFields valueFields) {
     Object jsonValue = null;
     if (valueFields.getTextValue() != null && valueFields.getTextValue().length() > 0) {
       if(jsonValue==null) {
@@ -81,7 +84,8 @@ public class JsonType implements VariableType {
   }
 
 
-  public void setValue(Object value, ValueFields valueFields) {
+  @Override
+public void setValue(Object value, ValueFields valueFields) {
     try {
       valueFields.setTextValue(objectMapper.writeValueAsString(value));
     } catch (JsonProcessingException e) {
@@ -89,7 +93,8 @@ public class JsonType implements VariableType {
     }
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     if (value == null) {
       return true;
     }

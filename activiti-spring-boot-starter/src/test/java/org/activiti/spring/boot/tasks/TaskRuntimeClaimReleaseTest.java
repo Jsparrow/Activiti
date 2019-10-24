@@ -83,10 +83,8 @@ public class TaskRuntimeClaimReleaseTest {
         assertThat(standAloneTask.getAssignee()).isNull();
         assertThat(standAloneTask.getStatus()).isEqualTo(Task.TaskStatus.CREATED);
 
-        Throwable thrown = catchThrowable(() -> {
-                    // UnAuthorized release, task is not assigned
-                    taskRuntime.release(TaskPayloadBuilder.release().withTaskId(standAloneTask.getId()).build());
-                }
+        // UnAuthorized release, task is not assigned
+		Throwable thrown = catchThrowable(() -> taskRuntime.release(TaskPayloadBuilder.release().withTaskId(standAloneTask.getId()).build())
         );
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
     }

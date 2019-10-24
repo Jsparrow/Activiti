@@ -44,7 +44,7 @@ public class SkipExpressionUtil {
       return ((Boolean) isSkipExpressionEnabled).booleanValue();
 
     } else {
-      throw new ActivitiIllegalArgumentException(skipExpressionEnabledVariable + " variable does not resolve to a boolean. " + isSkipExpressionEnabled);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append(skipExpressionEnabledVariable).append(" variable does not resolve to a boolean. ").append(isSkipExpressionEnabled).toString());
     }
   }
 

@@ -38,11 +38,12 @@ public class CompleteAdhocSubProcessCmd implements Command<Void>, Serializable {
     this.executionId = executionId;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     ExecutionEntityManager executionEntityManager = commandContext.getExecutionEntityManager();
     ExecutionEntity execution = executionEntityManager.findById(executionId);
     if (execution == null) {
-      throw new ActivitiObjectNotFoundException("No execution found for id '" + executionId + "'", ExecutionEntity.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("No execution found for id '").append(executionId).append("'").toString(), ExecutionEntity.class);
     }
 
     if (!(execution.getCurrentFlowElement() instanceof AdhocSubProcess)) {

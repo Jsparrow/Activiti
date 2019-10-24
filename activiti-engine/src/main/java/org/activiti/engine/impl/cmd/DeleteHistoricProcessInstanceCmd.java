@@ -34,7 +34,8 @@ public class DeleteHistoricProcessInstanceCmd implements Command<Object>, Serial
     this.processInstanceId = processInstanceId;
   }
 
-  public Object execute(CommandContext commandContext) {
+  @Override
+public Object execute(CommandContext commandContext) {
     if (processInstanceId == null) {
       throw new ActivitiIllegalArgumentException("processInstanceId is null");
     }

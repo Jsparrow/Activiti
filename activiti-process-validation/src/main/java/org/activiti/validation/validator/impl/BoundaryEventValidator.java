@@ -42,11 +42,11 @@ public class BoundaryEventValidator extends ProcessLevelValidator {
 
     // Only one boundary event of type 'cancel' can be attached to the same
     // element, so we store the count temporarily here
-    HashMap<String, Integer> cancelBoundaryEventsCounts = new HashMap<String, Integer>();
+    HashMap<String, Integer> cancelBoundaryEventsCounts = new HashMap<>();
 
     // Only one boundary event of type 'compensate' can be attached to the
     // same element, so we store the count temporarily here
-    HashMap<String, Integer> compensateBoundaryEventsCounts = new HashMap<String, Integer>();
+    HashMap<String, Integer> compensateBoundaryEventsCounts = new HashMap<>();
 
     for (int i = 0; i < boundaryEvents.size(); i++) {
 
@@ -69,15 +69,15 @@ public class BoundaryEventValidator extends ProcessLevelValidator {
             addError(errors, Problems.BOUNDARY_EVENT_CANCEL_ONLY_ON_TRANSACTION, process, boundaryEvent, "boundary event with cancelEventDefinition only supported on transaction subprocesses");
           } else {
             if (!cancelBoundaryEventsCounts.containsKey(attachedToFlowElement.getId())) {
-              cancelBoundaryEventsCounts.put(attachedToFlowElement.getId(), new Integer(0));
+              cancelBoundaryEventsCounts.put(attachedToFlowElement.getId(), Integer.valueOf(0));
             }
-            cancelBoundaryEventsCounts.put(attachedToFlowElement.getId(), new Integer(cancelBoundaryEventsCounts.get(attachedToFlowElement.getId()) + 1));
+            cancelBoundaryEventsCounts.put(attachedToFlowElement.getId(), Integer.valueOf(cancelBoundaryEventsCounts.get(attachedToFlowElement.getId()) + 1));
           }
 
         } else if (eventDefinition instanceof CompensateEventDefinition) {
 
           if (!compensateBoundaryEventsCounts.containsKey(boundaryEvent.getAttachedToRefId())) {
-            compensateBoundaryEventsCounts.put(boundaryEvent.getAttachedToRefId(), new Integer(0));
+            compensateBoundaryEventsCounts.put(boundaryEvent.getAttachedToRefId(), Integer.valueOf(0));
           }
           compensateBoundaryEventsCounts.put(boundaryEvent.getAttachedToRefId(), compensateBoundaryEventsCounts.get(boundaryEvent.getAttachedToRefId()) + 1);
 
@@ -88,18 +88,17 @@ public class BoundaryEventValidator extends ProcessLevelValidator {
           for (int j = 0; j < boundaryEvents.size(); j++) {
             if (j != i) {
               BoundaryEvent otherBoundaryEvent = boundaryEvents.get(j);
-              if (otherBoundaryEvent.getAttachedToRefId() != null && otherBoundaryEvent.getAttachedToRefId().equals(boundaryEvent.getAttachedToRefId())) {
-                if (otherBoundaryEvent.getEventDefinitions() != null && !otherBoundaryEvent.getEventDefinitions().isEmpty()) {
-                  EventDefinition otherEventDefinition = otherBoundaryEvent.getEventDefinitions().get(0);
-                  if (otherEventDefinition instanceof MessageEventDefinition) {
-                    MessageEventDefinition currentMessageEventDefinition = (MessageEventDefinition) eventDefinition;
-                    MessageEventDefinition otherMessageEventDefinition = (MessageEventDefinition) otherEventDefinition;
-                    if (otherMessageEventDefinition.getMessageRef() != null && otherMessageEventDefinition.getMessageRef().equals(currentMessageEventDefinition.getMessageRef())) {
-                      addError(errors, Problems.MESSAGE_EVENT_MULTIPLE_ON_BOUNDARY_SAME_MESSAGE_ID, process, boundaryEvent, "Multiple message events with same message id not supported");
-                    }
-                  }
-                }
-              }
+              boolean condition = otherBoundaryEvent.getAttachedToRefId() != null && otherBoundaryEvent.getAttachedToRefId().equals(boundaryEvent.getAttachedToRefId()) && otherBoundaryEvent.getEventDefinitions() != null && !otherBoundaryEvent.getEventDefinitions().isEmpty();
+			if (condition) {
+			  EventDefinition otherEventDefinition = otherBoundaryEvent.getEventDefinitions().get(0);
+			  if (otherEventDefinition instanceof MessageEventDefinition) {
+			    MessageEventDefinition currentMessageEventDefinition = (MessageEventDefinition) eventDefinition;
+			    MessageEventDefinition otherMessageEventDefinition = (MessageEventDefinition) otherEventDefinition;
+			    if (otherMessageEventDefinition.getMessageRef() != null && otherMessageEventDefinition.getMessageRef().equals(currentMessageEventDefinition.getMessageRef())) {
+			      addError(errors, Problems.MESSAGE_EVENT_MULTIPLE_ON_BOUNDARY_SAME_MESSAGE_ID, process, boundaryEvent, "Multiple message events with same message id not supported");
+			    }
+			  }
+			}
             }
 
           }
@@ -113,18 +112,12 @@ public class BoundaryEventValidator extends ProcessLevelValidator {
       }
     }
 
-    for (String elementId : cancelBoundaryEventsCounts.keySet()) {
-      if (cancelBoundaryEventsCounts.get(elementId) > 1) {
-        addError(errors, Problems.BOUNDARY_EVENT_MULTIPLE_CANCEL_ON_TRANSACTION, process, bpmnModel.getFlowElement(elementId),
-            "multiple boundary events with cancelEventDefinition not supported on same transaction subprocess.");
-      }
-    }
+    cancelBoundaryEventsCounts.keySet().stream().filter(elementId -> cancelBoundaryEventsCounts.get(elementId) > 1).forEach(elementId -> addError(errors, Problems.BOUNDARY_EVENT_MULTIPLE_CANCEL_ON_TRANSACTION, process,
+			bpmnModel.getFlowElement(elementId),
+			"multiple boundary events with cancelEventDefinition not supported on same transaction subprocess."));
 
-    for (String elementId : compensateBoundaryEventsCounts.keySet()) {
-      if (compensateBoundaryEventsCounts.get(elementId) > 1) {
-        addError(errors, Problems.COMPENSATE_EVENT_MULTIPLE_ON_BOUNDARY, process, bpmnModel.getFlowElement(elementId), "Multiple boundary events of type 'compensate' is invalid");
-      }
-    }
+    compensateBoundaryEventsCounts.keySet().stream().filter(elementId -> compensateBoundaryEventsCounts.get(elementId) > 1).forEach(elementId -> addError(errors, Problems.COMPENSATE_EVENT_MULTIPLE_ON_BOUNDARY, process, bpmnModel.getFlowElement(elementId),
+			"Multiple boundary events of type 'compensate' is invalid"));
 
   }
 }

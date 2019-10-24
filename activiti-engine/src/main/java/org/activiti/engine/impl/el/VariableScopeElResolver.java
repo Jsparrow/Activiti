@@ -95,20 +95,21 @@ public class VariableScopeElResolver extends ELResolver {
 
 	@Override
 	public boolean isReadOnly(ELContext context, Object base, Object property) {
-		if (base == null) {
-			String variable = (String) property;
-			return !variableScope.hasVariable(variable);
+		if (base != null) {
+			return true;
 		}
-		return true;
+		String variable = (String) property;
+		return !variableScope.hasVariable(variable);
 	}
 
 	@Override
 	public void setValue(ELContext context, Object base, Object property, Object value) {
-		if (base == null) {
-			String variable = (String) property;
-			if (variableScope.hasVariable(variable)) {
-				variableScope.setVariable(variable, value);
-			}
+		if (base != null) {
+			return;
+		}
+		String variable = (String) property;
+		if (variableScope.hasVariable(variable)) {
+			variableScope.setVariable(variable, value);
 		}
 	}
 

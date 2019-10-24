@@ -124,13 +124,8 @@ public class ProcessExtensionsTest {
         ProcessRuntimeConfiguration configuration = processRuntime.configuration();
         assertThat(configuration).isNotNull();
 
-        assertThatExceptionOfType(ActivitiException.class).isThrownBy(() -> {
-            processRuntime.start(ProcessPayloadBuilder.start()
-                    .withProcessDefinitionKey(INITIAL_VARS_PROCESS)
-                    .withVariable("extraVar",
-                            true)
-                    .build());
-        }).withMessage("Can't start process '" + INITIAL_VARS_PROCESS + "' without required variables - age");
+        assertThatExceptionOfType(ActivitiException.class).isThrownBy(() -> processRuntime.start(ProcessPayloadBuilder.start().withProcessDefinitionKey(INITIAL_VARS_PROCESS)
+				.withVariable("extraVar", true).build())).withMessage(new StringBuilder().append("Can't start process '").append(INITIAL_VARS_PROCESS).append("' without required variables - age").toString());
     }
 
     @Test
@@ -140,14 +135,8 @@ public class ProcessExtensionsTest {
         ProcessRuntimeConfiguration configuration = processRuntime.configuration();
         assertThat(configuration).isNotNull();
 
-        assertThatExceptionOfType(ActivitiException.class).isThrownBy(() -> {
-            processRuntime.start(ProcessPayloadBuilder.start()
-                    .withProcessDefinitionKey(INITIAL_VARS_PROCESS)
-                    .withVariable("age", true)
-                    .withVariable("name",7)
-                    .withVariable("subscribe","ok")
-                    .withVariable("birth","thisisnotadate")
-                    .build());
-        }).withMessage("Can't start process '" + INITIAL_VARS_PROCESS + "' as variables fail type validation - subscribe, name, birth, age");
+        assertThatExceptionOfType(ActivitiException.class).isThrownBy(() -> processRuntime.start(ProcessPayloadBuilder.start().withProcessDefinitionKey(INITIAL_VARS_PROCESS)
+				.withVariable("age", true).withVariable("name", 7).withVariable("subscribe", "ok")
+				.withVariable("birth", "thisisnotadate").build())).withMessage(new StringBuilder().append("Can't start process '").append(INITIAL_VARS_PROCESS).append("' as variables fail type validation - subscribe, name, birth, age").toString());
     }
 }

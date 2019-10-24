@@ -80,8 +80,8 @@ public class MailActivityBehavior extends AbstractBpmnActivityBehavior {
       String textStr = textVar == null ? getStringFromField(text, execution) : getStringFromField(getExpression(execution, textVar), execution);
       String htmlStr = htmlVar == null ? getStringFromField(html, execution) : getStringFromField(getExpression(execution, htmlVar), execution);
       String charSetStr = getStringFromField(charset, execution);
-      List<File> files = new LinkedList<File>();
-      List<DataSource> dataSources = new LinkedList<DataSource>();
+      List<File> files = new LinkedList<>();
+      List<DataSource> dataSources = new LinkedList<>();
       getFilesFromFields(attachments, execution, files, dataSources);
 
       email = createEmail(textStr, htmlStr, attachmentsExist(files, dataSources));
@@ -163,7 +163,7 @@ public class MailActivityBehavior extends AbstractBpmnActivityBehavior {
         try {
           email.addTo(t);
         } catch (EmailException e) {
-          throw new ActivitiException("Could not add " + t + " as recipient", e);
+          throw new ActivitiException(new StringBuilder().append("Could not add ").append(t).append(" as recipient").toString(), e);
         }
       }
     } else {
@@ -193,7 +193,7 @@ public class MailActivityBehavior extends AbstractBpmnActivityBehavior {
     try {
       email.setFrom(fromAddress);
     } catch (EmailException e) {
-      throw new ActivitiException("Could not set " + from + " as from address in email", e);
+      throw new ActivitiException(new StringBuilder().append("Could not set ").append(from).append(" as from address in email").toString(), e);
     }
   }
 
@@ -204,7 +204,7 @@ public class MailActivityBehavior extends AbstractBpmnActivityBehavior {
         try {
           email.addCc(c);
         } catch (EmailException e) {
-          throw new ActivitiException("Could not add " + c + " as cc recipient", e);
+          throw new ActivitiException(new StringBuilder().append("Could not add ").append(c).append(" as cc recipient").toString(), e);
         }
       }
     }
@@ -217,7 +217,7 @@ public class MailActivityBehavior extends AbstractBpmnActivityBehavior {
         try {
           email.addBcc(b);
         } catch (EmailException e) {
-          throw new ActivitiException("Could not add " + b + " as bcc recipient", e);
+          throw new ActivitiException(new StringBuilder().append("Could not add ").append(b).append(" as bcc recipient").toString(), e);
         }
       }
     }
@@ -274,9 +274,11 @@ public class MailActivityBehavior extends AbstractBpmnActivityBehavior {
       }
     }
 
-    if (!isMailServerSet) {
-      String mailSessionJndi = processEngineConfiguration.getMailSessionJndi();
-      if (mailSessionJndi != null) {
+    if (isMailServerSet) {
+		return;
+	}
+	String mailSessionJndi = processEngineConfiguration.getMailSessionJndi();
+	if (mailSessionJndi != null) {
         setEmailSession(email, mailSessionJndi);
 
       } else {
@@ -298,7 +300,6 @@ public class MailActivityBehavior extends AbstractBpmnActivityBehavior {
           email.setAuthentication(user, password);
         }
       }
-    }
   }
 
   protected void setEmailSession(Email email, String mailSessionJndi) {
@@ -316,14 +317,14 @@ public class MailActivityBehavior extends AbstractBpmnActivityBehavior {
   }
 
   protected String[] splitAndTrim(String str) {
-    if (str != null) {
-      String[] splittedStrings = str.split(",");
-      for (int i = 0; i < splittedStrings.length; i++) {
+    if (str == null) {
+		return null;
+	}
+	String[] splittedStrings = str.split(",");
+	for (int i = 0; i < splittedStrings.length; i++) {
         splittedStrings[i] = splittedStrings[i].trim();
       }
-      return splittedStrings;
-    }
-    return null;
+	return splittedStrings;
   }
 
   protected String getStringFromField(Expression expression, DelegateExecution execution) {

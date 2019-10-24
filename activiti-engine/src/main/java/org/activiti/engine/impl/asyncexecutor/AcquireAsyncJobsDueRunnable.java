@@ -41,7 +41,8 @@ public class AcquireAsyncJobsDueRunnable implements Runnable {
     this.asyncExecutor = asyncExecutor;
   }
 
-  public synchronized void run() {
+  @Override
+public synchronized void run() {
     log.info("{} starting to acquire async jobs due");
     Thread.currentThread().setName("activiti-acquire-async-jobs");
 
@@ -76,10 +77,7 @@ public class AcquireAsyncJobsDueRunnable implements Runnable {
 
       } catch (ActivitiOptimisticLockingException optimisticLockingException) {
         if (log.isDebugEnabled()) {
-          log.debug("Optimistic locking exception during async job acquisition. If you have multiple async executors running against the same database, "
-              + "this exception means that this thread tried to acquire a due async job, which already was acquired by another async executor acquisition thread."
-              + "This is expected behavior in a clustered environment. "
-              + "You can ignore this message if you indeed have multiple async executor acquisition threads running against the same database. " + "Exception message: {}",
+          log.debug(new StringBuilder().append("Optimistic locking exception during async job acquisition. If you have multiple async executors running against the same database, ").append("this exception means that this thread tried to acquire a due async job, which already was acquired by another async executor acquisition thread.").append("This is expected behavior in a clustered environment. ").append("You can ignore this message if you indeed have multiple async executor acquisition threads running against the same database. ").append("Exception message: {}").toString(),
               optimisticLockingException.getMessage());
         }
       } catch (Throwable e) {
@@ -103,7 +101,8 @@ public class AcquireAsyncJobsDueRunnable implements Runnable {
             log.debug("async job acquisition thread woke up");
           }
         } catch (InterruptedException e) {
-          if (log.isDebugEnabled()) {
+          log.error(e.getMessage(), e);
+		if (log.isDebugEnabled()) {
             log.debug("async job acquisition wait interrupted");
           }
         } finally {

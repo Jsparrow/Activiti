@@ -14,7 +14,8 @@ package org.activiti.bpmn.model;
 
 public class CancelEventDefinition extends EventDefinition {
 
-  public CancelEventDefinition clone() {
+  @Override
+public CancelEventDefinition clone() {
     CancelEventDefinition clone = new CancelEventDefinition();
     clone.setValues(this);
     return clone;

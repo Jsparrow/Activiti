@@ -20,6 +20,8 @@ import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Example of using the exclusive gateway.
@@ -28,14 +30,16 @@ import org.activiti.engine.test.Deployment;
  */
 public class ExclusiveGatewayTest extends PluggableActivitiTestCase {
 
-  /**
+  private static final Logger logger = LoggerFactory.getLogger(ExclusiveGatewayTest.class);
+
+/**
    * The test process has an XOR gateway where, the 'input' variable is used to select one of the outgoing sequence flow. Every one of those sequence flow goes to another task, allowing us to test the
    * decision very easily.
    */
   @Deployment
   public void testDecisionFunctionality() {
 
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
 
     // Test with input == 1
     variables.put("input", 1);
@@ -61,6 +65,7 @@ public class ExclusiveGatewayTest extends PluggableActivitiTestCase {
       runtimeService.startProcessInstanceByKey("exclusiveGateway", variables);
       fail();
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // Exception is expected since no outgoing sequence flow matches
     }
 

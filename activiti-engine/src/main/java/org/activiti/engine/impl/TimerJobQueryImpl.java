@@ -28,7 +28,7 @@ import org.activiti.engine.runtime.TimerJobQuery;
 
 
  */
-public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> implements TimerJobQuery, Serializable {
+public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> implements TimerJobQuery {
 
   private static final long serialVersionUID = 1L;
   protected String id;
@@ -61,7 +61,8 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     super(commandExecutor);
   }
 
-  public TimerJobQueryImpl jobId(String jobId) {
+  @Override
+public TimerJobQueryImpl jobId(String jobId) {
     if (jobId == null) {
       throw new ActivitiIllegalArgumentException("Provided job id is null");
     }
@@ -69,7 +70,8 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     return this;
   }
 
-  public TimerJobQueryImpl processInstanceId(String processInstanceId) {
+  @Override
+public TimerJobQueryImpl processInstanceId(String processInstanceId) {
     if (processInstanceId == null) {
       throw new ActivitiIllegalArgumentException("Provided process instance id is null");
     }
@@ -77,7 +79,8 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     return this;
   }
 
-  public TimerJobQueryImpl processDefinitionId(String processDefinitionId) {
+  @Override
+public TimerJobQueryImpl processDefinitionId(String processDefinitionId) {
     if (processDefinitionId == null) {
       throw new ActivitiIllegalArgumentException("Provided process definition id is null");
     }
@@ -85,7 +88,8 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     return this;
   }
 
-  public TimerJobQueryImpl executionId(String executionId) {
+  @Override
+public TimerJobQueryImpl executionId(String executionId) {
     if (executionId == null) {
       throw new ActivitiIllegalArgumentException("Provided execution id is null");
     }
@@ -98,12 +102,14 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     return this;
   }
 
-  public TimerJobQueryImpl executable() {
+  @Override
+public TimerJobQueryImpl executable() {
     executable = true;
     return this;
   }
 
-  public TimerJobQueryImpl timers() {
+  @Override
+public TimerJobQueryImpl timers() {
     if (onlyMessages) {
       throw new ActivitiIllegalArgumentException("Cannot combine onlyTimers() with onlyMessages() in the same query");
     }
@@ -111,7 +117,8 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     return this;
   }
 
-  public TimerJobQueryImpl messages() {
+  @Override
+public TimerJobQueryImpl messages() {
     if (onlyTimers) {
       throw new ActivitiIllegalArgumentException("Cannot combine onlyTimers() with onlyMessages() in the same query");
     }
@@ -119,7 +126,8 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     return this;
   }
 
-  public TimerJobQueryImpl duedateHigherThan(Date date) {
+  @Override
+public TimerJobQueryImpl duedateHigherThan(Date date) {
     if (date == null) {
       throw new ActivitiIllegalArgumentException("Provided date is null");
     }
@@ -127,7 +135,8 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     return this;
   }
 
-  public TimerJobQueryImpl duedateLowerThan(Date date) {
+  @Override
+public TimerJobQueryImpl duedateLowerThan(Date date) {
     if (date == null) {
       throw new ActivitiIllegalArgumentException("Provided date is null");
     }
@@ -164,12 +173,14 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     return this;
   }
   
-  public TimerJobQueryImpl withException() {
+  @Override
+public TimerJobQueryImpl withException() {
     this.withException = true;
     return this;
   }
 
-  public TimerJobQueryImpl exceptionMessage(String exceptionMessage) {
+  @Override
+public TimerJobQueryImpl exceptionMessage(String exceptionMessage) {
     if (exceptionMessage == null) {
       throw new ActivitiIllegalArgumentException("Provided exception message is null");
     }
@@ -177,7 +188,8 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     return this;
   }
 
-  public TimerJobQueryImpl jobTenantId(String tenantId) {
+  @Override
+public TimerJobQueryImpl jobTenantId(String tenantId) {
     if (tenantId == null) {
       throw new ActivitiIllegalArgumentException("job is null");
     }
@@ -185,7 +197,8 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     return this;
   }
 
-  public TimerJobQueryImpl jobTenantIdLike(String tenantIdLike) {
+  @Override
+public TimerJobQueryImpl jobTenantIdLike(String tenantIdLike) {
     if (tenantIdLike == null) {
       throw new ActivitiIllegalArgumentException("job is null");
     }
@@ -193,45 +206,54 @@ public class TimerJobQueryImpl extends AbstractQuery<TimerJobQuery, Job> impleme
     return this;
   }
 
-  public TimerJobQueryImpl jobWithoutTenantId() {
+  @Override
+public TimerJobQueryImpl jobWithoutTenantId() {
     this.withoutTenantId = true;
     return this;
   }
 
   // sorting //////////////////////////////////////////
 
-  public TimerJobQuery orderByJobDuedate() {
+  @Override
+public TimerJobQuery orderByJobDuedate() {
     return orderBy(JobQueryProperty.DUEDATE);
   }
 
-  public TimerJobQuery orderByExecutionId() {
+  @Override
+public TimerJobQuery orderByExecutionId() {
     return orderBy(JobQueryProperty.EXECUTION_ID);
   }
 
-  public TimerJobQuery orderByJobId() {
+  @Override
+public TimerJobQuery orderByJobId() {
     return orderBy(JobQueryProperty.JOB_ID);
   }
 
-  public TimerJobQuery orderByProcessInstanceId() {
+  @Override
+public TimerJobQuery orderByProcessInstanceId() {
     return orderBy(JobQueryProperty.PROCESS_INSTANCE_ID);
   }
 
-  public TimerJobQuery orderByJobRetries() {
+  @Override
+public TimerJobQuery orderByJobRetries() {
     return orderBy(JobQueryProperty.RETRIES);
   }
 
-  public TimerJobQuery orderByTenantId() {
+  @Override
+public TimerJobQuery orderByTenantId() {
     return orderBy(JobQueryProperty.TENANT_ID);
   }
 
   // results //////////////////////////////////////////
 
-  public long executeCount(CommandContext commandContext) {
+  @Override
+public long executeCount(CommandContext commandContext) {
     checkQueryOk();
     return commandContext.getTimerJobEntityManager().findJobCountByQueryCriteria(this);
   }
 
-  public List<Job> executeList(CommandContext commandContext, Page page) {
+  @Override
+public List<Job> executeList(CommandContext commandContext, Page page) {
     checkQueryOk();
     return commandContext.getTimerJobEntityManager().findJobsByQueryCriteria(this, page);
   }

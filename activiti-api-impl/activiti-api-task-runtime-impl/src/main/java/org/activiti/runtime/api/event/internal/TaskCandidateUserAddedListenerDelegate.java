@@ -41,11 +41,7 @@ public class TaskCandidateUserAddedListenerDelegate implements ActivitiEventList
     public void onEvent(ActivitiEvent event) {
         if (event instanceof ActivitiEntityEvent) {
             converter.from((ActivitiEntityEvent) event).ifPresent(
-                    convertedEvent -> {
-                        for (TaskRuntimeEventListener<TaskCandidateUserAddedEvent> listener : listeners) {
-                            listener.onEvent(convertedEvent);
-                        }
-                    }
+                    convertedEvent -> listeners.forEach(listener -> listener.onEvent(convertedEvent))
             );
         }
     }

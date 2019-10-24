@@ -46,9 +46,11 @@ public class QueryVariableValue implements Serializable {
   }
 
   public void initialize(VariableTypes types) {
-    if (variableInstanceEntity == null) {
-      VariableType type = types.findVariableType(value);
-      if (type instanceof ByteArrayType) {
+    if (variableInstanceEntity != null) {
+		return;
+	}
+	VariableType type = types.findVariableType(value);
+	if (type instanceof ByteArrayType) {
         throw new ActivitiIllegalArgumentException("Variables of type ByteArray cannot be used to query");
       } else if (type instanceof JPAEntityVariableType && operator != QueryOperator.EQUALS) {
         throw new ActivitiIllegalArgumentException("JPA entity variables can only be used in 'variableValueEquals'");
@@ -58,7 +60,6 @@ public class QueryVariableValue implements Serializable {
         // Type implementation determines which fields are set on the entity
         variableInstanceEntity = Context.getCommandContext().getVariableInstanceEntityManager().create(name, type, value);
       }
-    }
   }
 
   public String getName() {

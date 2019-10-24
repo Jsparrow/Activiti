@@ -40,18 +40,21 @@ public class TextAnnotationJsonConverter extends BaseBpmnJsonConverter {
     convertersToJsonMap.put(TextAnnotation.class, TextAnnotationJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     return STENCIL_TEXT_ANNOTATION;
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
     TextAnnotation annotation = (TextAnnotation) baseElement;
     if (StringUtils.isNotEmpty(annotation.getText())) {
       setPropertyValue("text", annotation.getText(), propertiesNode);
     }
   }
 
-  protected BaseElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected BaseElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     TextAnnotation annotation = new TextAnnotation();
     String text = getPropertyValueAsString("text", elementNode);
     if (StringUtils.isNotEmpty(text)) {

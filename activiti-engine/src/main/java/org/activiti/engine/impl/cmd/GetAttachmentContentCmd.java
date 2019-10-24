@@ -34,7 +34,8 @@ public class GetAttachmentContentCmd implements Command<InputStream>, Serializab
     this.attachmentId = attachmentId;
   }
 
-  public InputStream execute(CommandContext commandContext) {
+  @Override
+public InputStream execute(CommandContext commandContext) {
     AttachmentEntity attachment = commandContext.getAttachmentEntityManager().findById(attachmentId);
 
     String contentId = attachment.getContentId();

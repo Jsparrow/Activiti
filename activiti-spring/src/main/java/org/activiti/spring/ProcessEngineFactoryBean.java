@@ -36,17 +36,20 @@ public class ProcessEngineFactoryBean implements FactoryBean<ProcessEngine>, Dis
   protected ApplicationContext applicationContext;
   protected ProcessEngine processEngine;
 
-  public void destroy() throws Exception {
+  @Override
+public void destroy() throws Exception {
     if (processEngine != null) {
       processEngine.close();
     }
   }
 
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+  @Override
+public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
   }
 
-  public ProcessEngine getObject() throws Exception {
+  @Override
+public ProcessEngine getObject() throws Exception {
     configureExpressionManager();
     configureExternallyManagedTransactions();
 
@@ -65,19 +68,23 @@ public class ProcessEngineFactoryBean implements FactoryBean<ProcessEngine>, Dis
   }
 
   protected void configureExternallyManagedTransactions() {
-    if (processEngineConfiguration instanceof SpringProcessEngineConfiguration) { // remark: any config can be injected, so we cannot have SpringConfiguration as member
-      SpringProcessEngineConfiguration engineConfiguration = (SpringProcessEngineConfiguration) processEngineConfiguration;
-      if (engineConfiguration.getTransactionManager() != null) {
+    // remark: any config can be injected, so we cannot have SpringConfiguration as member
+	if (!(processEngineConfiguration instanceof SpringProcessEngineConfiguration)) {
+		return;
+	}
+	SpringProcessEngineConfiguration engineConfiguration = (SpringProcessEngineConfiguration) processEngineConfiguration;
+	if (engineConfiguration.getTransactionManager() != null) {
         processEngineConfiguration.setTransactionsExternallyManaged(true);
       }
-    }
   }
 
-  public Class<ProcessEngine> getObjectType() {
+  @Override
+public Class<ProcessEngine> getObjectType() {
     return ProcessEngine.class;
   }
 
-  public boolean isSingleton() {
+  @Override
+public boolean isSingleton() {
     return true;
   }
 

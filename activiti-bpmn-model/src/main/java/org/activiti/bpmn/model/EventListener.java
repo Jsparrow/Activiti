@@ -54,7 +54,8 @@ public class EventListener extends BaseElement {
     return entityType;
   }
 
-  public EventListener clone() {
+  @Override
+public EventListener clone() {
     EventListener clone = new EventListener();
     clone.setValues(this);
     return clone;

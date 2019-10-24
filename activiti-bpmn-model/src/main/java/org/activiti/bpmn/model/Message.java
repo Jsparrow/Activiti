@@ -21,7 +21,16 @@ public class Message extends BaseElement {
   protected String name;
   protected String itemRef;
 
-  private Message(Builder builder) {
+  public Message() {
+  }
+
+public Message(String id, String name, String itemRef) {
+    this.id = id;
+    this.name = name;
+    this.itemRef = itemRef;
+  }
+
+private Message(Builder builder) {
     this.id = builder.id;
     this.xmlRowNumber = builder.xmlRowNumber;
     this.xmlColumnNumber = builder.xmlColumnNumber;
@@ -31,44 +40,36 @@ public class Message extends BaseElement {
     this.itemRef = builder.itemRef;
   }
 
-  public Message() {
-  }
-
-  public Message(String id, String name, String itemRef) {
-    this.id = id;
-    this.name = name;
-    this.itemRef = itemRef;
-  }
-
-  public String getName() {
+public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+public void setName(String name) {
     this.name = name;
   }
 
-  public String getItemRef() {
+public String getItemRef() {
     return itemRef;
   }
 
-  public void setItemRef(String itemRef) {
+public void setItemRef(String itemRef) {
     this.itemRef = itemRef;
   }
 
-  public Message clone() {
+@Override
+public Message clone() {
     Message clone = new Message();
     clone.setValues(this);
     return clone;
   }
 
-  public void setValues(Message otherElement) {
+public void setValues(Message otherElement) {
     super.setValues(otherElement);
     setName(otherElement.getName());
     setItemRef(otherElement.getItemRef());
   }
 
-  /**
+/**
    * Creates builder to build {@link Message}.
    * @return created builder
    */
@@ -76,7 +77,7 @@ public class Message extends BaseElement {
     return new Builder();
   }
 
-  /**
+/**
    * Creates a builder to build {@link Message} and initialize it with the given object.
    * @param message to initialize the builder with
    * @return created builder
@@ -85,7 +86,7 @@ public class Message extends BaseElement {
     return new Builder(message);
   }
 
-  /**
+/**
    * Builder to build {@link Message}.
    */
   public static final class Builder {

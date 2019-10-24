@@ -68,9 +68,7 @@ public class SignalEventsAndNewVersionDeploymentsTest extends PluggableActivitiT
     List<Task> tasks = taskService.createTaskQuery().list();
     assertEquals(2, tasks.size());
     
-    for (Task task : tasks) {
-      assertEquals("Task after signal", task.getName());
-    }
+    tasks.forEach(task -> assertEquals("Task after signal", task.getName()));
     
     cleanup(deploymentId);
   }
@@ -208,7 +206,9 @@ public class SignalEventsAndNewVersionDeploymentsTest extends PluggableActivitiT
   }
   
   public void testDeleteDeploymentWithStartSignalEvents1() {
-    String deploymentId1, deploymentId2, deploymentId3;
+    String deploymentId1;
+	String deploymentId2;
+	String deploymentId3;
     deploymentId1 = deployStartSignalTestProcess();
     deploymentId2 = deployProcessWithoutEvents();
     deploymentId3 = deployStartSignalTestProcess();
@@ -425,19 +425,17 @@ public class SignalEventsAndNewVersionDeploymentsTest extends PluggableActivitiT
   }
   
   private List<EventSubscriptionEntity> getAllEventSubscriptions() {
-    return managementService.executeCommand(new Command<List<EventSubscriptionEntity>>() {
-      public List<EventSubscriptionEntity> execute(CommandContext commandContext) {
+    return managementService.executeCommand((CommandContext commandContext) -> {
         EventSubscriptionQueryImpl query = new EventSubscriptionQueryImpl(commandContext);
         query.orderByCreated().desc();
         
         List<EventSubscriptionEntity> eventSubscriptionEntities = query.list();
-        for (EventSubscriptionEntity eventSubscriptionEntity : eventSubscriptionEntities) {
+        eventSubscriptionEntities.forEach(eventSubscriptionEntity -> {
           assertEquals("signal", eventSubscriptionEntity.getEventType());
           assertNotNull(eventSubscriptionEntity.getProcessDefinitionId());
-        }
+        });
         return eventSubscriptionEntities;
-      }
-    });
+      });
   }
   
   private void assertEventSubscriptionsCount(long count) {

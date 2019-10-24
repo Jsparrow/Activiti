@@ -54,13 +54,12 @@ public class DeleteTaskCmd implements Command<Void>, Serializable {
     this.cancel = cancel;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     if (taskId != null) {
       deleteTask(commandContext, taskId);
     } else if (taskIds != null) {
-      for (String taskId : taskIds) {
-        deleteTask(commandContext, taskId);
-      }
+      taskIds.forEach(taskId -> deleteTask(commandContext, taskId));
     } else {
       throw new ActivitiIllegalArgumentException("taskId and taskIds are null");
     }

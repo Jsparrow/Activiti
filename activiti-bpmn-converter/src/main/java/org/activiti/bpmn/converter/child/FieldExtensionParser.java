@@ -29,21 +29,25 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class FieldExtensionParser extends BaseChildElementParser {
 
-  public String getElementName() {
+  @Override
+public String getElementName() {
     return ELEMENT_FIELD;
   }
 
-  public boolean accepts(BaseElement element) {
+  @Override
+public boolean accepts(BaseElement element) {
     return ((element instanceof ActivitiListener) 
             || (element instanceof ServiceTask) 
             || (element instanceof SendTask)
             || (element instanceof MessageEventDefinition));
   }
 
-  public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
+  @Override
+public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
 
-    if (!accepts(parentElement))
-      return;
+    if (!accepts(parentElement)) {
+		return;
+	}
 
     FieldExtension extension = new FieldExtension();
     BpmnXMLUtil.addXMLLocation(extension, xtr);

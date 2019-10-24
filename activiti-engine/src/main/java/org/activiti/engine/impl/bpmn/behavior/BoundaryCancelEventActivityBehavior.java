@@ -42,16 +42,10 @@ public class BoundaryCancelEventActivityBehavior extends BoundaryEventActivityBe
     CommandContext commandContext = Context.getCommandContext();
     ExecutionEntityManager executionEntityManager = commandContext.getExecutionEntityManager();
     
-    ExecutionEntity subProcessExecution = null;
     // TODO: this can be optimized. A full search in the all executions shouldn't be needed
     List<ExecutionEntity> processInstanceExecutions = executionEntityManager.findChildExecutionsByProcessInstanceId(execution.getProcessInstanceId());
-    for (ExecutionEntity childExecution : processInstanceExecutions) {
-      if (childExecution.getCurrentFlowElement() != null 
-          && childExecution.getCurrentFlowElement().getId().equals(boundaryEvent.getAttachedToRefId())) {
-        subProcessExecution = childExecution;
-        break;
-      }
-    }
+    ExecutionEntity subProcessExecution = processInstanceExecutions.stream().filter(childExecution -> childExecution.getCurrentFlowElement() != null 
+          && childExecution.getCurrentFlowElement().getId().equals(boundaryEvent.getAttachedToRefId())).findFirst().orElse(null);
     
     if (subProcessExecution == null) {
       throw new ActivitiException("No execution found for sub process of boundary cancel event " + boundaryEvent.getId());
@@ -64,7 +58,7 @@ public class BoundaryCancelEventActivityBehavior extends BoundaryEventActivityBe
       leave(execution);
     } else {
       
-      String deleteReason = DeleteReason.BOUNDARY_EVENT_INTERRUPTING + "(" + boundaryEvent.getId() + ")";
+      String deleteReason = new StringBuilder().append(DeleteReason.BOUNDARY_EVENT_INTERRUPTING).append("(").append(boundaryEvent.getId()).append(")").toString();
       
       // cancel boundary is always sync
       ScopeUtil.throwCompensationEvent(eventSubscriptions, execution, false);

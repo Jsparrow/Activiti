@@ -37,7 +37,7 @@ public class SetProcessInstanceBusinessKeyCmd implements Command<Void>, Serializ
 
   public SetProcessInstanceBusinessKeyCmd(String processInstanceId, String businessKey) {
     if (processInstanceId == null || processInstanceId.length() < 1) {
-      throw new ActivitiIllegalArgumentException("The process instance id is mandatory, but '" + processInstanceId + "' has been provided.");
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("The process instance id is mandatory, but '").append(processInstanceId).append("' has been provided.").toString());
     }
     if (businessKey == null) {
       throw new ActivitiIllegalArgumentException("The business key is mandatory, but 'null' has been provided.");
@@ -47,14 +47,15 @@ public class SetProcessInstanceBusinessKeyCmd implements Command<Void>, Serializ
     this.businessKey = businessKey;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     ExecutionEntityManager executionManager = commandContext.getExecutionEntityManager();
     ExecutionEntity processInstance = executionManager.findById(processInstanceId);
     if (processInstance == null) {
-      throw new ActivitiObjectNotFoundException("No process instance found for id = '" + processInstanceId + "'.", ProcessInstance.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("No process instance found for id = '").append(processInstanceId).append("'.").toString(), ProcessInstance.class);
     } else if (!processInstance.isProcessInstanceType()) {
-      throw new ActivitiIllegalArgumentException("A process instance id is required, but the provided id " + "'" + processInstanceId + "' " + "points to a child execution of process instance " + "'"
-          + processInstance.getProcessInstanceId() + "'. " + "Please invoke the " + getClass().getSimpleName() + " with a root execution id.");
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("A process instance id is required, but the provided id ").append("'").append(processInstanceId).append("' ").append("points to a child execution of process instance ").append("'").append(processInstance.getProcessInstanceId())
+			.append("'. ").append("Please invoke the ").append(getClass().getSimpleName()).append(" with a root execution id.").toString());
     }
     
     executionManager.updateProcessInstanceBusinessKey(processInstance, businessKey);

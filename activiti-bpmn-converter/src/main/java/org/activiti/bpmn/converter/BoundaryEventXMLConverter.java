@@ -28,7 +28,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class BoundaryEventXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return BoundaryEvent.class;
   }
 
@@ -69,13 +70,13 @@ public class BoundaryEventXMLConverter extends BaseBpmnXMLConverter {
       writeDefaultAttribute(ATTRIBUTE_BOUNDARY_ATTACHEDTOREF, boundaryEvent.getAttachedToRef().getId(), xtw);
     }
 
-    if (boundaryEvent.getEventDefinitions().size() == 1) {
-      EventDefinition eventDef = boundaryEvent.getEventDefinitions().get(0);
-
-      if (eventDef instanceof ErrorEventDefinition == false) {
+    if (boundaryEvent.getEventDefinitions().size() != 1) {
+		return;
+	}
+	EventDefinition eventDef = boundaryEvent.getEventDefinitions().get(0);
+	if (eventDef instanceof ErrorEventDefinition == false) {
         writeDefaultAttribute(ATTRIBUTE_BOUNDARY_CANCELACTIVITY, String.valueOf(boundaryEvent.isCancelActivity()).toLowerCase(), xtw);
       }
-    }
   }
 
   @Override

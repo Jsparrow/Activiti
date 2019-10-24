@@ -34,47 +34,43 @@ import org.apache.commons.lang3.StringUtils;
 public abstract class AbstractNativeQuery<T extends NativeQuery<?, ?>, U> implements Command<Object>, NativeQuery<T, U>, Serializable {
 
   private static final long serialVersionUID = 1L;
+protected transient CommandExecutor commandExecutor;
+protected transient CommandContext commandContext;
+protected int maxResults = Integer.MAX_VALUE;
+protected int firstResult;
+protected ResultType resultType;
+private Map<String, Object> parameters = new HashMap<>();
+private String sqlStatement;
 
-  private static enum ResultType {
-    LIST, LIST_PAGE, SINGLE_RESULT, COUNT
-  }
-
-  protected transient CommandExecutor commandExecutor;
-  protected transient CommandContext commandContext;
-
-  protected int maxResults = Integer.MAX_VALUE;
-  protected int firstResult;
-  protected ResultType resultType;
-
-  private Map<String, Object> parameters = new HashMap<String, Object>();
-  private String sqlStatement;
-
-  protected AbstractNativeQuery(CommandExecutor commandExecutor) {
-    this.commandExecutor = commandExecutor;
-  }
-
-  public AbstractNativeQuery(CommandContext commandContext) {
+public AbstractNativeQuery(CommandContext commandContext) {
     this.commandContext = commandContext;
   }
 
-  public AbstractNativeQuery<T, U> setCommandExecutor(CommandExecutor commandExecutor) {
+protected AbstractNativeQuery(CommandExecutor commandExecutor) {
+    this.commandExecutor = commandExecutor;
+  }
+
+public AbstractNativeQuery<T, U> setCommandExecutor(CommandExecutor commandExecutor) {
     this.commandExecutor = commandExecutor;
     return this;
   }
 
-  @SuppressWarnings("unchecked")
+@Override
+@SuppressWarnings("unchecked")
   public T sql(String sqlStatement) {
     this.sqlStatement = sqlStatement;
     return (T) this;
   }
 
-  @SuppressWarnings("unchecked")
+@Override
+@SuppressWarnings("unchecked")
   public T parameter(String name, Object value) {
     parameters.put(name, value);
     return (T) this;
   }
 
-  @SuppressWarnings("unchecked")
+@Override
+@SuppressWarnings("unchecked")
   public U singleResult() {
     this.resultType = ResultType.SINGLE_RESULT;
     if (commandExecutor != null) {
@@ -83,7 +79,8 @@ public abstract class AbstractNativeQuery<T extends NativeQuery<?, ?>, U> implem
     return executeSingleResult(Context.getCommandContext());
   }
 
-  @SuppressWarnings("unchecked")
+@Override
+@SuppressWarnings("unchecked")
   public List<U> list() {
     this.resultType = ResultType.LIST;
     if (commandExecutor != null) {
@@ -92,7 +89,8 @@ public abstract class AbstractNativeQuery<T extends NativeQuery<?, ?>, U> implem
     return executeList(Context.getCommandContext(), getParameterMap(), 0, Integer.MAX_VALUE);
   }
 
-  @SuppressWarnings("unchecked")
+@Override
+@SuppressWarnings("unchecked")
   public List<U> listPage(int firstResult, int maxResults) {
     this.firstResult = firstResult;
     this.maxResults = maxResults;
@@ -103,7 +101,8 @@ public abstract class AbstractNativeQuery<T extends NativeQuery<?, ?>, U> implem
     return executeList(Context.getCommandContext(), getParameterMap(), firstResult, maxResults);
   }
 
-  public long count() {
+@Override
+public long count() {
     this.resultType = ResultType.COUNT;
     if (commandExecutor != null) {
       return (Long) commandExecutor.execute(this);
@@ -111,7 +110,8 @@ public abstract class AbstractNativeQuery<T extends NativeQuery<?, ?>, U> implem
     return executeCount(Context.getCommandContext(), getParameterMap());
   }
 
-  public Object execute(CommandContext commandContext) {
+@Override
+public Object execute(CommandContext commandContext) {
     if (resultType == ResultType.LIST) {
       return executeList(commandContext, getParameterMap(), 0, Integer.MAX_VALUE);
     } else if (resultType == ResultType.LIST_PAGE) {
@@ -142,9 +142,9 @@ public abstract class AbstractNativeQuery<T extends NativeQuery<?, ?>, U> implem
     }
   }
 
-  public abstract long executeCount(CommandContext commandContext, Map<String, Object> parameterMap);
+public abstract long executeCount(CommandContext commandContext, Map<String, Object> parameterMap);
 
-  /**
+/**
    * Executes the actual query to retrieve the list of results.
    * 
    * @param maxResults
@@ -155,25 +155,29 @@ public abstract class AbstractNativeQuery<T extends NativeQuery<?, ?>, U> implem
    */
   public abstract List<U> executeList(CommandContext commandContext, Map<String, Object> parameterMap, int firstResult, int maxResults);
 
-  public U executeSingleResult(CommandContext commandContext) {
+public U executeSingleResult(CommandContext commandContext) {
     List<U> results = executeList(commandContext, getParameterMap(), 0, Integer.MAX_VALUE);
     if (results.size() == 1) {
       return results.get(0);
     } else if (results.size() > 1) {
-      throw new ActivitiException("Query return " + results.size() + " results instead of max 1");
+      throw new ActivitiException(new StringBuilder().append("Query return ").append(results.size()).append(" results instead of max 1").toString());
     }
     return null;
   }
 
-  private Map<String, Object> getParameterMap() {
-    HashMap<String, Object> parameterMap = new HashMap<String, Object>();
+private Map<String, Object> getParameterMap() {
+    HashMap<String, Object> parameterMap = new HashMap<>();
     parameterMap.put("sql", sqlStatement);
     parameterMap.putAll(parameters);
     return parameterMap;
   }
 
-  public Map<String, Object> getParameters() {
+public Map<String, Object> getParameters() {
     return parameters;
+  }
+
+private static enum ResultType {
+    LIST, LIST_PAGE, SINGLE_RESULT, COUNT
   }
 
 }

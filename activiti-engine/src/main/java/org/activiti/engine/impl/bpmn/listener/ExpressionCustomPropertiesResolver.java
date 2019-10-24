@@ -39,7 +39,7 @@ public class ExpressionCustomPropertiesResolver implements CustomPropertiesResol
     if (expressionValue instanceof Map) {
       return (Map<String, Object>) expressionValue;
     } else {
-      throw new ActivitiIllegalArgumentException("Custom properties resolver expression " + expression + " did not return a Map<String, Object>");
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("Custom properties resolver expression ").append(expression).append(" did not return a Map<String, Object>").toString());
     }
   }
 

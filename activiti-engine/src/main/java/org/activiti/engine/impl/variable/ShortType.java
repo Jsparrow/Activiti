@@ -19,22 +19,26 @@ public class ShortType implements VariableType {
 
   private static final long serialVersionUID = 1L;
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return "short";
   }
 
-  public boolean isCachable() {
+  @Override
+public boolean isCachable() {
     return true;
   }
 
-  public Object getValue(ValueFields valueFields) {
+  @Override
+public Object getValue(ValueFields valueFields) {
     if (valueFields.getLongValue() != null) {
-      return new Short(valueFields.getLongValue().shortValue());
+      return Short.valueOf(valueFields.getLongValue().shortValue());
     }
     return null;
   }
 
-  public void setValue(Object value, ValueFields valueFields) {
+  @Override
+public void setValue(Object value, ValueFields valueFields) {
     if (value != null) {
       valueFields.setLongValue(((Short) value).longValue());
       valueFields.setTextValue(value.toString());
@@ -44,7 +48,8 @@ public class ShortType implements VariableType {
     }
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     if (value == null) {
       return true;
     }

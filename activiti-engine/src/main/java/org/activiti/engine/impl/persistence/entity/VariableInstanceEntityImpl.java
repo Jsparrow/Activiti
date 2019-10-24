@@ -52,8 +52,9 @@ public class VariableInstanceEntityImpl extends AbstractEntity implements Variab
     
   }
   
-  public Object getPersistentState() {
-    Map<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    Map<String, Object> persistentState = new HashMap<>();
     if (longValue != null) {
       persistentState.put("longValue", longValue);
     }
@@ -75,21 +76,25 @@ public class VariableInstanceEntityImpl extends AbstractEntity implements Variab
     return persistentState;
   }
   
-  public void setExecution(ExecutionEntity execution) {
+  @Override
+public void setExecution(ExecutionEntity execution) {
     this.executionId = execution.getId();
     this.processInstanceId = execution.getProcessInstanceId();
     forceUpdate();
   }
 
-  public void forceUpdate() {
+  @Override
+public void forceUpdate() {
     forcedUpdate = true;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
+  @Override
+public void setProcessInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
   }
 
-  public void setExecutionId(String executionId) {
+  @Override
+public void setExecutionId(String executionId) {
     this.executionId = executionId;
   }
 
@@ -107,7 +112,8 @@ public class VariableInstanceEntityImpl extends AbstractEntity implements Variab
     byteArrayRef.setValue("var-" + name, bytes);
   }
 
-  public ByteArrayRef getByteArrayRef() {
+  @Override
+public ByteArrayRef getByteArrayRef() {
     return byteArrayRef;
   }
   
@@ -119,14 +125,16 @@ public class VariableInstanceEntityImpl extends AbstractEntity implements Variab
 
   // value //////////////////////////////////////////////////////////////////////
 
-  public Object getValue() {
+  @Override
+public Object getValue() {
     if (!type.isCachable() || cachedValue == null) {
       cachedValue = type.getValue(this);
     }
     return cachedValue;
   }
 
-  public void setValue(Object value) {
+  @Override
+public void setValue(Object value) {
     type.setValue(value, this);
     typeName = type.getTypeName();
     cachedValue = value;
@@ -134,15 +142,18 @@ public class VariableInstanceEntityImpl extends AbstractEntity implements Variab
 
   // getters and setters ////////////////////////////////////////////////////////
 
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     if (typeName != null) {
       return typeName;
     } else if (type != null) {
@@ -151,71 +162,88 @@ public class VariableInstanceEntityImpl extends AbstractEntity implements Variab
       return typeName;
     }
   }
-  public void setTypeName(String typeName) {
+  @Override
+public void setTypeName(String typeName) {
     this.typeName = typeName;
   }
 
-  public VariableType getType() {
+  @Override
+public VariableType getType() {
     return type;
   }
 
-  public void setType(VariableType type) {
+  @Override
+public void setType(VariableType type) {
     this.type = type;
   }
 
-  public String getProcessInstanceId() {
+  @Override
+public String getProcessInstanceId() {
     return processInstanceId;
   }
 
-  public String getTaskId() {
+  @Override
+public String getTaskId() {
     return taskId;
   }
 
-  public void setTaskId(String taskId) {
+  @Override
+public void setTaskId(String taskId) {
     this.taskId = taskId;
   }
 
-  public String getExecutionId() {
+  @Override
+public String getExecutionId() {
     return executionId;
   }
 
-  public Long getLongValue() {
+  @Override
+public Long getLongValue() {
     return longValue;
   }
 
-  public void setLongValue(Long longValue) {
+  @Override
+public void setLongValue(Long longValue) {
     this.longValue = longValue;
   }
 
-  public Double getDoubleValue() {
+  @Override
+public Double getDoubleValue() {
     return doubleValue;
   }
 
-  public void setDoubleValue(Double doubleValue) {
+  @Override
+public void setDoubleValue(Double doubleValue) {
     this.doubleValue = doubleValue;
   }
 
-  public String getTextValue() {
+  @Override
+public String getTextValue() {
     return textValue;
   }
 
-  public void setTextValue(String textValue) {
+  @Override
+public void setTextValue(String textValue) {
     this.textValue = textValue;
   }
 
-  public String getTextValue2() {
+  @Override
+public String getTextValue2() {
     return textValue2;
   }
 
-  public void setTextValue2(String textValue2) {
+  @Override
+public void setTextValue2(String textValue2) {
     this.textValue2 = textValue2;
   }
 
-  public Object getCachedValue() {
+  @Override
+public Object getCachedValue() {
     return cachedValue;
   }
 
-  public void setCachedValue(Object cachedValue) {
+  @Override
+public void setCachedValue(Object cachedValue) {
     this.cachedValue = cachedValue;
   }
 

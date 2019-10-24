@@ -25,7 +25,8 @@ public class TextAnnotationConverterTest extends AbstractConverterTest {
     deployProcess(parsedModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "parsing_error_on_extension_elements.bpmn";
   }
 

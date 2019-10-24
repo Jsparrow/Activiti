@@ -36,15 +36,17 @@ public class GenericManagerFactory implements SessionFactory {
     this(implementationClass, implementationClass);
   }
 
-  public Class<?> getSessionType() {
+  @Override
+public Class<?> getSessionType() {
     return typeClass;
   }
 
-  public Session openSession(CommandContext commandContext) {
+  @Override
+public Session openSession(CommandContext commandContext) {
     try {
       return implementationClass.newInstance();
     } catch (Exception e) {
-      throw new ActivitiException("couldn't instantiate " + implementationClass.getName() + ": " + e.getMessage(), e);
+      throw new ActivitiException(new StringBuilder().append("couldn't instantiate ").append(implementationClass.getName()).append(": ").append(e.getMessage()).toString(), e);
     }
   }
 }

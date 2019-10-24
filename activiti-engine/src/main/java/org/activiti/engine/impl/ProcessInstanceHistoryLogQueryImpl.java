@@ -112,16 +112,16 @@ public class ProcessInstanceHistoryLogQueryImpl implements ProcessInstanceHistor
       List<HistoricVariableInstance> variables = commandContext.getHistoricVariableInstanceEntityManager().findHistoricVariableInstancesByQueryCriteria(
           new HistoricVariableInstanceQueryImpl(commandExecutor).processInstanceId(processInstanceId), null);
       
-      // Make sure all variables values are fetched (similar to the HistoricVariableInstance query)
-      for (HistoricVariableInstance historicVariableInstance : variables) {
-        historicVariableInstance.getValue();
-        
-        // make sure JPA entities are cached for later retrieval
-        HistoricVariableInstanceEntity variableEntity = (HistoricVariableInstanceEntity) historicVariableInstance;
-        if (JPAEntityVariableType.TYPE_NAME.equals(variableEntity.getVariableType().getTypeName()) || JPAEntityListVariableType.TYPE_NAME.equals(variableEntity.getVariableType().getTypeName())) {
+      // make sure JPA entities are cached for later retrieval
+	// Make sure all variables values are fetched (similar to the HistoricVariableInstance query)
+	variables.stream().map(historicVariableInstance -> {
+		historicVariableInstance.getValue();
+		return (HistoricVariableInstanceEntity) historicVariableInstance;
+	}).forEach(variableEntity -> {
+		if (JPAEntityVariableType.TYPE_NAME.equals(variableEntity.getVariableType().getTypeName()) || JPAEntityListVariableType.TYPE_NAME.equals(variableEntity.getVariableType().getTypeName())) {
           ((CacheableVariable) variableEntity.getVariableType()).setForceCacheable(true);
         }
-      }
+	});
       
       processInstanceHistoryLog.addHistoricData(variables);
     }
@@ -138,10 +138,7 @@ public class ProcessInstanceHistoryLogQueryImpl implements ProcessInstanceHistor
           new HistoricDetailQueryImpl(commandExecutor).variableUpdates(), null);
       
       // Make sure all variables values are fetched (similar to the HistoricVariableInstance query)
-      for (HistoricData historicData : variableUpdates) {
-        HistoricVariableUpdate variableUpdate = (HistoricVariableUpdate) historicData;
-        variableUpdate.getValue();
-      }
+	variableUpdates.stream().map(historicData -> (HistoricVariableUpdate) historicData).forEach(HistoricVariableUpdate::getValue);
       
       processInstanceHistoryLog.addHistoricData(variableUpdates);
     }

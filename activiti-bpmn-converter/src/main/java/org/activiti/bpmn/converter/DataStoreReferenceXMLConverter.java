@@ -26,7 +26,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class DataStoreReferenceXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return DataStoreReference.class;
   }
 
@@ -58,10 +59,11 @@ public class DataStoreReferenceXMLConverter extends BaseBpmnXMLConverter {
   @Override
   protected void writeAdditionalChildElements(BaseElement element, BpmnModel model, XMLStreamWriter xtw) throws Exception {
     DataStoreReference dataStoreRef = (DataStoreReference) element;
-    if (StringUtils.isNotEmpty(dataStoreRef.getDataState())) {
-      xtw.writeStartElement(ELEMENT_DATA_STATE);
-      xtw.writeCharacters(dataStoreRef.getDataState());
-      xtw.writeEndElement();
-    }
+    if (!StringUtils.isNotEmpty(dataStoreRef.getDataState())) {
+		return;
+	}
+	xtw.writeStartElement(ELEMENT_DATA_STATE);
+	xtw.writeCharacters(dataStoreRef.getDataState());
+	xtw.writeEndElement();
   }
 }

@@ -62,7 +62,8 @@ public class JPAVariableTest extends AbstractActivitiTestCase {
 
     private static EntityManagerFactory entityManagerFactory;
 
-    protected void initializeProcessEngine() {
+    @Override
+	protected void initializeProcessEngine() {
         if (cachedProcessEngine == null) {
             ProcessEngineConfigurationImpl processEngineConfiguration = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
                     .createProcessEngineConfigurationFromResource("org/activiti/standalone/jpa/activiti.cfg.xml");
@@ -78,87 +79,69 @@ public class JPAVariableTest extends AbstractActivitiTestCase {
 
     public void setupJPAEntities() {
 
-        if (!entitiesInitialized) {
-
-            EntityManager manager = entityManagerFactory.createEntityManager();
-            manager.getTransaction().begin();
-
-            // Simple test data
-            simpleEntityFieldAccess = new FieldAccessJPAEntity();
-            simpleEntityFieldAccess.setId(1L);
-            simpleEntityFieldAccess.setValue("value1");
-            manager.persist(simpleEntityFieldAccess);
-
-            simpleEntityPropertyAccess = new PropertyAccessJPAEntity();
-            simpleEntityPropertyAccess.setId(1L);
-            simpleEntityPropertyAccess.setValue("value2");
-            manager.persist(simpleEntityPropertyAccess);
-
-            subclassFieldAccess = new SubclassFieldAccessJPAEntity();
-            subclassFieldAccess.setId(1L);
-            subclassFieldAccess.setValue("value3");
-            manager.persist(subclassFieldAccess);
-
-            subclassPropertyAccess = new SubclassPropertyAccessJPAEntity();
-            subclassPropertyAccess.setId(1L);
-            subclassPropertyAccess.setValue("value4");
-            manager.persist(subclassPropertyAccess);
-
-            // Test entities with all possible ID types
-            byteIdJPAEntity = new ByteIdJPAEntity();
-            byteIdJPAEntity.setByteId((byte) 1);
-            manager.persist(byteIdJPAEntity);
-
-            shortIdJPAEntity = new ShortIdJPAEntity();
-            shortIdJPAEntity.setShortId((short) 123);
-            manager.persist(shortIdJPAEntity);
-
-            integerIdJPAEntity = new IntegerIdJPAEntity();
-            integerIdJPAEntity.setIntId(123);
-            manager.persist(integerIdJPAEntity);
-
-            longIdJPAEntity = new LongIdJPAEntity();
-            longIdJPAEntity.setLongId(123456789L);
-            manager.persist(longIdJPAEntity);
-
-            floatIdJPAEntity = new FloatIdJPAEntity();
-            floatIdJPAEntity.setFloatId((float) 123.45678);
-            manager.persist(floatIdJPAEntity);
-
-            doubleIdJPAEntity = new DoubleIdJPAEntity();
-            doubleIdJPAEntity.setDoubleId(12345678.987654);
-            manager.persist(doubleIdJPAEntity);
-
-            charIdJPAEntity = new CharIdJPAEntity();
-            charIdJPAEntity.setCharId('g');
-            manager.persist(charIdJPAEntity);
-
-            dateIdJPAEntity = new DateIdJPAEntity();
-            dateIdJPAEntity.setDateId(new java.util.Date());
-            manager.persist(dateIdJPAEntity);
-
-            sqlDateIdJPAEntity = new SQLDateIdJPAEntity();
-            sqlDateIdJPAEntity.setDateId(new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
-            manager.persist(sqlDateIdJPAEntity);
-
-            stringIdJPAEntity = new StringIdJPAEntity();
-            stringIdJPAEntity.setStringId("azertyuiop");
-            manager.persist(stringIdJPAEntity);
-
-            bigDecimalIdJPAEntity = new BigDecimalIdJPAEntity();
-            bigDecimalIdJPAEntity.setBigDecimalId(new BigDecimal("12345678912345678900000.123456789123456789"));
-            manager.persist(bigDecimalIdJPAEntity);
-
-            bigIntegerIdJPAEntity = new BigIntegerIdJPAEntity();
-            bigIntegerIdJPAEntity.setBigIntegerId(new BigInteger("12345678912345678912345678900000"));
-            manager.persist(bigIntegerIdJPAEntity);
-
-            manager.flush();
-            manager.getTransaction().commit();
-            manager.close();
-
-            entitiesInitialized = true;
-        }
+        if (entitiesInitialized) {
+			return;
+		}
+		EntityManager manager = entityManagerFactory.createEntityManager();
+		manager.getTransaction().begin();
+		// Simple test data
+		simpleEntityFieldAccess = new FieldAccessJPAEntity();
+		simpleEntityFieldAccess.setId(1L);
+		simpleEntityFieldAccess.setValue("value1");
+		manager.persist(simpleEntityFieldAccess);
+		simpleEntityPropertyAccess = new PropertyAccessJPAEntity();
+		simpleEntityPropertyAccess.setId(1L);
+		simpleEntityPropertyAccess.setValue("value2");
+		manager.persist(simpleEntityPropertyAccess);
+		subclassFieldAccess = new SubclassFieldAccessJPAEntity();
+		subclassFieldAccess.setId(1L);
+		subclassFieldAccess.setValue("value3");
+		manager.persist(subclassFieldAccess);
+		subclassPropertyAccess = new SubclassPropertyAccessJPAEntity();
+		subclassPropertyAccess.setId(1L);
+		subclassPropertyAccess.setValue("value4");
+		manager.persist(subclassPropertyAccess);
+		// Test entities with all possible ID types
+		byteIdJPAEntity = new ByteIdJPAEntity();
+		byteIdJPAEntity.setByteId((byte) 1);
+		manager.persist(byteIdJPAEntity);
+		shortIdJPAEntity = new ShortIdJPAEntity();
+		shortIdJPAEntity.setShortId((short) 123);
+		manager.persist(shortIdJPAEntity);
+		integerIdJPAEntity = new IntegerIdJPAEntity();
+		integerIdJPAEntity.setIntId(123);
+		manager.persist(integerIdJPAEntity);
+		longIdJPAEntity = new LongIdJPAEntity();
+		longIdJPAEntity.setLongId(123456789L);
+		manager.persist(longIdJPAEntity);
+		floatIdJPAEntity = new FloatIdJPAEntity();
+		floatIdJPAEntity.setFloatId((float) 123.45678);
+		manager.persist(floatIdJPAEntity);
+		doubleIdJPAEntity = new DoubleIdJPAEntity();
+		doubleIdJPAEntity.setDoubleId(12345678.987654);
+		manager.persist(doubleIdJPAEntity);
+		charIdJPAEntity = new CharIdJPAEntity();
+		charIdJPAEntity.setCharId('g');
+		manager.persist(charIdJPAEntity);
+		dateIdJPAEntity = new DateIdJPAEntity();
+		dateIdJPAEntity.setDateId(new java.util.Date());
+		manager.persist(dateIdJPAEntity);
+		sqlDateIdJPAEntity = new SQLDateIdJPAEntity();
+		sqlDateIdJPAEntity.setDateId(new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
+		manager.persist(sqlDateIdJPAEntity);
+		stringIdJPAEntity = new StringIdJPAEntity();
+		stringIdJPAEntity.setStringId("azertyuiop");
+		manager.persist(stringIdJPAEntity);
+		bigDecimalIdJPAEntity = new BigDecimalIdJPAEntity();
+		bigDecimalIdJPAEntity.setBigDecimalId(new BigDecimal("12345678912345678900000.123456789123456789"));
+		manager.persist(bigDecimalIdJPAEntity);
+		bigIntegerIdJPAEntity = new BigIntegerIdJPAEntity();
+		bigIntegerIdJPAEntity.setBigIntegerId(new BigInteger("12345678912345678912345678900000"));
+		manager.persist(bigIntegerIdJPAEntity);
+		manager.flush();
+		manager.getTransaction().commit();
+		manager.close();
+		entitiesInitialized = true;
     }
 
     public void setupIllegalJPAEntities() {
@@ -473,7 +456,7 @@ public class JPAVariableTest extends AbstractActivitiTestCase {
         setupIllegalJPAEntities();
         // Starting process instance with a variable that has a compound primary
         // key, which is not supported.
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("compoundIdJPAEntity",
                       compoundIdJPAEntity);
 
@@ -489,7 +472,7 @@ public class JPAVariableTest extends AbstractActivitiTestCase {
         }
 
         // Starting process instance with a variable that has null as ID-value
-        variables = new HashMap<String, Object>();
+        variables = new HashMap<>();
         variables.put("nullValueEntity",
                       new FieldAccessJPAEntity());
 
@@ -507,7 +490,7 @@ public class JPAVariableTest extends AbstractActivitiTestCase {
         // the class is
         // present in the PU when creating EntityanagerFactory, but we test it
         // *just in case*
-        variables = new HashMap<String, Object>();
+        variables = new HashMap<>();
         IllegalIdClassJPAEntity illegalIdTypeEntity = new IllegalIdClassJPAEntity();
         illegalIdTypeEntity.setId(Calendar.getInstance());
         variables.put("illegalTypeId",
@@ -525,7 +508,7 @@ public class JPAVariableTest extends AbstractActivitiTestCase {
         // Start process instance with JPA-entity which has an ID but isn't
         // persisted. When reading
         // the variable we should get an exception.
-        variables = new HashMap<String, Object>();
+        variables = new HashMap<>();
         FieldAccessJPAEntity nonPersistentEntity = new FieldAccessJPAEntity();
         nonPersistentEntity.setId(9999L);
         variables.put("nonPersistentEntity",
@@ -539,7 +522,7 @@ public class JPAVariableTest extends AbstractActivitiTestCase {
                                        "nonPersistentEntity");
             fail("Exception expected");
         } catch (ActivitiException ae) {
-            assertTextPresent("Entity does not exist: " + FieldAccessJPAEntity.class.getName() + " - 9999",
+            assertTextPresent(new StringBuilder().append("Entity does not exist: ").append(FieldAccessJPAEntity.class.getName()).append(" - 9999").toString(),
                               ae.getMessage());
         }
     }
@@ -548,7 +531,7 @@ public class JPAVariableTest extends AbstractActivitiTestCase {
     public void testQueryJPAVariable() {
         setupQueryJPAEntity();
 
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("entityToQuery",
                       entityToQuery);
 
@@ -617,7 +600,7 @@ public class JPAVariableTest extends AbstractActivitiTestCase {
     @Deployment
     public void testUpdateJPAEntityValues() {
         setupJPAEntityToUpdate();
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("entityToUpdate",
                       entityToUpdate);
 

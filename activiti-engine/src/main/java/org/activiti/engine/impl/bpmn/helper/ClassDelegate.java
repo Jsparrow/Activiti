@@ -157,7 +157,7 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
     } else if (delegateInstance instanceof JavaDelegate) {
       return new ServiceTaskJavaDelegateActivityBehavior((JavaDelegate) delegateInstance);
     } else {
-      throw new ActivitiIllegalArgumentException(delegateInstance.getClass().getName() + " doesn't implement " + ExecutionListener.class + " nor " + JavaDelegate.class);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append(delegateInstance.getClass().getName()).append(" doesn't implement ").append(ExecutionListener.class).append(" nor ").append(JavaDelegate.class).toString());
     }
   }
 
@@ -166,7 +166,7 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
     if (delegateInstance instanceof TransactionDependentExecutionListener) {
       return (TransactionDependentExecutionListener) delegateInstance;
     } else {
-      throw new ActivitiIllegalArgumentException(delegateInstance.getClass().getName() + " doesn't implement " + TransactionDependentExecutionListener.class);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append(delegateInstance.getClass().getName()).append(" doesn't implement ").append(TransactionDependentExecutionListener.class).toString());
     }
   }
 
@@ -175,7 +175,7 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
     if (delegateInstance instanceof CustomPropertiesResolver) {
       return (CustomPropertiesResolver) delegateInstance;
     } else {
-      throw new ActivitiIllegalArgumentException(delegateInstance.getClass().getName() + " doesn't implement " + CustomPropertiesResolver.class);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append(delegateInstance.getClass().getName()).append(" doesn't implement ").append(CustomPropertiesResolver.class).toString());
     }
   }
 
@@ -184,7 +184,7 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
     if (delegateInstance instanceof TaskListener) {
       return (TaskListener) delegateInstance;
     } else {
-      throw new ActivitiIllegalArgumentException(delegateInstance.getClass().getName() + " doesn't implement " + TaskListener.class);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append(delegateInstance.getClass().getName()).append(" doesn't implement ").append(TaskListener.class).toString());
     }
   }
 
@@ -193,16 +193,18 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
     if (delegateInstance instanceof TransactionDependentTaskListener) {
       return (TransactionDependentTaskListener) delegateInstance;
     } else {
-      throw new ActivitiIllegalArgumentException(delegateInstance.getClass().getName() + " doesn't implement " + TransactionDependentTaskListener.class);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append(delegateInstance.getClass().getName()).append(" doesn't implement ").append(TransactionDependentTaskListener.class).toString());
     }
   }
 
   // Activity Behavior
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     boolean isSkipExpressionEnabled = SkipExpressionUtil.isSkipExpressionEnabled(execution, skipExpression);
-    if (!isSkipExpressionEnabled || (isSkipExpressionEnabled && !SkipExpressionUtil.shouldSkipFlowElement(execution, skipExpression))) {
-
-      if (Context.getProcessEngineConfiguration().isEnableProcessDefinitionInfoCache()) {
+    if (!(!isSkipExpressionEnabled || (isSkipExpressionEnabled && !SkipExpressionUtil.shouldSkipFlowElement(execution, skipExpression)))) {
+		return;
+	}
+	if (Context.getProcessEngineConfiguration().isEnableProcessDefinitionInfoCache()) {
         ObjectNode taskElementProperties = Context.getBpmnOverrideElementProperties(serviceTaskId, execution.getProcessDefinitionId());
         if (taskElementProperties != null && taskElementProperties.has(DynamicBpmnConstants.SERVICE_TASK_CLASS_NAME)) {
           String overrideClassName = taskElementProperties.get(DynamicBpmnConstants.SERVICE_TASK_CLASS_NAME).asText();
@@ -212,24 +214,23 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
           }
         }
       }
-      
-      if (activityBehaviorInstance == null) {
+	if (activityBehaviorInstance == null) {
         activityBehaviorInstance = getActivityBehaviorInstance();
       }
-
-      try {
+	try {
         activityBehaviorInstance.execute(execution);
       } catch (BpmnError error) {
         ErrorPropagation.propagateError(error, execution);
       } catch (RuntimeException e) {
-        if (!ErrorPropagation.mapException(e, (ExecutionEntity) execution, mapExceptions))
-          throw e;
+        if (!ErrorPropagation.mapException(e, (ExecutionEntity) execution, mapExceptions)) {
+			throw e;
+		}
       }
-    }
   }
 
   // Signallable activity behavior
-  public void trigger(DelegateExecution execution, String signalName, Object signalData) {
+  @Override
+public void trigger(DelegateExecution execution, String signalName, Object signalData) {
     if (activityBehaviorInstance == null) {
       activityBehaviorInstance = getActivityBehaviorInstance();
     }
@@ -237,7 +238,7 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
     if (activityBehaviorInstance instanceof TriggerableActivityBehavior) {
       ((TriggerableActivityBehavior) activityBehaviorInstance).trigger(execution, signalName, signalData);
     } else {
-      throw new ActivitiException("signal() can only be called on a " + TriggerableActivityBehavior.class.getName() + " instance");
+      throw new ActivitiException(new StringBuilder().append("signal() can only be called on a ").append(TriggerableActivityBehavior.class.getName()).append(" instance").toString());
     }
   }
 
@@ -252,7 +253,7 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
     if (activityBehaviorInstance instanceof SubProcessActivityBehavior) {
       ((SubProcessActivityBehavior) activityBehaviorInstance).completing(execution, subProcessInstance);
     } else {
-      throw new ActivitiException("completing() can only be called on a " + SubProcessActivityBehavior.class.getName() + " instance");
+      throw new ActivitiException(new StringBuilder().append("completing() can only be called on a ").append(SubProcessActivityBehavior.class.getName()).append(" instance").toString());
     }
   }
 
@@ -265,7 +266,7 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
     if (activityBehaviorInstance instanceof SubProcessActivityBehavior) {
       ((SubProcessActivityBehavior) activityBehaviorInstance).completed(execution);
     } else {
-      throw new ActivitiException("completed() can only be called on a " + SubProcessActivityBehavior.class.getName() + " instance");
+      throw new ActivitiException(new StringBuilder().append("completed() can only be called on a ").append(SubProcessActivityBehavior.class.getName()).append(" instance").toString());
     }
   }
 
@@ -277,18 +278,18 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
     } else if (delegateInstance instanceof JavaDelegate) {
       return determineBehaviour(new ServiceTaskJavaDelegateActivityBehavior((JavaDelegate) delegateInstance));
     } else {
-      throw new ActivitiIllegalArgumentException(delegateInstance.getClass().getName() + " doesn't implement " + JavaDelegate.class.getName() + " nor " + ActivityBehavior.class.getName());
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append(delegateInstance.getClass().getName()).append(" doesn't implement ").append(JavaDelegate.class.getName()).append(" nor ").append(ActivityBehavior.class.getName()).toString());
     }
   }
 
   // Adds properties to the given delegation instance (eg multi instance) if
   // needed
   protected ActivityBehavior determineBehaviour(ActivityBehavior delegateInstance) {
-    if (hasMultiInstanceCharacteristics()) {
-      multiInstanceActivityBehavior.setInnerActivityBehavior((AbstractBpmnActivityBehavior) delegateInstance);
-      return multiInstanceActivityBehavior;
-    }
-    return delegateInstance;
+    if (!hasMultiInstanceCharacteristics()) {
+		return delegateInstance;
+	}
+	multiInstanceActivityBehavior.setInnerActivityBehavior((AbstractBpmnActivityBehavior) delegateInstance);
+	return multiInstanceActivityBehavior;
   }
 
   protected Object instantiateDelegate(String className, List<FieldDeclaration> fieldDeclarations) {
@@ -314,9 +315,7 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
   
   public static void applyFieldDeclaration(List<FieldDeclaration> fieldDeclarations, Object target, boolean throwExceptionOnMissingField) {
     if(fieldDeclarations != null) {
-      for(FieldDeclaration declaration : fieldDeclarations) {
-        applyFieldDeclaration(declaration, target, throwExceptionOnMissingField);
-      }
+      fieldDeclarations.forEach(declaration -> applyFieldDeclaration(declaration, target, throwExceptionOnMissingField));
     }
   }
 
@@ -332,17 +331,17 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
       try {
         setterMethod.invoke(target, declaration.getValue());
       } catch (IllegalArgumentException e) {
-        throw new ActivitiException("Error while invoking '" + declaration.getName() + "' on class " + target.getClass().getName(), e);
+        throw new ActivitiException(new StringBuilder().append("Error while invoking '").append(declaration.getName()).append("' on class ").append(target.getClass().getName()).toString(), e);
       } catch (IllegalAccessException e) {
-        throw new ActivitiException("Illegal acces when calling '" + declaration.getName() + "' on class " + target.getClass().getName(), e);
+        throw new ActivitiException(new StringBuilder().append("Illegal acces when calling '").append(declaration.getName()).append("' on class ").append(target.getClass().getName()).toString(), e);
       } catch (InvocationTargetException e) {
-        throw new ActivitiException("Exception while invoking '" + declaration.getName() + "' on class " + target.getClass().getName(), e);
+        throw new ActivitiException(new StringBuilder().append("Exception while invoking '").append(declaration.getName()).append("' on class ").append(target.getClass().getName()).toString(), e);
       }
     } else {
       Field field = ReflectUtil.getField(declaration.getName(), target);
       if(field == null) {
         if (throwExceptionOnMissingField) {
-          throw new ActivitiIllegalArgumentException("Field definition uses unexisting field '" + declaration.getName() + "' on class " + target.getClass().getName());
+          throw new ActivitiIllegalArgumentException(new StringBuilder().append("Field definition uses unexisting field '").append(declaration.getName()).append("' on class ").append(target.getClass().getName()).toString());
         } else {
           return;
         }
@@ -350,10 +349,8 @@ public class ClassDelegate extends AbstractBpmnActivityBehavior implements TaskL
       
       // Check if the delegate field's type is correct
      if(!fieldTypeCompatible(declaration, field)) {
-       throw new ActivitiIllegalArgumentException("Incompatible type set on field declaration '" + declaration.getName() 
-          + "' for class " + target.getClass().getName() 
-          + ". Declared value has type " + declaration.getValue().getClass().getName() 
-          + ", while expecting " + field.getType().getName());
+       throw new ActivitiIllegalArgumentException(new StringBuilder().append("Incompatible type set on field declaration '").append(declaration.getName()).append("' for class ").append(target.getClass().getName()).append(". Declared value has type ").append(declaration.getValue().getClass().getName())
+			.append(", while expecting ").append(field.getType().getName()).toString());
      }
      ReflectUtil.setField(field, target, declaration.getValue());
      

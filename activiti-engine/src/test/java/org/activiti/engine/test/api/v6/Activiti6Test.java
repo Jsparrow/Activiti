@@ -43,10 +43,7 @@ public class Activiti6Test extends PluggableActivitiTestCase {
         assertTrue(processInstance.isEnded());
 
         // Cleanup
-        for (Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-            repositoryService.deleteDeployment(deployment.getId(),
-                                               true);
-        }
+		repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
     }
 
     @Test
@@ -94,9 +91,7 @@ public class Activiti6Test extends PluggableActivitiTestCase {
         assertEquals("Task b",
                      tasks.get(1).getName());
 
-        for (Task task : tasks) {
-            taskService.complete(task.getId());
-        }
+        tasks.forEach(task -> taskService.complete(task.getId()));
 
         assertEquals(0,
                      runtimeService.createProcessInstanceQuery().count());
@@ -121,9 +116,7 @@ public class Activiti6Test extends PluggableActivitiTestCase {
         assertEquals("Task c",
                      tasks.get(3).getName());
 
-        for (Task task : tasks) {
-            taskService.complete(task.getId());
-        }
+        tasks.forEach(task -> taskService.complete(task.getId()));
 
         assertEquals(0,
                      runtimeService.createProcessInstanceQuery().count());
@@ -138,9 +131,9 @@ public class Activiti6Test extends PluggableActivitiTestCase {
         int maxCount = 3210; // You can make this as big as you want (as long as
         // it still fits within transaction timeouts). Go
         // on, try it!
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("counter",
-                 new Integer(0));
+                 Integer.valueOf(0));
         vars.put("maxCount",
                  maxCount);
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("testLongServiceTaskLoop",
@@ -163,7 +156,7 @@ public class Activiti6Test extends PluggableActivitiTestCase {
     @Test
     @org.activiti.engine.test.Deployment
     public void testScriptTask() {
-        Map<String, Object> variableMap = new HashMap<String, Object>();
+        Map<String, Object> variableMap = new HashMap<>();
         variableMap.put("a",
                         1);
         variableMap.put("b",
@@ -248,9 +241,7 @@ public class Activiti6Test extends PluggableActivitiTestCase {
                      tasks.size());
 
         // Completing them both should complete the process instance
-        for (Task task : tasks) {
-            taskService.complete(task.getId());
-        }
+		tasks.forEach(task -> taskService.complete(task.getId()));
 
         assertEquals(0,
                      runtimeService.createExecutionQuery().count());
@@ -264,9 +255,7 @@ public class Activiti6Test extends PluggableActivitiTestCase {
         managementService.executeJob(job.getId());
 
         tasks = taskService.createTaskQuery().orderByTaskName().desc().list(); // Not the desc() here: Task B, Task A will be the result (task b being associated with the child execution)
-        for (Task task : tasks) {
-            taskService.complete(task.getId());
-        }
+        tasks.forEach(task -> taskService.complete(task.getId()));
         assertEquals(0,
                      runtimeService.createExecutionQuery().count());
     }
@@ -295,9 +284,7 @@ public class Activiti6Test extends PluggableActivitiTestCase {
         assertEquals("C",
                      tasks.get(2).getName());
 
-        for (Task t : tasks) {
-            taskService.complete(t.getId());
-        }
+        tasks.forEach(t -> taskService.complete(t.getId()));
 
         // 2 conditions are true for input = 20
         processInstance = runtimeService.startProcessInstanceByKey("testConditions",
@@ -314,9 +301,7 @@ public class Activiti6Test extends PluggableActivitiTestCase {
         assertEquals("C",
                      tasks.get(1).getName());
 
-        for (Task t : tasks) {
-            taskService.complete(t.getId());
-        }
+        tasks.forEach(t -> taskService.complete(t.getId()));
 
         // 1 condition is true for input = 200
         processInstance = runtimeService.startProcessInstanceByKey("testConditions",
@@ -331,9 +316,7 @@ public class Activiti6Test extends PluggableActivitiTestCase {
         assertEquals("C",
                      tasks.get(0).getName());
 
-        for (Task t : tasks) {
-            taskService.complete(t.getId());
-        }
+        tasks.forEach(t -> taskService.complete(t.getId()));
     }
 
     @Test
@@ -355,10 +338,10 @@ public class Activiti6Test extends PluggableActivitiTestCase {
         List<Job> jobs = managementService.createTimerJobQuery().list();
         assertEquals(2,
                      jobs.size());
-        for (Job job : jobs) {
+        jobs.forEach(job -> {
             managementService.moveTimerToExecutableJob(job.getId());
             managementService.executeJob(job.getId());
-        }
+        });
 
         tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).orderByTaskName().asc().list();
         assertEquals(5,
@@ -398,10 +381,8 @@ public class Activiti6Test extends PluggableActivitiTestCase {
                      tasks.get(5).getName());
 
         // Completing all tasks in this order should give the engine a bit
-        // exercise (parent executions first)
-        for (Task task : tasks) {
-            taskService.complete(task.getId());
-        }
+		// exercise (parent executions first)
+		tasks.forEach(task -> taskService.complete(task.getId()));
 
         assertEquals(0,
                      runtimeService.createExecutionQuery().count());

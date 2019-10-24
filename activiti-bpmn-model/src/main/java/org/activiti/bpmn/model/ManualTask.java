@@ -14,7 +14,8 @@ package org.activiti.bpmn.model;
 
 public class ManualTask extends Task {
 
-  public ManualTask clone() {
+  @Override
+public ManualTask clone() {
     ManualTask clone = new ManualTask();
     clone.setValues(this);
     return clone;

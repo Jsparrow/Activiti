@@ -41,11 +41,7 @@ public class TaskCandidateGroupAddedListenerDelegate implements ActivitiEventLis
     public void onEvent(ActivitiEvent event) {
         if (event instanceof ActivitiEntityEvent) {
             converter.from((ActivitiEntityEvent) event)
-                    .ifPresent(convertedEvent -> {
-                        for (TaskRuntimeEventListener<TaskCandidateGroupAddedEvent> listener : listeners) {
-                            listener.onEvent(convertedEvent);
-                        }
-                    });
+                    .ifPresent(convertedEvent -> listeners.forEach(listener -> listener.onEvent(convertedEvent)));
         }
     }
 

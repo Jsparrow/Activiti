@@ -50,23 +50,23 @@ public class BpmnActivityBehavior implements Serializable {
      * @param activityExecution
      */
     protected void dispatchJobCanceledEvents(ExecutionEntity activityExecution) {
-        if (activityExecution != null) {
-            List<JobEntity> jobs = activityExecution.getJobs();
-            for (JobEntity job : jobs) {
-                if (Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
-                    Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.JOB_CANCELED,
-                                                                                                                                      job));
-                }
-            }
-
-            List<TimerJobEntity> timerJobs = activityExecution.getTimerJobs();
-            for (TimerJobEntity job : timerJobs) {
-                if (Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
-                    Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.JOB_CANCELED,
-                                                                                                                                      job));
-                }
-            }
-        }
+        if (activityExecution == null) {
+			return;
+		}
+		List<JobEntity> jobs = activityExecution.getJobs();
+		jobs.forEach(job -> {
+		    if (Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
+		        Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.JOB_CANCELED,
+		                                                                                                                          job));
+		    }
+		});
+		List<TimerJobEntity> timerJobs = activityExecution.getTimerJobs();
+		timerJobs.forEach(job -> {
+		    if (Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
+		        Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.JOB_CANCELED,
+		                                                                                                                          job));
+		    }
+		});
     }
 
     /**

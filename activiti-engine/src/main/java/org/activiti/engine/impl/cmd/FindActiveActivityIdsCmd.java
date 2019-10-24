@@ -38,7 +38,8 @@ public class FindActiveActivityIdsCmd implements Command<List<String>>, Serializ
     this.executionId = executionId;
   }
 
-  public List<String> execute(CommandContext commandContext) {
+  @Override
+public List<String> execute(CommandContext commandContext) {
     if (executionId == null) {
       throw new ActivitiIllegalArgumentException("executionId is null");
     }
@@ -47,14 +48,14 @@ public class FindActiveActivityIdsCmd implements Command<List<String>>, Serializ
     ExecutionEntity execution = executionEntityManager.findById(executionId);
 
     if (execution == null) {
-      throw new ActivitiObjectNotFoundException("execution " + executionId + " doesn't exist", Execution.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("execution ").append(executionId).append(" doesn't exist").toString(), Execution.class);
     }
 
     return findActiveActivityIds(execution);
   }
   
   public List<String> findActiveActivityIds(ExecutionEntity executionEntity) {
-    List<String> activeActivityIds = new ArrayList<String>();
+    List<String> activeActivityIds = new ArrayList<>();
     collectActiveActivityIds(executionEntity, activeActivityIds);
     return activeActivityIds;
   }
@@ -64,9 +65,7 @@ public class FindActiveActivityIdsCmd implements Command<List<String>>, Serializ
       activeActivityIds.add(executionEntity.getActivityId());
     }
     
-    for (ExecutionEntity childExecution : executionEntity.getExecutions()) {
-      collectActiveActivityIds(childExecution, activeActivityIds);
-    }
+    executionEntity.getExecutions().forEach(childExecution -> collectActiveActivityIds(childExecution, activeActivityIds));
   }
   
 }

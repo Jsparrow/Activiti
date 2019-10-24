@@ -35,7 +35,7 @@ public class VariableEventsStoreTest extends PluggableActivitiTestCase {
 
   @Deployment(resources = {"org/activiti/engine/test/api/runtime/oneTaskProcess.bpmn20.xml"})
   public void testStartEndProcessInstanceVariableEvents() throws Exception {
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
     variables.put("var1", "value1");
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess", variables);
 
@@ -69,7 +69,7 @@ public class VariableEventsStoreTest extends PluggableActivitiTestCase {
     assertEquals(2, managementService.getEventLogEntries(null, null).size());
 
     // bulk insert delete var test
-    Map<String, String> vars = new HashMap<String, String>();
+    Map<String, String> vars = new HashMap<>();
     vars.put("myVar", "value");
     vars.put("myVar2", "value");
     taskService.setVariablesLocal(task.getId(), vars);
@@ -95,14 +95,12 @@ public class VariableEventsStoreTest extends PluggableActivitiTestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
 
-    if (listener != null) {
-      listener.clearEventsReceived();
-      processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
-
-      // cleanup
-      for (EventLogEntry eventLogEntry : managementService.getEventLogEntries(null, null)) {
-        managementService.deleteEventLogEntry(eventLogEntry.getLogNumber());
-      }
-    }
+    if (listener == null) {
+		return;
+	}
+	listener.clearEventsReceived();
+	processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
+	// cleanup
+	managementService.getEventLogEntries(null, null).forEach(eventLogEntry -> managementService.deleteEventLogEntry(eventLogEntry.getLogNumber()));
   }
 }

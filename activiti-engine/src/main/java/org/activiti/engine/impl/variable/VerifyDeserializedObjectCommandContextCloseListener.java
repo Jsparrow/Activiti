@@ -37,19 +37,23 @@ public class VerifyDeserializedObjectCommandContextCloseListener implements Comm
     this.deserializedObject = deserializedObject;
   }
   
-  public void closing(CommandContext commandContext) {
+  @Override
+public void closing(CommandContext commandContext) {
     deserializedObject.verifyIfBytesOfSerializedObjectChanged();
   }
 
-  public void closed(CommandContext commandContext) {
+  @Override
+public void closed(CommandContext commandContext) {
     
   }
 
-  public void afterSessionsFlush(CommandContext commandContext) {
+  @Override
+public void afterSessionsFlush(CommandContext commandContext) {
     
   }
 
-  public void closeFailure(CommandContext commandContext) {
+  @Override
+public void closeFailure(CommandContext commandContext) {
     
   }
 

@@ -139,12 +139,7 @@ public class InstanceInvolvementTest extends PluggableActivitiTestCase {
   }
 
   private boolean containsIdentityLink(List<IdentityLink> identityLinks, String userId, String type) {
-    for (IdentityLink identityLink : identityLinks) {
-      if (userId.equals(identityLink.getUserId()) && type.equals(identityLink.getType())) {
-        return true;
-      }
-    }
-    return false;
+    return identityLinks.stream().anyMatch(identityLink -> userId.equals(identityLink.getUserId()) && type.equals(identityLink.getType()));
   }
 
 }

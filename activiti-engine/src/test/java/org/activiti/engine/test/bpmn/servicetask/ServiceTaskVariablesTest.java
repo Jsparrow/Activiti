@@ -30,47 +30,6 @@ public class ServiceTaskVariablesTest extends PluggableActivitiTestCase {
   static boolean isOkInDelegate2;
   static boolean isOkInDelegate3;
 
-  public static class Variable implements Serializable {
-    private static final long serialVersionUID = 1L;
-    public String value;
-  }
-
-  public static class Delegate1 implements JavaDelegate {
-
-    public void execute(DelegateExecution execution) {
-      Variable v = new Variable();
-      v.value = "delegate1";
-      execution.setVariable("variable", v);
-    }
-
-  }
-
-  public static class Delegate2 implements JavaDelegate {
-
-    public void execute(DelegateExecution execution) {
-      Variable v = (Variable) execution.getVariable("variable");
-      synchronized (ServiceTaskVariablesTest.class) {
-        // we expect this to be 'true'
-        isOkInDelegate2 = (v.value != null && v.value.equals("delegate1"));
-      }
-      v.value = "delegate2";
-      execution.setVariable("variable", v);
-    }
-
-  }
-
-  public static class Delegate3 implements JavaDelegate {
-
-    public void execute(DelegateExecution execution) {
-      Variable v = (Variable) execution.getVariable("variable");
-      synchronized (ServiceTaskVariablesTest.class) {
-        // we expect this to be 'true' as well
-        isOkInDelegate3 = (v.value != null && v.value.equals("delegate2"));
-      }
-    }
-
-  }
-
   @Deployment
   public void testSerializedVariablesBothAsync() {
 
@@ -91,7 +50,7 @@ public class ServiceTaskVariablesTest extends PluggableActivitiTestCase {
     assertTrue(isOkInDelegate3);
   }
 
-  @Deployment
+@Deployment
   public void testSerializedVariablesThirdAsync() {
 
     // in this test, only the third service task is async
@@ -102,6 +61,50 @@ public class ServiceTaskVariablesTest extends PluggableActivitiTestCase {
     synchronized (ServiceTaskVariablesTest.class) {
       assertTrue(isOkInDelegate2);
       assertTrue(isOkInDelegate3);
+    }
+
+  }
+
+public static class Variable implements Serializable {
+    private static final long serialVersionUID = 1L;
+    public String value;
+  }
+
+  public static class Delegate1 implements JavaDelegate {
+
+    @Override
+	public void execute(DelegateExecution execution) {
+      Variable v = new Variable();
+      v.value = "delegate1";
+      execution.setVariable("variable", v);
+    }
+
+  }
+
+  public static class Delegate2 implements JavaDelegate {
+
+    @Override
+	public void execute(DelegateExecution execution) {
+      Variable v = (Variable) execution.getVariable("variable");
+      synchronized (ServiceTaskVariablesTest.class) {
+        // we expect this to be 'true'
+        isOkInDelegate2 = (v.value != null && "delegate1".equals(v.value));
+      }
+      v.value = "delegate2";
+      execution.setVariable("variable", v);
+    }
+
+  }
+
+  public static class Delegate3 implements JavaDelegate {
+
+    @Override
+	public void execute(DelegateExecution execution) {
+      Variable v = (Variable) execution.getVariable("variable");
+      synchronized (ServiceTaskVariablesTest.class) {
+        // we expect this to be 'true' as well
+        isOkInDelegate3 = (v.value != null && "delegate2".equals(v.value));
+      }
     }
 
   }

@@ -35,27 +35,33 @@ public abstract class AbstractEntityNoRevision implements Entity {
     this.id = id;
   }
   
-  public boolean isInserted() {
+  @Override
+public boolean isInserted() {
     return isInserted;
   }
 
-  public void setInserted(boolean isInserted) {
+  @Override
+public void setInserted(boolean isInserted) {
     this.isInserted = isInserted;
   }
 
-  public boolean isUpdated() {
+  @Override
+public boolean isUpdated() {
     return isUpdated;
   }
 
-  public void setUpdated(boolean isUpdated) {
+  @Override
+public void setUpdated(boolean isUpdated) {
     this.isUpdated = isUpdated;
   }
 
-  public boolean isDeleted() {
+  @Override
+public boolean isDeleted() {
     return isDeleted;
   }
 
-  public void setDeleted(boolean isDeleted) {
+  @Override
+public void setDeleted(boolean isDeleted) {
     this.isDeleted = isDeleted;
   }
   

@@ -30,31 +30,38 @@ public class PropertyEntityImpl extends AbstractEntity implements PropertyEntity
   public PropertyEntityImpl() {
   }
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
   
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
 
-  public String getValue() {
+  @Override
+public String getValue() {
     return value;
   }
 
-  public void setValue(String value) {
+  @Override
+public void setValue(String value) {
     this.value = value;
   }
 
-  public String getId() {
+  @Override
+public String getId() {
     return name;
   }
 
-  public Object getPersistentState() {
+  @Override
+public Object getPersistentState() {
     return value;
   }
 
-  public void setId(String id) {
+  @Override
+public void setId(String id) {
     throw new ActivitiException("only provided id generation allowed for properties");
   }
 
@@ -62,7 +69,7 @@ public class PropertyEntityImpl extends AbstractEntity implements PropertyEntity
 
   @Override
   public String toString() {
-    return "PropertyEntity[name=" + name + ", value=" + value + "]";
+    return new StringBuilder().append("PropertyEntity[name=").append(name).append(", value=").append(value).append("]").toString();
   }
 
 }

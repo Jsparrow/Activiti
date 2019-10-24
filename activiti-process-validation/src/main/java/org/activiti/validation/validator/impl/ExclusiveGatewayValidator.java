@@ -32,9 +32,7 @@ public class ExclusiveGatewayValidator extends ProcessLevelValidator {
   @Override
   protected void executeValidation(BpmnModel bpmnModel, Process process, List<ValidationError> errors) {
     List<ExclusiveGateway> gateways = process.findFlowElementsOfType(ExclusiveGateway.class);
-    for (ExclusiveGateway gateway : gateways) {
-      validateExclusiveGateway(process, gateway, errors);
-    }
+    gateways.forEach(gateway -> validateExclusiveGateway(process, gateway, errors));
   }
 
   public void validateExclusiveGateway(Process process, ExclusiveGateway exclusiveGateway, List<ValidationError> errors) {
@@ -49,8 +47,8 @@ public class ExclusiveGatewayValidator extends ProcessLevelValidator {
     } else {
       String defaultSequenceFlow = exclusiveGateway.getDefaultFlow();
 
-      List<SequenceFlow> flowsWithoutCondition = new ArrayList<SequenceFlow>();
-      for (SequenceFlow flow : exclusiveGateway.getOutgoingFlows()) {
+      List<SequenceFlow> flowsWithoutCondition = new ArrayList<>();
+      exclusiveGateway.getOutgoingFlows().forEach(flow -> {
         String condition = flow.getConditionExpression();
         boolean isDefaultFlow = flow.getId() != null && flow.getId().equals(defaultSequenceFlow);
         boolean hasConditon = StringUtils.isNotEmpty(condition);
@@ -61,7 +59,7 @@ public class ExclusiveGatewayValidator extends ProcessLevelValidator {
         if (hasConditon && isDefaultFlow) {
           addError(errors, Problems.EXCLUSIVE_GATEWAY_CONDITION_ON_DEFAULT_SEQ_FLOW, process, exclusiveGateway, "Default sequenceflow has a condition, which is not allowed");
         }
-      }
+      });
 
       if (!flowsWithoutCondition.isEmpty()) {
         addWarning(errors, Problems.EXCLUSIVE_GATEWAY_SEQ_FLOW_WITHOUT_CONDITIONS, process, exclusiveGateway,

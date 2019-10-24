@@ -23,13 +23,17 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class DisabledSchemaValidationTest {
 
-  protected ProcessEngine processEngine;
+  private static final Logger logger = LoggerFactory.getLogger(DisabledSchemaValidationTest.class);
+
+protected ProcessEngine processEngine;
 
   protected RepositoryService repositoryService;
 
@@ -44,9 +48,7 @@ public class DisabledSchemaValidationTest {
 
   @After
   public void tearDown() {
-    for (Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId());
-    }
+    repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId()));
 
     ProcessEngines.unregister(processEngine);
     processEngine = null;
@@ -61,6 +63,7 @@ public class DisabledSchemaValidationTest {
       repositoryService.createDeployment().addClasspathResource("org/activiti/standalone/validation/invalid_process_xsd_error.bpmn20.xml").deploy();
       Assert.fail();
     } catch (XMLException e) {
+		logger.error(e.getMessage(), e);
       // expected exception
     }
 
@@ -69,6 +72,7 @@ public class DisabledSchemaValidationTest {
       repositoryService.createDeployment().addClasspathResource("org/activiti/standalone/validation/invalid_process_xsd_error.bpmn20.xml").disableSchemaValidation().deploy();
       Assert.fail();
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // expected exception
     }
 

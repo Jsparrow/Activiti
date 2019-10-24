@@ -58,55 +58,54 @@ public class ShellCommandExecutor implements CommandExecutor {
     }
 
 
-    public void executeCommand(DelegateExecution execution) throws Exception {
-        if (argList != null && argList.size() > 0) {
-            ProcessBuilder processBuilder = new ProcessBuilder(argList);
-            processBuilder.redirectErrorStream(getRedirectErrorFlag());
-            if (getCleanEnvBoolean()) {
-                Map<String, String> env = processBuilder.environment();
-                env.clear();
-            }
-            if (getDirectoryStr() != null && getDirectoryStr().length() > 0)
-                processBuilder.directory(new File(getDirectoryStr()));
+    @Override
+	public void executeCommand(DelegateExecution execution) throws Exception {
+        if (!(argList != null && argList.size() > 0)) {
+			return;
+		}
+		ProcessBuilder processBuilder = new ProcessBuilder(argList);
+		processBuilder.redirectErrorStream(getRedirectErrorFlag());
+		if (getCleanEnvBoolean()) {
+		    Map<String, String> env = processBuilder.environment();
+		    env.clear();
+		}
+		if (getDirectoryStr() != null && getDirectoryStr().length() > 0) {
+			processBuilder.directory(new File(getDirectoryStr()));
+		}
+		Process process = processBuilder.start();
+		if (getWaitFlag()) {
+		    int errorCode = process.waitFor();
 
-            Process process = processBuilder.start();
+		    if (getResultVariableStr() != null) {
+		        String result = convertStreamToStr(process.getInputStream());
+		        execution.setVariable(getResultVariableStr(), result);
+		    }
 
-            if (getWaitFlag()) {
-                int errorCode = process.waitFor();
+		    if (getErrorCodeVariableStr() != null) {
+		        execution.setVariable(getErrorCodeVariableStr(), Integer.toString(errorCode));
 
-                if (getResultVariableStr() != null) {
-                    String result = convertStreamToStr(process.getInputStream());
-                    execution.setVariable(getResultVariableStr(), result);
-                }
+		    }
 
-                if (getErrorCodeVariableStr() != null) {
-                    execution.setVariable(getErrorCodeVariableStr(), Integer.toString(errorCode));
-
-                }
-
-            }
-        }
+		}
     }
 
     private String convertStreamToStr(InputStream is) throws IOException {
 
-        if (is != null) {
-            Writer writer = new StringWriter();
-
-            char[] buffer = new char[1024];
-            try {
-                Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                int n;
-                while ((n = reader.read(buffer)) != -1) {
-                    writer.write(buffer, 0, n);
-                }
-            } finally {
-                is.close();
-            }
-            return writer.toString();
-        } else {
-            return "";
-        }
+        if (is == null) {
+			return "";
+		}
+		Writer writer = new StringWriter();
+		char[] buffer = new char[1024];
+		try {
+		    Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+		    int n;
+		    while ((n = reader.read(buffer)) != -1) {
+		        writer.write(buffer, 0, n);
+		    }
+		} finally {
+		    is.close();
+		}
+		return writer.toString();
     }
 
     public Boolean getWaitFlag() {

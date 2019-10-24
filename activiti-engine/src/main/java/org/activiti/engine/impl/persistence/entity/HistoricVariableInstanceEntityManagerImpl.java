@@ -91,12 +91,11 @@ public class HistoricVariableInstanceEntityManagerImpl extends AbstractEntityMan
 
   @Override
   public void deleteHistoricVariableInstanceByProcessInstanceId(final String historicProcessInstanceId) {
-    if (getHistoryManager().isHistoryLevelAtLeast(HistoryLevel.ACTIVITY)) {
-      List<HistoricVariableInstanceEntity> historicProcessVariables = historicVariableInstanceDataManager.findHistoricVariableInstancesByProcessInstanceId(historicProcessInstanceId);
-      for (HistoricVariableInstanceEntity historicProcessVariable : historicProcessVariables) {
-        delete(historicProcessVariable);
-      }
-    }
+    if (!getHistoryManager().isHistoryLevelAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	List<HistoricVariableInstanceEntity> historicProcessVariables = historicVariableInstanceDataManager.findHistoricVariableInstancesByProcessInstanceId(historicProcessInstanceId);
+	historicProcessVariables.forEach(historicProcessVariable -> delete(historicProcessVariable));
   }
 
   @Override
@@ -116,12 +115,11 @@ public class HistoricVariableInstanceEntityManagerImpl extends AbstractEntityMan
 
   @Override
   public void deleteHistoricVariableInstancesByTaskId(String taskId) {
-    if (getHistoryManager().isHistoryLevelAtLeast(HistoryLevel.ACTIVITY)) {
-      List<HistoricVariableInstanceEntity> historicProcessVariables = historicVariableInstanceDataManager.findHistoricVariableInstancesByTaskId(taskId);
-      for (HistoricVariableInstanceEntity historicProcessVariable : historicProcessVariables) {
-        delete((HistoricVariableInstanceEntity) historicProcessVariable);
-      }
-    }
+    if (!getHistoryManager().isHistoryLevelAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	List<HistoricVariableInstanceEntity> historicProcessVariables = historicVariableInstanceDataManager.findHistoricVariableInstancesByTaskId(taskId);
+	historicProcessVariables.forEach(historicProcessVariable -> delete((HistoricVariableInstanceEntity) historicProcessVariable));
   }
 
   @Override

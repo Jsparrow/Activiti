@@ -23,7 +23,7 @@ public class DateVariableType extends JavaObjectVariableType {
     }
 
     @Override
-    public Object parseFromValue(Object value) throws ActivitiException {
+    public Object parseFromValue(Object value) {
 
         try {
             return dateFormatterProvider.toDate(value);

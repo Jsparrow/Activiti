@@ -17,6 +17,8 @@ import org.activiti.engine.delegate.BpmnError;
 import org.activiti.engine.delegate.event.ActivitiEvent;
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test case for {@link ActivitiEvent} thrown when a BPMNError is not caught in the process.
@@ -25,7 +27,8 @@ import org.activiti.engine.test.Deployment;
  */
 public class UncaughtErrorEventTest extends PluggableActivitiTestCase {
 
-  private TestActivitiEventListener listener;
+  private static final Logger logger = LoggerFactory.getLogger(UncaughtErrorEventTest.class);
+private TestActivitiEventListener listener;
 
   /**
    * Test events related to error-events, thrown from within process-execution (eg. service-task).
@@ -36,6 +39,7 @@ public class UncaughtErrorEventTest extends PluggableActivitiTestCase {
       runtimeService.startProcessInstanceByKey("errorProcess");
       fail("Exception BPMN  error excepted due to not caught exception");
     } catch (BpmnError e) {
+		logger.error(e.getMessage(), e);
 
     }
   }
@@ -52,9 +56,10 @@ public class UncaughtErrorEventTest extends PluggableActivitiTestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
 
-    if (listener != null) {
-      listener.clearEventsReceived();
-      processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
-    }
+    if (listener == null) {
+		return;
+	}
+	listener.clearEventsReceived();
+	processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
   }
 }

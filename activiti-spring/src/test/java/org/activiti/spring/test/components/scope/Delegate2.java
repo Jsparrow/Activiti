@@ -19,7 +19,8 @@ public class Delegate2 implements JavaDelegate {
   @Autowired
   private StatefulObject statefulObject;
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
 
     this.statefulObject.increment();
 

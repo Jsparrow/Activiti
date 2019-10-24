@@ -21,17 +21,12 @@ public class CustomMybatisXMLMapperTest extends ResourceActivitiTestCase {
   public void testSelectOneTask() {
     // Create test data
     for (int i = 0; i < 4; i++) {
-      createTask(i + "", null, null, 0);
+      createTask(Integer.toString(i), null, null, 0);
     }
 
     final String taskId = createTask("4", null, null, 0);
 
-    CustomTask customTask = managementService.executeCommand(new Command<CustomTask>() {
-      @Override
-      public CustomTask execute(CommandContext commandContext) {
-        return (CustomTask) commandContext.getDbSqlSession().selectOne("selectOneCustomTask", taskId);
-      }
-    });
+    CustomTask customTask = managementService.executeCommand((CommandContext commandContext) -> (CustomTask) commandContext.getDbSqlSession().selectOne("selectOneCustomTask", taskId));
 
     assertEquals("4", customTask.getName());
 
@@ -49,17 +44,10 @@ public class CustomMybatisXMLMapperTest extends ResourceActivitiTestCase {
   public void testSelectTaskList() {
     // Create test data
     for (int i = 0; i < 5; i++) {
-      createTask(i + "", null, null, 0);
+      createTask(Integer.toString(i), null, null, 0);
     }
 
-    List<CustomTask> tasks = managementService.executeCommand(new Command<List<CustomTask>>() {
-
-      @SuppressWarnings("unchecked")
-      @Override
-      public List<CustomTask> execute(CommandContext commandContext) {
-        return (List<CustomTask>) commandContext.getDbSqlSession().selectList("selectCustomTaskList");
-      }
-    });
+    List<CustomTask> tasks = managementService.executeCommand((CommandContext commandContext) -> (List<CustomTask>) commandContext.getDbSqlSession().selectList("selectCustomTaskList"));
 
     assertEquals(5, tasks.size());
 
@@ -70,7 +58,7 @@ public class CustomMybatisXMLMapperTest extends ResourceActivitiTestCase {
   public void testSelectTasksByCustomQuery() {
     // Create test data
     for (int i = 0; i < 5; i++) {
-      createTask(i + "", null, null, 0);
+      createTask(Integer.toString(i), null, null, 0);
     }
     createTask("Owned task", "kermit", null, 0);
 
@@ -88,7 +76,7 @@ public class CustomMybatisXMLMapperTest extends ResourceActivitiTestCase {
   public void testSelectTaskByCustomQuery() {
     // Create test data
     for (int i = 0; i < 5; i++) {
-      createTask(i + "", null, null, 0);
+      createTask(Integer.toString(i), null, null, 0);
     }
     createTask("Owned task", "kermit", null, 0);
 
@@ -104,7 +92,7 @@ public class CustomMybatisXMLMapperTest extends ResourceActivitiTestCase {
   public void testCustomQueryListPage() {
     // Create test data
     for (int i = 0; i < 15; i++) {
-      createTask(i + "", null, null, 0);
+      createTask(Integer.toString(i), null, null, 0);
     }
 
     List<CustomTask> tasks = new CustomTaskQuery(managementService).listPage(0, 10);
@@ -120,7 +108,7 @@ public class CustomMybatisXMLMapperTest extends ResourceActivitiTestCase {
   public void testCustomQueryOrderBy() {
     // Create test data
     for (int i = 0; i < 5; i++) {
-      createTask(i + "", null, null, i * 20);
+      createTask(Integer.toString(i), null, null, i * 20);
     }
 
     List<CustomTask> tasks = new CustomTaskQuery(managementService).orderByTaskPriority().desc().list();
@@ -159,7 +147,7 @@ public class CustomMybatisXMLMapperTest extends ResourceActivitiTestCase {
     Authentication.setAuthenticatedUserId("fozzie");
 
     for (int i = 0; i < 15; i++) {
-      taskService.createAttachment(null, createTask(i + "", null, null, 0), null, "attachmentName" + i, "", "http://activiti.org/" + i);
+      taskService.createAttachment(null, createTask(Integer.toString(i), null, null, 0), null, "attachmentName" + i, "", "http://activiti.org/" + i);
     }
 
     assertEquals(attachmentId, new AttachmentQuery(managementService).attachmentId(attachmentId).singleResult().getId());
@@ -207,12 +195,10 @@ public class CustomMybatisXMLMapperTest extends ResourceActivitiTestCase {
   }
 
   protected void deleteTasks(List<Task> tasks) {
-    for (Task task : tasks)
-      deleteTask(task.getId());
+    tasks.forEach(task -> deleteTask(task.getId()));
   }
 
   protected void deleteCustomTasks(List<CustomTask> tasks) {
-    for (CustomTask task : tasks)
-      deleteTask(task.getId());
+    tasks.forEach(task -> deleteTask(task.getId()));
   }
 }

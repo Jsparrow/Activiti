@@ -33,14 +33,16 @@ public class BoundaryEventParseHandler extends AbstractFlowNodeBpmnParseHandler<
 
   private static final Logger logger = LoggerFactory.getLogger(BoundaryEventParseHandler.class);
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return BoundaryEvent.class;
   }
 
-  protected void executeParse(BpmnParse bpmnParse, BoundaryEvent boundaryEvent) {
+  @Override
+protected void executeParse(BpmnParse bpmnParse, BoundaryEvent boundaryEvent) {
 
     if (boundaryEvent.getAttachedToRef() == null) {
-      logger.warn("Invalid reference in boundary event. Make sure that the referenced activity " + "is defined in the same scope as the boundary event " + boundaryEvent.getId());
+      logger.warn(new StringBuilder().append("Invalid reference in boundary event. Make sure that the referenced activity ").append("is defined in the same scope as the boundary event ").append(boundaryEvent.getId()).toString());
       return;
     }
 

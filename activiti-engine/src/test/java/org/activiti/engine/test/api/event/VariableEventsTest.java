@@ -111,7 +111,7 @@ public class VariableEventsTest extends PluggableActivitiTestCase {
         listener.clearEventsReceived();
 
         // Create, update and delete multiple variables
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("test",
                  123);
         vars.put("test2",
@@ -147,7 +147,7 @@ public class VariableEventsTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/runtime/oneTaskProcess.bpmn20.xml"})
     public void testStartEndProcessInstanceVariableEvents() throws Exception {
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("var1",
                       "value1");
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess",
@@ -173,7 +173,7 @@ public class VariableEventsTest extends PluggableActivitiTestCase {
     @Deployment(resources = {"org/activiti/engine/test/api/runtime/oneTaskProcess.bpmn20.xml"})
     public void testProcessInstanceVariableEventsOnStart() throws Exception {
 
-        HashMap<String, Object> vars = new HashMap<String, Object>();
+        HashMap<String, Object> vars = new HashMap<>();
         vars.put("testVariable",
                  "The value");
 
@@ -524,9 +524,10 @@ public class VariableEventsTest extends PluggableActivitiTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        if (listener != null) {
-            listener.clearEventsReceived();
-            processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
-        }
+        if (listener == null) {
+			return;
+		}
+		listener.clearEventsReceived();
+		processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
     }
 }

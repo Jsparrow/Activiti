@@ -14,5 +14,6 @@ package org.activiti.bpmn.model;
 
 public abstract class Artifact extends BaseElement {
 
-  public abstract Artifact clone();
+  @Override
+public abstract Artifact clone();
 }

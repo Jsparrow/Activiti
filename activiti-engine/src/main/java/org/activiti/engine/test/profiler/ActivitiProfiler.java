@@ -16,7 +16,7 @@ public class ActivitiProfiler implements ProcessEngineConfigurator {
     protected static ActivitiProfiler INSTANCE = new ActivitiProfiler();
 
     protected ProfileSession currentProfileSession;
-    protected List<ProfileSession> profileSessions = new ArrayList<ProfileSession>();
+    protected List<ProfileSession> profileSessions = new ArrayList<>();
 
     public static ActivitiProfiler getInstance() {
         return INSTANCE;
@@ -26,7 +26,7 @@ public class ActivitiProfiler implements ProcessEngineConfigurator {
     public void beforeInit(ProcessEngineConfigurationImpl processEngineConfiguration) {
 
         // Command interceptor
-        List<CommandInterceptor> interceptors = new ArrayList<CommandInterceptor>();
+        List<CommandInterceptor> interceptors = new ArrayList<>();
         interceptors.add(new TotalExecutionTimeCommandInterceptor());
         processEngineConfiguration.setCustomPreCommandInterceptors(interceptors);
 

@@ -21,11 +21,13 @@ import org.activiti.engine.impl.bpmn.parser.BpmnParse;
  */
 public class CallActivityParseHandler extends AbstractActivityBpmnParseHandler<CallActivity> {
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return CallActivity.class;
   }
 
-  protected void executeParse(BpmnParse bpmnParse, CallActivity callActivity) {
+  @Override
+protected void executeParse(BpmnParse bpmnParse, CallActivity callActivity) {
     callActivity.setBehavior(bpmnParse.getActivityBehaviorFactory().createCallActivityBehavior(callActivity));
   }
 

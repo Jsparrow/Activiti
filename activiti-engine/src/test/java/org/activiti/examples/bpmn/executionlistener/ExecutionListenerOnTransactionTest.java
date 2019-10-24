@@ -21,13 +21,17 @@ import org.activiti.engine.impl.history.HistoryLevel;
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class ExecutionListenerOnTransactionTest extends PluggableActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(ExecutionListenerOnTransactionTest.class);
+
+@Deployment
   public void testOnClosedExecutionListenersWithRollback() {
 
     CurrentActivityTransactionDependentExecutionListener.clear();
@@ -46,6 +50,7 @@ public class ExecutionListenerOnTransactionTest extends PluggableActivitiTestCas
       managementService.executeJob(managementService.createJobQuery().singleResult().getId());
 
     } catch (Exception ex) {
+		logger.error(ex.getMessage(), ex);
       // expected; serviceTask3 throws exception
     }
 
@@ -81,6 +86,7 @@ public class ExecutionListenerOnTransactionTest extends PluggableActivitiTestCas
     try {
       managementService.executeJob(managementService.createJobQuery().singleResult().getId());
     } catch (Exception ex) {
+		logger.error(ex.getMessage(), ex);
       // expected; serviceTask3 throws exception
     }
 

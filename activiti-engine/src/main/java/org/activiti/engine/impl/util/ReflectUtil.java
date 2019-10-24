@@ -145,7 +145,7 @@ public abstract class ReflectUtil {
       method.setAccessible(true);
       return method.invoke(target, args);
     } catch (Exception e) {
-      throw new ActivitiException("couldn't invoke " + methodName + " on " + target, e);
+      throw new ActivitiException(new StringBuilder().append("couldn't invoke ").append(methodName).append(" on ").append(target).toString(), e);
     }
   }
 
@@ -164,9 +164,11 @@ public abstract class ReflectUtil {
     try {
       field = clazz.getDeclaredField(fieldName);
     } catch (SecurityException e) {
-      throw new ActivitiException("not allowed to access field " + field + " on class " + clazz.getCanonicalName());
+      LOG.error(e.getMessage(), e);
+	throw new ActivitiException(new StringBuilder().append("not allowed to access field ").append(field).append(" on class ").append(clazz.getCanonicalName()).toString());
     } catch (NoSuchFieldException e) {
-      // for some reason getDeclaredFields doesn't search superclasses
+      LOG.error(e.getMessage(), e);
+	// for some reason getDeclaredFields doesn't search superclasses
       // (which getFields() does ... but that gives only public fields)
       Class<?> superClass = clazz.getSuperclass();
       if (superClass != null) {
@@ -180,9 +182,7 @@ public abstract class ReflectUtil {
     try {
       field.setAccessible(true);
       field.set(object, value);
-    } catch (IllegalArgumentException e) {
-      throw new ActivitiException("Could not set field " + field.toString(), e);
-    } catch (IllegalAccessException e) {
+    } catch (IllegalAccessException | IllegalArgumentException e) {
       throw new ActivitiException("Could not set field " + field.toString(), e);
     }
   }
@@ -191,7 +191,7 @@ public abstract class ReflectUtil {
    * Returns the setter-method for the given field name or null if no setter exists.
    */
   public static Method getSetter(String fieldName, Class<?> clazz, Class<?> fieldType) {
-    String setterName = "set" + Character.toTitleCase(fieldName.charAt(0)) + fieldName.substring(1, fieldName.length());
+    String setterName = new StringBuilder().append("set").append(Character.toTitleCase(fieldName.charAt(0))).append(fieldName.substring(1, fieldName.length())).toString();
     try {
       // Using getMethods(), getMethod(...) expects exact parameter type
       // matching and ignores inheritance-tree.
@@ -206,7 +206,8 @@ public abstract class ReflectUtil {
       }
       return null;
     } catch (SecurityException e) {
-      throw new ActivitiException("Not allowed to access method " + setterName + " on class " + clazz.getCanonicalName());
+      LOG.error(e.getMessage(), e);
+	throw new ActivitiException(new StringBuilder().append("Not allowed to access method ").append(setterName).append(" on class ").append(clazz.getCanonicalName()).toString());
     }
   }
 
@@ -228,12 +229,12 @@ public abstract class ReflectUtil {
     Class<?> clazz = loadClass(className);
     Constructor<?> constructor = findMatchingConstructor(clazz, args);
     if (constructor == null) {
-      throw new ActivitiException("couldn't find constructor for " + className + " with args " + Arrays.asList(args));
+      throw new ActivitiException(new StringBuilder().append("couldn't find constructor for ").append(className).append(" with args ").append(Arrays.asList(args)).toString());
     }
     try {
       return constructor.newInstance(args);
     } catch (Exception e) {
-      throw new ActivitiException("couldn't find constructor for " + className + " with args " + Arrays.asList(args), e);
+      throw new ActivitiException(new StringBuilder().append("couldn't find constructor for ").append(className).append(" with args ").append(Arrays.asList(args)).toString(), e);
     }
   }
 
@@ -299,7 +300,7 @@ public abstract class ReflectUtil {
 
     // special for isXXX boolean
     if (name.startsWith("is")) {
-      return params.length == 0 && type.getSimpleName().equalsIgnoreCase("boolean");
+      return params.length == 0 && "boolean".equalsIgnoreCase(type.getSimpleName());
     }
 
     return params.length == 0 && !type.equals(Void.TYPE);

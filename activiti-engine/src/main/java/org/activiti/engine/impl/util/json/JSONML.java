@@ -46,7 +46,7 @@ public class JSONML {
    * @return A JSONArray if the value is the outermost tag, otherwise null.
    * @throws JSONException
    */
-  private static Object parse(XMLTokener x, boolean arrayForm, JSONArray ja) throws JSONException {
+  private static Object parse(XMLTokener x, boolean arrayForm, JSONArray ja) {
     String attribute;
     char c;
     String closeTag = null;
@@ -73,7 +73,7 @@ public class JSONML {
 
             token = x.nextToken();
             if (!(token instanceof String)) {
-              throw new JSONException("Expected a closing name instead of '" + token + "'.");
+              throw new JSONException(new StringBuilder().append("Expected a closing name instead of '").append(token).append("'.").toString());
             }
             if (x.nextToken() != XML.GT) {
               throw x.syntaxError("Misshaped close tag");
@@ -124,7 +124,7 @@ public class JSONML {
 
         } else {
           if (!(token instanceof String)) {
-            throw x.syntaxError("Bad tagName '" + token + "'.");
+            throw x.syntaxError(new StringBuilder().append("Bad tagName '").append(token).append("'.").toString());
           }
           tagName = (String) token;
           newja = new JSONArray();
@@ -197,7 +197,7 @@ public class JSONML {
             closeTag = (String) parse(x, arrayForm, newja);
             if (closeTag != null) {
               if (!closeTag.equals(tagName)) {
-                throw x.syntaxError("Mismatched '" + tagName + "' and '" + closeTag + "'");
+                throw x.syntaxError(new StringBuilder().append("Mismatched '").append(tagName).append("' and '").append(closeTag).append("'").toString());
               }
               tagName = null;
               if (!arrayForm && newja.length() > 0) {
@@ -231,7 +231,7 @@ public class JSONML {
    * @return A JSONArray containing the structured signalData from the XML string.
    * @throws JSONException
    */
-  public static JSONArray toJSONArray(String string) throws JSONException {
+  public static JSONArray toJSONArray(String string) {
     return toJSONArray(new XMLTokener(string));
   }
 
@@ -245,7 +245,7 @@ public class JSONML {
    * @return A JSONArray containing the structured signalData from the XML string.
    * @throws JSONException
    */
-  public static JSONArray toJSONArray(XMLTokener x) throws JSONException {
+  public static JSONArray toJSONArray(XMLTokener x) {
     return (JSONArray) parse(x, true, null);
   }
 
@@ -261,7 +261,7 @@ public class JSONML {
    * @return A JSONObject containing the structured signalData from the XML string.
    * @throws JSONException
    */
-  public static JSONObject toJSONObject(XMLTokener x) throws JSONException {
+  public static JSONObject toJSONObject(XMLTokener x) {
     return (JSONObject) parse(x, false, null);
   }
 
@@ -277,7 +277,7 @@ public class JSONML {
    * @return A JSONObject containing the structured signalData from the XML string.
    * @throws JSONException
    */
-  public static JSONObject toJSONObject(String string) throws JSONException {
+  public static JSONObject toJSONObject(String string) {
     return toJSONObject(new XMLTokener(string));
   }
 
@@ -289,7 +289,7 @@ public class JSONML {
    * @return An XML string.
    * @throws JSONException
    */
-  public static String toString(JSONArray ja) throws JSONException {
+  public static String toString(JSONArray ja) {
     Object e;
     int i;
     JSONObject jo;
@@ -372,7 +372,7 @@ public class JSONML {
    * @throws JSONException
    */
   @SuppressWarnings("unchecked")
-  public static String toString(JSONObject jo) throws JSONException {
+  public static String toString(JSONObject jo) {
     StringBuilder sb = new StringBuilder();
     Object e;
     int i;
@@ -399,7 +399,7 @@ public class JSONML {
     keys = jo.keys();
     while (keys.hasNext()) {
       k = keys.next().toString();
-      if (!k.equals("tagName") && !k.equals("childNodes")) {
+      if (!"tagName".equals(k) && !"childNodes".equals(k)) {
         XML.noSpace(k);
         v = jo.optString(k);
         if (v != null) {

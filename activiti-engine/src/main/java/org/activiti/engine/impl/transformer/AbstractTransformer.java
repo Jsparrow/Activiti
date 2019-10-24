@@ -13,6 +13,8 @@
 package org.activiti.engine.impl.transformer;
 
 import org.activiti.engine.ActivitiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Transformer is responsible of transforming an object into a different object
@@ -21,15 +23,19 @@ import org.activiti.engine.ActivitiException;
  */
 public abstract class AbstractTransformer implements Transformer {
 
-  /**
+  private static final Logger logger = LoggerFactory.getLogger(AbstractTransformer.class);
+
+/**
    * {@inheritDoc}
    */
-  public Object transform(Object anObject) {
+  @Override
+public Object transform(Object anObject) {
     try {
       return this.primTransform(anObject);
     } catch (Exception e) {
 
-      throw new ActivitiException("Error while executing transformation from object: " + anObject + " using transformer " + this);
+      logger.error(e.getMessage(), e);
+	throw new ActivitiException(new StringBuilder().append("Error while executing transformation from object: ").append(anObject).append(" using transformer ").append(this).toString());
     }
   }
 

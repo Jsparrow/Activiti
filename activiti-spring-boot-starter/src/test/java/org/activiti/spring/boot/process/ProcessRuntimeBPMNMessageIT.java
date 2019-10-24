@@ -696,11 +696,7 @@ public class ProcessRuntimeBPMNMessageIT {
                                                   .withProcessDefinitionKey("testBoundaryMessageExpression")
                                                   .build());
         // when
-        Throwable thrown = catchThrowable(() -> {
-            processRuntime.receive(MessagePayloadBuilder.receive("int-boundary-message")
-                                                        .withCorrelationKey(null)
-                                                        .build());
-        });
+        Throwable thrown = catchThrowable(() -> processRuntime.receive(MessagePayloadBuilder.receive("int-boundary-message").withCorrelationKey(null).build()));
 
         // then
         assertThat(thrown).isInstanceOf(ActivitiObjectNotFoundException.class);
@@ -717,11 +713,8 @@ public class ProcessRuntimeBPMNMessageIT {
                                                   .build());
         
         // when
-        Throwable thrown = catchThrowable(() -> {
-        processRuntime.receive(MessagePayloadBuilder.receive("non-found-boundary-message")
-                                                    .withCorrelationKey("correlationId")
-                                                    .build());
-        });        
+        Throwable thrown = catchThrowable(() -> processRuntime.receive(
+				MessagePayloadBuilder.receive("non-found-boundary-message").withCorrelationKey("correlationId").build()));        
 
         // then
         assertThat(thrown).isInstanceOf(ActivitiObjectNotFoundException.class);

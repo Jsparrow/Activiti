@@ -51,7 +51,8 @@ public class JobRetryCmd implements Command<Object> {
     this.exception = exception;
   }
 
-  public Object execute(CommandContext commandContext) {
+  @Override
+public Object execute(CommandContext commandContext) {
     JobEntity job = commandContext.getJobEntityManager().findById(jobId);
     if (job == null) {
       return null;
@@ -70,7 +71,7 @@ public class JobRetryCmd implements Command<Object> {
     AbstractJobEntity newJobEntity = null;
     if (currentFlowElement == null || failedJobRetryTimeCycleValue == null) {
 
-      log.debug("activity or FailedJobRetryTimerCycleValue is null in job " + jobId + ". only decrementing retries.");
+      log.debug(new StringBuilder().append("activity or FailedJobRetryTimerCycleValue is null in job ").append(jobId).append(". only decrementing retries.").toString());
       
       if (job.getRetries() <= 1) {
         newJobEntity = commandContext.getJobManager().moveJobToDeadLetterJob(job);
@@ -105,17 +106,18 @@ public class JobRetryCmd implements Command<Object> {
         newJobEntity.setDuedate(durationHelper.getDateAfter());
 
         if (job.getExceptionMessage() == null) { // is it the first exception
-          log.debug("Applying JobRetryStrategy '" + failedJobRetryTimeCycleValue + "' the first time for job " + 
-              job.getId() + " with " + durationHelper.getTimes() + " retries");
+          log.debug(new StringBuilder().append("Applying JobRetryStrategy '").append(failedJobRetryTimeCycleValue).append("' the first time for job ").append(job.getId()).append(" with ").append(durationHelper.getTimes())
+				.append(" retries").toString());
 
         } else {
-          log.debug("Decrementing retries of JobRetryStrategy '" + failedJobRetryTimeCycleValue + "' for job " + job.getId());
+          log.debug(new StringBuilder().append("Decrementing retries of JobRetryStrategy '").append(failedJobRetryTimeCycleValue).append("' for job ").append(job.getId()).toString());
         }
         
         newJobEntity.setRetries(jobRetries - 1);
 
       } catch (Exception e) {
-        throw new ActivitiException("failedJobRetryTimeCylcle has wrong format:" + failedJobRetryTimeCycleValue, exception);
+        log.error(e.getMessage(), e);
+		throw new ActivitiException("failedJobRetryTimeCylcle has wrong format:" + failedJobRetryTimeCycleValue, exception);
       }
     }
     

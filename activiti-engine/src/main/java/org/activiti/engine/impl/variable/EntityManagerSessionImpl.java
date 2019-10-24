@@ -47,7 +47,8 @@ public class EntityManagerSessionImpl implements EntityManagerSession {
     this.closeEntityManager = closeEntityManager;
   }
 
-  public void flush() {
+  @Override
+public void flush() {
     if (entityManager != null && (!handleTransactions || isTransactionActive())) {
       try {
         entityManager.flush();
@@ -68,7 +69,8 @@ public class EntityManagerSessionImpl implements EntityManagerSession {
     return false;
   }
 
-  public void close() {
+  @Override
+public void close() {
     if (closeEntityManager && entityManager != null && !entityManager.isOpen()) {
       try {
         entityManager.close();
@@ -78,27 +80,24 @@ public class EntityManagerSessionImpl implements EntityManagerSession {
     }
   }
 
-  public EntityManager getEntityManager() {
+  @Override
+public EntityManager getEntityManager() {
     if (entityManager == null) {
       entityManager = getEntityManagerFactory().createEntityManager();
 
       if (handleTransactions) {
         // Add transaction listeners, if transactions should be handled
-        TransactionListener jpaTransactionCommitListener = new TransactionListener() {
-          public void execute(CommandContext commandContext) {
+        TransactionListener jpaTransactionCommitListener = (CommandContext commandContext) -> {
             if (isTransactionActive()) {
               entityManager.getTransaction().commit();
             }
-          }
-        };
+          };
 
-        TransactionListener jpaTransactionRollbackListener = new TransactionListener() {
-          public void execute(CommandContext commandContext) {
+        TransactionListener jpaTransactionRollbackListener = (CommandContext commandContext) -> {
             if (isTransactionActive()) {
               entityManager.getTransaction().rollback();
             }
-          }
-        };
+          };
 
         TransactionContext transactionContext = Context.getTransactionContext();
         transactionContext.addTransactionListener(TransactionState.COMMITTED, jpaTransactionCommitListener);

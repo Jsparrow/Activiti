@@ -25,6 +25,8 @@ import javax.script.ScriptException;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.delegate.VariableScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -33,7 +35,8 @@ import org.activiti.engine.delegate.VariableScope;
  */
 public class ScriptingEngines {
 
-  public static final String DEFAULT_SCRIPTING_LANGUAGE = "juel";
+  private static final Logger logger = LoggerFactory.getLogger(ScriptingEngines.class);
+public static final String DEFAULT_SCRIPTING_LANGUAGE = "juel";
   public static final String GROOVY_SCRIPTING_LANGUAGE = "groovy";
 
   private final ScriptEngineManager scriptEngineManager;
@@ -49,7 +52,7 @@ public class ScriptingEngines {
 
   public ScriptingEngines(ScriptEngineManager scriptEngineManager) {
     this.scriptEngineManager = scriptEngineManager;
-    cachedEngines = new HashMap<String, ScriptEngine>();
+    cachedEngines = new HashMap<>();
   }
 
   public ScriptingEngines addScriptEngineFactory(ScriptEngineFactory scriptEngineFactory) {
@@ -59,9 +62,7 @@ public class ScriptingEngines {
 
   public void setScriptEngineFactories(List<ScriptEngineFactory> scriptEngineFactories) {
     if (scriptEngineFactories != null) {
-      for (ScriptEngineFactory scriptEngineFactory : scriptEngineFactories) {
-        scriptEngineManager.registerEngineName(scriptEngineFactory.getEngineName(), scriptEngineFactory);
-      }
+      scriptEngineFactories.forEach(scriptEngineFactory -> scriptEngineManager.registerEngineName(scriptEngineFactory.getEngineName(), scriptEngineFactory));
     }
   }
 
@@ -104,6 +105,7 @@ public class ScriptingEngines {
             try {
               scriptEngine.getContext().setAttribute("#jsr223.groovy.engine.keep.globals", "weak", ScriptContext.ENGINE_SCOPE);
             } catch (Exception ignore) {
+				logger.error(ignore.getMessage(), ignore);
               // ignore this, in case engine doesn't support the
               // passed attribute
             }
@@ -124,7 +126,7 @@ public class ScriptingEngines {
     }
 
     if (scriptEngine == null) {
-      throw new ActivitiException("Can't find scripting engine for '" + language + "'");
+      throw new ActivitiException(new StringBuilder().append("Can't find scripting engine for '").append(language).append("'").toString());
     }
     return scriptEngine;
   }

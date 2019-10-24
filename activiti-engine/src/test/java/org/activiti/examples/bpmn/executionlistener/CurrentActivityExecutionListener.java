@@ -28,9 +28,25 @@ import org.activiti.engine.impl.util.ProcessDefinitionUtil;
  */
 public class CurrentActivityExecutionListener implements ExecutionListener {
 
-  private static List<CurrentActivity> currentActivities = new ArrayList<CurrentActivity>();
+  private static List<CurrentActivity> currentActivities = new ArrayList<>();
 
-  public static class CurrentActivity {
+  @Override
+public void notify(DelegateExecution execution) {
+    org.activiti.bpmn.model.Process process = ProcessDefinitionUtil.getProcess(execution.getProcessDefinitionId());
+    String activityId = execution.getCurrentActivityId();
+    FlowElement currentFlowElement = process.getFlowElement(activityId, true);
+    currentActivities.add(new CurrentActivity(execution.getCurrentActivityId(), currentFlowElement.getName()));
+  }
+
+public static List<CurrentActivity> getCurrentActivities() {
+    return currentActivities;
+  }
+
+public static void clear() {
+    currentActivities.clear();
+  }
+
+public static class CurrentActivity {
     private final String activityId;
     private final String activityName;
 
@@ -46,20 +62,5 @@ public class CurrentActivityExecutionListener implements ExecutionListener {
     public String getActivityName() {
       return activityName;
     }
-  }
-
-  public void notify(DelegateExecution execution) {
-    org.activiti.bpmn.model.Process process = ProcessDefinitionUtil.getProcess(execution.getProcessDefinitionId());
-    String activityId = execution.getCurrentActivityId();
-    FlowElement currentFlowElement = process.getFlowElement(activityId, true);
-    currentActivities.add(new CurrentActivity(execution.getCurrentActivityId(), currentFlowElement.getName()));
-  }
-
-  public static List<CurrentActivity> getCurrentActivities() {
-    return currentActivities;
-  }
-
-  public static void clear() {
-    currentActivities.clear();
   }
 }

@@ -51,9 +51,7 @@ public class HistoricIdentityLinkEntityManagerImpl extends AbstractEntityManager
   @Override
   public void deleteHistoricIdentityLinksByTaskId(String taskId) {
     List<HistoricIdentityLinkEntity> identityLinks = findHistoricIdentityLinksByTaskId(taskId);
-    for (HistoricIdentityLinkEntity identityLink : identityLinks) {
-      delete(identityLink);
-    }
+    identityLinks.forEach(identityLink -> delete(identityLink));
   }
 
   @Override
@@ -62,9 +60,7 @@ public class HistoricIdentityLinkEntityManagerImpl extends AbstractEntityManager
     List<HistoricIdentityLinkEntity> identityLinks = historicIdentityLinkDataManager
         .findHistoricIdentityLinksByProcessInstanceId(processInstanceId);
     
-    for (HistoricIdentityLinkEntity identityLink : identityLinks) {
-      delete(identityLink);
-    }
+    identityLinks.forEach(identityLink -> delete(identityLink));
 
   }
 

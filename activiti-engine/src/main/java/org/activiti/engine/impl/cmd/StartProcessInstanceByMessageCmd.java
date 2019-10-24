@@ -54,7 +54,8 @@ public class StartProcessInstanceByMessageCmd implements Command<ProcessInstance
     this.tenantId = processInstanceBuilder.getTenantId();
   }
 
-  public ProcessInstance execute(CommandContext commandContext) {
+  @Override
+public ProcessInstance execute(CommandContext commandContext) {
 
     if (messageName == null) {
       throw new ActivitiIllegalArgumentException("Cannot start process instance by message: message name is null");
@@ -63,19 +64,19 @@ public class StartProcessInstanceByMessageCmd implements Command<ProcessInstance
     MessageEventSubscriptionEntity messageEventSubscription = commandContext.getEventSubscriptionEntityManager().findMessageStartEventSubscriptionByName(messageName, tenantId);
 
     if (messageEventSubscription == null) {
-      throw new ActivitiObjectNotFoundException("Cannot start process instance by message: no subscription to message with name '" + messageName + "' found.", MessageEventSubscriptionEntity.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("Cannot start process instance by message: no subscription to message with name '").append(messageName).append("' found.").toString(), MessageEventSubscriptionEntity.class);
     }
 
     String processDefinitionId = messageEventSubscription.getConfiguration();
     if (processDefinitionId == null) {
-      throw new ActivitiException("Cannot start process instance by message: subscription to message with name '" + messageName + "' is not a message start event.");
+      throw new ActivitiException(new StringBuilder().append("Cannot start process instance by message: subscription to message with name '").append(messageName).append("' is not a message start event.").toString());
     }
 
     DeploymentManager deploymentCache = commandContext.getProcessEngineConfiguration().getDeploymentManager();
 
     ProcessDefinition processDefinition = deploymentCache.findDeployedProcessDefinitionById(processDefinitionId);
     if (processDefinition == null) {
-      throw new ActivitiObjectNotFoundException("No process definition found for id '" + processDefinitionId + "'", ProcessDefinition.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("No process definition found for id '").append(processDefinitionId).append("'").toString(), ProcessDefinition.class);
     }
 
     ProcessInstanceHelper processInstanceHelper = commandContext.getProcessEngineConfiguration().getProcessInstanceHelper();

@@ -31,7 +31,8 @@ public class GetTaskCommentsByTypeCmd extends GetTaskCommentsCmd {
     this.type = type;
   }
 
-  public List<Comment> execute(CommandContext commandContext) {
+  @Override
+public List<Comment> execute(CommandContext commandContext) {
     return commandContext.getCommentEntityManager().findCommentsByTaskIdAndType(taskId, type);
   }
 

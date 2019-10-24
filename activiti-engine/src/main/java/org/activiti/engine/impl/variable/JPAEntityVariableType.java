@@ -33,25 +33,29 @@ public class JPAEntityVariableType implements VariableType, CacheableVariable {
     mappings = new JPAEntityMappings();
   }
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return TYPE_NAME;
   }
 
-  public boolean isCachable() {
+  @Override
+public boolean isCachable() {
     return forceCacheable;
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     if (value == null) {
       return true;
     }
     return mappings.isJPAEntity(value);
   }
 
-  public void setValue(Object value, ValueFields valueFields) {
+  @Override
+public void setValue(Object value, ValueFields valueFields) {
     EntityManagerSession entityManagerSession = Context.getCommandContext().getSession(EntityManagerSession.class);
     if (entityManagerSession == null) {
-      throw new ActivitiException("Cannot set JPA variable: " + EntityManagerSession.class + " not configured");
+      throw new ActivitiException(new StringBuilder().append("Cannot set JPA variable: ").append(EntityManagerSession.class).append(" not configured").toString());
     } else {
       // Before we set the value we must flush all pending changes from
       // the entitymanager
@@ -72,7 +76,8 @@ public class JPAEntityVariableType implements VariableType, CacheableVariable {
     }
   }
 
-  public Object getValue(ValueFields valueFields) {
+  @Override
+public Object getValue(ValueFields valueFields) {
     if (valueFields.getTextValue() != null && valueFields.getTextValue2() != null) {
       return mappings.getJPAEntity(valueFields.getTextValue(), valueFields.getTextValue2());
     }
@@ -82,7 +87,8 @@ public class JPAEntityVariableType implements VariableType, CacheableVariable {
   /**
    * Force the value to be cacheable.
    */
-  public void setForceCacheable(boolean forceCachedValue) {
+  @Override
+public void setForceCacheable(boolean forceCachedValue) {
     this.forceCacheable = forceCachedValue;
   }
 

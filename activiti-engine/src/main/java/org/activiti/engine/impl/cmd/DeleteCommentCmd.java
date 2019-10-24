@@ -40,21 +40,22 @@ public class DeleteCommentCmd implements Command<Void>, Serializable {
     this.commentId = commentId;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     CommentEntityManager commentManager = commandContext.getCommentEntityManager();
 
     if (commentId != null) {
       // Delete for an individual comment
       Comment comment = commentManager.findComment(commentId);
       if (comment == null) {
-        throw new ActivitiObjectNotFoundException("Comment with id '" + commentId + "' doesn't exists.", Comment.class);
+        throw new ActivitiObjectNotFoundException(new StringBuilder().append("Comment with id '").append(commentId).append("' doesn't exists.").toString(), Comment.class);
       }
       
       commentManager.delete((CommentEntity) comment);
 
     } else {
       // Delete all comments on a task of process
-      ArrayList<Comment> comments = new ArrayList<Comment>();
+      ArrayList<Comment> comments = new ArrayList<>();
       if (processInstanceId != null) {
         comments.addAll(commentManager.findCommentsByProcessInstanceId(processInstanceId));
       }
@@ -63,9 +64,7 @@ public class DeleteCommentCmd implements Command<Void>, Serializable {
         comments.addAll(commentManager.findCommentsByTaskId(taskId));
       }
 
-      for (Comment comment : comments) {
-        commentManager.delete((CommentEntity) comment);
-      }
+      comments.forEach(comment -> commentManager.delete((CommentEntity) comment));
     }
     return null;
   }

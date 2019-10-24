@@ -33,15 +33,18 @@ public class ActivateProcessDefinitionCmd extends AbstractSetProcessDefinitionSt
     super(processDefinitionId, processDefinitionKey, includeProcessInstances, executionDate, tenantId);
   }
 
-  protected SuspensionState getProcessDefinitionSuspensionState() {
+  @Override
+protected SuspensionState getProcessDefinitionSuspensionState() {
     return SuspensionState.ACTIVE;
   }
 
-  protected String getDelayedExecutionJobHandlerType() {
+  @Override
+protected String getDelayedExecutionJobHandlerType() {
     return TimerActivateProcessDefinitionHandler.TYPE;
   }
 
-  protected AbstractSetProcessInstanceStateCmd getProcessInstanceChangeStateCmd(ProcessInstance processInstance) {
+  @Override
+protected AbstractSetProcessInstanceStateCmd getProcessInstanceChangeStateCmd(ProcessInstance processInstance) {
     return new ActivateProcessInstanceCmd(processInstance.getId());
   }
 }

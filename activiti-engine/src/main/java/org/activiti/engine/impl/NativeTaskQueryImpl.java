@@ -38,11 +38,13 @@ public class NativeTaskQueryImpl extends AbstractNativeQuery<NativeTaskQuery, Ta
 
   // results ////////////////////////////////////////////////////////////////
 
-  public List<Task> executeList(CommandContext commandContext, Map<String, Object> parameterMap, int firstResult, int maxResults) {
+  @Override
+public List<Task> executeList(CommandContext commandContext, Map<String, Object> parameterMap, int firstResult, int maxResults) {
     return commandContext.getTaskEntityManager().findTasksByNativeQuery(parameterMap, firstResult, maxResults);
   }
 
-  public long executeCount(CommandContext commandContext, Map<String, Object> parameterMap) {
+  @Override
+public long executeCount(CommandContext commandContext, Map<String, Object> parameterMap) {
     return commandContext.getTaskEntityManager().findTaskCountByNativeQuery(parameterMap);
   }
 

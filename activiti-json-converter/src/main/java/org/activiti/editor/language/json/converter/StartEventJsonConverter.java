@@ -56,7 +56,8 @@ public class StartEventJsonConverter extends BaseBpmnJsonConverter implements Fo
     convertersToJsonMap.put(StartEvent.class, StartEventJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     Event event = (Event) baseElement;
     if (event.getEventDefinitions().size() > 0) {
       EventDefinition eventDefinition = event.getEventDefinitions().get(0);
@@ -73,7 +74,8 @@ public class StartEventJsonConverter extends BaseBpmnJsonConverter implements Fo
     return STENCIL_EVENT_START_NONE;
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
     StartEvent startEvent = (StartEvent) baseElement;
     if (StringUtils.isNotEmpty(startEvent.getInitiator())) {
       propertiesNode.put(PROPERTY_NONE_STARTEVENT_INITIATOR, startEvent.getInitiator());
@@ -97,7 +99,8 @@ public class StartEventJsonConverter extends BaseBpmnJsonConverter implements Fo
     addEventProperties(startEvent, propertiesNode);
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     StartEvent startEvent = new StartEvent();
     startEvent.setInitiator(getPropertyValueAsString(PROPERTY_NONE_STARTEVENT_INITIATOR, elementNode));
     String stencilId = BpmnJsonConverterUtil.getStencilId(elementNode);
@@ -107,12 +110,10 @@ public class StartEventJsonConverter extends BaseBpmnJsonConverter implements Fo
         startEvent.setFormKey(formKey);
       } else {
         JsonNode formReferenceNode = getProperty(PROPERTY_FORM_REFERENCE, elementNode);
-        if (formReferenceNode != null && formReferenceNode.get("id") != null) {
-
-          if (formMap != null && formMap.containsKey(formReferenceNode.get("id").asText())) {
+        boolean condition = formReferenceNode != null && formReferenceNode.get("id") != null && formMap != null && formMap.containsKey(formReferenceNode.get("id").asText());
+		if (condition) {
             startEvent.setFormKey(formMap.get(formReferenceNode.get("id").asText()));
           }
-        }
       }
       convertJsonToFormProperties(elementNode, startEvent);
 

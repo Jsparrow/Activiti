@@ -34,11 +34,13 @@ import java.util.List;
  */
 public class CompensationEventHandler implements EventHandler {
 
-  public String getEventHandlerType() {
+  @Override
+public String getEventHandlerType() {
     return CompensateEventSubscriptionEntity.EVENT_TYPE;
   }
 
-  public void handleEvent(EventSubscriptionEntity eventSubscription, Object payload, CommandContext commandContext) {
+  @Override
+public void handleEvent(EventSubscriptionEntity eventSubscription, Object payload, CommandContext commandContext) {
 
     String configuration = eventSubscription.getConfiguration();
     if (configuration == null) {
@@ -50,7 +52,7 @@ public class CompensationEventHandler implements EventHandler {
     String processDefinitionId = compensatingExecution.getProcessDefinitionId();
     Process process = ProcessDefinitionUtil.getProcess(processDefinitionId);
     if (process == null) {
-      throw new ActivitiException("Cannot start process instance. Process model (id = " + processDefinitionId + ") could not be found");
+      throw new ActivitiException(new StringBuilder().append("Cannot start process instance. Process model (id = ").append(processDefinitionId).append(") could not be found").toString());
     }
 
     FlowElement flowElement = process.getFlowElement(eventSubscription.getActivityId(), true);

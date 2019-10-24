@@ -92,11 +92,10 @@ public class DynamicUserTaskTest extends PluggableActivitiTestCase {
     List<IdentityLink> taskIdentityLinks = taskService.getIdentityLinksForTask(task.getId());
     boolean candidateUserTestFound = false;
     for (IdentityLink identityLink : taskIdentityLinks) {
-      if (IdentityLinkType.CANDIDATE.equals(identityLink.getType()) && identityLink.getUserId() != null && identityLink.getGroupId() == null) {
-        if ("test".equals(identityLink.getUserId())) {
-          candidateUserTestFound = true;
-        }
-      }
+      boolean condition = IdentityLinkType.CANDIDATE.equals(identityLink.getType()) && identityLink.getUserId() != null && identityLink.getGroupId() == null && "test".equals(identityLink.getUserId());
+	if (condition) {
+	  candidateUserTestFound = true;
+	}
     }
     assertFalse(candidateUserTestFound);
     taskService.complete(task.getId());
@@ -113,11 +112,10 @@ public class DynamicUserTaskTest extends PluggableActivitiTestCase {
     taskIdentityLinks = taskService.getIdentityLinksForTask(task.getId());
     candidateUserTestFound = false;
     for (IdentityLink identityLink : taskIdentityLinks) {
-      if (IdentityLinkType.CANDIDATE.equals(identityLink.getType()) && identityLink.getUserId() != null && identityLink.getGroupId() == null) {
-        if ("test".equals(identityLink.getUserId())) {
-          candidateUserTestFound = true;
-        }
-      }
+      boolean condition1 = IdentityLinkType.CANDIDATE.equals(identityLink.getType()) && identityLink.getUserId() != null && identityLink.getGroupId() == null && "test".equals(identityLink.getUserId());
+	if (condition1) {
+	  candidateUserTestFound = true;
+	}
     }
     assertTrue(candidateUserTestFound);
     taskService.complete(task.getId());
@@ -158,11 +156,10 @@ public class DynamicUserTaskTest extends PluggableActivitiTestCase {
     List<IdentityLink> taskIdentityLinks = taskService.getIdentityLinksForTask(task.getId());
     boolean candidateGroupTestFound = false;
     for (IdentityLink identityLink : taskIdentityLinks) {
-      if (IdentityLinkType.CANDIDATE.equals(identityLink.getType()) && identityLink.getGroupId() != null && identityLink.getUserId() == null) {
-        if ("test".equals(identityLink.getGroupId())) {
-          candidateGroupTestFound = true;
-        }
-      }
+      boolean condition = IdentityLinkType.CANDIDATE.equals(identityLink.getType()) && identityLink.getGroupId() != null && identityLink.getUserId() == null && "test".equals(identityLink.getGroupId());
+	if (condition) {
+	  candidateGroupTestFound = true;
+	}
     }
     assertFalse(candidateGroupTestFound);
     taskService.complete(task.getId());
@@ -179,11 +176,10 @@ public class DynamicUserTaskTest extends PluggableActivitiTestCase {
     taskIdentityLinks = taskService.getIdentityLinksForTask(task.getId());
     candidateGroupTestFound = false;
     for (IdentityLink identityLink : taskIdentityLinks) {
-      if (IdentityLinkType.CANDIDATE.equals(identityLink.getType()) && identityLink.getGroupId() != null && identityLink.getUserId() == null) {
-        if ("test".equals(identityLink.getGroupId())) {
-          candidateGroupTestFound = true;
-        }
-      }
+      boolean condition1 = IdentityLinkType.CANDIDATE.equals(identityLink.getType()) && identityLink.getGroupId() != null && identityLink.getUserId() == null && "test".equals(identityLink.getGroupId());
+	if (condition1) {
+	  candidateGroupTestFound = true;
+	}
     }
     assertTrue(candidateGroupTestFound);
     taskService.complete(task.getId());
@@ -388,7 +384,7 @@ public class DynamicUserTaskTest extends PluggableActivitiTestCase {
   @Deployment
   public void testChangeFormKeyWithExpression() {
     // first test without changing the form key
-    Map<String, Object> varMap = new HashMap<String, Object>();
+    Map<String, Object> varMap = new HashMap<>();
     varMap.put("start", "test");
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("dynamicUserTask", varMap);
     String processDefinitionId = processInstance.getProcessDefinitionId();
@@ -403,7 +399,7 @@ public class DynamicUserTaskTest extends PluggableActivitiTestCase {
     ObjectNode infoNode = dynamicBpmnService.changeUserTaskFormKey("task1", "${anotherKey}");
     dynamicBpmnService.saveProcessDefinitionInfo(processDefinitionId, infoNode);
     
-    varMap = new HashMap<String, Object>();
+    varMap = new HashMap<>();
     varMap.put("anotherKey", "test2");
     processInstance = runtimeService.startProcessInstanceByKey("dynamicUserTask", varMap);
     

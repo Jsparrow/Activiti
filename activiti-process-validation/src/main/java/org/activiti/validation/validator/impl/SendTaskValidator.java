@@ -32,7 +32,7 @@ public class SendTaskValidator extends ExternalInvocationTaskValidator {
   @Override
   protected void executeValidation(BpmnModel bpmnModel, Process process, List<ValidationError> errors) {
     List<SendTask> sendTasks = process.findFlowElementsOfType(SendTask.class);
-    for (SendTask sendTask : sendTasks) {
+    sendTasks.forEach(sendTask -> {
 
       // Verify implementation
       if (StringUtils.isEmpty(sendTask.getType()) && !ImplementationType.IMPLEMENTATION_TYPE_WEBSERVICE.equalsIgnoreCase(sendTask.getImplementationType())) {
@@ -42,11 +42,11 @@ public class SendTaskValidator extends ExternalInvocationTaskValidator {
       // Verify type
       if (StringUtils.isNotEmpty(sendTask.getType())) {
 
-        if (!sendTask.getType().equalsIgnoreCase("mail") && !sendTask.getType().equalsIgnoreCase("mule") && !sendTask.getType().equalsIgnoreCase("camel")) {
+        if (!"mail".equalsIgnoreCase(sendTask.getType()) && !"mule".equalsIgnoreCase(sendTask.getType()) && !"camel".equalsIgnoreCase(sendTask.getType())) {
           addError(errors, Problems.SEND_TASK_INVALID_TYPE, process, sendTask, "Invalid or unsupported type for send task");
         }
 
-        if (sendTask.getType().equalsIgnoreCase("mail")) {
+        if ("mail".equalsIgnoreCase(sendTask.getType())) {
           validateFieldDeclarationsForEmail(process, sendTask, sendTask.getFieldExtensions(), errors);
         }
 
@@ -54,14 +54,15 @@ public class SendTaskValidator extends ExternalInvocationTaskValidator {
 
       // Web service
       verifyWebservice(bpmnModel, process, sendTask, errors);
-    }
+    });
   }
 
   protected void verifyWebservice(BpmnModel bpmnModel, Process process, SendTask sendTask, List<ValidationError> errors) {
-    if (ImplementationType.IMPLEMENTATION_TYPE_WEBSERVICE.equalsIgnoreCase(sendTask.getImplementationType()) && StringUtils.isNotEmpty(sendTask.getOperationRef())) {
-
-      boolean operationFound = false;
-      if (bpmnModel.getInterfaces() != null && !bpmnModel.getInterfaces().isEmpty()) {
+    if (!(ImplementationType.IMPLEMENTATION_TYPE_WEBSERVICE.equalsIgnoreCase(sendTask.getImplementationType()) && StringUtils.isNotEmpty(sendTask.getOperationRef()))) {
+		return;
+	}
+	boolean operationFound = false;
+	if (bpmnModel.getInterfaces() != null && !bpmnModel.getInterfaces().isEmpty()) {
         for (Interface bpmnInterface : bpmnModel.getInterfaces()) {
           if (bpmnInterface.getOperations() != null && !bpmnInterface.getOperations().isEmpty()) {
             for (Operation operation : bpmnInterface.getOperations()) {
@@ -72,12 +73,9 @@ public class SendTaskValidator extends ExternalInvocationTaskValidator {
           }
         }
       }
-
-      if (!operationFound) {
+	if (!operationFound) {
         addError(errors, Problems.SEND_TASK_WEBSERVICE_INVALID_OPERATION_REF, process, sendTask, "Invalid operation reference for send task");
       }
-
-    }
   }
 
 }

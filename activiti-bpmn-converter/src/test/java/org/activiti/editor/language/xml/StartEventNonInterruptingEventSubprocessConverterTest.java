@@ -42,7 +42,8 @@ public class StartEventNonInterruptingEventSubprocessConverterTest extends Abstr
 
     }
 
-    protected String getResource() {
+    @Override
+	protected String getResource() {
         return "StartEventNonInterruptingEventSubprocessConverterTest.bpmn";
     }
 }

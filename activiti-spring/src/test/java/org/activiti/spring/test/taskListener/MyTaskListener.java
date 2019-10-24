@@ -21,12 +21,13 @@ import org.activiti.engine.delegate.TaskListener;
  */
 public class MyTaskListener implements TaskListener {
 
-  public void notify(DelegateTask delegateTask) {
+  @Override
+public void notify(DelegateTask delegateTask) {
     delegateTask.setVariable("calledThroughNotify", delegateTask.getName() + "-notify");
   }
 
   public void calledInExpression(DelegateTask task, String eventName) {
-    task.setVariable("calledInExpression", task.getName() + "-" + eventName);
+    task.setVariable("calledInExpression", new StringBuilder().append(task.getName()).append("-").append(eventName).toString());
   }
 
 }

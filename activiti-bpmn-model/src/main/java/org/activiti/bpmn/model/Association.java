@@ -42,7 +42,8 @@ public class Association extends Artifact {
     this.targetRef = targetRef;
   }
 
-  public Association clone() {
+  @Override
+public Association clone() {
     Association clone = new Association();
     clone.setValues(this);
     return clone;

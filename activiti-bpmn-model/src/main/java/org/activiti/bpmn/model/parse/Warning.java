@@ -23,7 +23,9 @@ public class Warning {
     column = element.getXmlColumnNumber();
   }
 
-  public String toString() {
-    return warningMessage + (resource != null ? " | " + resource : "") + " | line " + line + " | column " + column;
+  @Override
+public String toString() {
+    return new StringBuilder().append(warningMessage).append(resource != null ? " | " + resource : "").append(" | line ").append(line).append(" | column ")
+			.append(column).toString();
   }
 }

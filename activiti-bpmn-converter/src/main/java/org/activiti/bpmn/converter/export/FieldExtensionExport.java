@@ -27,29 +27,27 @@ public class FieldExtensionExport implements BpmnXMLConstants {
 
     for (FieldExtension fieldExtension : fieldExtensionList) {
 
-      if (StringUtils.isNotEmpty(fieldExtension.getFieldName())) {
+      boolean condition = StringUtils.isNotEmpty(fieldExtension.getFieldName()) && (StringUtils.isNotEmpty(fieldExtension.getStringValue()) || StringUtils.isNotEmpty(fieldExtension.getExpression()));
+	if (condition) {
 
-        if (StringUtils.isNotEmpty(fieldExtension.getStringValue()) || StringUtils.isNotEmpty(fieldExtension.getExpression())) {
+	  if (!didWriteExtensionStartElement) {
+	    xtw.writeStartElement(ELEMENT_EXTENSIONS);
+	    didWriteExtensionStartElement = true;
+	  }
 
-          if (!didWriteExtensionStartElement) {
-            xtw.writeStartElement(ELEMENT_EXTENSIONS);
-            didWriteExtensionStartElement = true;
-          }
+	  xtw.writeStartElement(ACTIVITI_EXTENSIONS_PREFIX, ELEMENT_FIELD, ACTIVITI_EXTENSIONS_NAMESPACE);
+	  BpmnXMLUtil.writeDefaultAttribute(ATTRIBUTE_FIELD_NAME, fieldExtension.getFieldName(), xtw);
 
-          xtw.writeStartElement(ACTIVITI_EXTENSIONS_PREFIX, ELEMENT_FIELD, ACTIVITI_EXTENSIONS_NAMESPACE);
-          BpmnXMLUtil.writeDefaultAttribute(ATTRIBUTE_FIELD_NAME, fieldExtension.getFieldName(), xtw);
-
-          if (StringUtils.isNotEmpty(fieldExtension.getStringValue())) {
-            xtw.writeStartElement(ACTIVITI_EXTENSIONS_PREFIX, ELEMENT_FIELD_STRING, ACTIVITI_EXTENSIONS_NAMESPACE);
-            xtw.writeCData(fieldExtension.getStringValue());
-          } else {
-            xtw.writeStartElement(ACTIVITI_EXTENSIONS_PREFIX, ATTRIBUTE_FIELD_EXPRESSION, ACTIVITI_EXTENSIONS_NAMESPACE);
-            xtw.writeCData(fieldExtension.getExpression());
-          }
-          xtw.writeEndElement();
-          xtw.writeEndElement();
-        }
-      }
+	  if (StringUtils.isNotEmpty(fieldExtension.getStringValue())) {
+	    xtw.writeStartElement(ACTIVITI_EXTENSIONS_PREFIX, ELEMENT_FIELD_STRING, ACTIVITI_EXTENSIONS_NAMESPACE);
+	    xtw.writeCData(fieldExtension.getStringValue());
+	  } else {
+	    xtw.writeStartElement(ACTIVITI_EXTENSIONS_PREFIX, ATTRIBUTE_FIELD_EXPRESSION, ACTIVITI_EXTENSIONS_NAMESPACE);
+	    xtw.writeCData(fieldExtension.getExpression());
+	  }
+	  xtw.writeEndElement();
+	  xtw.writeEndElement();
+	}
     }
     return didWriteExtensionStartElement;
   }

@@ -29,12 +29,7 @@ public abstract class AbstractConverterTest {
 
   protected BpmnModel readXmlFile() throws Exception {
     final InputStream jsonStream = this.getClass().getClassLoader().getResourceAsStream(getResource());
-    return new BpmnXMLConverter().convertToBpmnModel(new InputStreamProvider() {
-      @Override
-      public InputStream getInputStream() {
-        return jsonStream;
-      }
-    }, false, false);
+    return new BpmnXMLConverter().convertToBpmnModel(() -> jsonStream, false, false);
   }
 
   protected BpmnModel convertToJsonAndBack(BpmnModel bpmnModel) {

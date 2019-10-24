@@ -10,7 +10,7 @@ import org.activiti.engine.repository.ProcessDefinitionQuery;
 
 public class ProcessDefinitionQueryByLatestTest extends PluggableActivitiTestCase {
 
-	private static String XML_FILE_PATH = "org/activiti/engine/test/repository/latest/";
+	private static String xmlFilePath = "org/activiti/engine/test/repository/latest/";
 	
 	  @Override
 	  protected void setUp() throws Exception {
@@ -23,23 +23,18 @@ public class ProcessDefinitionQueryByLatestTest extends PluggableActivitiTestCas
 	}
 	
 	protected List<String> deploy(List<String> xmlFileNameList) throws Exception {
-		List<String> deploymentIdList = new ArrayList<String>();
-		for(String xmlFileName : xmlFileNameList){
-		    String deploymentId = repositoryService
-		  	      .createDeployment()
-		  	      .name(XML_FILE_PATH + xmlFileName)
-		  	      .addClasspathResource(XML_FILE_PATH + xmlFileName)
-		  	      .deploy()
-		  	      .getId();
-		    deploymentIdList.add(deploymentId);
-		}
+		List<String> deploymentIdList = new ArrayList<>();
+		xmlFileNameList.stream().map(xmlFileName -> repositoryService
+		      .createDeployment()
+		      .name(xmlFilePath + xmlFileName)
+		      .addClasspathResource(xmlFilePath + xmlFileName)
+		      .deploy()
+		      .getId()).forEach(deploymentIdList::add);
 		return deploymentIdList;
 	}
 
 	private void unDeploy(List<String> deploymentIdList) throws Exception {
-		for(String deploymentId : deploymentIdList){
-			repositoryService.deleteDeployment(deploymentId, true);
-		}
+		deploymentIdList.forEach(deploymentId -> repositoryService.deleteDeployment(deploymentId, true));
 	}
 
 	public void testQueryByLatestAndId() throws Exception {
@@ -48,11 +43,8 @@ public class ProcessDefinitionQueryByLatestTest extends PluggableActivitiTestCas
 				"name_testProcess1_two.bpmn20.xml", "name_testProcess2_one.bpmn20.xml");
 		List<String> deploymentIdList = deploy(xmlFileNameList);
 		
-		List<String> processDefinitionIdList = new ArrayList<String>();
-		for(String deploymentId : deploymentIdList){
-			String processDefinitionId = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentId).list().get(0).getId();
-			processDefinitionIdList.add(processDefinitionId);
-		}
+		List<String> processDefinitionIdList = new ArrayList<>();
+		deploymentIdList.stream().map(deploymentId -> repositoryService.createProcessDefinitionQuery().deploymentId(deploymentId).list().get(0).getId()).forEach(processDefinitionIdList::add);
 
 		ProcessDefinitionQuery idQuery1 = repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefinitionIdList.get(0)).latestVersion();
 		List<ProcessDefinition>  processDefinitions = idQuery1.list();

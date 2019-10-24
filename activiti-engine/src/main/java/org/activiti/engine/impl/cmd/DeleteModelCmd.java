@@ -30,7 +30,8 @@ public class DeleteModelCmd implements Command<Void>, Serializable {
     this.modelId = modelId;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     if (modelId == null) {
       throw new ActivitiIllegalArgumentException("modelId is null");
     }

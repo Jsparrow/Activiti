@@ -32,6 +32,6 @@ import org.activiti.engine.impl.delegate.invocation.DelegateInvocation;
 @Internal
 public interface DelegateInterceptor {
 
-  public void handleInvocation(DelegateInvocation invocation);
+  void handleInvocation(DelegateInvocation invocation);
 
 }

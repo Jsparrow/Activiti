@@ -37,11 +37,13 @@ public class ActivitiEventDispatcherImpl implements ActivitiEventDispatcher {
     eventSupport = new ActivitiEventSupport();
   }
 
-  public void setEnabled(boolean enabled) {
+  @Override
+public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
 
-  public boolean isEnabled() {
+  @Override
+public boolean isEnabled() {
     return enabled;
   }
 
@@ -76,12 +78,13 @@ public class ActivitiEventDispatcherImpl implements ActivitiEventDispatcher {
     
     // Try getting hold of the Process definition, based on the process definition key, if a context is active
     CommandContext commandContext = Context.getCommandContext();
-    if (commandContext != null) {
-      BpmnModel bpmnModel = extractBpmnModelFromEvent(event);
-      if (bpmnModel != null) {
+    if (commandContext == null) {
+		return;
+	}
+	BpmnModel bpmnModel = extractBpmnModelFromEvent(event);
+	if (bpmnModel != null) {
         ((ActivitiEventSupport) bpmnModel.getEventSupport()).dispatchEvent(event);
       }
-    }
     
   }
 

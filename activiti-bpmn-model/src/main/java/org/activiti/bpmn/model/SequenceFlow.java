@@ -37,7 +37,7 @@ public class SequenceFlow extends FlowElement {
    * 
    * Added during parsing of a process definition.
    */
-  protected List<Integer> waypoints = new ArrayList<Integer>();
+  protected List<Integer> waypoints = new ArrayList<>();
 
   public SequenceFlow() {
 
@@ -104,11 +104,13 @@ public class SequenceFlow extends FlowElement {
     this.waypoints = waypoints;
   }
 
-  public String toString() {
-    return sourceRef + " --> " + targetRef;
+  @Override
+public String toString() {
+    return new StringBuilder().append(sourceRef).append(" --> ").append(targetRef).toString();
   }
 
-  public SequenceFlow clone() {
+  @Override
+public SequenceFlow clone() {
     SequenceFlow clone = new SequenceFlow();
     clone.setValues(this);
     return clone;

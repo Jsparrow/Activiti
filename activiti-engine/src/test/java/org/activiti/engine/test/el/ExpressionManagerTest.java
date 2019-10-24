@@ -38,7 +38,7 @@ public class ExpressionManagerTest extends PluggableActivitiTestCase {
     // contains a method with 2 params. When the process completes without
     // exception,
     // test passed.
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("aString", "abcdefgh");
     runtimeService.startProcessInstanceByKey("methodExpressionProcess", vars);
 
@@ -47,7 +47,7 @@ public class ExpressionManagerTest extends PluggableActivitiTestCase {
 
   @Deployment
   public void testExecutionAvailable() {
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
 
     vars.put("myVar", new ExecutionTestVariable());
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("testExecutionAvailableProcess", vars);

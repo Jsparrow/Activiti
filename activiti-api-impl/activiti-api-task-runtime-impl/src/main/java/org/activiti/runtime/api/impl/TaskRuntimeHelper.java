@@ -173,7 +173,8 @@ public class TaskRuntimeHelper {
             org.activiti.engine.task.Task task = taskService.createTaskQuery().taskCandidateOrAssigned(authenticatedUserId,
                     userGroups).taskId(taskId).singleResult();
             if (task == null) {
-                throw new NotFoundException("Unable to find task for the given id: " + taskId + " for user: " + authenticatedUserId + " (with groups: " + userGroups + " & with roles: " + userRoles + ")");
+                throw new NotFoundException(new StringBuilder().append("Unable to find task for the given id: ").append(taskId).append(" for user: ").append(authenticatedUserId).append(" (with groups: ").append(userGroups)
+						.append(" & with roles: ").append(userRoles).append(")").toString());
             }
 
             return task;

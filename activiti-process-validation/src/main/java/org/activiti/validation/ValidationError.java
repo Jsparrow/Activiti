@@ -120,7 +120,7 @@ public class ValidationError {
   @Override
   public String toString() {
     StringBuilder strb = new StringBuilder();
-    strb.append("[Validation set: '" + validatorSetName + "' | Problem: '" + problem + "'] : ");
+    strb.append(new StringBuilder().append("[Validation set: '").append(validatorSetName).append("' | Problem: '").append(problem).append("'] : ").toString());
     strb.append(defaultDescription);
     strb.append(" - [Extra info : ");
     boolean extraInfoAlreadyPresent = false;
@@ -132,26 +132,26 @@ public class ValidationError {
       if (extraInfoAlreadyPresent) {
         strb.append(" | ");
       }
-      strb.append("processDefinitionName = " + processDefinitionName + " | ");
+      strb.append(new StringBuilder().append("processDefinitionName = ").append(processDefinitionName).append(" | ").toString());
       extraInfoAlreadyPresent = true;
     }
     if (activityId != null) {
       if (extraInfoAlreadyPresent) {
         strb.append(" | ");
       }
-      strb.append("id = " + activityId + " | ");
+      strb.append(new StringBuilder().append("id = ").append(activityId).append(" | ").toString());
       extraInfoAlreadyPresent = true;
     }
     if (activityName != null) {
       if (extraInfoAlreadyPresent) {
         strb.append(" | ");
       }
-      strb.append("activityName = " + activityName + " | ");
+      strb.append(new StringBuilder().append("activityName = ").append(activityName).append(" | ").toString());
       extraInfoAlreadyPresent = true;
     }
     strb.append("]");
     if (xmlLineNumber > 0 && xmlColumnNumber > 0) {
-      strb.append(" ( line: " + xmlLineNumber + ", column: " + xmlColumnNumber + ")");
+      strb.append(new StringBuilder().append(" ( line: ").append(xmlLineNumber).append(", column: ").append(xmlColumnNumber).append(")").toString());
     }
     return strb.toString();
   }

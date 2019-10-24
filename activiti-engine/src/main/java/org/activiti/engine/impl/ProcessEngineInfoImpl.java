@@ -33,15 +33,18 @@ public class ProcessEngineInfoImpl implements Serializable, ProcessEngineInfo {
     this.exception = exception;
   }
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
 
-  public String getResourceUrl() {
+  @Override
+public String getResourceUrl() {
     return resourceUrl;
   }
 
-  public String getException() {
+  @Override
+public String getException() {
     return exception;
   }
 }

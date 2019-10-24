@@ -45,15 +45,15 @@ public class SetProcessInstanceNameCmd implements Command<Void>, Serializable {
     ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(processInstanceId);
 
     if (execution == null) {
-      throw new ActivitiObjectNotFoundException("process instance " + processInstanceId + " doesn't exist", ProcessInstance.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("process instance ").append(processInstanceId).append(" doesn't exist").toString(), ProcessInstance.class);
     }
 
     if (!execution.isProcessInstanceType()) {
-      throw new ActivitiObjectNotFoundException("process instance " + processInstanceId + " doesn't exist, the given ID references an execution, though", ProcessInstance.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("process instance ").append(processInstanceId).append(" doesn't exist, the given ID references an execution, though").toString(), ProcessInstance.class);
     }
 
     if (execution.isSuspended()) {
-      throw new ActivitiException("process instance " + processInstanceId + " is suspended, cannot set name");
+      throw new ActivitiException(new StringBuilder().append("process instance ").append(processInstanceId).append(" is suspended, cannot set name").toString());
     }
 
     // Actually set the name

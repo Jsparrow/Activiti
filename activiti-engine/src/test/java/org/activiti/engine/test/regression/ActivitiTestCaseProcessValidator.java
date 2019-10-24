@@ -22,9 +22,7 @@ public class ActivitiTestCaseProcessValidator implements ProcessValidator {
   public List<ValidationError> validate(BpmnModel bpmnModel) {
     CustomParseValidator customParseValidator = new CustomParseValidator();
 
-    for (Process process : bpmnModel.getProcesses()) {
-      customParseValidator.executeParse(bpmnModel, process);
-    }
+    bpmnModel.getProcesses().forEach(process -> customParseValidator.executeParse(bpmnModel, process));
     return bpmnModel.getErrors().values().stream()
            .map(bpmnError -> {
              ValidationError error = new ValidationError();
@@ -53,7 +51,7 @@ public class ActivitiTestCaseProcessValidator implements ProcessValidator {
 
     void validateAsyncAttribute(ServiceTask serviceTask, BpmnModel bpmnModel, FlowElement flowElement) {
       if (!serviceTask.isAsynchronous()) {
-        bpmnModel.addError("Please set value of 'activiti:async'" + "attribute as true for task:" + serviceTask.getName(),
+        bpmnModel.addError(new StringBuilder().append("Please set value of 'activiti:async'").append("attribute as true for task:").append(serviceTask.getName()).toString(),
                            "error-" + serviceTask.getName(),
                            flowElement.getId());
       }

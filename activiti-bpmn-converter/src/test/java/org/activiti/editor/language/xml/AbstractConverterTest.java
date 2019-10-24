@@ -9,10 +9,14 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractConverterTest {
 
-  protected BpmnModel readXMLFile() throws Exception {
+  private static final Logger logger = LoggerFactory.getLogger(AbstractConverterTest.class);
+
+protected BpmnModel readXMLFile() throws Exception {
     InputStream xmlStream = this.getClass().getClassLoader().getResourceAsStream(getResource());
     XMLInputFactory xif = XMLInputFactory.newInstance();
     InputStreamReader in = new InputStreamReader(xmlStream, "UTF-8");
@@ -22,7 +26,7 @@ public abstract class AbstractConverterTest {
 
   protected BpmnModel exportAndReadXMLFile(BpmnModel bpmnModel) throws Exception {
     byte[] xml = new BpmnXMLConverter().convertToXML(bpmnModel);
-    System.out.println("xml " + new String(xml, "UTF-8"));
+    logger.info("xml " + new String(xml, "UTF-8"));
     XMLInputFactory xif = XMLInputFactory.newInstance();
     InputStreamReader in = new InputStreamReader(new ByteArrayInputStream(xml), "UTF-8");
     XMLStreamReader xtr = xif.createXMLStreamReader(in);

@@ -37,7 +37,7 @@ public class DeploymentCacheLimitTest extends ResourceActivitiTestCase {
 
     String processDefinitionTemplate = DeploymentCacheTestUtil.readTemplateFile("/org/activiti/standalone/deploy/deploymentCacheTest.bpmn20.xml");
     for (int i = 1; i <= 5; i++) {
-      repositoryService.createDeployment().addString("Process " + i + ".bpmn20.xml", MessageFormat.format(processDefinitionTemplate, i)).deploy();
+      repositoryService.createDeployment().addString(new StringBuilder().append("Process ").append(i).append(".bpmn20.xml").toString(), MessageFormat.format(processDefinitionTemplate, i)).deploy();
 
       if (i < processDefinitionCacheLimit) {
         assertEquals(i, processDefinitionCache.size());
@@ -47,9 +47,7 @@ public class DeploymentCacheLimitTest extends ResourceActivitiTestCase {
     }
 
     // Cleanup
-    for (Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+	repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
   }
 
 }

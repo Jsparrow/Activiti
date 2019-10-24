@@ -24,7 +24,8 @@ public class JndiEmailTest extends SpringActivitiTestCase {
 
   private static Logger logger = LoggerFactory.getLogger(JndiEmailTest.class);
 
-  @BeforeClass
+  @Override
+@BeforeClass
   public void setUp() {
     Properties props = new Properties();
     props.put("mail.transport.protocol", "smtp");
@@ -49,7 +50,7 @@ public class JndiEmailTest extends SpringActivitiTestCase {
 
   @Deployment(resources = {"org/activiti/spring/test/email/EmailTaskUsingJndi.bpmn20.xml"})
   public void testEmailUsingJndi() {
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("EmailJndiProcess", variables);
     assertEquals(0, runtimeService.createProcessInstanceQuery().processInstanceId(processInstance.getId()).count());
   }

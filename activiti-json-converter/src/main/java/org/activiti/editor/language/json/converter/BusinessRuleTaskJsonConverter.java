@@ -40,11 +40,13 @@ public class BusinessRuleTaskJsonConverter extends BaseBpmnJsonConverter {
     convertersToJsonMap.put(BusinessRuleTask.class, BusinessRuleTaskJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     return STENCIL_TASK_BUSINESS_RULE;
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
     BusinessRuleTask ruleTask = (BusinessRuleTask) baseElement;
     propertiesNode.put(PROPERTY_RULETASK_CLASS, ruleTask.getClassName());
     propertiesNode.put(PROPERTY_RULETASK_VARIABLES_INPUT, convertListToCommaSeparatedString(ruleTask.getInputVariables()));
@@ -55,7 +57,8 @@ public class BusinessRuleTaskJsonConverter extends BaseBpmnJsonConverter {
     }
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     BusinessRuleTask task = new BusinessRuleTask();
     task.setClassName(getPropertyValueAsString(PROPERTY_RULETASK_CLASS, elementNode));
     task.setInputVariables(getPropertyValueAsList(PROPERTY_RULETASK_VARIABLES_INPUT, elementNode));

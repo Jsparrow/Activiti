@@ -31,11 +31,13 @@ public class TriggerTimerEventJobHandler implements JobHandler {
 
   public static final String TYPE = "trigger-timer";
 
-  public String getType() {
+  @Override
+public String getType() {
     return TYPE;
   }
 
-  public void execute(JobEntity job, String configuration, ExecutionEntity execution, CommandContext commandContext) {
+  @Override
+public void execute(JobEntity job, String configuration, ExecutionEntity execution, CommandContext commandContext) {
 
     Context.getAgenda().planTriggerExecutionOperation(execution);
 
@@ -43,24 +45,23 @@ public class TriggerTimerEventJobHandler implements JobHandler {
       commandContext.getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.TIMER_FIRED, job));
     }
 
-    if (execution.getCurrentFlowElement() instanceof BoundaryEvent) {
-      List<String> processedElements = new ArrayList<String>();
-      dispatchExecutionTimeOut(job, execution, processedElements, commandContext);
-    }
+    if (!(execution.getCurrentFlowElement() instanceof BoundaryEvent)) {
+		return;
+	}
+	List<String> processedElements = new ArrayList<>();
+	dispatchExecutionTimeOut(job, execution, processedElements, commandContext);
   }
 
   protected void dispatchExecutionTimeOut(JobEntity timerEntity, ExecutionEntity execution, List<String> processedElements, CommandContext commandContext) {
     FlowElement currentElement = execution.getCurrentFlowElement();
     if (currentElement instanceof BoundaryEvent) {
       BoundaryEvent boundaryEvent = (BoundaryEvent) execution.getCurrentFlowElement();
-      if (boundaryEvent.isCancelActivity() && boundaryEvent.getAttachedToRef() != null) {
-
-        if (!processedElements.contains(boundaryEvent.getId())) {
-          processedElements.add(boundaryEvent.getId());
-          ExecutionEntity parentExecution = execution.getParent();
-          dispatchExecutionTimeOut(timerEntity, parentExecution, processedElements, commandContext);
-        }
-      }
+      boolean condition = boundaryEvent.isCancelActivity() && boundaryEvent.getAttachedToRef() != null && !processedElements.contains(boundaryEvent.getId());
+	if (condition) {
+	  processedElements.add(boundaryEvent.getId());
+	  ExecutionEntity parentExecution = execution.getParent();
+	  dispatchExecutionTimeOut(timerEntity, parentExecution, processedElements, commandContext);
+	}
 
     } else {
 
@@ -78,22 +79,14 @@ public class TriggerTimerEventJobHandler implements JobHandler {
 
       // subprocesses
       if (execution.getCurrentFlowElement() instanceof SubProcess) {
-        for (ExecutionEntity subExecution : execution.getExecutions()) {
-          if (!processedElements.contains(subExecution.getCurrentActivityId())) {
-            dispatchExecutionTimeOut(timerEntity, subExecution, processedElements, commandContext);
-          }
-        }
+        execution.getExecutions().stream().filter(subExecution -> !processedElements.contains(subExecution.getCurrentActivityId())).forEach(subExecution -> dispatchExecutionTimeOut(timerEntity, subExecution, processedElements, commandContext));
 
       // call activities
       } else if (execution.getCurrentFlowElement() instanceof CallActivity) {
         ExecutionEntity subProcessInstance = commandContext.getExecutionEntityManager().findSubProcessInstanceBySuperExecutionId(execution.getId());
         if (subProcessInstance != null) {
           List<? extends ExecutionEntity> childExecutions = subProcessInstance.getExecutions();
-          for (ExecutionEntity subExecution : childExecutions) {
-            if (!processedElements.contains(subExecution.getCurrentActivityId())) {
-              dispatchExecutionTimeOut(timerEntity, subExecution, processedElements, commandContext);
-            }
-          }
+          childExecutions.stream().filter(subExecution -> !processedElements.contains(subExecution.getCurrentActivityId())).forEach(subExecution -> dispatchExecutionTimeOut(timerEntity, subExecution, processedElements, commandContext));
         }
       }
     }

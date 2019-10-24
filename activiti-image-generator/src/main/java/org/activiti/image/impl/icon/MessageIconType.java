@@ -26,7 +26,8 @@ public class MessageIconType extends IconType {
         return " m0 1.5  l0 13  l17 0  l0 -13  z M1.5 3  L6 7.5  L1.5 12  z M3.5 3  L13.5 3  L8.5 8  z m12 0  l0 9  l-4.5 -4.5  z M7 8.5  L8.5 10  L10 8.5  L14.5 13  L2.5 13  z";
     }
 
-    public void drawIcon(final int imageX,
+    @Override
+	public void drawIcon(final int imageX,
                          final int imageY,
                          final int iconPadding,
                          final ProcessDiagramSVGGraphics2D svgGenerator) {
@@ -34,7 +35,8 @@ public class MessageIconType extends IconType {
                                                                     SVGGraphics2D.SVG_G_TAG);
         gTag.setAttributeNS(null,
                             "transform",
-                            "translate(" + (imageX - 1) + "," + (imageY - 2) + ")");
+                            new StringBuilder().append("translate(").append(imageX - 1).append(",")
+									.append(imageY - 2).append(")").toString());
 
         Element pathTag = svgGenerator.getDOMFactory().createElementNS(null,
                                                                        SVGGraphics2D.SVG_PATH_TAG);

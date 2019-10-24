@@ -128,9 +128,7 @@ public class ProcessEngineAutoConfiguration extends AbstractProcessEngineAutoCon
         }
 
         if (processEngineConfigurationConfigurers != null) {
-            for (ProcessEngineConfigurationConfigurer processEngineConfigurationConfigurer : processEngineConfigurationConfigurers) {
-                processEngineConfigurationConfigurer.configure(conf);
-            }
+            processEngineConfigurationConfigurers.forEach(processEngineConfigurationConfigurer -> processEngineConfigurationConfigurer.configure(conf));
         }
         springAsyncExecutor.applyConfig(conf);
         return conf;
@@ -138,17 +136,18 @@ public class ProcessEngineAutoConfiguration extends AbstractProcessEngineAutoCon
 
     protected void addAsyncPropertyValidator(ActivitiProperties activitiProperties,
                                            SpringProcessEngineConfiguration conf) {
-        if (!activitiProperties.isAsyncExecutorActivate()) {
-            ValidatorSet springBootStarterValidatorSet = new ValidatorSet("activiti-spring-boot-starter");
-            springBootStarterValidatorSet.addValidator(new AsyncPropertyValidator());
-            if (conf.getProcessValidator() == null) {
-                ProcessValidatorImpl processValidator = new ProcessValidatorImpl();
-                processValidator.addValidatorSet(springBootStarterValidatorSet);
-                conf.setProcessValidator(processValidator);
-            } else {
-                conf.getProcessValidator().getValidatorSets().add(springBootStarterValidatorSet);
-            }
-        }
+        if (activitiProperties.isAsyncExecutorActivate()) {
+			return;
+		}
+		ValidatorSet springBootStarterValidatorSet = new ValidatorSet("activiti-spring-boot-starter");
+		springBootStarterValidatorSet.addValidator(new AsyncPropertyValidator());
+		if (conf.getProcessValidator() == null) {
+		    ProcessValidatorImpl processValidator = new ProcessValidatorImpl();
+		    processValidator.addValidatorSet(springBootStarterValidatorSet);
+		    conf.setProcessValidator(processValidator);
+		} else {
+		    conf.getProcessValidator().getValidatorSets().add(springBootStarterValidatorSet);
+		}
     }
 
     private void configureProcessDefinitionResources(ProcessDefinitionResourceFinder processDefinitionResourceFinder,

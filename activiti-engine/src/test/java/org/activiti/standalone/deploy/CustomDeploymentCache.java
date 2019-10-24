@@ -42,10 +42,11 @@ public class CustomDeploymentCache implements DeploymentCache<ProcessDefinitionC
 
   @Override
   public void remove(String id) {
-    if (id.equals(this.id)) {
-      this.id = null;
-      this.entry = null;
-    }
+    if (!id.equals(this.id)) {
+		return;
+	}
+	this.id = null;
+	this.entry = null;
   }
 
   @Override

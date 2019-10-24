@@ -255,7 +255,7 @@ public class TaskEventsTest extends PluggableActivitiTestCase {
       Task task = taskService.createTaskQuery().singleResult();
 
       // Complete first task
-      Map<String, Object> taskParams = new HashMap<String, Object>();
+      Map<String, Object> taskParams = new HashMap<>();
       taskService.complete(task.getId(), taskParams, true);
 
       ActivitiEntityEvent event = (ActivitiEntityEvent) tlistener.getEventsReceived().get(0);

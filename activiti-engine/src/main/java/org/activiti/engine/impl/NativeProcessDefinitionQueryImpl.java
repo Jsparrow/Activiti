@@ -22,11 +22,13 @@ public class NativeProcessDefinitionQueryImpl extends AbstractNativeQuery<Native
 
   // results ////////////////////////////////////////////////////////////////
 
-  public List<ProcessDefinition> executeList(CommandContext commandContext, Map<String, Object> parameterMap, int firstResult, int maxResults) {
+  @Override
+public List<ProcessDefinition> executeList(CommandContext commandContext, Map<String, Object> parameterMap, int firstResult, int maxResults) {
     return commandContext.getProcessDefinitionEntityManager().findProcessDefinitionsByNativeQuery(parameterMap, firstResult, maxResults);
   }
 
-  public long executeCount(CommandContext commandContext, Map<String, Object> parameterMap) {
+  @Override
+public long executeCount(CommandContext commandContext, Map<String, Object> parameterMap) {
     return commandContext.getProcessDefinitionEntityManager().findProcessDefinitionCountByNativeQuery(parameterMap);
   }
 

@@ -6,6 +6,8 @@ import org.activiti.engine.ActivitiException;
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.validation.ProcessValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * From http://forums.activiti.org/content/skip-parse-validation-while-fetching- startformdata
@@ -16,7 +18,8 @@ import org.activiti.validation.ProcessValidator;
  */
 public class ProcessValidationExecutedAfterDeployTest extends PluggableActivitiTestCase {
 
-  protected ProcessValidator processValidator;
+  private static final Logger logger = LoggerFactory.getLogger(ProcessValidationExecutedAfterDeployTest.class);
+protected ProcessValidator processValidator;
 
   private void disableValidation() {
     processValidator = processEngineConfiguration.getProcessValidator();
@@ -31,7 +34,8 @@ public class ProcessValidationExecutedAfterDeployTest extends PluggableActivitiT
     processEngineConfiguration.getProcessDefinitionCache().clear();
   }
 
-  protected void tearDown() throws Exception {
+  @Override
+protected void tearDown() throws Exception {
     enableValidation();
     super.tearDown();
   }
@@ -64,12 +68,11 @@ public class ProcessValidationExecutedAfterDeployTest extends PluggableActivitiT
       repositoryService.getProcessModel(definition.getId());
       assertTrue(true);
     } catch (ActivitiException e) {
-      fail("Error occurred in fetching process model.");
+      logger.error(e.getMessage(), e);
+	fail("Error occurred in fetching process model.");
     }
 
-    for (org.activiti.engine.repository.Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId());
-    }
+    repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId()));
   }
 
 }

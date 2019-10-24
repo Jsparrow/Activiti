@@ -55,7 +55,8 @@ public class GetTaskDataObjectCmd implements Command<DataObject>, Serializable {
     this.withLocalizationFallback = withLocalizationFallback;
   }
 
-  public DataObject execute(CommandContext commandContext) {
+  @Override
+public DataObject execute(CommandContext commandContext) {
     if (taskId == null) {
       throw new ActivitiIllegalArgumentException("taskId is null");
     }
@@ -66,7 +67,7 @@ public class GetTaskDataObjectCmd implements Command<DataObject>, Serializable {
     TaskEntity task = commandContext.getTaskEntityManager().findById(taskId);
 
     if (task == null) {
-      throw new ActivitiObjectNotFoundException("task " + taskId + " doesn't exist", Task.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("task ").append(taskId).append(" doesn't exist").toString(), Task.class);
     }
 
     DataObject dataObject = null;

@@ -62,7 +62,8 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
     this.userTask = userTask;
   }
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     CommandContext commandContext = Context.getCommandContext();
     TaskEntityManager taskEntityManager = commandContext.getTaskEntityManager();
     
@@ -228,10 +229,11 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
       }
     }
     
-    if (skipUserTask) {
-      taskEntityManager.deleteTask(task, null, false, false);
-      leave(execution);
-    }
+    if (!skipUserTask) {
+		return;
+	}
+	taskEntityManager.deleteTask(task, null, false, false);
+	leave(execution);
 
   }
 
@@ -253,7 +255,8 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
       return Collections.emptyMap();
   }
 
-  public void trigger(DelegateExecution execution, String signalName, Object signalData) {
+  @Override
+public void trigger(DelegateExecution execution, String signalName, Object signalData) {
     CommandContext commandContext = Context.getCommandContext();
     
     TaskEntityManager taskEntityManager = commandContext.getTaskEntityManager();
@@ -277,16 +280,16 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
             commandContext.getExecutionEntityManager().findById(processInstanceId) :
             null;
 
-    if (processInstanceEntity != null) {
-      Map<String, Object> taskVariables = new HashMap<>();
-
-      if (commandContext.getCommand() instanceof CompleteTaskCmd) {
+    if (processInstanceEntity == null) {
+		return;
+	}
+	Map<String, Object> taskVariables = new HashMap<>();
+	if (commandContext.getCommand() instanceof CompleteTaskCmd) {
         taskVariables = ((CompleteTaskCmd) commandContext.getCommand()).getTaskVariables();
       }
-      Map<String, Object> outboundVariables = calculateOutBoundVariables(execution,
+	Map<String, Object> outboundVariables = calculateOutBoundVariables(execution,
                                                                          taskVariables);
-      processInstanceEntity.setVariables(outboundVariables);
-    }
+	processInstanceEntity.setVariables(outboundVariables);
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -351,9 +354,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
           Object value = idExpression.getValue(execution);
           if (value instanceof String) {
             List<String> userIds = extractCandidates((String) value);
-            for (String userId : userIds) {
-              task.addUserIdentityLink(userId, customUserIdentityLinkType);
-            }
+            userIds.forEach(userId -> task.addUserIdentityLink(userId, customUserIdentityLinkType));
           } else if (value instanceof Collection) {
             Iterator userIdSet = ((Collection) value).iterator();
             while (userIdSet.hasNext()) {
@@ -377,9 +378,7 @@ public class UserTaskActivityBehavior extends TaskActivityBehavior {
           Object value = idExpression.getValue(execution);
           if (value instanceof String) {
             List<String> groupIds = extractCandidates((String) value);
-            for (String groupId : groupIds) {
-              task.addGroupIdentityLink(groupId, customGroupIdentityLinkType);
-            }
+            groupIds.forEach(groupId -> task.addGroupIdentityLink(groupId, customGroupIdentityLinkType));
           } else if (value instanceof Collection) {
             Iterator groupIdSet = ((Collection) value).iterator();
             while (groupIdSet.hasNext()) {

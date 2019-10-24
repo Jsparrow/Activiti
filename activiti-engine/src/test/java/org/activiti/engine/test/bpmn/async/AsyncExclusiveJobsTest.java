@@ -25,26 +25,24 @@ public class AsyncExclusiveJobsTest extends PluggableActivitiTestCase {
 	@Deployment
 	public void testExclusiveJobs() {
 		
-		if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-		
-			// The process has two script tasks in parallel, both exclusive.
-			// They should be executed with at least 6 seconds in between (as they both sleep for 6 seconds)
-			runtimeService.startProcessInstanceByKey("testExclusiveJobs");
-			waitForJobExecutorToProcessAllJobs(20000L, 500L);
-			
-			HistoricActivityInstance scriptTaskAInstance = historyService.createHistoricActivityInstanceQuery().activityId("scriptTaskA").singleResult();
-			HistoricActivityInstance scriptTaskBInstance = historyService.createHistoricActivityInstanceQuery().activityId("scriptTaskB").singleResult();
-			
-			long endTimeA = scriptTaskAInstance.getEndTime().getTime();
-			long endTimeB = scriptTaskBInstance.getEndTime().getTime();
-			long endTimeDifference = 0;
-			if (endTimeB > endTimeA) {
-				endTimeDifference = endTimeB - endTimeA;
-			} else {
-				endTimeDifference = endTimeA - endTimeB;
-			}
-			assertTrue(endTimeDifference > 6000); // > 6000 -> jobs were executed in parallel
+		if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+			return;
 		}
+		// The process has two script tasks in parallel, both exclusive.
+		// They should be executed with at least 6 seconds in between (as they both sleep for 6 seconds)
+		runtimeService.startProcessInstanceByKey("testExclusiveJobs");
+		waitForJobExecutorToProcessAllJobs(20000L, 500L);
+		HistoricActivityInstance scriptTaskAInstance = historyService.createHistoricActivityInstanceQuery().activityId("scriptTaskA").singleResult();
+		HistoricActivityInstance scriptTaskBInstance = historyService.createHistoricActivityInstanceQuery().activityId("scriptTaskB").singleResult();
+		long endTimeA = scriptTaskAInstance.getEndTime().getTime();
+		long endTimeB = scriptTaskBInstance.getEndTime().getTime();
+		long endTimeDifference = 0;
+		if (endTimeB > endTimeA) {
+			endTimeDifference = endTimeB - endTimeA;
+		} else {
+			endTimeDifference = endTimeA - endTimeB;
+		}
+		assertTrue(endTimeDifference > 6000); // > 6000 -> jobs were executed in parallel
 		
 	}
 

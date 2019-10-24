@@ -20,9 +20,7 @@ public class NeverFailAutoDeploymentStrategyTest extends SpringActivitiTestCase 
 
     private void cleanUp() {
         List<org.activiti.engine.repository.Deployment> deployments = repositoryService.createDeploymentQuery().list();
-        for (org.activiti.engine.repository.Deployment deployment : deployments) {
-            repositoryService.deleteDeployment(deployment.getId(), true);
-        }
+        deployments.forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
     }
 
     @Override

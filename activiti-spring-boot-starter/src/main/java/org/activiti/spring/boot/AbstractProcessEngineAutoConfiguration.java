@@ -58,7 +58,7 @@ public abstract class AbstractProcessEngineAutoConfiguration
         Class customMybatisClass = Class.forName(customMybatisMapperClassName);
         mybatisMappers.add(customMybatisClass);
       } catch (ClassNotFoundException e) {
-        throw new IllegalArgumentException("Class " + customMybatisMapperClassName + " has not been found.", e);
+        throw new IllegalArgumentException(new StringBuilder().append("Class ").append(customMybatisMapperClassName).append(" has not been found.").toString(), e);
       }
     }
     return mybatisMappers;

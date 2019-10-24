@@ -31,7 +31,8 @@ public class DelegateTaskCmd extends NeedsActiveTaskCmd<Object> {
     this.userId = userId;
   }
 
-  protected Object execute(CommandContext commandContext, TaskEntity task) {
+  @Override
+protected Object execute(CommandContext commandContext, TaskEntity task) {
     task.setDelegationState(DelegationState.PENDING);
     if (task.getOwner() == null) {
       task.setOwner(task.getAssignee());

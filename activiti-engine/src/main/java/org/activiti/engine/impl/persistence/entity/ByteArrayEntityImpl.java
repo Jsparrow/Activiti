@@ -34,39 +34,47 @@ public class ByteArrayEntityImpl extends AbstractEntity implements ByteArrayEnti
     
   }
 
-  public byte[] getBytes() {
+  @Override
+public byte[] getBytes() {
     return bytes;
   }
 
-  public Object getPersistentState() {
+  @Override
+public Object getPersistentState() {
     return new PersistentState(name, bytes);
   }
 
   // getters and setters ////////////////////////////////////////////////////////
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
 
-  public String getDeploymentId() {
+  @Override
+public String getDeploymentId() {
     return deploymentId;
   }
 
-  public void setDeploymentId(String deploymentId) {
+  @Override
+public void setDeploymentId(String deploymentId) {
     this.deploymentId = deploymentId;
   }
 
-  public void setBytes(byte[] bytes) {
+  @Override
+public void setBytes(byte[] bytes) {
     this.bytes = bytes;
   }
 
   @Override
   public String toString() {
-    return "ByteArrayEntity[id=" + id + ", name=" + name + ", size=" + (bytes != null ? bytes.length : 0) + "]";
+    return new StringBuilder().append("ByteArrayEntity[id=").append(id).append(", name=").append(name).append(", size=")
+			.append(bytes != null ? bytes.length : 0).append("]").toString();
   }
 
   // Wrapper for a byte array, needed to do byte array comparisons
@@ -81,12 +89,13 @@ public class ByteArrayEntityImpl extends AbstractEntity implements ByteArrayEnti
       this.bytes = bytes;
     }
 
-    public boolean equals(Object obj) {
-      if (obj instanceof PersistentState) {
-        PersistentState other = (PersistentState) obj;
-        return StringUtils.equals(this.name, other.name) && Arrays.equals(this.bytes, other.bytes);
-      }
-      return false;
+    @Override
+	public boolean equals(Object obj) {
+      if (!(obj instanceof PersistentState)) {
+		return false;
+	}
+	PersistentState other = (PersistentState) obj;
+	return StringUtils.equals(this.name, other.name) && Arrays.equals(this.bytes, other.bytes);
     }
 
     @Override

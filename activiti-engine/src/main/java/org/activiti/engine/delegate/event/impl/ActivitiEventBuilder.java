@@ -345,9 +345,11 @@ public class ActivitiEventBuilder {
   }
 
   protected static void populateEventWithCurrentContext(ActivitiEventImpl event) {
-    if (event instanceof ActivitiEntityEvent) {
-      Object persistedObject = ((ActivitiEntityEvent) event).getEntity();
-      if (persistedObject instanceof Job) {
+    if (!(event instanceof ActivitiEntityEvent)) {
+		return;
+	}
+	Object persistedObject = ((ActivitiEntityEvent) event).getEntity();
+	if (persistedObject instanceof Job) {
         event.setExecutionId(((Job) persistedObject).getExecutionId());
         event.setProcessInstanceId(((Job) persistedObject).getProcessInstanceId());
         event.setProcessDefinitionId(((Job) persistedObject).getProcessDefinitionId());
@@ -375,7 +377,6 @@ public class ActivitiEventBuilder {
       } else if (persistedObject instanceof ProcessDefinition) {
         event.setProcessDefinitionId(((ProcessDefinition) persistedObject).getId());
       }
-    }
   }
   
   private static ActivitiSignalEvent createSignalEvent(ActivitiEventType type,
@@ -393,19 +394,19 @@ public class ActivitiEventBuilder {
   
   private static void applyExecution(ActivitiActivityEventImpl newEvent, 
                                      DelegateExecution execution) {
-    if (execution != null) {
-      newEvent.setActivityId(execution.getCurrentActivityId());
-      newEvent.setExecutionId(execution.getId());
-      newEvent.setProcessDefinitionId(execution.getProcessDefinitionId());
-      newEvent.setProcessInstanceId(execution.getProcessInstanceId());
-      
-      if (execution.getCurrentFlowElement() instanceof FlowNode) {
+    if (execution == null) {
+		return;
+	}
+	newEvent.setActivityId(execution.getCurrentActivityId());
+	newEvent.setExecutionId(execution.getId());
+	newEvent.setProcessDefinitionId(execution.getProcessDefinitionId());
+	newEvent.setProcessInstanceId(execution.getProcessInstanceId());
+	if (execution.getCurrentFlowElement() instanceof FlowNode) {
           FlowNode flowNode = (FlowNode) execution.getCurrentFlowElement();
           newEvent.setActivityType(parseActivityType(flowNode));
           newEvent.setBehaviorClass(parseActivityBehavior(flowNode));
           newEvent.setActivityName(flowNode.getName());
-      }
-    }  
+      }  
   }
   
 }

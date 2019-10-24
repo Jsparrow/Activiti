@@ -40,10 +40,11 @@ public class ExecuteActivityForAdhocSubProcessCmd implements Command<Execution>,
     this.activityId = activityId;
   }
 
-  public Execution execute(CommandContext commandContext) {
+  @Override
+public Execution execute(CommandContext commandContext) {
     ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(executionId);
     if (execution == null) {
-      throw new ActivitiObjectNotFoundException("No execution found for id '" + executionId + "'", ExecutionEntity.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("No execution found for id '").append(executionId).append("'").toString(), ExecutionEntity.class);
     }
 
     if (!(execution.getCurrentFlowElement() instanceof AdhocSubProcess)) {
@@ -53,12 +54,11 @@ public class ExecuteActivityForAdhocSubProcessCmd implements Command<Execution>,
     FlowNode foundNode = null;
     AdhocSubProcess adhocSubProcess = (AdhocSubProcess) execution.getCurrentFlowElement();
 
-    // if sequential ordering, only one child execution can be active
-    if (adhocSubProcess.hasSequentialOrdering()) {
-      if (execution.getExecutions().size() > 0) {
+    boolean condition = adhocSubProcess.hasSequentialOrdering() && execution.getExecutions().size() > 0;
+	// if sequential ordering, only one child execution can be active
+    if (condition) {
         throw new ActivitiException("Sequential ad-hoc sub process already has an active execution");
       }
-    }
 
     for (FlowElement flowElement : adhocSubProcess.getFlowElements()) {
       if (activityId.equals(flowElement.getId()) && flowElement instanceof FlowNode) {
@@ -70,7 +70,7 @@ public class ExecuteActivityForAdhocSubProcessCmd implements Command<Execution>,
     }
 
     if (foundNode == null) {
-      throw new ActivitiException("The requested activity with id " + activityId + " can not be enabled");
+      throw new ActivitiException(new StringBuilder().append("The requested activity with id ").append(activityId).append(" can not be enabled").toString());
     }
 
     ExecutionEntity activityExecution = Context.getCommandContext().getExecutionEntityManager().createChildExecution(execution);

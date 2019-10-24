@@ -34,14 +34,15 @@ public class AcquireJobsCmd implements Command<AcquiredJobEntities> {
     this.asyncExecutor = asyncExecutor;
   }
 
-  public AcquiredJobEntities execute(CommandContext commandContext) {
+  @Override
+public AcquiredJobEntities execute(CommandContext commandContext) {
     AcquiredJobEntities acquiredJobs = new AcquiredJobEntities();
     List<JobEntity> jobs = commandContext.getJobEntityManager().findJobsToExecute(new Page(0, asyncExecutor.getMaxAsyncJobsDuePerAcquisition()));
 
-    for (JobEntity job : jobs) {
+    jobs.forEach(job -> {
       lockJob(commandContext, job, asyncExecutor.getAsyncJobLockTimeInMillis());
       acquiredJobs.addJob(job);
-    }
+    });
 
     return acquiredJobs;
   }

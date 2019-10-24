@@ -37,7 +37,8 @@ public class LockExclusiveJobCmd implements Command<Object>, Serializable {
     this.job = job;
   }
 
-  public Object execute(CommandContext commandContext) {
+  @Override
+public Object execute(CommandContext commandContext) {
 
     if (job == null) {
       throw new ActivitiIllegalArgumentException("job is null");
@@ -47,14 +48,13 @@ public class LockExclusiveJobCmd implements Command<Object>, Serializable {
       log.debug("Executing lock exclusive job {} {}", job.getId(), job.getExecutionId());
     }
 
-    if (job.isExclusive()) {
-      if (job.getExecutionId() != null) {
+    boolean condition = job.isExclusive() && job.getExecutionId() != null;
+	if (condition) {
         ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(job.getExecutionId());
         if (execution != null) {
           commandContext.getExecutionEntityManager().updateProcessInstanceLockTime(execution.getProcessInstanceId());
         }
       }
-    }
 
     return null;
   }

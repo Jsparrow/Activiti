@@ -32,7 +32,8 @@ public class IbatisVariableTypeHandler implements TypeHandler<VariableType> {
 
   protected VariableTypes variableTypes;
 
-  public VariableType getResult(ResultSet rs, String columnName) throws SQLException {
+  @Override
+public VariableType getResult(ResultSet rs, String columnName) throws SQLException {
     String typeName = rs.getString(columnName);
     VariableType type = getVariableTypes().getVariableType(typeName);
     if (type == null && typeName != null) {
@@ -41,7 +42,8 @@ public class IbatisVariableTypeHandler implements TypeHandler<VariableType> {
     return type;
   }
 
-  public VariableType getResult(CallableStatement cs, int columnIndex) throws SQLException {
+  @Override
+public VariableType getResult(CallableStatement cs, int columnIndex) throws SQLException {
     String typeName = cs.getString(columnIndex);
     VariableType type = getVariableTypes().getVariableType(typeName);
     if (type == null) {
@@ -50,7 +52,8 @@ public class IbatisVariableTypeHandler implements TypeHandler<VariableType> {
     return type;
   }
 
-  public void setParameter(PreparedStatement ps, int i, VariableType parameter, JdbcType jdbcType) throws SQLException {
+  @Override
+public void setParameter(PreparedStatement ps, int i, VariableType parameter, JdbcType jdbcType) throws SQLException {
     String typeName = parameter.getTypeName();
     ps.setString(i, typeName);
   }
@@ -62,7 +65,8 @@ public class IbatisVariableTypeHandler implements TypeHandler<VariableType> {
     return variableTypes;
   }
 
-  public VariableType getResult(ResultSet resultSet, int columnIndex) throws SQLException {
+  @Override
+public VariableType getResult(ResultSet resultSet, int columnIndex) throws SQLException {
     String typeName = resultSet.getString(columnIndex);
     VariableType type = getVariableTypes().getVariableType(typeName);
     if (type == null) {

@@ -25,11 +25,13 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class DocumentationParser extends BaseChildElementParser {
 
-  public String getElementName() {
+  @Override
+public String getElementName() {
     return "documentation";
   }
 
-  public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
+  @Override
+public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
     String docText = xtr.getElementText();
     if (StringUtils.isNotEmpty(docText)) {
       if (parentElement instanceof FlowElement) {

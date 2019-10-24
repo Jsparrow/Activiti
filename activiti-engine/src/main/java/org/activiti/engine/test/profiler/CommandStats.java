@@ -12,16 +12,16 @@ public class CommandStats {
 
     protected long getTotalCommandTime = 0L;
     
-    protected List<Long> commandExecutionTimings = new ArrayList<Long>();
-    protected List<Long> databaseTimings = new ArrayList<Long>();
+    protected List<Long> commandExecutionTimings = new ArrayList<>();
+    protected List<Long> databaseTimings = new ArrayList<>();
     
-    protected Map<String, Long> dbSelects = new HashMap<String, Long>();
-    protected Map<String, Long> dbInserts = new HashMap<String, Long>();
-    protected Map<String, Long> dbUpdates = new HashMap<String, Long>();
-    protected Map<String, Long> dbDeletes = new HashMap<String, Long>();
+    protected Map<String, Long> dbSelects = new HashMap<>();
+    protected Map<String, Long> dbInserts = new HashMap<>();
+    protected Map<String, Long> dbUpdates = new HashMap<>();
+    protected Map<String, Long> dbDeletes = new HashMap<>();
 
     public CommandStats(List<CommandExecutionResult> executions) {
-        for (CommandExecutionResult execution : executions) {
+        executions.forEach(execution -> {
             getTotalCommandTime += execution.getTotalTimeInMs();
             
             commandExecutionTimings.add(execution.getTotalTimeInMs());
@@ -31,17 +31,15 @@ public class CommandStats {
             addToDbOperation(execution.getDbInserts(), dbInserts);
             addToDbOperation(execution.getDbUpdates(), dbUpdates);
             addToDbOperation(execution.getDbDeletes(), dbDeletes);
-        }
+        });
     }
 
     protected void addToDbOperation(Map<String, Long> executionMap, Map<String, Long> globalMap) {
-        for (String key : executionMap.keySet()) {
-            if (!globalMap.containsKey(key)) {
-                globalMap.put(key, 0L);
-            }
+        executionMap.keySet().forEach(key -> {
+            globalMap.putIfAbsent(key, 0L);
             Long oldValue = globalMap.get(key);
             globalMap.put(key, oldValue + executionMap.get(key));
-        }
+        });
     }
 
     public long getCount() {

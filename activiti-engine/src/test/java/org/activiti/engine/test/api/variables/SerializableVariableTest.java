@@ -18,7 +18,7 @@ public class SerializableVariableTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testUpdateSerializableInServiceTask() {
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("myVar", new TestSerializableVariable(1));
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("testUpdateSerializableInServiceTask", vars);
     
@@ -33,7 +33,8 @@ public class SerializableVariableTest extends PluggableActivitiTestCase {
   
   public static class TestUpdateSerializableVariableDelegate implements JavaDelegate {
     
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       TestSerializableVariable var = (TestSerializableVariable) execution.getVariable("myVar");
       var.setNumber(2);
     }

@@ -46,7 +46,8 @@ public class SpringAutoDeployTest extends AbstractTestCase {
         this.repositoryService = applicationContext.getBean(RepositoryService.class);
     }
 
-    protected void tearDown() throws Exception {
+    @Override
+	protected void tearDown() throws Exception {
         removeAllDeployments();
         this.applicationContext = null;
         this.repositoryService = null;
@@ -57,12 +58,10 @@ public class SpringAutoDeployTest extends AbstractTestCase {
         createAppContext("org/activiti/spring/test/autodeployment/SpringAutoDeployTest-context.xml");
         List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery().list();
 
-        Set<String> processDefinitionKeys = new HashSet<String>();
-        for (ProcessDefinition processDefinition : processDefinitions) {
-            processDefinitionKeys.add(processDefinition.getKey());
-        }
+        Set<String> processDefinitionKeys = new HashSet<>();
+        processDefinitions.forEach(processDefinition -> processDefinitionKeys.add(processDefinition.getKey()));
 
-        Set<String> expectedProcessDefinitionKeys = new HashSet<String>();
+        Set<String> expectedProcessDefinitionKeys = new HashSet<>();
         expectedProcessDefinitionKeys.add("a");
         expectedProcessDefinitionKeys.add("b");
         expectedProcessDefinitionKeys.add("c");
@@ -169,10 +168,7 @@ public class SpringAutoDeployTest extends AbstractTestCase {
     // ----------------------------------------------------------
 
     private void removeAllDeployments() {
-        for (Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-            repositoryService.deleteDeployment(deployment.getId(),
-                                               true);
-        }
+        repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
     }
 
     private boolean waitUntilFileIsWritten(String filePath,

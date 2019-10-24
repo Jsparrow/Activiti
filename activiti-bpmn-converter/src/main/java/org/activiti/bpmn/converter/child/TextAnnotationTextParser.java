@@ -23,13 +23,16 @@ import org.activiti.bpmn.model.TextAnnotation;
  */
 public class TextAnnotationTextParser extends BaseChildElementParser {
 
-  public String getElementName() {
+  @Override
+public String getElementName() {
     return ELEMENT_TEXT_ANNOTATION_TEXT;
   }
 
-  public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
-    if (!(parentElement instanceof TextAnnotation))
-      return;
+  @Override
+public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
+    if (!(parentElement instanceof TextAnnotation)) {
+		return;
+	}
 
     ((TextAnnotation) parentElement).setText(xtr.getElementText());
   }

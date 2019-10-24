@@ -36,7 +36,8 @@ public class IntermediateCatchTimerEventActivityBehavior extends IntermediateCat
     this.timerEventDefinition = timerEventDefinition;
   }
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     JobManager jobManager = Context.getCommandContext().getJobManager();
     
     // end date should be ignored for intermediate timer events.
@@ -53,9 +54,8 @@ public class IntermediateCatchTimerEventActivityBehavior extends IntermediateCat
     JobEntityManager jobEntityManager = Context.getCommandContext().getJobEntityManager();
     List<JobEntity> jobEntities = jobEntityManager.findJobsByExecutionId(execution.getId());
     
-    for (JobEntity jobEntity : jobEntities) { // Should be only one
-      jobEntityManager.delete(jobEntity);
-    }
+    // Should be only one
+	jobEntities.forEach(jobEntityManager::delete);
     
     Context.getCommandContext().getExecutionEntityManager().deleteExecutionAndRelatedData((ExecutionEntity) execution, 
         DeleteReason.EVENT_BASED_GATEWAY_CANCEL, false);

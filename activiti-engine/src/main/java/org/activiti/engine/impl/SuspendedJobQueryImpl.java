@@ -28,7 +28,7 @@ import org.activiti.engine.runtime.SuspendedJobQuery;
 
 
  */
-public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job> implements SuspendedJobQuery, Serializable {
+public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job> implements SuspendedJobQuery {
 
   private static final long serialVersionUID = 1L;
   protected String id;
@@ -61,7 +61,8 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     super(commandExecutor);
   }
 
-  public SuspendedJobQueryImpl jobId(String jobId) {
+  @Override
+public SuspendedJobQueryImpl jobId(String jobId) {
     if (jobId == null) {
       throw new ActivitiIllegalArgumentException("Provided job id is null");
     }
@@ -69,7 +70,8 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     return this;
   }
 
-  public SuspendedJobQueryImpl processInstanceId(String processInstanceId) {
+  @Override
+public SuspendedJobQueryImpl processInstanceId(String processInstanceId) {
     if (processInstanceId == null) {
       throw new ActivitiIllegalArgumentException("Provided process instance id is null");
     }
@@ -77,7 +79,8 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     return this;
   }
 
-  public SuspendedJobQueryImpl processDefinitionId(String processDefinitionId) {
+  @Override
+public SuspendedJobQueryImpl processDefinitionId(String processDefinitionId) {
     if (processDefinitionId == null) {
       throw new ActivitiIllegalArgumentException("Provided process definition id is null");
     }
@@ -85,7 +88,8 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     return this;
   }
 
-  public SuspendedJobQueryImpl executionId(String executionId) {
+  @Override
+public SuspendedJobQueryImpl executionId(String executionId) {
     if (executionId == null) {
       throw new ActivitiIllegalArgumentException("Provided execution id is null");
     }
@@ -93,17 +97,20 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     return this;
   }
 
-  public SuspendedJobQueryImpl withRetriesLeft() {
+  @Override
+public SuspendedJobQueryImpl withRetriesLeft() {
     retriesLeft = true;
     return this;
   }
 
-  public SuspendedJobQueryImpl executable() {
+  @Override
+public SuspendedJobQueryImpl executable() {
     executable = true;
     return this;
   }
 
-  public SuspendedJobQueryImpl timers() {
+  @Override
+public SuspendedJobQueryImpl timers() {
     if (onlyMessages) {
       throw new ActivitiIllegalArgumentException("Cannot combine onlyTimers() with onlyMessages() in the same query");
     }
@@ -111,7 +118,8 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     return this;
   }
 
-  public SuspendedJobQueryImpl messages() {
+  @Override
+public SuspendedJobQueryImpl messages() {
     if (onlyTimers) {
       throw new ActivitiIllegalArgumentException("Cannot combine onlyTimers() with onlyMessages() in the same query");
     }
@@ -119,7 +127,8 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     return this;
   }
 
-  public SuspendedJobQueryImpl duedateHigherThan(Date date) {
+  @Override
+public SuspendedJobQueryImpl duedateHigherThan(Date date) {
     if (date == null) {
       throw new ActivitiIllegalArgumentException("Provided date is null");
     }
@@ -127,7 +136,8 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     return this;
   }
 
-  public SuspendedJobQueryImpl duedateLowerThan(Date date) {
+  @Override
+public SuspendedJobQueryImpl duedateLowerThan(Date date) {
     if (date == null) {
       throw new ActivitiIllegalArgumentException("Provided date is null");
     }
@@ -159,17 +169,20 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     return this;
   }
 
-  public SuspendedJobQueryImpl noRetriesLeft() {
+  @Override
+public SuspendedJobQueryImpl noRetriesLeft() {
     noRetriesLeft = true;
     return this;
   }
   
-  public SuspendedJobQueryImpl withException() {
+  @Override
+public SuspendedJobQueryImpl withException() {
     this.withException = true;
     return this;
   }
 
-  public SuspendedJobQueryImpl exceptionMessage(String exceptionMessage) {
+  @Override
+public SuspendedJobQueryImpl exceptionMessage(String exceptionMessage) {
     if (exceptionMessage == null) {
       throw new ActivitiIllegalArgumentException("Provided exception message is null");
     }
@@ -177,7 +190,8 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     return this;
   }
 
-  public SuspendedJobQueryImpl jobTenantId(String tenantId) {
+  @Override
+public SuspendedJobQueryImpl jobTenantId(String tenantId) {
     if (tenantId == null) {
       throw new ActivitiIllegalArgumentException("job is null");
     }
@@ -185,7 +199,8 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     return this;
   }
 
-  public SuspendedJobQueryImpl jobTenantIdLike(String tenantIdLike) {
+  @Override
+public SuspendedJobQueryImpl jobTenantIdLike(String tenantIdLike) {
     if (tenantIdLike == null) {
       throw new ActivitiIllegalArgumentException("job is null");
     }
@@ -193,45 +208,54 @@ public class SuspendedJobQueryImpl extends AbstractQuery<SuspendedJobQuery, Job>
     return this;
   }
 
-  public SuspendedJobQueryImpl jobWithoutTenantId() {
+  @Override
+public SuspendedJobQueryImpl jobWithoutTenantId() {
     this.withoutTenantId = true;
     return this;
   }
 
   // sorting //////////////////////////////////////////
 
-  public SuspendedJobQuery orderByJobDuedate() {
+  @Override
+public SuspendedJobQuery orderByJobDuedate() {
     return orderBy(JobQueryProperty.DUEDATE);
   }
 
-  public SuspendedJobQuery orderByExecutionId() {
+  @Override
+public SuspendedJobQuery orderByExecutionId() {
     return orderBy(JobQueryProperty.EXECUTION_ID);
   }
 
-  public SuspendedJobQuery orderByJobId() {
+  @Override
+public SuspendedJobQuery orderByJobId() {
     return orderBy(JobQueryProperty.JOB_ID);
   }
 
-  public SuspendedJobQuery orderByProcessInstanceId() {
+  @Override
+public SuspendedJobQuery orderByProcessInstanceId() {
     return orderBy(JobQueryProperty.PROCESS_INSTANCE_ID);
   }
 
-  public SuspendedJobQuery orderByJobRetries() {
+  @Override
+public SuspendedJobQuery orderByJobRetries() {
     return orderBy(JobQueryProperty.RETRIES);
   }
 
-  public SuspendedJobQuery orderByTenantId() {
+  @Override
+public SuspendedJobQuery orderByTenantId() {
     return orderBy(JobQueryProperty.TENANT_ID);
   }
 
   // results //////////////////////////////////////////
 
-  public long executeCount(CommandContext commandContext) {
+  @Override
+public long executeCount(CommandContext commandContext) {
     checkQueryOk();
     return commandContext.getSuspendedJobEntityManager().findJobCountByQueryCriteria(this);
   }
 
-  public List<Job> executeList(CommandContext commandContext, Page page) {
+  @Override
+public List<Job> executeList(CommandContext commandContext, Page page) {
     checkQueryOk();
     return commandContext.getSuspendedJobEntityManager().findJobsByQueryCriteria(this, page);
   }

@@ -26,7 +26,7 @@ import org.activiti.engine.repository.DeploymentQuery;
 
 
  */
-public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployment> implements DeploymentQuery, Serializable {
+public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployment> implements DeploymentQuery {
 
   private static final long serialVersionUID = 1L;
   protected String deploymentId;
@@ -55,7 +55,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     super(commandExecutor);
   }
 
-  public DeploymentQueryImpl deploymentId(String deploymentId) {
+  @Override
+public DeploymentQueryImpl deploymentId(String deploymentId) {
     if (deploymentId == null) {
       throw new ActivitiIllegalArgumentException("Deployment id is null");
     }
@@ -63,7 +64,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
 
-  public DeploymentQueryImpl deploymentName(String deploymentName) {
+  @Override
+public DeploymentQueryImpl deploymentName(String deploymentName) {
     if (deploymentName == null) {
       throw new ActivitiIllegalArgumentException("deploymentName is null");
     }
@@ -71,7 +73,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
 
-  public DeploymentQueryImpl deploymentNameLike(String nameLike) {
+  @Override
+public DeploymentQueryImpl deploymentNameLike(String nameLike) {
     if (nameLike == null) {
       throw new ActivitiIllegalArgumentException("deploymentNameLike is null");
     }
@@ -79,7 +82,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
 
-  public DeploymentQueryImpl deploymentCategory(String deploymentCategory) {
+  @Override
+public DeploymentQueryImpl deploymentCategory(String deploymentCategory) {
     if (deploymentCategory == null) {
       throw new ActivitiIllegalArgumentException("deploymentCategory is null");
     }
@@ -87,7 +91,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
   
-  public DeploymentQueryImpl deploymentCategoryLike(String categoryLike) {
+  @Override
+public DeploymentQueryImpl deploymentCategoryLike(String categoryLike) {
     if (categoryLike == null) {
       throw new ActivitiIllegalArgumentException("deploymentCategoryLike is null");
     }
@@ -95,7 +100,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
 
-  public DeploymentQueryImpl deploymentCategoryNotEquals(String deploymentCategoryNotEquals) {
+  @Override
+public DeploymentQueryImpl deploymentCategoryNotEquals(String deploymentCategoryNotEquals) {
     if (deploymentCategoryNotEquals == null) {
       throw new ActivitiIllegalArgumentException("deploymentCategoryExclude is null");
     }
@@ -103,7 +109,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
   
-  public DeploymentQueryImpl deploymentKey(String deploymentKey) {
+  @Override
+public DeploymentQueryImpl deploymentKey(String deploymentKey) {
     if (deploymentKey == null) {
       throw new ActivitiIllegalArgumentException("deploymentKey is null");
     }
@@ -111,7 +118,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
   
-  public DeploymentQueryImpl deploymentKeyLike(String deploymentKeyLike) {
+  @Override
+public DeploymentQueryImpl deploymentKeyLike(String deploymentKeyLike) {
     if (deploymentKeyLike == null) {
       throw new ActivitiIllegalArgumentException("deploymentKeyLike is null");
     }
@@ -119,7 +127,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
 
-  public DeploymentQueryImpl deploymentTenantId(String tenantId) {
+  @Override
+public DeploymentQueryImpl deploymentTenantId(String tenantId) {
     if (tenantId == null) {
       throw new ActivitiIllegalArgumentException("deploymentTenantId is null");
     }
@@ -127,7 +136,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
 
-  public DeploymentQueryImpl deploymentTenantIdLike(String tenantIdLike) {
+  @Override
+public DeploymentQueryImpl deploymentTenantIdLike(String tenantIdLike) {
     if (tenantIdLike == null) {
       throw new ActivitiIllegalArgumentException("deploymentTenantIdLike is null");
     }
@@ -135,12 +145,14 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
 
-  public DeploymentQueryImpl deploymentWithoutTenantId() {
+  @Override
+public DeploymentQueryImpl deploymentWithoutTenantId() {
     this.withoutTenantId = true;
     return this;
   }
 
-  public DeploymentQueryImpl processDefinitionKey(String key) {
+  @Override
+public DeploymentQueryImpl processDefinitionKey(String key) {
     if (key == null) {
       throw new ActivitiIllegalArgumentException("key is null");
     }
@@ -148,7 +160,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
 
-  public DeploymentQueryImpl processDefinitionKeyLike(String keyLike) {
+  @Override
+public DeploymentQueryImpl processDefinitionKeyLike(String keyLike) {
     if (keyLike == null) {
       throw new ActivitiIllegalArgumentException("keyLike is null");
     }
@@ -156,7 +169,8 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
     return this;
   }
   
-  public DeploymentQueryImpl latest() {
+  @Override
+public DeploymentQueryImpl latest() {
     if (key == null) {
       throw new ActivitiIllegalArgumentException("latest can only be used together with a deployment key");
     }
@@ -167,19 +181,23 @@ public class DeploymentQueryImpl extends AbstractQuery<DeploymentQuery, Deployme
 
   // sorting ////////////////////////////////////////////////////////
 
-  public DeploymentQuery orderByDeploymentId() {
+  @Override
+public DeploymentQuery orderByDeploymentId() {
     return orderBy(DeploymentQueryProperty.DEPLOYMENT_ID);
   }
 
-  public DeploymentQuery orderByDeploymenTime() {
+  @Override
+public DeploymentQuery orderByDeploymenTime() {
     return orderBy(DeploymentQueryProperty.DEPLOY_TIME);
   }
 
-  public DeploymentQuery orderByDeploymentName() {
+  @Override
+public DeploymentQuery orderByDeploymentName() {
     return orderBy(DeploymentQueryProperty.DEPLOYMENT_NAME);
   }
 
-  public DeploymentQuery orderByTenantId() {
+  @Override
+public DeploymentQuery orderByTenantId() {
     return orderBy(DeploymentQueryProperty.DEPLOYMENT_TENANT_ID);
   }
 

@@ -46,21 +46,24 @@ public class WSOperation implements OperationImplementation {
     /**
      * {@inheritDoc}
      */
-    public String getId() {
+    @Override
+	public String getId() {
         return this.id;
     }
 
     /**
      * {@inheritDoc}
      */
-    public String getName() {
+    @Override
+	public String getName() {
         return this.name;
     }
 
     /**
      * {@inheritDoc}
      */
-    public MessageInstance sendFor(MessageInstance message,
+    @Override
+	public MessageInstance sendFor(MessageInstance message,
                                    Operation operation,
                                    ConcurrentMap<QName, URL> overridenEndpointAddresses) throws Exception {
         Object[] arguments = this.getArguments(message);

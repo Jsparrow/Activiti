@@ -50,9 +50,7 @@ public class ProcessDiagramGeneratorTest extends PluggableActivitiTestCase {
 
         runtimeService.startProcessInstanceByKey("myProcess");
         List<Task> tasks = taskService.createTaskQuery().list();
-        for (Task task : tasks) {
-            taskService.complete(task.getId());
-        }
+        tasks.forEach(task -> taskService.complete(task.getId()));
         Task task = taskService.createTaskQuery().taskDefinitionKey("usertask4").singleResult();
         taskService.complete(task.getId());
 
@@ -221,9 +219,7 @@ public class ProcessDiagramGeneratorTest extends PluggableActivitiTestCase {
     }
 
     private void checkDiagramElements(List<String> elementIdList, SVGOMDocument svg) {
-        for (String elementId : elementIdList) {
-            assertNotNull(svg.getElementById(elementId));
-        }
+        elementIdList.forEach(elementId -> assertNotNull(svg.getElementById(elementId)));
     }
 
     private SVGOMDocument parseXml(InputStream resourceStream) throws Exception {

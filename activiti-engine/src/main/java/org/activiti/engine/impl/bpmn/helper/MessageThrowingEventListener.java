@@ -36,20 +36,16 @@ public class MessageThrowingEventListener extends BaseDelegateEventListener {
 
   @Override
   public void onEvent(ActivitiEvent event) {
-    if (isValidEvent(event)) {
-
-      if (event.getProcessInstanceId() == null) {
+    if (!isValidEvent(event)) {
+		return;
+	}
+	if (event.getProcessInstanceId() == null) {
         throw new ActivitiIllegalArgumentException("Cannot throw process-instance scoped message, since the dispatched event is not part of an ongoing process instance");
       }
-
-      EventSubscriptionEntityManager eventSubscriptionEntityManager = Context.getCommandContext().getEventSubscriptionEntityManager();
-      List<MessageEventSubscriptionEntity> subscriptionEntities = eventSubscriptionEntityManager.findMessageEventSubscriptionsByProcessInstanceAndEventName(
+	EventSubscriptionEntityManager eventSubscriptionEntityManager = Context.getCommandContext().getEventSubscriptionEntityManager();
+	List<MessageEventSubscriptionEntity> subscriptionEntities = eventSubscriptionEntityManager.findMessageEventSubscriptionsByProcessInstanceAndEventName(
           event.getProcessInstanceId(), messageName);
-      
-      for (EventSubscriptionEntity messageEventSubscriptionEntity : subscriptionEntities) {
-        eventSubscriptionEntityManager.eventReceived(messageEventSubscriptionEntity, null, false);
-      }
-    }
+	subscriptionEntities.forEach(messageEventSubscriptionEntity -> eventSubscriptionEntityManager.eventReceived(messageEventSubscriptionEntity, null, false));
   }
 
   public void setMessageName(String messageName) {

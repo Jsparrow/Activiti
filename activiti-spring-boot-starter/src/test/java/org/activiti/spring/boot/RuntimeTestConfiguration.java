@@ -183,7 +183,7 @@ public class RuntimeTestConfiguration {
 
     @Bean
     public BPMNElementEventListener<BPMNSequenceFlowTakenEvent> sequenceFlowTakenEventListener() {
-        return sequenceFlowTakenEvent -> sequenceFlowTakenEvents.add(sequenceFlowTakenEvent);
+        return sequenceFlowTakenEvents::add;
     }
     
     @Bean
@@ -198,12 +198,12 @@ public class RuntimeTestConfiguration {
 
     @Bean
     public TaskRuntimeEventListener<TaskCandidateUserAddedEvent> CandidateUserAddedListener() {
-        return candidateUserAddedEvent -> taskCandidateUserAddedEvents.add(candidateUserAddedEvent);
+        return taskCandidateUserAddedEvents::add;
     }
 
     @Bean
     public TaskRuntimeEventListener<TaskCandidateUserRemovedEvent> CandidateUserRemovedListener() {
-        return candidateUserRemovedEvent -> taskCandidateUserRemovedEvents.add(candidateUserRemovedEvent);
+        return taskCandidateUserRemovedEvents::add;
     }
 
     @Bean(name = "Variable Mapping Connector.variableMappingActionName")

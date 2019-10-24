@@ -42,7 +42,8 @@ public class GetHistoricIdentityLinksForTaskCmd implements Command<List<Historic
     this.processInstanceId = processInstanceId;
   }
 
-  public List<HistoricIdentityLink> execute(CommandContext commandContext) {
+  @Override
+public List<HistoricIdentityLink> execute(CommandContext commandContext) {
     if (taskId != null) {
       return getLinksForTask(commandContext);
     } else {

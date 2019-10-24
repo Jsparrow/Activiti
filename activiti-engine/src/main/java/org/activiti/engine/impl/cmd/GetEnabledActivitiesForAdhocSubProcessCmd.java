@@ -38,35 +38,32 @@ public class GetEnabledActivitiesForAdhocSubProcessCmd implements Command<List<F
     this.executionId = executionId;
   }
 
-  public List<FlowNode> execute(CommandContext commandContext) {
+  @Override
+public List<FlowNode> execute(CommandContext commandContext) {
     ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(executionId);
     if (execution == null) {
-      throw new ActivitiObjectNotFoundException("No execution found for id '" + executionId + "'", ExecutionEntity.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("No execution found for id '").append(executionId).append("'").toString(), ExecutionEntity.class);
     }
     
     if (!(execution.getCurrentFlowElement() instanceof AdhocSubProcess)) {
       throw new ActivitiException("The current flow element of the requested execution is not an ad-hoc sub process");
     }
     
-    List<FlowNode> enabledFlowNodes = new ArrayList<FlowNode>();
+    List<FlowNode> enabledFlowNodes = new ArrayList<>();
 
     AdhocSubProcess adhocSubProcess = (AdhocSubProcess) execution.getCurrentFlowElement();
     
-    // if sequential ordering, only one child execution can be active, so no enabled activities
-    if (adhocSubProcess.hasSequentialOrdering()) {
-      if (execution.getExecutions().size() > 0) {
+    boolean condition = adhocSubProcess.hasSequentialOrdering() && execution.getExecutions().size() > 0;
+	// if sequential ordering, only one child execution can be active, so no enabled activities
+    if (condition) {
         return enabledFlowNodes;
       }
-    }
     
-    for (FlowElement flowElement : adhocSubProcess.getFlowElements()) {
-      if (flowElement instanceof FlowNode) {
-        FlowNode flowNode = (FlowNode) flowElement;
-        if (flowNode.getIncomingFlows().size() == 0) {
+    adhocSubProcess.getFlowElements().stream().filter(flowElement -> flowElement instanceof FlowNode).map(flowElement -> (FlowNode) flowElement).forEach(flowNode -> {
+		if (flowNode.getIncomingFlows().size() == 0) {
           enabledFlowNodes.add(flowNode);
         }
-      }
-    }
+	});
     
     return enabledFlowNodes;
   }

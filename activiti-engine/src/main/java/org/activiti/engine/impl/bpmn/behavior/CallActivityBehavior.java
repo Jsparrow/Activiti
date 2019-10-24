@@ -63,7 +63,8 @@ public class CallActivityBehavior extends AbstractBpmnActivityBehavior implement
     this.mapExceptions = mapExceptions;
   }
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
 
     String finalProcessDefinitonKey = null;
     if (processDefinitionExpression != null) {
@@ -77,7 +78,7 @@ public class CallActivityBehavior extends AbstractBpmnActivityBehavior implement
     // Get model from cache
     Process subProcess = ProcessDefinitionUtil.getProcess(processDefinition.getId());
     if (subProcess == null) {
-      throw new ActivitiException("Cannot start a sub process instance. Process model " + processDefinition.getName() + " (id = " + processDefinition.getId() + ") could not be found");
+      throw new ActivitiException(new StringBuilder().append("Cannot start a sub process instance. Process model ").append(processDefinition.getName()).append(" (id = ").append(processDefinition.getId()).append(") could not be found").toString());
     }
 
     FlowElement initialFlowElement = subProcess.getInitialFlowElement();
@@ -87,7 +88,7 @@ public class CallActivityBehavior extends AbstractBpmnActivityBehavior implement
 
     // Do not start a process instance if the process definition is suspended
     if (ProcessDefinitionUtil.isProcessDefinitionSuspended(processDefinition.getId())) {
-      throw new ActivitiException("Cannot start process instance. Process definition " + processDefinition.getName() + " (id = " + processDefinition.getId() + ") is suspended");
+      throw new ActivitiException(new StringBuilder().append("Cannot start process instance. Process definition ").append(processDefinition.getName()).append(" (id = ").append(processDefinition.getId()).append(") is suspended").toString());
     }
 
     ProcessEngineConfigurationImpl processEngineConfiguration = Context.getProcessEngineConfiguration();
@@ -117,9 +118,7 @@ public class CallActivityBehavior extends AbstractBpmnActivityBehavior implement
 
     if (callActivity.isInheritVariables()) {
       Map<String, Object> executionVariables = execution.getVariables();
-      for (Map.Entry<String, Object> entry : executionVariables.entrySet()) {
-        variables.put(entry.getKey(), entry.getValue());
-      }
+      executionVariables.entrySet().forEach(entry -> variables.put(entry.getKey(), entry.getValue()));
     }
     Map<String, Object> variablesFromExtensionFile = calculateInboundVariables(execution, processDefinition);
 
@@ -139,7 +138,8 @@ public class CallActivityBehavior extends AbstractBpmnActivityBehavior implement
       .dispatchEvent(ActivitiEventBuilder.createProcessStartedEvent(subProcessInitialExecution, variables, false));
   }
 
-  public void completing(DelegateExecution execution, DelegateExecution subProcessInstance) throws Exception {
+  @Override
+public void completing(DelegateExecution execution, DelegateExecution subProcessInstance) throws Exception {
 
       Map<String, Object> outboundVariables = calculateOutBoundVariables(execution, subProcessInstance.getVariables());
       if (outboundVariables != null) {
@@ -147,7 +147,8 @@ public class CallActivityBehavior extends AbstractBpmnActivityBehavior implement
       }
   }
 
-  public void completed(DelegateExecution execution) throws Exception {
+  @Override
+public void completed(DelegateExecution execution) throws Exception {
     // only control flow. no sub process instance data available
     leave(execution);
   }
@@ -162,10 +163,10 @@ public class CallActivityBehavior extends AbstractBpmnActivityBehavior implement
   }
 
   protected Map<String, Object> processDataObjects(Collection<ValuedDataObject> dataObjects) {
-  	Map<String, Object> variablesMap = new HashMap<String,Object>();
+  	Map<String, Object> variablesMap = new HashMap<>();
   	// convert data objects to process variables
   	if (dataObjects != null) {
-        variablesMap = new HashMap<String, Object>(dataObjects.size());
+        variablesMap = new HashMap<>(dataObjects.size());
   	  for (ValuedDataObject dataObject : dataObjects) {
   	    variablesMap.put(dataObject.getName(), dataObject.getValue());
   	  }
@@ -188,12 +189,12 @@ public class CallActivityBehavior extends AbstractBpmnActivityBehavior implement
 
   protected Map<String, Object> calculateInboundVariables(DelegateExecution execution,
                                                           ProcessDefinition processDefinition) {
-    return new HashMap<String, Object>();
+    return new HashMap<>();
   }
 
   protected Map<String, Object> calculateOutBoundVariables(DelegateExecution execution,
                                                            Map<String, Object> subProcessVariables) {
-    return new HashMap<String, Object>();
+    return new HashMap<>();
   }
 
 }

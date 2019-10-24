@@ -19,8 +19,7 @@ package org.activiti.runtime.api.model.impl;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.runtime.model.impl.ProcessInstanceImpl;
 
-public class APIProcessInstanceConverter extends ListConverter<org.activiti.engine.runtime.ProcessInstance, ProcessInstance>
-        implements ModelConverter<org.activiti.engine.runtime.ProcessInstance, ProcessInstance> {
+public class APIProcessInstanceConverter extends ListConverter<org.activiti.engine.runtime.ProcessInstance, ProcessInstance> {
 
     @Override
     public ProcessInstance from(org.activiti.engine.runtime.ProcessInstance internalProcessInstance) {

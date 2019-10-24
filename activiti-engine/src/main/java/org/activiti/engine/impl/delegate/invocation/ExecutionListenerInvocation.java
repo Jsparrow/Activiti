@@ -30,11 +30,13 @@ public class ExecutionListenerInvocation extends DelegateInvocation {
     this.execution = execution;
   }
 
-  protected void invoke() {
+  @Override
+protected void invoke() {
     executionListenerInstance.notify(execution);
   }
 
-  public Object getTarget() {
+  @Override
+public Object getTarget() {
     return executionListenerInstance;
   }
 

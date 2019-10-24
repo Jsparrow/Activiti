@@ -50,13 +50,11 @@ public class ExecutionTree implements Iterable<ExecutionTreeNode> {
 
     List<ExecutionTreeNode> children = currentNode.getChildren();
     if (currentNode.getChildren() != null && children.size() > 0) {
-      int index = 0;
-      while (index < children.size()) {
-        ExecutionTreeNode result = getTreeNode(executionId, children.get(index));
+      for (ExecutionTreeNode aChildren : children) {
+        ExecutionTreeNode result = getTreeNode(executionId, aChildren);
         if (result != null) {
           return result;
         }
-        index++;
       }
     }
 

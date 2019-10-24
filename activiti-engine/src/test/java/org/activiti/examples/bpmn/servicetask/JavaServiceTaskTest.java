@@ -51,7 +51,7 @@ public class JavaServiceTaskTest extends PluggableActivitiTestCase {
 
   @Deployment
   public void testExpressionFieldInjection() {
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("name", "kermit");
     vars.put("gender", "male");
     vars.put("genderBean", new GenderBean());
@@ -65,7 +65,7 @@ public class JavaServiceTaskTest extends PluggableActivitiTestCase {
 
   @Deployment
   public void testExpressionFieldInjectionWithSkipExpression() {
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("name", "kermit");
     vars.put("gender", "male");
     vars.put("genderBean", new GenderBean());
@@ -78,7 +78,7 @@ public class JavaServiceTaskTest extends PluggableActivitiTestCase {
     assertEquals("timrek .rM olleH", runtimeService.getVariable(execution.getId(), "var2"));
     assertEquals("elam :si redneg ruoY", runtimeService.getVariable(execution.getId(), "var1"));
 
-    Map<String, Object> vars2 = new HashMap<String, Object>();
+    Map<String, Object> vars2 = new HashMap<>();
     vars2.put("name", "kermit");
     vars2.put("gender", "male");
     vars2.put("genderBean", new GenderBean());
@@ -117,7 +117,7 @@ public class JavaServiceTaskTest extends PluggableActivitiTestCase {
 
     // If variable value is != 'throw-exception', process goes
     // through service task and ends immediately
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("var", "no-exception");
     runtimeService.startProcessInstanceByKey("exceptionHandling", vars);
     assertEquals(0, runtimeService.createProcessInstanceQuery().count());

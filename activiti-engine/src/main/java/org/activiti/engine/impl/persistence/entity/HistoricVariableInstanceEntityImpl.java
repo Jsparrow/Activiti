@@ -51,8 +51,9 @@ public class HistoricVariableInstanceEntityImpl extends AbstractEntity implement
     
   }
 
-  public Object getPersistentState() {
-    HashMap<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    HashMap<String, Object> persistentState = new HashMap<>();
 
     persistentState.put("textValue", textValue);
     persistentState.put("textValue2", textValue2);
@@ -69,7 +70,8 @@ public class HistoricVariableInstanceEntityImpl extends AbstractEntity implement
     return persistentState;
   }
 
-  public Object getValue() {
+  @Override
+public Object getValue() {
     if (!variableType.isCachable() || cachedValue == null) {
       cachedValue = variableType.getValue(this);
     }
@@ -96,116 +98,144 @@ public class HistoricVariableInstanceEntityImpl extends AbstractEntity implement
 
   // getters and setters //////////////////////////////////////////////////////
 
-  public String getVariableTypeName() {
+  @Override
+public String getVariableTypeName() {
     return (variableType != null ? variableType.getTypeName() : null);
   }
 
-  public String getVariableName() {
+  @Override
+public String getVariableName() {
     return name;
   }
   
-  public VariableType getVariableType() {
+  @Override
+public VariableType getVariableType() {
     return variableType;
   }
 
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
   
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
 
-  public Long getLongValue() {
+  @Override
+public Long getLongValue() {
     return longValue;
   }
 
-  public void setLongValue(Long longValue) {
+  @Override
+public void setLongValue(Long longValue) {
     this.longValue = longValue;
   }
 
-  public Double getDoubleValue() {
+  @Override
+public Double getDoubleValue() {
     return doubleValue;
   }
 
-  public void setDoubleValue(Double doubleValue) {
+  @Override
+public void setDoubleValue(Double doubleValue) {
     this.doubleValue = doubleValue;
   }
 
-  public String getTextValue() {
+  @Override
+public String getTextValue() {
     return textValue;
   }
 
-  public void setTextValue(String textValue) {
+  @Override
+public void setTextValue(String textValue) {
     this.textValue = textValue;
   }
 
-  public String getTextValue2() {
+  @Override
+public String getTextValue2() {
     return textValue2;
   }
 
-  public void setTextValue2(String textValue2) {
+  @Override
+public void setTextValue2(String textValue2) {
     this.textValue2 = textValue2;
   }
 
-  public Object getCachedValue() {
+  @Override
+public Object getCachedValue() {
     return cachedValue;
   }
 
-  public void setCachedValue(Object cachedValue) {
+  @Override
+public void setCachedValue(Object cachedValue) {
     this.cachedValue = cachedValue;
   }
 
-  public void setVariableType(VariableType variableType) {
+  @Override
+public void setVariableType(VariableType variableType) {
     this.variableType = variableType;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
+  @Override
+public void setProcessInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
   }
 
-  public String getProcessInstanceId() {
+  @Override
+public String getProcessInstanceId() {
     return processInstanceId;
   }
 
-  public String getTaskId() {
+  @Override
+public String getTaskId() {
     return taskId;
   }
 
-  public void setTaskId(String taskId) {
+  @Override
+public void setTaskId(String taskId) {
     this.taskId = taskId;
   }
 
-  public Date getCreateTime() {
+  @Override
+public Date getCreateTime() {
     return createTime;
   }
 
-  public void setCreateTime(Date createTime) {
+  @Override
+public void setCreateTime(Date createTime) {
     this.createTime = createTime;
   }
 
-  public Date getLastUpdatedTime() {
+  @Override
+public Date getLastUpdatedTime() {
     return lastUpdatedTime;
   }
 
-  public void setLastUpdatedTime(Date lastUpdatedTime) {
+  @Override
+public void setLastUpdatedTime(Date lastUpdatedTime) {
     this.lastUpdatedTime = lastUpdatedTime;
   }
 
-  public String getExecutionId() {
+  @Override
+public String getExecutionId() {
     return executionId;
   }
 
-  public void setExecutionId(String executionId) {
+  @Override
+public void setExecutionId(String executionId) {
     this.executionId = executionId;
   }
 
-  public Date getTime() {
+  @Override
+public Date getTime() {
     return getCreateTime();
   }
   
-  public ByteArrayRef getByteArrayRef() {
+  @Override
+public ByteArrayRef getByteArrayRef() {
     return byteArrayRef;
   }
   

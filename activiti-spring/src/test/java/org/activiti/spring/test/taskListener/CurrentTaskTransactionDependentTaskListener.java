@@ -33,7 +33,15 @@ public class CurrentTaskTransactionDependentTaskListener implements TransactionD
     currentTasks.add(new CurrentTask(processInstanceId, executionId, task.getId(), task.getName(), executionVariables, customPropertiesMap));
   }
 
-  public static class CurrentTask {
+  public static List<CurrentTask> getCurrentTasks() {
+    return currentTasks;
+  }
+
+public static void clear() {
+    currentTasks.clear();
+  }
+
+public static class CurrentTask {
     private final String processInstanceId;
     private final String executionId;
     private final String taskId;
@@ -73,13 +81,5 @@ public class CurrentTaskTransactionDependentTaskListener implements TransactionD
     public Map<String, Object> getCustomPropertiesMap() {
       return customPropertiesMap;
     }
-  }
-
-  public static List<CurrentTask> getCurrentTasks() {
-    return currentTasks;
-  }
-
-  public static void clear() {
-    currentTasks.clear();
   }
 }

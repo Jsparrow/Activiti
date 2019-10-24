@@ -40,7 +40,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
   }
 
   private Map<String, Object> generateVariables() {
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
 
     // 10 Strings
     for (int i = 0; i < 10; i++) {
@@ -82,9 +82,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
   @Override
   protected void tearDown() throws Exception {
 
-    for (Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+    repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
 
     super.tearDown();
   }
@@ -94,7 +92,13 @@ public class VariablesTest extends PluggableActivitiTestCase {
     // Regular getVariables after process instance start
     Map<String, Object> vars = runtimeService.getVariables(processInstanceId);
     assertEquals(70, vars.size());
-    int nrOfStrings = 0, nrOfInts = 0, nrOfDates = 0, nrOfLocalDates = 0, nrOfDateTimes = 0, nrOfBooleans = 0, nrOfSerializable = 0;
+    int nrOfStrings = 0;
+	int nrOfInts = 0;
+	int nrOfDates = 0;
+	int nrOfLocalDates = 0;
+	int nrOfDateTimes = 0;
+	int nrOfBooleans = 0;
+	int nrOfSerializable = 0;
     for (String variableName : vars.keySet()) {
       Object variableValue = vars.get(variableName);
       if (variableValue instanceof String) {
@@ -172,7 +176,13 @@ public class VariablesTest extends PluggableActivitiTestCase {
     // Regular getVariables after process instance start
     Map<String, Object> vars = runtimeService.getVariablesLocal(processInstanceId);
     assertEquals(70, vars.size());
-    int nrOfStrings = 0, nrOfInts = 0, nrOfDates = 0, nrOfLocalDates = 0, nrOfDateTimes = 0, nrOfBooleans = 0, nrOfSerializable = 0;
+    int nrOfStrings = 0;
+	int nrOfInts = 0;
+	int nrOfDates = 0;
+	int nrOfLocalDates = 0;
+	int nrOfDateTimes = 0;
+	int nrOfBooleans = 0;
+	int nrOfSerializable = 0;
     for (String variableName : vars.keySet()) {
       Object variableValue = vars.get(variableName);
       if (variableValue instanceof String) {
@@ -428,7 +438,13 @@ public class VariablesTest extends PluggableActivitiTestCase {
     Task task = taskService.createTaskQuery().taskName("Task 1").singleResult();
     Map<String, Object> vars = taskService.getVariables(task.getId());
     assertEquals(70, vars.size());
-    int nrOfStrings = 0, nrOfInts = 0, nrOfDates = 0, nrOfLocalDates = 0, nrOfDateTimes = 0, nrOfBooleans = 0, nrOfSerializable = 0;
+    int nrOfStrings = 0;
+	int nrOfInts = 0;
+	int nrOfDates = 0;
+	int nrOfLocalDates = 0;
+	int nrOfDateTimes = 0;
+	int nrOfBooleans = 0;
+	int nrOfSerializable = 0;
     for (String variableName : vars.keySet()) {
       Object variableValue = vars.get(variableName);
       if (variableValue instanceof String) {
@@ -478,7 +494,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
     assertEquals("localTaskVarValue", taskService.getVariableLocal(task.getId(), "localTaskVar"));
 
     // Override process variable
-    Collection<String> varNames = new ArrayList<String>();
+    Collection<String> varNames = new ArrayList<>();
     varNames.add("stringVar1");
     assertEquals("stringVarValue-1", taskService.getVariable(task.getId(), "stringVar1"));
     assertEquals("stringVarValue-1", taskService.getVariable(task.getId(), "stringVar1"));
@@ -581,21 +597,24 @@ public class VariablesTest extends PluggableActivitiTestCase {
 
   // Test delegates
   public static class TestJavaDelegate1 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String var = (String) execution.getVariable("testVar");
       execution.setVariable("testVar", var.toUpperCase());
     }
   }
 
   public static class TestJavaDelegate2 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String var = (String) execution.getVariable("testVar");
       execution.setVariable("testVar", var + " world");
     }
   }
 
   public static class TestJavaDelegate3 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
 
     }
   }
@@ -603,21 +622,24 @@ public class VariablesTest extends PluggableActivitiTestCase {
   // ////////////////////////////////////////
 
   public static class TestJavaDelegate4 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String var = (String) execution.getVariable("testVar", false);
       execution.setVariable("testVar", var.toUpperCase());
     }
   }
 
   public static class TestJavaDelegate5 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String var = (String) execution.getVariable("testVar", false);
       execution.setVariable("testVar", var + " world");
     }
   }
 
   public static class TestJavaDelegate6 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String var = (String) execution.getVariable("testVar", false);
       execution.setVariable("testVar", var + "!");
     }
@@ -626,7 +648,8 @@ public class VariablesTest extends PluggableActivitiTestCase {
   // ////////////////////////////////////////
 
   public static class TestJavaDelegate7 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
 
       // Setting variable through 'default' way of setting variable
       execution.setVariable("testVar", "test");
@@ -635,14 +658,16 @@ public class VariablesTest extends PluggableActivitiTestCase {
   }
 
   public static class TestJavaDelegate8 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String var = (String) execution.getVariable("testVar", false);
       execution.setVariable("testVar", var + " 1 2 3");
     }
   }
 
   public static class TestJavaDelegate9 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       execution.setVariable("testVar2", "Hiya");
     }
   }
@@ -650,21 +675,24 @@ public class VariablesTest extends PluggableActivitiTestCase {
   // ////////////////////////////////////////
 
   public static class TestJavaDelegate10 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String testVar = (String) execution.getVariable("testVar", false);
       execution.setVariable("testVar", testVar + "2");
     }
   }
 
   public static class TestJavaDelegate11 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String testVar = (String) execution.getVariable("testVar", false);
       execution.setVariable("testVar", testVar + "3");
     }
   }
 
   public static class TestJavaDelegate12 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String testVar = (String) execution.getVariable("testVar");
       execution.setVariable("testVar", testVar + "4");
     }
@@ -673,7 +701,8 @@ public class VariablesTest extends PluggableActivitiTestCase {
   // ////////////////////////////////////////
 
   public static class TestJavaDelegate13 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       Map<String, Object> vars = execution.getVariables(Arrays.asList("testVar1", "testVar2", "testVar3"), false);
 
       String testVar1 = (String) vars.get("testVar1");
@@ -689,7 +718,8 @@ public class VariablesTest extends PluggableActivitiTestCase {
   }
 
   public static class TestJavaDelegate14 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String value = (String) execution.getVariable("testVar2");
       String localVarValue = (String) execution.getVariableLocal("localValue");
       execution.setVariableLocal("testVar2", value + localVarValue);
@@ -697,7 +727,8 @@ public class VariablesTest extends PluggableActivitiTestCase {
   }
 
   public static class TestJavaDelegate15 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       execution.removeVariable("testVar3");
     }
   }

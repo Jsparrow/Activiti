@@ -23,7 +23,8 @@ public class NotExecutablePoolConverterTest extends AbstractConverterTest {
     validateModel(bpmnModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "test.notexecutablepoolmodel.json";
   }
 

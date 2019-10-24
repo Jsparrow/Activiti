@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class BpmnXMLUtil implements BpmnXMLConstants {
 
-  private static Map<String, BaseChildElementParser> genericChildParserMap = new HashMap<String, BaseChildElementParser>();
+  private static Map<String, BaseChildElementParser> genericChildParserMap = new HashMap<>();
 
   static {
     addGenericParser(new ActivitiEventListenerParser());
@@ -74,7 +74,7 @@ public class BpmnXMLUtil implements BpmnXMLConstants {
       Map<String, BaseChildElementParser> childParsers, BpmnModel model) throws Exception {
     
     Map<String, BaseChildElementParser> localParserMap =
-        new HashMap<String, BaseChildElementParser>(genericChildParserMap);
+        new HashMap<>(genericChildParserMap);
     if (childParsers != null) {
       localParserMap.putAll(childParsers);
     }
@@ -174,7 +174,7 @@ public class BpmnXMLUtil implements BpmnXMLConstants {
       }
 
       if (namespaceMap == null) {
-        namespaceMap = new HashMap<String, String>();
+        namespaceMap = new HashMap<>();
       }
 
       for (List<ExtensionElement> extensionElements : baseElement.getExtensionElements().values()) {
@@ -187,9 +187,11 @@ public class BpmnXMLUtil implements BpmnXMLConstants {
   }
 
   protected static void writeExtensionElement(ExtensionElement extensionElement, Map<String, String> namespaceMap, XMLStreamWriter xtw) throws Exception {
-    if (StringUtils.isNotEmpty(extensionElement.getName())) {
-      Map<String, String> localNamespaceMap = new HashMap<String, String>();
-      if (StringUtils.isNotEmpty(extensionElement.getNamespace())) {
+    if (!StringUtils.isNotEmpty(extensionElement.getName())) {
+		return;
+	}
+	Map<String, String> localNamespaceMap = new HashMap<>();
+	if (StringUtils.isNotEmpty(extensionElement.getNamespace())) {
         if (StringUtils.isNotEmpty(extensionElement.getNamespacePrefix())) {
           xtw.writeStartElement(extensionElement.getNamespacePrefix(), extensionElement.getName(), extensionElement.getNamespace());
 
@@ -205,8 +207,7 @@ public class BpmnXMLUtil implements BpmnXMLConstants {
       } else {
         xtw.writeStartElement(extensionElement.getName());
       }
-
-      for (List<ExtensionAttribute> attributes : extensionElement.getAttributes().values()) {
+	for (List<ExtensionAttribute> attributes : extensionElement.getAttributes().values()) {
         for (ExtensionAttribute attribute : attributes) {
           if (StringUtils.isNotEmpty(attribute.getName()) && attribute.getValue() != null) {
             if (StringUtils.isNotEmpty(attribute.getNamespace())) {
@@ -228,8 +229,7 @@ public class BpmnXMLUtil implements BpmnXMLConstants {
           }
         }
       }
-
-      if (extensionElement.getElementText() != null) {
+	if (extensionElement.getElementText() != null) {
         xtw.writeCData(extensionElement.getElementText());
       } else {
         for (List<ExtensionElement> childElements : extensionElement.getChildElements().values()) {
@@ -238,17 +238,12 @@ public class BpmnXMLUtil implements BpmnXMLConstants {
           }
         }
       }
-
-      for (String prefix : localNamespaceMap.keySet()) {
-        namespaceMap.remove(prefix);
-      }
-
-      xtw.writeEndElement();
-    }
+	localNamespaceMap.keySet().forEach(namespaceMap::remove);
+	xtw.writeEndElement();
   }
 
   public static List<String> parseDelimitedList(String s) {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     if (StringUtils.isNotEmpty(s)) {
 
       StringCharacterIterator iterator = new StringCharacterIterator(s);
@@ -286,12 +281,12 @@ public class BpmnXMLUtil implements BpmnXMLConstants {
     StringBuilder resultString = new StringBuilder();
 
     if (stringList != null) {
-      for (String result : stringList) {
+      stringList.forEach(result -> {
         if (resultString.length() > 0) {
           resultString.append(",");
         }
         resultString.append(result);
-      }
+      });
     }
     return resultString.toString();
   }
@@ -321,7 +316,7 @@ public class BpmnXMLUtil implements BpmnXMLConstants {
   }
 
   public static void writeCustomAttributes(Collection<List<ExtensionAttribute>> attributes, XMLStreamWriter xtw, List<ExtensionAttribute>... blackLists) throws XMLStreamException {
-    writeCustomAttributes(attributes, xtw, new LinkedHashMap<String, String>(), blackLists);
+    writeCustomAttributes(attributes, xtw, new LinkedHashMap<>(), blackLists);
   }
 
   /**
@@ -339,9 +334,9 @@ public class BpmnXMLUtil implements BpmnXMLConstants {
         for (ExtensionAttribute attribute : attributeList) {
           if (!isBlacklisted(attribute, blackLists)) {
             if (attribute.getNamespacePrefix() == null) {
-              if (attribute.getNamespace() == null)
-                xtw.writeAttribute(attribute.getName(), attribute.getValue());
-              else {
+              if (attribute.getNamespace() == null) {
+				xtw.writeAttribute(attribute.getName(), attribute.getValue());
+			} else {
                 xtw.writeAttribute(attribute.getNamespace(), attribute.getName(), attribute.getValue());
               }
             } else {
@@ -362,10 +357,12 @@ public class BpmnXMLUtil implements BpmnXMLConstants {
       for (List<ExtensionAttribute> blackList : blackLists) {
         for (ExtensionAttribute blackAttribute : blackList) {
           if (blackAttribute.getName().equals(attribute.getName())) {
-            if (blackAttribute.getNamespace() != null && attribute.getNamespace() != null && blackAttribute.getNamespace().equals(attribute.getNamespace()))
-              return true;
-            if (blackAttribute.getNamespace() == null && attribute.getNamespace() == null)
-              return true;
+            if (blackAttribute.getNamespace() != null && attribute.getNamespace() != null && blackAttribute.getNamespace().equals(attribute.getNamespace())) {
+				return true;
+			}
+            if (blackAttribute.getNamespace() == null && attribute.getNamespace() == null) {
+				return true;
+			}
           }
         }
       }

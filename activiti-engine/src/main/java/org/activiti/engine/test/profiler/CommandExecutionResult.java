@@ -12,10 +12,10 @@ public class CommandExecutionResult {
     protected long totalTimeInMs;
     protected long databaseTimeInMs;
 
-    protected Map<String, Long> dbSelects = new HashMap<String, Long>();
-    protected Map<String, Long> dbInserts = new HashMap<String, Long>();
-    protected Map<String, Long> dbUpdates = new HashMap<String, Long>();
-    protected Map<String, Long> dbDeletes = new HashMap<String, Long>();
+    protected Map<String, Long> dbSelects = new HashMap<>();
+    protected Map<String, Long> dbInserts = new HashMap<>();
+    protected Map<String, Long> dbUpdates = new HashMap<>();
+    protected Map<String, Long> dbDeletes = new HashMap<>();
 
     public String getCommandFqn() {
         return commandFqn;
@@ -50,9 +50,7 @@ public class CommandExecutionResult {
     }
 
     public void addDbSelect(String select) {
-        if (!dbSelects.containsKey(select)) {
-            dbSelects.put(select, 0L);
-        }
+        dbSelects.putIfAbsent(select, 0L);
         Long oldValue = dbSelects.get(select);
         dbSelects.put(select, oldValue + 1);
     }
@@ -66,9 +64,7 @@ public class CommandExecutionResult {
     }
 
     public void addDbInsert(String insert) {
-        if (!dbInserts.containsKey(insert)) {
-            dbInserts.put(insert, 0L);
-        }
+        dbInserts.putIfAbsent(insert, 0L);
         Long oldValue = dbInserts.get(insert);
         dbInserts.put(insert, oldValue + 1);
     }
@@ -82,9 +78,7 @@ public class CommandExecutionResult {
     }
 
     public void addDbUpdate(String update) {
-        if (!dbUpdates.containsKey(update)) {
-            dbUpdates.put(update, 0L);
-        }
+        dbUpdates.putIfAbsent(update, 0L);
         Long oldValue = dbUpdates.get(update);
         dbUpdates.put(update, oldValue + 1);
     }
@@ -98,9 +92,7 @@ public class CommandExecutionResult {
     }
 
     public void addDbDelete(String delete) {
-        if (!dbDeletes.containsKey(delete)) {
-            dbDeletes.put(delete, 0L);
-        }
+        dbDeletes.putIfAbsent(delete, 0L);
         Long oldValue = dbDeletes.get(delete);
         dbDeletes.put(delete, oldValue + 1);
     }

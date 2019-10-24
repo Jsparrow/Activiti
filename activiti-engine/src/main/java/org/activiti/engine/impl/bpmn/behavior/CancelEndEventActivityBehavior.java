@@ -104,7 +104,7 @@ public class CancelEndEventActivityBehavior extends FlowNodeActivityBehavior {
 
     if (subProcess.getLoopCharacteristics() != null) {
       List<? extends ExecutionEntity> multiInstanceExecutions = parentScopeExecution.getExecutions();
-      List<ExecutionEntity> executionsToDelete = new ArrayList<ExecutionEntity>();
+      List<ExecutionEntity> executionsToDelete = new ArrayList<>();
       for (ExecutionEntity multiInstanceExecution : multiInstanceExecutions) {
         if (!multiInstanceExecution.getId().equals(parentScopeExecution.getId())) {
           ScopeUtil.createCopyOfSubProcessExecutionForCompensation(multiInstanceExecution);
@@ -116,9 +116,7 @@ public class CancelEndEventActivityBehavior extends FlowNodeActivityBehavior {
         }
       }
 
-      for (ExecutionEntity executionEntityToDelete : executionsToDelete) {
-        deleteChildExecutions(executionEntityToDelete, executionEntity, commandContext, DeleteReason.TRANSACTION_CANCELED);
-      }
+      executionsToDelete.forEach(executionEntityToDelete -> deleteChildExecutions(executionEntityToDelete, executionEntity, commandContext, DeleteReason.TRANSACTION_CANCELED));
     }
 
     // The current activity is finished (and will not be ended in the deleteChildExecutions)
@@ -141,11 +139,7 @@ public class CancelEndEventActivityBehavior extends FlowNodeActivityBehavior {
     ExecutionEntityManager executionEntityManager = commandContext.getExecutionEntityManager();
     Collection<ExecutionEntity> childExecutions = executionEntityManager.findChildExecutionsByParentExecutionId(parentExecution.getId());
     if (CollectionUtil.isNotEmpty(childExecutions)) {
-      for (ExecutionEntity childExecution : childExecutions) {
-        if (!(childExecution.getId().equals(notToDeleteExecution.getId()))) {
-          deleteChildExecutions(childExecution, notToDeleteExecution, commandContext, deleteReason);
-        }
-      }
+      childExecutions.stream().filter(childExecution -> !(childExecution.getId().equals(notToDeleteExecution.getId()))).forEach(childExecution -> deleteChildExecutions(childExecution, notToDeleteExecution, commandContext, deleteReason));
     }
 
     executionEntityManager.deleteExecutionAndRelatedData(parentExecution, deleteReason, false);

@@ -19,7 +19,7 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
             taskService.saveTask(adhocTask);
 
 
-            List<String> groups = new ArrayList<String>();
+            List<String> groups = new ArrayList<>();
             groups.add("group1");
 
 
@@ -41,14 +41,12 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
 
         } finally {
             List<Task> allTasks = taskService.createTaskQuery().list();
-            for(Task task : allTasks) {
-                if(task.getExecutionId() == null) {
-                    taskService.deleteTask(task.getId());
-                    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-                        historyService.deleteHistoricTaskInstance(task.getId());
-                    }
-                }
-            }
+            allTasks.stream().filter(task -> task.getExecutionId() == null).forEach(task -> {
+			    taskService.deleteTask(task.getId());
+			    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+			        historyService.deleteHistoricTaskInstance(task.getId());
+			    }
+			});
         }
     }
 
@@ -61,7 +59,7 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
             taskService.saveTask(adhocTask);
             taskService.addGroupIdentityLink(adhocTask.getId(), "group1", IdentityLinkType.PARTICIPANT);
 
-            List<String> groups = new ArrayList<String>();
+            List<String> groups = new ArrayList<>();
             groups.add("group1");
 
             assertEquals(3, taskService.getIdentityLinksForTask(adhocTask.getId()).size());
@@ -84,14 +82,12 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
             }
         } finally {
             List<Task> allTasks = taskService.createTaskQuery().list();
-            for(Task task : allTasks) {
-                if(task.getExecutionId() == null) {
-                    taskService.deleteTask(task.getId());
-                    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-                        historyService.deleteHistoricTaskInstance(task.getId());
-                    }
-                }
-            }
+            allTasks.stream().filter(task -> task.getExecutionId() == null).forEach(task -> {
+			    taskService.deleteTask(task.getId());
+			    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+			        historyService.deleteHistoricTaskInstance(task.getId());
+			    }
+			});
         }
     }
 
@@ -115,7 +111,7 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
 
 
 
-            List<String> groups = new ArrayList<String>();
+            List<String> groups = new ArrayList<>();
             groups.add("group1");
 
             assertEquals(2, taskService.createTaskQuery()
@@ -144,14 +140,12 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
 
         } finally {
             List<Task> allTasks = taskService.createTaskQuery().list();
-            for(Task task : allTasks) {
-                if(task.getExecutionId() == null) {
-                    taskService.deleteTask(task.getId());
-                    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-                        historyService.deleteHistoricTaskInstance(task.getId());
-                    }
-                }
-            }
+            allTasks.stream().filter(task -> task.getExecutionId() == null).forEach(task -> {
+			    taskService.deleteTask(task.getId());
+			    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+			        historyService.deleteHistoricTaskInstance(task.getId());
+			    }
+			});
         }
     }
 
@@ -166,7 +160,7 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
 
 
 
-            List<String> groups = new ArrayList<String>();
+            List<String> groups = new ArrayList<>();
             groups.add("group2");
 
             assertEquals(3, taskService.getIdentityLinksForTask(adhocTask.getId()).size());
@@ -188,14 +182,12 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
 
         } finally {
             List<Task> allTasks = taskService.createTaskQuery().list();
-            for(Task task : allTasks) {
-                if(task.getExecutionId() == null) {
-                    taskService.deleteTask(task.getId());
-                    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-                        historyService.deleteHistoricTaskInstance(task.getId());
-                    }
-                }
-            }
+            allTasks.stream().filter(task -> task.getExecutionId() == null).forEach(task -> {
+			    taskService.deleteTask(task.getId());
+			    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+			        historyService.deleteHistoricTaskInstance(task.getId());
+			    }
+			});
         }
     }
 
@@ -244,10 +236,10 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
 
 
 
-            List<String> andGroup = new ArrayList<String>();
+            List<String> andGroup = new ArrayList<>();
             andGroup.add("group1");
 
-            List<String> orGroup = new ArrayList<String>();
+            List<String> orGroup = new ArrayList<>();
             orGroup.add("group2");
             orGroup.add("group4");
 
@@ -264,14 +256,12 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
 
         } finally {
             List<Task> allTasks = taskService.createTaskQuery().list();
-            for(Task task : allTasks) {
-                if(task.getExecutionId() == null) {
-                    taskService.deleteTask(task.getId());
-                    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-                        historyService.deleteHistoricTaskInstance(task.getId());
-                    }
-                }
-            }
+            allTasks.stream().filter(task -> task.getExecutionId() == null).forEach(task -> {
+			    taskService.deleteTask(task.getId());
+			    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+			        historyService.deleteHistoricTaskInstance(task.getId());
+			    }
+			});
         }
     }
 
@@ -355,10 +345,10 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
             taskService.addGroupIdentityLink(taskUser2Group1andUser2Group4.getId(), "group4", IdentityLinkType.PARTICIPANT);
             taskService.addUserIdentityLink(taskUser2Group1andUser2Group4.getId(), "user2", IdentityLinkType.PARTICIPANT);
 
-            List<String> andGroup = new ArrayList<String>();
+            List<String> andGroup = new ArrayList<>();
             andGroup.add("group1");
 
-            List<String> orGroup = new ArrayList<String>();
+            List<String> orGroup = new ArrayList<>();
             orGroup.add("group2");
             orGroup.add("group4");
 
@@ -393,14 +383,12 @@ public class TaskInvolvementTest  extends PluggableActivitiTestCase {
 
         } finally {
             List<Task> allTasks = taskService.createTaskQuery().list();
-            for(Task task : allTasks) {
-                if(task.getExecutionId() == null) {
-                    taskService.deleteTask(task.getId());
-                    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-                        historyService.deleteHistoricTaskInstance(task.getId());
-                    }
-                }
-            }
+            allTasks.stream().filter(task -> task.getExecutionId() == null).forEach(task -> {
+			    taskService.deleteTask(task.getId());
+			    if(processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+			        historyService.deleteHistoricTaskInstance(task.getId());
+			    }
+			});
         }
     }
 }

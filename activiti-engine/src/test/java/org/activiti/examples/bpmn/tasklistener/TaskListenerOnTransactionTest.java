@@ -22,13 +22,17 @@ import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class TaskListenerOnTransactionTest extends PluggableActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(TaskListenerOnTransactionTest.class);
+
+@Deployment
   public void testOnCompleteCommitted() {
     CurrentTaskTransactionDependentTaskListener.clear();
 
@@ -80,6 +84,7 @@ public class TaskListenerOnTransactionTest extends PluggableActivitiTestCase {
     try {
       taskService.complete(task.getId());
     } catch (Exception ex) {
+		logger.error(ex.getMessage(), ex);
 
     }
 

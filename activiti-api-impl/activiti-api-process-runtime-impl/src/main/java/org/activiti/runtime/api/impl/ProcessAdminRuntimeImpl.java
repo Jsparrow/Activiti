@@ -148,7 +148,7 @@ public class ProcessAdminRuntimeImpl implements ProcessAdminRuntime {
                 .processInstanceId(processInstanceId)
                 .singleResult();
         if (internalProcessInstance == null) {
-            throw new NotFoundException("Unable to find process instance for the given id:'" + processInstanceId + "'");
+            throw new NotFoundException(new StringBuilder().append("Unable to find process instance for the given id:'").append(processInstanceId).append("'").toString());
         }
         return processInstanceConverter.from(internalProcessInstance);
     }
@@ -191,11 +191,11 @@ public class ProcessAdminRuntimeImpl implements ProcessAdminRuntime {
         ProcessInstanceImpl processInstance = (ProcessInstanceImpl) processInstance(deleteProcessPayload.getProcessInstanceId());
         runtimeService.deleteProcessInstance(deleteProcessPayload.getProcessInstanceId(),
                 deleteProcessPayload.getReason());
-        if (processInstance != null) {
-            processInstance.setStatus(ProcessInstance.ProcessInstanceStatus.DELETED);
-            return processInstance;
-        }
-        return null;
+        if (processInstance == null) {
+			return null;
+		}
+		processInstance.setStatus(ProcessInstance.ProcessInstanceStatus.DELETED);
+		return processInstance;
     }
 
     @Override

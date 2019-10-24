@@ -8,7 +8,6 @@ public class DefaultMessageExecutionContextFactory implements MessageExecutionCo
     
     
     public DefaultMessageExecutionContextFactory() {
-        super();
     }
     
     @Override

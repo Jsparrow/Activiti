@@ -46,7 +46,8 @@ public class FieldExtension extends BaseElement {
     this.expression = expression;
   }
 
-  public FieldExtension clone() {
+  @Override
+public FieldExtension clone() {
     FieldExtension clone = new FieldExtension();
     clone.setValues(this);
     return clone;

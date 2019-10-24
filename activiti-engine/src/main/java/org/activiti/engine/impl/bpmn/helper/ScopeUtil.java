@@ -41,7 +41,7 @@ public class ScopeUtil {
     ExecutionEntityManager executionEntityManager = Context.getCommandContext().getExecutionEntityManager();
     
     // first spawn the compensating executions
-    for (EventSubscriptionEntity eventSubscription : eventSubscriptions) {
+	eventSubscriptions.forEach(eventSubscription -> {
       ExecutionEntity compensatingExecution = null;
       
       // check whether compensating execution is already created (which is the case when compensating an embedded subprocess,
@@ -55,18 +55,18 @@ public class ScopeUtil {
         eventSubscription.setConfiguration(compensatingExecution.getId());
       }
       
-    }
+    });
 
     // signal compensation events in reverse order of their 'created' timestamp
-    Collections.sort(eventSubscriptions, new Comparator<EventSubscriptionEntity>() {
-      public int compare(EventSubscriptionEntity o1, EventSubscriptionEntity o2) {
+    eventSubscriptions.sort(new Comparator<EventSubscriptionEntity>() {
+      @Override
+	public int compare(EventSubscriptionEntity o1, EventSubscriptionEntity o2) {
         return o2.getCreated().compareTo(o1.getCreated());
       }
     });
 
-    for (CompensateEventSubscriptionEntity compensateEventSubscriptionEntity : eventSubscriptions) {
-      Context.getCommandContext().getEventSubscriptionEntityManager().eventReceived(compensateEventSubscriptionEntity, null, async);
-    }
+    eventSubscriptions.forEach(compensateEventSubscriptionEntity -> Context.getCommandContext().getEventSubscriptionEntityManager().eventReceived(compensateEventSubscriptionEntity,
+			null, async));
   }
   
   /**
@@ -76,39 +76,31 @@ public class ScopeUtil {
     EventSubscriptionEntityManager eventSubscriptionEntityManager = Context.getCommandContext().getEventSubscriptionEntityManager();
     List<EventSubscriptionEntity> eventSubscriptions = eventSubscriptionEntityManager.findEventSubscriptionsByExecutionAndType(subProcessExecution.getId(), "compensate");
     
-    List<CompensateEventSubscriptionEntity> compensateEventSubscriptions = new ArrayList<CompensateEventSubscriptionEntity>();
-    for (EventSubscriptionEntity event : eventSubscriptions) {
-      if (event instanceof CompensateEventSubscriptionEntity) {
-        compensateEventSubscriptions.add((CompensateEventSubscriptionEntity) event);
-      }
-    }
+    List<CompensateEventSubscriptionEntity> compensateEventSubscriptions = new ArrayList<>();
+    eventSubscriptions.stream().filter(event -> event instanceof CompensateEventSubscriptionEntity).forEach(event -> compensateEventSubscriptions.add((CompensateEventSubscriptionEntity) event));
 
-    if (CollectionUtil.isNotEmpty(compensateEventSubscriptions)) {
-      
-      ExecutionEntity processInstanceExecutionEntity = subProcessExecution.getProcessInstance();
-      
-      ExecutionEntity eventScopeExecution = Context.getCommandContext().getExecutionEntityManager().createChildExecution(processInstanceExecutionEntity); 
-      eventScopeExecution.setActive(false);
-      eventScopeExecution.setEventScope(true);
-      eventScopeExecution.setCurrentFlowElement(subProcessExecution.getCurrentFlowElement());
-
-      // copy local variables to eventScopeExecution by value. This way,
+    if (!CollectionUtil.isNotEmpty(compensateEventSubscriptions)) {
+		return;
+	}
+	ExecutionEntity processInstanceExecutionEntity = subProcessExecution.getProcessInstance();
+	ExecutionEntity eventScopeExecution = Context.getCommandContext().getExecutionEntityManager().createChildExecution(processInstanceExecutionEntity);
+	eventScopeExecution.setActive(false);
+	eventScopeExecution.setEventScope(true);
+	eventScopeExecution.setCurrentFlowElement(subProcessExecution.getCurrentFlowElement());
+	// copy local variables to eventScopeExecution by value. This way,
       // the eventScopeExecution references a 'snapshot' of the local variables
       new SubProcessVariableSnapshotter().setVariablesSnapshots(subProcessExecution, eventScopeExecution);
-
-      // set event subscriptions to the event scope execution:
-      for (CompensateEventSubscriptionEntity eventSubscriptionEntity : compensateEventSubscriptions) {
+	// set event subscriptions to the event scope execution:
+	compensateEventSubscriptions.forEach(eventSubscriptionEntity -> {
         eventSubscriptionEntityManager.delete(eventSubscriptionEntity);
 
         CompensateEventSubscriptionEntity newSubscription = eventSubscriptionEntityManager.insertCompensationEvent(
             eventScopeExecution, eventSubscriptionEntity.getActivityId());
         newSubscription.setConfiguration(eventSubscriptionEntity.getConfiguration());
         newSubscription.setCreated(eventSubscriptionEntity.getCreated());
-      }
-
-      CompensateEventSubscriptionEntity eventSubscription = eventSubscriptionEntityManager.insertCompensationEvent(
+      });
+	CompensateEventSubscriptionEntity eventSubscription = eventSubscriptionEntityManager.insertCompensationEvent(
           processInstanceExecutionEntity, eventScopeExecution.getCurrentFlowElement().getId());
-      eventSubscription.setConfiguration(eventScopeExecution.getId());
-    }
+	eventSubscription.setConfiguration(eventScopeExecution.getId());
   }
 }

@@ -49,12 +49,12 @@ public class HistoricTaskInstanceEntityManagerImpl extends AbstractEntityManager
   
   @Override
   public void deleteHistoricTaskInstancesByProcessInstanceId(String processInstanceId) {
-    if (getHistoryManager().isHistoryLevelAtLeast(HistoryLevel.AUDIT)) {
-      List<HistoricTaskInstanceEntity> taskInstances = historicTaskInstanceDataManager.findHistoricTaskInstanceByProcessInstanceId(processInstanceId); 
-      for (HistoricTaskInstanceEntity historicTaskInstanceEntity : taskInstances) {
-        delete(historicTaskInstanceEntity.getId()); // Needs to be by id (since that method is overridden, see below !)
-      }
-    }
+    if (!getHistoryManager().isHistoryLevelAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	List<HistoricTaskInstanceEntity> taskInstances = historicTaskInstanceDataManager.findHistoricTaskInstanceByProcessInstanceId(processInstanceId);
+	// Needs to be by id (since that method is overridden, see below !)
+	taskInstances.forEach(historicTaskInstanceEntity -> delete(historicTaskInstanceEntity.getId()));
   }
 
   @Override
@@ -85,14 +85,14 @@ public class HistoricTaskInstanceEntityManagerImpl extends AbstractEntityManager
 
   @Override
   public void delete(String id) {
-    if (getHistoryManager().isHistoryEnabled()) {
-      HistoricTaskInstanceEntity historicTaskInstance = findById(id);
-      if (historicTaskInstance != null) {
+    if (!getHistoryManager().isHistoryEnabled()) {
+		return;
+	}
+	HistoricTaskInstanceEntity historicTaskInstance = findById(id);
+	if (historicTaskInstance != null) {
         
         List<HistoricTaskInstanceEntity> subTasks = historicTaskInstanceDataManager.findHistoricTasksByParentTaskId(historicTaskInstance.getId());
-        for (HistoricTaskInstance subTask: subTasks) {
-          delete(subTask.getId());
-        }
+        subTasks.forEach(subTask -> delete(subTask.getId()));
 
         getHistoricDetailEntityManager().deleteHistoricDetailsByTaskId(id);
         getHistoricVariableInstanceEntityManager().deleteHistoricVariableInstancesByTaskId(id);
@@ -102,7 +102,6 @@ public class HistoricTaskInstanceEntityManagerImpl extends AbstractEntityManager
         
         delete(historicTaskInstance);
       }
-    }
   }
 
   @Override

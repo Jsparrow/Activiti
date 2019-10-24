@@ -35,7 +35,8 @@ public class TenantAwareExecuteAsyncRunnableFactory implements ExecuteAsyncRunna
     this.tenantId = tenantId;
   }
 
-  public Runnable createExecuteAsyncRunnable(Job job, ProcessEngineConfigurationImpl processEngineConfiguration) {
+  @Override
+public Runnable createExecuteAsyncRunnable(Job job, ProcessEngineConfigurationImpl processEngineConfiguration) {
     return new TenantAwareExecuteAsyncRunnable(job, processEngineConfiguration, tenantInfoHolder, tenantId);
   }
 

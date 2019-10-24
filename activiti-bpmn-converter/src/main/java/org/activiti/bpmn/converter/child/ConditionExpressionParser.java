@@ -23,11 +23,13 @@ import org.activiti.bpmn.model.SequenceFlow;
  */
 public class ConditionExpressionParser extends BaseChildElementParser {
 
-  public String getElementName() {
+  @Override
+public String getElementName() {
     return ELEMENT_FLOW_CONDITION;
   }
 
-  public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
+  @Override
+public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
     if (!(parentElement instanceof SequenceFlow)) {
       return;
     }

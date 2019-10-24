@@ -20,7 +20,7 @@ public class MessageEventDefinition extends EventDefinition {
   protected String messageRef;
   protected String messageExpression;
   protected String correlationKey;
-  protected List<FieldExtension> fieldExtensions = new ArrayList<FieldExtension>();
+  protected List<FieldExtension> fieldExtensions = new ArrayList<>();
   
   public List<FieldExtension> getFieldExtensions() {
     return fieldExtensions;
@@ -53,7 +53,8 @@ public class MessageEventDefinition extends EventDefinition {
       this.correlationKey = correlationKey;
   }
 
-  public MessageEventDefinition clone() {
+  @Override
+public MessageEventDefinition clone() {
     MessageEventDefinition clone = new MessageEventDefinition();
     clone.setValues(this);
     return clone;

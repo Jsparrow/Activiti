@@ -235,9 +235,7 @@ public class TerminateMultiInstanceEndEventTest extends PluggableActivitiTestCas
     List<Task> afterInnerMiTasks = taskService.createTaskQuery().taskName("AfterInnerMi").list();
     assertEquals(1, afterInnerMiTasks.size());
     
-    for (Task aTask : aTasks) {
-      taskService.complete(aTask.getId());
-    }
+    aTasks.forEach(aTask -> taskService.complete(aTask.getId()));
     
     // Finish
     List<Task> nextTasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
@@ -288,9 +286,7 @@ public class TerminateMultiInstanceEndEventTest extends PluggableActivitiTestCas
     List<Task> afterInnerMiTasks = taskService.createTaskQuery().taskName("AfterInnerMi").list();
     assertEquals(1, afterInnerMiTasks.size());
     
-    for (Task aTask : aTasks) {
-      taskService.complete(aTask.getId());
-    }
+    aTasks.forEach(aTask -> taskService.complete(aTask.getId()));
     
     // Finish
     List<Task> nextTasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();

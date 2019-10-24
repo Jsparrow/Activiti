@@ -63,7 +63,8 @@ public class GetTaskDataObjectsCmd implements Command<Map<String, DataObject>>,
         this.withLocalizationFallback = withLocalizationFallback;
     }
 
-    public Map<String, DataObject> execute(CommandContext commandContext) {
+    @Override
+	public Map<String, DataObject> execute(CommandContext commandContext) {
         if (taskId == null) {
             throw new ActivitiIllegalArgumentException("taskId is null");
         }
@@ -71,7 +72,7 @@ public class GetTaskDataObjectsCmd implements Command<Map<String, DataObject>>,
         TaskEntity task = commandContext.getTaskEntityManager().findById(taskId);
 
         if (task == null) {
-            throw new ActivitiObjectNotFoundException("task " + taskId + " doesn't exist",
+            throw new ActivitiObjectNotFoundException(new StringBuilder().append("task ").append(taskId).append(" doesn't exist").toString(),
                                                       Task.class);
         }
 

@@ -27,7 +27,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class ActivitiListenerParser extends BaseChildElementParser {
 
-  public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
+  @Override
+public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
 
     ActivitiListener listener = new ActivitiListener();
     BpmnXMLUtil.addXMLLocation(listener, xtr);

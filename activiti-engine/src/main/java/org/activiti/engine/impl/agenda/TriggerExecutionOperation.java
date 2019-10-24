@@ -42,11 +42,11 @@ public class TriggerExecutionOperation extends AbstractOperation {
         }
         
       } else {
-        throw new ActivitiException("Invalid behavior: " + activityBehavior + " should implement " + TriggerableActivityBehavior.class.getName());
+        throw new ActivitiException(new StringBuilder().append("Invalid behavior: ").append(activityBehavior).append(" should implement ").append(TriggerableActivityBehavior.class.getName()).toString());
       }
 
     } else {
-      throw new ActivitiException("Programmatic error: no current flow element found or invalid type: " + currentFlowElement + ". Halting.");
+      throw new ActivitiException(new StringBuilder().append("Programmatic error: no current flow element found or invalid type: ").append(currentFlowElement).append(". Halting.").toString());
     }
   }
 

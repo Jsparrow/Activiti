@@ -28,7 +28,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class SendTaskXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return SendTask.class;
   }
 
@@ -81,9 +82,9 @@ public class SendTaskXMLConverter extends BaseBpmnXMLConverter {
       if (indexOfP != -1) {
         String prefix = operationRef.substring(0, indexOfP);
         String resolvedNamespace = model.getNamespace(prefix);
-        result = resolvedNamespace + ":" + operationRef.substring(indexOfP + 1);
+        result = new StringBuilder().append(resolvedNamespace).append(":").append(operationRef.substring(indexOfP + 1)).toString();
       } else {
-        result = model.getTargetNamespace() + ":" + operationRef;
+        result = new StringBuilder().append(model.getTargetNamespace()).append(":").append(operationRef).toString();
       }
     }
     return result;

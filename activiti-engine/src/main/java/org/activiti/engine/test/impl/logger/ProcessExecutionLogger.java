@@ -29,12 +29,12 @@ public class ProcessExecutionLogger {
 
   private static final Logger logger = LoggerFactory.getLogger(ProcessExecutionLogger.class);
 
-  protected Map<String, List<DebugInfo>> debugInfoMap = new HashMap<String, List<DebugInfo>>();
+  protected Map<String, List<DebugInfo>> debugInfoMap = new HashMap<>();
 
   // To avoid going to the db (and thus influencing process execution/tests), we store all encountered executions here,
   // to build up a tree representation with that information afterwards.
-  protected Map<String, ExecutionEntity> createdExecutions = new HashMap<String, ExecutionEntity>();
-  protected Map<String, ExecutionEntity> deletedExecutions = new HashMap<String, ExecutionEntity>();
+  protected Map<String, ExecutionEntity> createdExecutions = new HashMap<>();
+  protected Map<String, ExecutionEntity> deletedExecutions = new HashMap<>();
 
   public ProcessExecutionLogger() {
 
@@ -48,9 +48,7 @@ public class ProcessExecutionLogger {
 
     // Store debug info
     String threadName = Thread.currentThread().getName();
-    if (!debugInfoMap.containsKey(threadName)) {
-      debugInfoMap.put(threadName, new ArrayList<DebugInfo>());
-    }
+    debugInfoMap.putIfAbsent(threadName, new ArrayList<>());
     debugInfoMap.get(threadName).add(debugInfo);
 
     // Generate execution tree
@@ -62,25 +60,21 @@ public class ProcessExecutionLogger {
   protected List<DebugInfoExecutionTree> generateExecutionTrees() {
 
     // Gather information
-    List<ExecutionEntity> processInstances = new ArrayList<ExecutionEntity>();
-    Map<String, List<ExecutionEntity>> parentMapping = new HashMap<String, List<ExecutionEntity>>();
+    List<ExecutionEntity> processInstances = new ArrayList<>();
+    Map<String, List<ExecutionEntity>> parentMapping = new HashMap<>();
 
-    for (ExecutionEntity executionEntity : createdExecutions.values()) {
-      if (!deletedExecutions.containsKey(executionEntity.getId())) {
+    createdExecutions.values().stream().filter(executionEntity -> !deletedExecutions.containsKey(executionEntity.getId())).forEach(executionEntity -> {
         if (executionEntity.getParentId() == null) {
           processInstances.add(executionEntity);
         } else {
-          if (!parentMapping.containsKey(executionEntity.getParentId())) {
-            parentMapping.put(executionEntity.getParentId(), new ArrayList<ExecutionEntity>());
-          }
+          parentMapping.putIfAbsent(executionEntity.getParentId(), new ArrayList<>());
           parentMapping.get(executionEntity.getParentId()).add(executionEntity);
         }
-      }
-    }
+      });
 
     // Build tree representation
-    List<DebugInfoExecutionTree> executionTrees = new ArrayList<DebugInfoExecutionTree>();
-    for (ExecutionEntity processInstance : processInstances) {
+    List<DebugInfoExecutionTree> executionTrees = new ArrayList<>();
+    processInstances.forEach(processInstance -> {
 
       DebugInfoExecutionTree executionTree = new DebugInfoExecutionTree();
       executionTrees.add(executionTree);
@@ -90,14 +84,14 @@ public class ProcessExecutionLogger {
       rootNode.setId(processInstance.getId());
 
       internalPopulateExecutionTree(rootNode, parentMapping);
-    }
+    });
 
     return executionTrees;
   }
 
   protected void internalPopulateExecutionTree(DebugInfoExecutionTreeNode parentNode, Map<String, List<ExecutionEntity>> parentMapping) {
     if (parentMapping.containsKey(parentNode.getId())) {
-      for (ExecutionEntity childExecutionEntity : parentMapping.get(parentNode.getId())) {
+      parentMapping.get(parentNode.getId()).forEach(childExecutionEntity -> {
         DebugInfoExecutionTreeNode childNode = new DebugInfoExecutionTreeNode();
         childNode.setId(childExecutionEntity.getId());
         childNode.setActivityId(childExecutionEntity.getCurrentFlowElement() != null ? childExecutionEntity.getCurrentFlowElement().getId() : null);
@@ -108,7 +102,7 @@ public class ProcessExecutionLogger {
         parentNode.getChildNodes().add(childNode);
 
         internalPopulateExecutionTree(childNode, parentMapping);
-      }
+      });
     }
   }
 
@@ -121,17 +115,15 @@ public class ProcessExecutionLogger {
     logger.info("--------------------------------");
     logger.info("CommandInvoker debug information");
     logger.info("--------------------------------");
-    for (String threadName : debugInfoMap.keySet()) {
+    debugInfoMap.keySet().forEach(threadName -> {
 
       logger.info("");
-      logger.info("Thread '" + threadName + "':");
+      logger.info(new StringBuilder().append("Thread '").append(threadName).append("':").toString());
       logger.info("");
 
-      for (DebugInfo debugInfo : debugInfoMap.get(threadName)) {
-        debugInfo.printOut(logger);
-      }
+      debugInfoMap.get(threadName).forEach(debugInfo -> debugInfo.printOut(logger));
 
-    }
+    });
 
     logger.info("");
 

@@ -30,13 +30,13 @@ public class ProcessDefinitionCategoryTest extends PluggableActivitiTestCase {
         .deploy();
 
     HashSet<String> processDefinitionNames = getProcessDefinitionNames(repositoryService.createProcessDefinitionQuery().processDefinitionCategoryNotEquals("one").list());
-    HashSet<String> expectedProcessDefinitionNames = new HashSet<String>();
+    HashSet<String> expectedProcessDefinitionNames = new HashSet<>();
     expectedProcessDefinitionNames.add("processTwo");
     expectedProcessDefinitionNames.add("processThree");
     assertEquals(expectedProcessDefinitionNames, processDefinitionNames);
 
     processDefinitionNames = getProcessDefinitionNames(repositoryService.createProcessDefinitionQuery().processDefinitionCategoryNotEquals("two").list());
-    expectedProcessDefinitionNames = new HashSet<String>();
+    expectedProcessDefinitionNames = new HashSet<>();
     expectedProcessDefinitionNames.add("processOne");
     expectedProcessDefinitionNames.add("processThree");
     assertEquals(expectedProcessDefinitionNames, processDefinitionNames);
@@ -45,10 +45,8 @@ public class ProcessDefinitionCategoryTest extends PluggableActivitiTestCase {
   }
 
   private HashSet<String> getProcessDefinitionNames(List<ProcessDefinition> processDefinitions) {
-    HashSet<String> processDefinitionNames = new HashSet<String>();
-    for (ProcessDefinition processDefinition : processDefinitions) {
-      processDefinitionNames.add(processDefinition.getKey());
-    }
+    HashSet<String> processDefinitionNames = new HashSet<>();
+    processDefinitions.forEach(processDefinition -> processDefinitionNames.add(processDefinition.getKey()));
     return processDefinitionNames;
   }
 

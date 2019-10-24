@@ -29,6 +29,9 @@ import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.stream.Collectors;
 
 /**
  * Test case for all {@link ActivitiEvent}s related to jobs.
@@ -37,7 +40,8 @@ import org.activiti.engine.test.Deployment;
  */
 public class JobEventsTest extends PluggableActivitiTestCase {
 
-  private TestActivitiEntityEventListener listener;
+  private static final Logger logger = LoggerFactory.getLogger(JobEventsTest.class);
+private TestActivitiEntityEventListener listener;
 
   /**
    * Test create, update and delete events of jobs entities.
@@ -165,7 +169,7 @@ public class JobEventsTest extends PluggableActivitiTestCase {
     // a new timer should be created with the repeat
     assertEquals(1, managementService.createTimerJobQuery().processInstanceId(processInstance.getId()).count());
     Job secondTimerInstance = managementService.createTimerJobQuery().processInstanceId(processInstance.getId()).singleResult();
-    assertTrue(firstTimerInstance.getId() != secondTimerInstance.getId());
+    assertTrue(!firstTimerInstance.getId().equals(secondTimerInstance.getId()));
 
     checkEventCount(1, ActivitiEventType.TIMER_FIRED);
     checkEventContext(filterEvents(ActivitiEventType.TIMER_FIRED).get(0), firstTimerInstance);
@@ -262,21 +266,17 @@ public class JobEventsTest extends PluggableActivitiTestCase {
     int timerCancelledCount = 0;
     List<ActivitiEvent> eventsReceived = listener.getEventsReceived();
     for (ActivitiEvent eventReceived : eventsReceived) {
-      if (eventType.equals(eventReceived.getType())) {
+      if (eventType == eventReceived.getType()) {
         timerCancelledCount++;
       }
     }
-    assertEquals(eventType.name() + " event was expected " + expectedCount + " times.", expectedCount, timerCancelledCount);
+    assertEquals(new StringBuilder().append(eventType.name()).append(" event was expected ").append(expectedCount).append(" times.").toString(), expectedCount, timerCancelledCount);
   }
 
   private List<ActivitiEvent> filterEvents(ActivitiEventType eventType) {
     List<ActivitiEvent> eventsReceived = listener.getEventsReceived();
     List<ActivitiEvent> filteredEvents = new ArrayList<>();
-    for (ActivitiEvent eventReceived : eventsReceived) {
-      if (eventType.equals(eventReceived.getType())) {
-        filteredEvents.add(eventReceived);
-      }
-    }
+    filteredEvents.addAll(eventsReceived.stream().filter(eventReceived -> eventType == eventReceived.getType()).collect(Collectors.toList()));
     return filteredEvents;
   }
   /**
@@ -352,6 +352,7 @@ public class JobEventsTest extends PluggableActivitiTestCase {
       managementService.executeJob(executableJob.getId());
       fail("Expected exception");
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
       // exception expected
     }
     
@@ -426,22 +427,15 @@ public class JobEventsTest extends PluggableActivitiTestCase {
 
     // Process Cancelled event should not be sent for the subprocess
     List<ActivitiEvent> eventsReceived = activitiEventListener.getEventsReceived();
-    for (ActivitiEvent eventReceived : eventsReceived) {
-      if (ActivitiEventType.PROCESS_CANCELLED.equals(eventReceived.getType())) {
-        fail("Should not have received PROCESS_CANCELLED event");
-      }
-    }
+    eventsReceived.stream().filter(eventReceived -> ActivitiEventType.PROCESS_CANCELLED == eventReceived.getType()).forEach(eventReceived -> fail("Should not have received PROCESS_CANCELLED event"));
 
     // validate the activityType string
-    for (ActivitiEvent eventReceived : eventsReceived) {
-      if (ActivitiEventType.ACTIVITY_CANCELLED.equals(eventReceived.getType())) {
-        ActivitiActivityEvent event = (ActivitiActivityEvent) eventReceived;
-        String activityType = event.getActivityType();
-        if (!"userTask".equals(activityType) && (!"subProcess".equals(activityType)) && (!"endEvent".equals(activityType))) {
+	eventsReceived.stream().filter(eventReceived -> ActivitiEventType.ACTIVITY_CANCELLED == eventReceived.getType()).map(eventReceived -> (ActivitiActivityEvent) eventReceived).forEach(event -> {
+		String activityType = event.getActivityType();
+		if (!"userTask".equals(activityType) && (!"subProcess".equals(activityType)) && (!"endEvent".equals(activityType))) {
           fail("Unexpected activity type: " + activityType);
         }
-      }
-    }
+	});
 
     task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
     assertEquals("Outside Task", task.getName());

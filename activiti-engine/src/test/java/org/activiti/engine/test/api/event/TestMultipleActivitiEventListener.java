@@ -25,7 +25,7 @@ public class TestMultipleActivitiEventListener implements ActivitiEventListener 
   private List<Class<?>> eventClasses;
 
   public TestMultipleActivitiEventListener() {
-    eventsReceived = new ArrayList<ActivitiEvent>();
+    eventsReceived = new ArrayList<>();
   }
 
   public List<ActivitiEvent> getEventsReceived() {
@@ -45,8 +45,9 @@ public class TestMultipleActivitiEventListener implements ActivitiEventListener 
 
   private boolean isAssignableFrom(Collection<Class<?>> classes, Object entity) {
     for (Class<?> itemClass : classes) {
-      if (itemClass.isAssignableFrom(entity.getClass()))
-        return true;
+      if (itemClass.isAssignableFrom(entity.getClass())) {
+		return true;
+	}
     }
     return false;
   }

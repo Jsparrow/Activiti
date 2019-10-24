@@ -34,7 +34,8 @@ public class ApplicationContextElResolver extends ELResolver {
     this.applicationContext = applicationContext;
   }
 
-  public Object getValue(ELContext context, Object base, Object property) {
+  @Override
+public Object getValue(ELContext context, Object base, Object property) {
     if (base == null) {
       // according to javadoc, can only be a String
       String key = (String) property;
@@ -48,28 +49,34 @@ public class ApplicationContextElResolver extends ELResolver {
     return null;
   }
 
-  public boolean isReadOnly(ELContext context, Object base, Object property) {
+  @Override
+public boolean isReadOnly(ELContext context, Object base, Object property) {
     return true;
   }
 
-  public void setValue(ELContext context, Object base, Object property, Object value) {
-    if (base == null) {
-      String key = (String) property;
-      if (applicationContext.containsBean(key)) {
-        throw new ActivitiException("Cannot set value of '" + property + "', it resolves to a bean defined in the Spring application-context.");
+  @Override
+public void setValue(ELContext context, Object base, Object property, Object value) {
+    if (base != null) {
+		return;
+	}
+	String key = (String) property;
+	if (applicationContext.containsBean(key)) {
+        throw new ActivitiException(new StringBuilder().append("Cannot set value of '").append(property).append("', it resolves to a bean defined in the Spring application-context.").toString());
       }
-    }
   }
 
-  public Class<?> getCommonPropertyType(ELContext context, Object arg) {
+  @Override
+public Class<?> getCommonPropertyType(ELContext context, Object arg) {
     return Object.class;
   }
 
-  public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object arg) {
+  @Override
+public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object arg) {
     return null;
   }
 
-  public Class<?> getType(ELContext context, Object arg1, Object arg2) {
+  @Override
+public Class<?> getType(ELContext context, Object arg1, Object arg2) {
     return Object.class;
   }
 }

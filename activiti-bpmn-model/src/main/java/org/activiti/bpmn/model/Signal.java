@@ -45,7 +45,8 @@ public class Signal extends BaseElement {
     this.scope = scope;
   }
 
-  public Signal clone() {
+  @Override
+public Signal clone() {
     Signal clone = new Signal();
     clone.setValues(this);
     return clone;

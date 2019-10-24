@@ -44,13 +44,12 @@ public class ScriptBindingsFactory {
   }
 
   protected List<Resolver> createResolvers(VariableScope variableScope) {
-    List<Resolver> scriptResolvers = new ArrayList<Resolver>();
-    for (ResolverFactory scriptResolverFactory : resolverFactories) {
-      Resolver resolver = scriptResolverFactory.createResolver(processEngineConfiguration, variableScope);
-      if (resolver != null) {
-        scriptResolvers.add(resolver);
-      }
-    }
+    List<Resolver> scriptResolvers = new ArrayList<>();
+    resolverFactories.stream().map(scriptResolverFactory -> scriptResolverFactory.createResolver(processEngineConfiguration, variableScope)).forEach(resolver -> {
+		if (resolver != null) {
+		    scriptResolvers.add(resolver);
+		  }
+	});
     return scriptResolvers;
   }
 

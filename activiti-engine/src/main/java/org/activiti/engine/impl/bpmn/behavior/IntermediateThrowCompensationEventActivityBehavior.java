@@ -62,7 +62,7 @@ public class IntermediateThrowCompensationEventActivityBehavior extends FlowNode
     CommandContext commandContext = Context.getCommandContext();
     EventSubscriptionEntityManager eventSubscriptionEntityManager = commandContext.getEventSubscriptionEntityManager();
     
-    List<CompensateEventSubscriptionEntity> eventSubscriptions = new ArrayList<CompensateEventSubscriptionEntity>();
+    List<CompensateEventSubscriptionEntity> eventSubscriptions = new ArrayList<>();
     if (StringUtils.isNotEmpty(activityRef)) {
       
       // If an activity ref is provided, only that activity is compensated
@@ -81,12 +81,9 @@ public class IntermediateThrowCompensationEventActivityBehavior extends FlowNode
         flowElementsContainer = throwEvent.getSubProcess();
       }
       
-      for (FlowElement flowElement : flowElementsContainer.getFlowElements()) {
-        if (flowElement instanceof Activity) {
-          eventSubscriptions.addAll(eventSubscriptionEntityManager
-              .findCompensateEventSubscriptionsByProcessInstanceIdAndActivityId(execution.getProcessInstanceId(), flowElement.getId()));
-        }
-      }
+      flowElementsContainer.getFlowElements().stream().filter(flowElement -> flowElement instanceof Activity).forEach(flowElement -> eventSubscriptions
+			.addAll(eventSubscriptionEntityManager.findCompensateEventSubscriptionsByProcessInstanceIdAndActivityId(
+					execution.getProcessInstanceId(), flowElement.getId())));
       
     }
     

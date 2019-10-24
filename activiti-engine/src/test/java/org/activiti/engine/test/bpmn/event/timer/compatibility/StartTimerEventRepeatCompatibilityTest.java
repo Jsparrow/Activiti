@@ -24,10 +24,13 @@ import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.api.event.TestActivitiEntityEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StartTimerEventRepeatCompatibilityTest extends TimerEventCompatibilityTest {
 
-  private TestActivitiEntityEventListener listener;
+  private static final Logger logger = LoggerFactory.getLogger(StartTimerEventRepeatCompatibilityTest.class);
+private TestActivitiEntityEventListener listener;
 
   @Override
   protected void setUp() throws Exception {
@@ -116,7 +119,8 @@ public class StartTimerEventRepeatCompatibilityTest extends TimerEventCompatibil
     try {
       waitForJobExecutorToProcessAllJobsAndExecutableTimerJobs(2000, 200);
     } catch (Exception e) {
-      fail("Because the maximum number of repeats is reached it will not be executed other jobs");
+      logger.error(e.getMessage(), e);
+	fail("Because the maximum number of repeats is reached it will not be executed other jobs");
     }
     
     // After the 10nth startEvent Execution should have 10 process instances started
@@ -139,7 +143,7 @@ public class StartTimerEventRepeatCompatibilityTest extends TimerEventCompatibil
     int timerFiredCount = 0;
     List<ActivitiEvent> eventsReceived = listener.getEventsReceived();
     for (ActivitiEvent eventReceived : eventsReceived) {
-      if (ActivitiEventType.TIMER_FIRED.equals(eventReceived.getType())) {
+      if (ActivitiEventType.TIMER_FIRED == eventReceived.getType()) {
         timerFiredCount++;
       }
     }
@@ -147,7 +151,7 @@ public class StartTimerEventRepeatCompatibilityTest extends TimerEventCompatibil
     // count "entity created" events
     int eventCreatedCount = 0;
     for (ActivitiEvent eventReceived : eventsReceived) {
-      if (ActivitiEventType.ENTITY_CREATED.equals(eventReceived.getType())) {
+      if (ActivitiEventType.ENTITY_CREATED == eventReceived.getType()) {
         eventCreatedCount++;
       }
     }
@@ -155,7 +159,7 @@ public class StartTimerEventRepeatCompatibilityTest extends TimerEventCompatibil
     // count "entity deleted" events
     int eventDeletedCount = 0;
     for (ActivitiEvent eventReceived : eventsReceived) {
-      if (ActivitiEventType.ENTITY_DELETED.equals(eventReceived.getType())) {
+      if (ActivitiEventType.ENTITY_DELETED == eventReceived.getType()) {
         eventDeletedCount++;
       }
     }

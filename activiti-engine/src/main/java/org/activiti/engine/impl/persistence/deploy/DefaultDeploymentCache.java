@@ -33,7 +33,7 @@ public class DefaultDeploymentCache<T> implements DeploymentCache<T> {
 
   /** Cache with no limit */
   public DefaultDeploymentCache() {
-    this.cache = Collections.synchronizedMap(new HashMap<String, T>());
+    this.cache = Collections.synchronizedMap(new HashMap<>());
   }
 
   /**
@@ -45,7 +45,8 @@ public class DefaultDeploymentCache<T> implements DeploymentCache<T> {
           // true will keep the 'access-order', which is needed to have a real LRU cache
           private static final long serialVersionUID = 1L;
 
-          protected boolean removeEldestEntry(Map.Entry<String, T> eldest) {
+          @Override
+		protected boolean removeEldestEntry(Map.Entry<String, T> eldest) {
             boolean removeEldest = size() > limit;
             if (removeEldest && logger.isTraceEnabled()) {
               logger.trace("Cache limit is reached, {} will be evicted", eldest.getKey());
@@ -56,15 +57,18 @@ public class DefaultDeploymentCache<T> implements DeploymentCache<T> {
         });
   }
 
-  public T get(String id) {
+  @Override
+public T get(String id) {
     return cache.get(id);
   }
 
-  public void add(String id, T obj) {
+  @Override
+public void add(String id, T obj) {
     cache.put(id, obj);
   }
 
-  public void remove(String id) {
+  @Override
+public void remove(String id) {
     cache.remove(id);
   }
 
@@ -73,7 +77,8 @@ public class DefaultDeploymentCache<T> implements DeploymentCache<T> {
     return cache.containsKey(id);
   }
 
-  public void clear() {
+  @Override
+public void clear() {
     cache.clear();
   }
 

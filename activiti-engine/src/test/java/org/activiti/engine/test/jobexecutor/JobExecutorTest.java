@@ -32,8 +32,7 @@ public class JobExecutorTest extends JobExecutorTestCase {
 
   public void testBasicJobExecutorOperation() throws Exception {
     CommandExecutor commandExecutor = processEngineConfiguration.getCommandExecutor();
-    commandExecutor.execute(new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    commandExecutor.execute((CommandContext commandContext) -> {
         JobManager jobManager = commandContext.getJobManager();
         jobManager.execute(createTweetMessage("message-one"));
         jobManager.execute(createTweetMessage("message-two"));
@@ -45,8 +44,7 @@ public class JobExecutorTest extends JobExecutorTestCase {
         timerJobManager.insert(createTweetTimer("timer-one", new Date()));
         timerJobManager.insert(createTweetTimer("timer-two", new Date()));
         return null;
-      }
-    });
+      });
 
     GregorianCalendar currentCal = new GregorianCalendar();
     currentCal.add(Calendar.MINUTE, 1);
@@ -54,8 +52,8 @@ public class JobExecutorTest extends JobExecutorTestCase {
 
     waitForJobExecutorToProcessAllJobs(8000L, 200L);
 
-    Set<String> messages = new HashSet<String>(tweetHandler.getMessages());
-    Set<String> expectedMessages = new HashSet<String>();
+    Set<String> messages = new HashSet<>(tweetHandler.getMessages());
+    Set<String> expectedMessages = new HashSet<>();
     expectedMessages.add("message-one");
     expectedMessages.add("message-two");
     expectedMessages.add("message-three");

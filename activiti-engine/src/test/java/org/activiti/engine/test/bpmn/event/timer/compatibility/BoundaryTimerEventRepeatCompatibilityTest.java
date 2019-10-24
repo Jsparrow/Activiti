@@ -12,10 +12,14 @@ import org.activiti.engine.test.Deployment;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BoundaryTimerEventRepeatCompatibilityTest extends TimerEventCompatibilityTest {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(BoundaryTimerEventRepeatCompatibilityTest.class);
+
+@Deployment
   public void testRepeatWithoutEnd() throws Throwable {
 
     Calendar calendar = Calendar.getInstance();
@@ -78,7 +82,8 @@ public class BoundaryTimerEventRepeatCompatibilityTest extends TimerEventCompati
     try {
       waitForJobExecutorToProcessAllJobs(2000, 100);
     } catch (Exception ex) {
-      fail("Should not have any other jobs because the endDate is reached");
+      logger.error(ex.getMessage(), ex);
+	fail("Should not have any other jobs because the endDate is reached");
     }
     
     tasks = taskService.createTaskQuery().list();
@@ -90,7 +95,8 @@ public class BoundaryTimerEventRepeatCompatibilityTest extends TimerEventCompati
     try {
       waitForJobExecutorToProcessAllJobs(2000, 500);
     } catch (Exception e) {
-      fail("No jobs should be active here.");
+      logger.error(e.getMessage(), e);
+	fail("No jobs should be active here.");
     }
 
     // now All the process instances should be completed

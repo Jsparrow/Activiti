@@ -34,7 +34,6 @@ public class AddEventListenerCommand implements Command<Void> {
   }
 
   public AddEventListenerCommand(ActivitiEventListener listener) {
-    super();
     this.listener = listener;
   }
 

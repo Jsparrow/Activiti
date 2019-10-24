@@ -84,7 +84,7 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
   protected String nameLikeIgnoreCase;
   protected String deploymentId;
   protected List<String> deploymentIds;
-  protected List<ExecutionQueryImpl> orQueryObjects = new ArrayList<ExecutionQueryImpl>();
+  protected List<ExecutionQueryImpl> orQueryObjects = new ArrayList<>();
   
   public ExecutionQueryImpl() {
   }
@@ -101,7 +101,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return false; // see dynamic query
   }
 
-  public ExecutionQueryImpl processDefinitionId(String processDefinitionId) {
+  @Override
+public ExecutionQueryImpl processDefinitionId(String processDefinitionId) {
     if (processDefinitionId == null) {
       throw new ActivitiIllegalArgumentException("Process definition id is null");
     }
@@ -109,7 +110,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQueryImpl processDefinitionKey(String processDefinitionKey) {
+  @Override
+public ExecutionQueryImpl processDefinitionKey(String processDefinitionKey) {
     if (processDefinitionKey == null) {
       throw new ActivitiIllegalArgumentException("Process definition key is null");
     }
@@ -144,7 +146,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQueryImpl processInstanceId(String processInstanceId) {
+  @Override
+public ExecutionQueryImpl processInstanceId(String processInstanceId) {
     if (processInstanceId == null) {
       throw new ActivitiIllegalArgumentException("Process instance id is null");
     }
@@ -152,7 +155,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQueryImpl rootProcessInstanceId(String rootProcessInstanceId) {
+  @Override
+public ExecutionQueryImpl rootProcessInstanceId(String rootProcessInstanceId) {
     if (rootProcessInstanceId == null) {
       throw new ActivitiIllegalArgumentException("Root process instance id is null");
     }
@@ -160,7 +164,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQuery processInstanceBusinessKey(String businessKey) {
+  @Override
+public ExecutionQuery processInstanceBusinessKey(String businessKey) {
     if (businessKey == null) {
       throw new ActivitiIllegalArgumentException("Business key is null");
     }
@@ -168,7 +173,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQuery processInstanceBusinessKey(String processInstanceBusinessKey, boolean includeChildExecutions) {
+  @Override
+public ExecutionQuery processInstanceBusinessKey(String processInstanceBusinessKey, boolean includeChildExecutions) {
     if (!includeChildExecutions) {
       return processInstanceBusinessKey(processInstanceBusinessKey);
     } else {
@@ -181,7 +187,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     }
   }
   
-  public ExecutionQuery processDefinitionKeys(Set<String> processDefinitionKeys) {
+  @Override
+public ExecutionQuery processDefinitionKeys(Set<String> processDefinitionKeys) {
     if (processDefinitionKeys == null) {
       throw new ActivitiIllegalArgumentException("Process definition keys is null");
     }
@@ -189,7 +196,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
   
-  public ExecutionQueryImpl executionId(String executionId) {
+  @Override
+public ExecutionQueryImpl executionId(String executionId) {
     if (executionId == null) {
       throw new ActivitiIllegalArgumentException("Execution id is null");
     }
@@ -197,7 +205,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQueryImpl activityId(String activityId) {
+  @Override
+public ExecutionQueryImpl activityId(String activityId) {
     this.activityId = activityId;
 
     if (activityId != null) {
@@ -206,7 +215,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQueryImpl parentId(String parentId) {
+  @Override
+public ExecutionQueryImpl parentId(String parentId) {
     if (parentId == null) {
       throw new ActivitiIllegalArgumentException("Parent id is null");
     }
@@ -214,22 +224,26 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQuery onlyChildExecutions() {
+  @Override
+public ExecutionQuery onlyChildExecutions() {
     this.onlyChildExecutions = true;
     return this;
   }
 
-  public ExecutionQuery onlySubProcessExecutions() {
+  @Override
+public ExecutionQuery onlySubProcessExecutions() {
     this.onlySubProcessExecutions = true;
     return this;
   }
 
-  public ExecutionQuery onlyProcessInstanceExecutions() {
+  @Override
+public ExecutionQuery onlyProcessInstanceExecutions() {
     this.onlyProcessInstanceExecutions = true;
     return this;
   }
 
-  public ExecutionQueryImpl executionTenantId(String tenantId) {
+  @Override
+public ExecutionQueryImpl executionTenantId(String tenantId) {
     if (tenantId == null) {
       throw new ActivitiIllegalArgumentException("execution tenant id is null");
     }
@@ -237,7 +251,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQueryImpl executionTenantIdLike(String tenantIdLike) {
+  @Override
+public ExecutionQueryImpl executionTenantIdLike(String tenantIdLike) {
     if (tenantIdLike == null) {
       throw new ActivitiIllegalArgumentException("execution tenant id is null");
     }
@@ -245,7 +260,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQueryImpl executionWithoutTenantId() {
+  @Override
+public ExecutionQueryImpl executionWithoutTenantId() {
     this.withoutTenantId = true;
     return this;
   }
@@ -254,11 +270,13 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return eventSubscription("signal", signalName);
   }
 
-  public ExecutionQuery signalEventSubscriptionName(String signalName) {
+  @Override
+public ExecutionQuery signalEventSubscriptionName(String signalName) {
     return eventSubscription("signal", signalName);
   }
 
-  public ExecutionQuery messageEventSubscriptionName(String messageName) {
+  @Override
+public ExecutionQuery messageEventSubscriptionName(String messageName) {
     return eventSubscription("message", messageName);
   }
 
@@ -270,37 +288,44 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
       throw new ActivitiIllegalArgumentException("event type is null");
     }
     if (eventSubscriptions == null) {
-      eventSubscriptions = new ArrayList<EventSubscriptionQueryValue>();
+      eventSubscriptions = new ArrayList<>();
     }
     eventSubscriptions.add(new EventSubscriptionQueryValue(eventName, eventType));
     return this;
   }
 
-  public ExecutionQuery processVariableValueEquals(String variableName, Object variableValue) {
+  @Override
+public ExecutionQuery processVariableValueEquals(String variableName, Object variableValue) {
     return variableValueEquals(variableName, variableValue, false);
   }
 
-  public ExecutionQuery processVariableValueEquals(Object variableValue) {
+  @Override
+public ExecutionQuery processVariableValueEquals(Object variableValue) {
     return variableValueEquals(variableValue, false);
   }
 
-  public ExecutionQuery processVariableValueNotEquals(String variableName, Object variableValue) {
+  @Override
+public ExecutionQuery processVariableValueNotEquals(String variableName, Object variableValue) {
     return variableValueNotEquals(variableName, variableValue, false);
   }
 
-  public ExecutionQuery processVariableValueEqualsIgnoreCase(String name, String value) {
+  @Override
+public ExecutionQuery processVariableValueEqualsIgnoreCase(String name, String value) {
     return variableValueEqualsIgnoreCase(name, value, false);
   }
 
-  public ExecutionQuery processVariableValueNotEqualsIgnoreCase(String name, String value) {
+  @Override
+public ExecutionQuery processVariableValueNotEqualsIgnoreCase(String name, String value) {
     return variableValueNotEqualsIgnoreCase(name, value, false);
   }
   
-  public ExecutionQuery processVariableValueLike(String name, String value) {
+  @Override
+public ExecutionQuery processVariableValueLike(String name, String value) {
     return variableValueLike(name, value, false);
   }
   
-  public ExecutionQuery processVariableValueLikeIgnoreCase(String name, String value) {
+  @Override
+public ExecutionQuery processVariableValueLikeIgnoreCase(String name, String value) {
     return variableValueLikeIgnoreCase(name, value, false);
   }
 
@@ -310,12 +335,14 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQuery withLocalizationFallback() {
+  @Override
+public ExecutionQuery withLocalizationFallback() {
     withLocalizationFallback = true;
     return this;
   }
 
-  public ExecutionQuery startedBefore(Date beforeTime) {
+  @Override
+public ExecutionQuery startedBefore(Date beforeTime) {
     if (beforeTime == null) {
       throw new ActivitiIllegalArgumentException("before time is null");
     }
@@ -324,7 +351,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQuery startedAfter(Date afterTime) {
+  @Override
+public ExecutionQuery startedAfter(Date afterTime) {
     if (afterTime == null) {
       throw new ActivitiIllegalArgumentException("after time is null");
     }
@@ -333,7 +361,8 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     return this;
   }
 
-  public ExecutionQuery startedBy(String userId) {
+  @Override
+public ExecutionQuery startedBy(String userId) {
     if (userId == null) {
       throw new ActivitiIllegalArgumentException("user id is null");
     }
@@ -344,42 +373,48 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
   
   // ordering ////////////////////////////////////////////////////
 
-  public ExecutionQueryImpl orderByProcessInstanceId() {
+  @Override
+public ExecutionQueryImpl orderByProcessInstanceId() {
     this.orderProperty = ExecutionQueryProperty.PROCESS_INSTANCE_ID;
     return this;
   }
 
-  public ExecutionQueryImpl orderByProcessDefinitionId() {
+  @Override
+public ExecutionQueryImpl orderByProcessDefinitionId() {
     this.orderProperty = ExecutionQueryProperty.PROCESS_DEFINITION_ID;
     return this;
   }
 
-  public ExecutionQueryImpl orderByProcessDefinitionKey() {
+  @Override
+public ExecutionQueryImpl orderByProcessDefinitionKey() {
     this.orderProperty = ExecutionQueryProperty.PROCESS_DEFINITION_KEY;
     return this;
   }
 
-  public ExecutionQueryImpl orderByTenantId() {
+  @Override
+public ExecutionQueryImpl orderByTenantId() {
     this.orderProperty = ExecutionQueryProperty.TENANT_ID;
     return this;
   }
 
   // results ////////////////////////////////////////////////////
 
-  public long executeCount(CommandContext commandContext) {
+  @Override
+public long executeCount(CommandContext commandContext) {
     checkQueryOk();
     ensureVariablesInitialized();
     return commandContext.getExecutionEntityManager().findExecutionCountByQueryCriteria(this);
   }
 
-  @SuppressWarnings({ "unchecked" })
+  @Override
+@SuppressWarnings({ "unchecked" })
   public List<Execution> executeList(CommandContext commandContext, Page page) {
     checkQueryOk();
     ensureVariablesInitialized();
     List<?> executions = commandContext.getExecutionEntityManager().findExecutionsByQueryCriteria(this, page);
     
     if (Context.getProcessEngineConfiguration().getPerformanceSettings().isEnableLocalization()) {
-      for (ExecutionEntity execution : (List<ExecutionEntity>) executions) {
+      ((List<ExecutionEntity>) executions).forEach(execution -> {
         String activityId = null;
         if (execution.getId().equals(execution.getProcessInstanceId())) {
           if (execution.getProcessDefinitionId() != null) {
@@ -396,7 +431,7 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
         if (activityId != null) {
           localize(execution, activityId);
         }
-      }
+      });
     }
 
     return (List<Execution>) executions;
@@ -408,9 +443,11 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
     executionEntity.setLocalizedDescription(null);
 
     String processDefinitionId = executionEntity.getProcessDefinitionId();
-    if (locale != null && processDefinitionId != null) {
-      ObjectNode languageNode = Context.getLocalizationElementProperties(locale, activityId, processDefinitionId, withLocalizationFallback);
-      if (languageNode != null) {
+    if (!(locale != null && processDefinitionId != null)) {
+		return;
+	}
+	ObjectNode languageNode = Context.getLocalizationElementProperties(locale, activityId, processDefinitionId, withLocalizationFallback);
+	if (languageNode != null) {
         JsonNode languageNameNode = languageNode.get(DynamicBpmnConstants.LOCALIZATION_NAME);
         if (languageNameNode != null && !languageNameNode.isNull()) {
           executionEntity.setLocalizedName(languageNameNode.asText());
@@ -421,7 +458,6 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
           executionEntity.setLocalizedDescription(languageDescriptionNode.asText());
         }
       }
-    }
   }
 
   // getters ////////////////////////////////////////////////////

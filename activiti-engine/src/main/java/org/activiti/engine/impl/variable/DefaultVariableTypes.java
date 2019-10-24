@@ -27,14 +27,16 @@ public class DefaultVariableTypes implements VariableTypes, Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private final List<VariableType> typesList = new ArrayList<VariableType>();
-  private final Map<String, VariableType> typesMap = new HashMap<String, VariableType>();
+  private final List<VariableType> typesList = new ArrayList<>();
+  private final Map<String, VariableType> typesMap = new HashMap<>();
 
-  public DefaultVariableTypes addType(VariableType type) {
+  @Override
+public DefaultVariableTypes addType(VariableType type) {
     return addType(type, typesList.size());
   }
 
-  public DefaultVariableTypes addType(VariableType type, int index) {
+  @Override
+public DefaultVariableTypes addType(VariableType type, int index) {
     typesList.add(index, type);
     typesMap.put(type.getTypeName(), type);
     return this;
@@ -44,16 +46,16 @@ public class DefaultVariableTypes implements VariableTypes, Serializable {
     this.typesList.clear();
     this.typesList.addAll(typesList);
     this.typesMap.clear();
-    for (VariableType type : typesList) {
-      typesMap.put(type.getTypeName(), type);
-    }
+    typesList.forEach(type -> typesMap.put(type.getTypeName(), type));
   }
 
-  public VariableType getVariableType(String typeName) {
+  @Override
+public VariableType getVariableType(String typeName) {
     return typesMap.get(typeName);
   }
 
-  public VariableType findVariableType(Object value) {
+  @Override
+public VariableType findVariableType(Object value) {
     for (VariableType type : typesList) {
       if (type.isAbleToStore(value)) {
         return type;
@@ -62,11 +64,13 @@ public class DefaultVariableTypes implements VariableTypes, Serializable {
     throw new ActivitiException("couldn't find a variable type that is able to serialize " + value);
   }
 
-  public int getTypeIndex(VariableType type) {
+  @Override
+public int getTypeIndex(VariableType type) {
     return typesList.indexOf(type);
   }
 
-  public int getTypeIndex(String typeName) {
+  @Override
+public int getTypeIndex(String typeName) {
     VariableType type = typesMap.get(typeName);
     if (type != null) {
       return getTypeIndex(type);
@@ -75,7 +79,8 @@ public class DefaultVariableTypes implements VariableTypes, Serializable {
     }
   }
 
-  public VariableTypes removeType(VariableType type) {
+  @Override
+public VariableTypes removeType(VariableType type) {
     typesList.remove(type);
     typesMap.remove(type.getTypeName());
     return this;

@@ -44,8 +44,9 @@ public class ModelEntityImpl extends AbstractEntity implements ModelEntity, Seri
     
   }
 
-  public Object getPersistentState() {
-    Map<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    Map<String, Object> persistentState = new HashMap<>();
     persistentState.put("name", this.name);
     persistentState.put("key", key);
     persistentState.put("category", this.category);
@@ -61,99 +62,123 @@ public class ModelEntityImpl extends AbstractEntity implements ModelEntity, Seri
 
   // getters and setters ////////////////////////////////////////////////////////
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
 
-  public String getKey() {
+  @Override
+public String getKey() {
     return key;
   }
 
-  public void setKey(String key) {
+  @Override
+public void setKey(String key) {
     this.key = key;
   }
 
-  public String getCategory() {
+  @Override
+public String getCategory() {
     return category;
   }
 
-  public void setCategory(String category) {
+  @Override
+public void setCategory(String category) {
     this.category = category;
   }
 
-  public Date getCreateTime() {
+  @Override
+public Date getCreateTime() {
     return createTime;
   }
 
-  public void setCreateTime(Date createTime) {
+  @Override
+public void setCreateTime(Date createTime) {
     this.createTime = createTime;
   }
 
-  public Date getLastUpdateTime() {
+  @Override
+public Date getLastUpdateTime() {
     return lastUpdateTime;
   }
 
-  public void setLastUpdateTime(Date lastUpdateTime) {
+  @Override
+public void setLastUpdateTime(Date lastUpdateTime) {
     this.lastUpdateTime = lastUpdateTime;
   }
 
-  public Integer getVersion() {
+  @Override
+public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(Integer version) {
+  @Override
+public void setVersion(Integer version) {
     this.version = version;
   }
 
-  public String getMetaInfo() {
+  @Override
+public String getMetaInfo() {
     return metaInfo;
   }
 
-  public void setMetaInfo(String metaInfo) {
+  @Override
+public void setMetaInfo(String metaInfo) {
     this.metaInfo = metaInfo;
   }
 
-  public String getDeploymentId() {
+  @Override
+public String getDeploymentId() {
     return deploymentId;
   }
 
-  public void setDeploymentId(String deploymentId) {
+  @Override
+public void setDeploymentId(String deploymentId) {
     this.deploymentId = deploymentId;
   }
 
-  public String getEditorSourceValueId() {
+  @Override
+public String getEditorSourceValueId() {
     return editorSourceValueId;
   }
 
-  public void setEditorSourceValueId(String editorSourceValueId) {
+  @Override
+public void setEditorSourceValueId(String editorSourceValueId) {
     this.editorSourceValueId = editorSourceValueId;
   }
 
-  public String getEditorSourceExtraValueId() {
+  @Override
+public String getEditorSourceExtraValueId() {
     return editorSourceExtraValueId;
   }
 
-  public void setEditorSourceExtraValueId(String editorSourceExtraValueId) {
+  @Override
+public void setEditorSourceExtraValueId(String editorSourceExtraValueId) {
     this.editorSourceExtraValueId = editorSourceExtraValueId;
   }
 
-  public String getTenantId() {
+  @Override
+public String getTenantId() {
     return tenantId;
   }
 
-  public void setTenantId(String tenantId) {
+  @Override
+public void setTenantId(String tenantId) {
     this.tenantId = tenantId;
   }
 
-  public boolean hasEditorSource() {
+  @Override
+public boolean hasEditorSource() {
     return this.editorSourceValueId != null;
   }
 
-  public boolean hasEditorSourceExtra() {
+  @Override
+public boolean hasEditorSourceExtra() {
     return this.editorSourceExtraValueId != null;
   }
 

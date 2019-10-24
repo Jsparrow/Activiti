@@ -35,7 +35,8 @@ public class DeleteAttachmentCmd implements Command<Object>, Serializable {
     this.attachmentId = attachmentId;
   }
 
-  public Object execute(CommandContext commandContext) {
+  @Override
+public Object execute(CommandContext commandContext) {
     AttachmentEntity attachment = commandContext.getAttachmentEntityManager().findById(attachmentId); 
 
     String processInstanceId = attachment.getProcessInstanceId();

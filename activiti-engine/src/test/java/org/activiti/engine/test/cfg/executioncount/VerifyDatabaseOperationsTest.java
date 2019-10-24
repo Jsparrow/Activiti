@@ -18,13 +18,16 @@ import org.activiti.engine.test.profiler.ProfileSession;
 import org.activiti.engine.test.profiler.ProfilingDbSqlSessionFactory;
 import org.activiti.engine.test.profiler.TotalExecutionTimeCommandInterceptor;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class VerifyDatabaseOperationsTest extends PluggableActivitiTestCase {
   
-  protected boolean oldExecutionTreeFetchValue;
+  private static final Logger logger = LoggerFactory.getLogger(VerifyDatabaseOperationsTest.class);
+protected boolean oldExecutionTreeFetchValue;
   protected boolean oldExecutionRelationshipCountValue;
   protected boolean oldenableProcessDefinitionInfoCacheValue;
   protected CommandInterceptor oldFirstCommandInterceptor;
@@ -76,22 +79,20 @@ public class VerifyDatabaseOperationsTest extends PluggableActivitiTestCase {
     processEngineConfiguration.setEnableProcessDefinitionInfoCache(oldenableProcessDefinitionInfoCacheValue);
     ((DefaultHistoryManager) processEngineConfiguration.getHistoryManager()).setHistoryLevel(oldHistoryLevel);
     
-    ((CommandExecutorImpl) processEngineConfiguration.getCommandExecutor()).setFirst(oldFirstCommandInterceptor);;
+    ((CommandExecutorImpl) processEngineConfiguration.getCommandExecutor()).setFirst(oldFirstCommandInterceptor);
     
     processEngineConfiguration.addSessionFactory(oldDbSqlSessionFactory);
     
     // Validate (cause this tended to be screwed up)
     List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery().list();
-    for (HistoricActivityInstance historicActivityInstance : historicActivityInstances) {
+    historicActivityInstances.forEach(historicActivityInstance -> {
       Assert.assertTrue(historicActivityInstance.getStartTime() != null);
       Assert.assertTrue(historicActivityInstance.getEndTime() != null);
-    }
+    });
     
     ActivitiProfiler.getInstance().reset();
     
-    for (Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+    repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
     super.tearDown();
   }
   
@@ -258,10 +259,8 @@ public class VerifyDatabaseOperationsTest extends PluggableActivitiTestCase {
     Map<String, CommandStats> allStats = profileSession.calculateSummaryStatistics();
     
     if (commands.length != allStats.size()) {
-      System.out.println("Following commands were found: ");
-      for (String command : allStats.keySet()) {
-        System.out.println(command);
-      }
+      logger.info("Following commands were found: ");
+      allStats.keySet().forEach(logger::info);
     }
     Assert.assertEquals(commands.length, allStats.size());
     
@@ -288,14 +287,14 @@ public class VerifyDatabaseOperationsTest extends PluggableActivitiTestCase {
     CommandStats stats = getStats(commandClass);
     
     if (expectedInserts.length / 2 != stats.getDbInserts().size()) {
-      Assert.fail("Unexpected number of database inserts : " + stats.getDbInserts().size() + ", but expected " + expectedInserts.length / 2);
+      Assert.fail(new StringBuilder().append("Unexpected number of database inserts : ").append(stats.getDbInserts().size()).append(", but expected ").append(expectedInserts.length / 2).toString());
     }
     
     for (int i=0; i<expectedInserts.length; i+=2) {
       String dbInsert = (String) expectedInserts[i];
       Long count = (Long) expectedInserts[i+1];
       
-      Assert.assertEquals("Insert count for " + dbInsert + "not correct", count, stats.getDbInserts().get("org.activiti.engine.impl.persistence.entity." + dbInsert));
+      Assert.assertEquals(new StringBuilder().append("Insert count for ").append(dbInsert).append("not correct").toString(), count, stats.getDbInserts().get("org.activiti.engine.impl.persistence.entity." + dbInsert));
     }
   }
   
@@ -310,7 +309,7 @@ public class VerifyDatabaseOperationsTest extends PluggableActivitiTestCase {
       String dbDelete = (String) expectedDeletes[i];
       Long count = (Long) expectedDeletes[i+1];
       
-      Assert.assertEquals("Delete count count for " + dbDelete + "not correct", count, stats.getDbDeletes().get("org.activiti.engine.impl.persistence.entity." + dbDelete));
+      Assert.assertEquals(new StringBuilder().append("Delete count count for ").append(dbDelete).append("not correct").toString(), count, stats.getDbDeletes().get("org.activiti.engine.impl.persistence.entity." + dbDelete));
     }
   }
   
@@ -380,7 +379,7 @@ public class VerifyDatabaseOperationsTest extends PluggableActivitiTestCase {
   protected void stopProfiling() {
     ActivitiProfiler profiler = ActivitiProfiler.getInstance();
     profiler.stopCurrentProfileSession();
-    new ConsoleLogger(profiler).log();;
+    new ConsoleLogger(profiler).log();
   }
 
 }

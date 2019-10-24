@@ -14,23 +14,20 @@ import org.slf4j.LoggerFactory;
 public class VariableParsingService {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableParsingService.class);
+	private Map<String, VariableType> variableTypeMap;
 
-    public VariableParsingService(Map<String, VariableType> variableTypeMap) {
+	public VariableParsingService(Map<String, VariableType> variableTypeMap) {
         this.variableTypeMap = variableTypeMap;
     }
 
-    private Map<String, VariableType> variableTypeMap;
-
-    public Object parse(VariableDefinition variableDefinition) throws ActivitiException{
+	public Object parse(VariableDefinition variableDefinition){
 
 
-        if(variableDefinition.getType()!=null) {
-            VariableType type = variableTypeMap.get(variableDefinition.getType());
-
-            return type.parseFromValue(variableDefinition.getValue());
-        }
-
-        return variableDefinition.getValue();
+        if (variableDefinition.getType() == null) {
+			return variableDefinition.getValue();
+		}
+		VariableType type = variableTypeMap.get(variableDefinition.getType());
+		return type.parseFromValue(variableDefinition.getValue());
     }
 
 }

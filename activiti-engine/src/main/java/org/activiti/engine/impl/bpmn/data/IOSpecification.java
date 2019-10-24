@@ -35,20 +35,16 @@ public class IOSpecification {
   protected List<DataRef> dataOutputRefs;
 
   public IOSpecification() {
-    this.dataInputs = new ArrayList<Data>();
-    this.dataOutputs = new ArrayList<Data>();
-    this.dataInputRefs = new ArrayList<DataRef>();
-    this.dataOutputRefs = new ArrayList<DataRef>();
+    this.dataInputs = new ArrayList<>();
+    this.dataOutputs = new ArrayList<>();
+    this.dataInputRefs = new ArrayList<>();
+    this.dataOutputRefs = new ArrayList<>();
   }
 
   public void initialize(DelegateExecution execution) {
-    for (Data data : this.dataInputs) {
-      execution.setVariable(data.getName(), data.getDefinition().createInstance());
-    }
+    this.dataInputs.forEach(data -> execution.setVariable(data.getName(), data.getDefinition().createInstance()));
 
-    for (Data data : this.dataOutputs) {
-      execution.setVariable(data.getName(), data.getDefinition().createInstance());
-    }
+    this.dataOutputs.forEach(data -> execution.setVariable(data.getName(), data.getDefinition().createInstance()));
   }
 
   public List<Data> getDataInputs() {

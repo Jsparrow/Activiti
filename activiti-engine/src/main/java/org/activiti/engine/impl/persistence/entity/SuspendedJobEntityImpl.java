@@ -23,7 +23,7 @@ public class SuspendedJobEntityImpl extends AbstractJobEntityImpl implements Sus
 
   @Override
   public String toString() {
-    return "SuspendedJobEntity [id=" + id + "]";
+    return new StringBuilder().append("SuspendedJobEntity [id=").append(id).append("]").toString();
   }
 
 }

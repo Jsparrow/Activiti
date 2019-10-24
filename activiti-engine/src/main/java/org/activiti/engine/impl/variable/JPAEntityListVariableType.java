@@ -75,7 +75,7 @@ public class JPAEntityListVariableType implements VariableType, CacheableVariabl
   public void setValue(Object value, ValueFields valueFields) {
     EntityManagerSession entityManagerSession = Context.getCommandContext().getSession(EntityManagerSession.class);
     if (entityManagerSession == null) {
-      throw new ActivitiException("Cannot set JPA variable: " + EntityManagerSession.class + " not configured");
+      throw new ActivitiException(new StringBuilder().append("Cannot set JPA variable: ").append(EntityManagerSession.class).append(" not configured").toString());
     } else {
       // Before we set the value we must flush all pending changes from
       // the entitymanager
@@ -87,12 +87,10 @@ public class JPAEntityListVariableType implements VariableType, CacheableVariabl
 
     if (value instanceof List<?> && ((List<?>) value).size() > 0) {
       List<?> list = (List<?>) value;
-      List<String> ids = new ArrayList<String>();
+      List<String> ids = new ArrayList<>();
 
       String type = mappings.getJPAClassString(list.get(0));
-      for (Object entry : list) {
-        ids.add(mappings.getJPAIdString(entry));
-      }
+      list.forEach(entry -> ids.add(mappings.getJPAIdString(entry)));
 
       // Store type in text field and the ID's as a serialized array
       valueFields.setBytes(serializeIds(ids));
@@ -110,19 +108,16 @@ public class JPAEntityListVariableType implements VariableType, CacheableVariabl
   @Override
   public Object getValue(ValueFields valueFields) {
     byte[] bytes = valueFields.getBytes();
-    if (valueFields.getTextValue() != null && bytes != null) {
-      String entityClass = valueFields.getTextValue();
-
-      List<Object> result = new ArrayList<Object>();
-      String[] ids = deserializeIds(bytes);
-
-      for (String id : ids) {
+    if (!(valueFields.getTextValue() != null && bytes != null)) {
+		return null;
+	}
+	String entityClass = valueFields.getTextValue();
+	List<Object> result = new ArrayList<>();
+	String[] ids = deserializeIds(bytes);
+	for (String id : ids) {
         result.add(mappings.getJPAEntity(entityClass, id));
       }
-
-      return result;
-    }
-    return null;
+	return result;
   }
 
   /**
@@ -152,9 +147,7 @@ public class JPAEntityListVariableType implements VariableType, CacheableVariabl
       }
 
       return (String[]) read;
-    } catch (IOException ioe) {
-      throw new ActivitiException("Unexpected exception when deserializing JPA id's", ioe);
-    } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException | IOException e) {
       throw new ActivitiException("Unexpected exception when deserializing JPA id's", e);
     }
   }

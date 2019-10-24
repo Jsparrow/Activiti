@@ -67,10 +67,8 @@ public class ResetExpiredJobsTest extends PluggableActivitiTestCase {
     expiredJobs = managementService.executeCommand(new FindExpiredJobsCmd(expiredJobsPagesSize));
     assertTrue(expiredJobs.size() > 0);
     
-    List<String> jobIds = new ArrayList<String>();
-    for (JobEntity jobEntity : expiredJobs) {
-      jobIds.add(jobEntity.getId());
-    }
+    List<String> jobIds = new ArrayList<>();
+    expiredJobs.forEach(jobEntity -> jobIds.add(jobEntity.getId()));
     
     managementService.executeCommand(new ResetExpiredJobsCmd(jobIds));
     assertJobDetails(false);
@@ -87,11 +85,10 @@ public class ResetExpiredJobsTest extends PluggableActivitiTestCase {
     
     List<Job> unlockedJobs = managementService.createJobQuery().unlocked().list();
     assertEquals(2, unlockedJobs.size());
-    for (Job job : unlockedJobs) {
-      JobEntity jobEntity = (JobEntity) job;
-      assertNull(jobEntity.getLockOwner());
-      assertNull(jobEntity.getLockExpirationTime());
-    }
+    unlockedJobs.stream().map(job -> (JobEntity) job).forEach(jobEntity -> {
+		assertNull(jobEntity.getLockOwner());
+		assertNull(jobEntity.getLockExpirationTime());
+	});
   }
 
   protected void assertJobDetails(boolean locked) {

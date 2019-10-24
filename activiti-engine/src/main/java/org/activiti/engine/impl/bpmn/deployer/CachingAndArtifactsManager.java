@@ -29,6 +29,8 @@ import org.activiti.engine.impl.persistence.entity.DeploymentEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntityManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Updates caches and artifacts for a deployment, its process definitions, 
@@ -36,7 +38,9 @@ import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntityMa
  */
 public class CachingAndArtifactsManager {
   
-  /**
+  private static final Logger logger = LoggerFactory.getLogger(CachingAndArtifactsManager.class);
+
+/**
    * Ensures that the process definition is cached in the appropriate places, including the
    * deployment's collection of deployed artifacts and the deployment manager's cache, as well
    * as caching any ProcessDefinitionInfos.
@@ -48,7 +52,7 @@ public class CachingAndArtifactsManager {
       = processEngineConfiguration.getDeploymentManager().getProcessDefinitionCache();
     DeploymentEntity deployment = parsedDeployment.getDeployment();
 
-    for (ProcessDefinitionEntity processDefinition : parsedDeployment.getAllProcessDefinitions()) {
+    parsedDeployment.getAllProcessDefinitions().forEach(processDefinition -> {
       BpmnModel bpmnModel = parsedDeployment.getBpmnModelForProcessDefinition(processDefinition);
       Process process = parsedDeployment.getProcessModelForProcessDefinition(processDefinition);
       ProcessDefinitionCacheEntry cacheEntry = new ProcessDefinitionCacheEntry(processDefinition, bpmnModel, process);
@@ -57,7 +61,7 @@ public class CachingAndArtifactsManager {
     
       // Add to deployment for further usage
       deployment.addDeployedArtifact(processDefinition);
-    }
+    });
   }
 
   protected void addDefinitionInfoToCache(ProcessDefinitionEntity processDefinition, 
@@ -79,7 +83,8 @@ public class CachingAndArtifactsManager {
         try {
           infoNode = (ObjectNode) objectMapper.readTree(infoBytes);
         } catch (Exception e) {
-          throw new ActivitiException("Error deserializing json info for process definition " + processDefinition.getId());
+          logger.error(e.getMessage(), e);
+		throw new ActivitiException("Error deserializing json info for process definition " + processDefinition.getId());
         }
       }
     }

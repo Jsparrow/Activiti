@@ -68,9 +68,7 @@ public class ActivityEventsTest extends PluggableActivitiTestCase {
     }
 
     // Remove entries
-    for (EventLogEntry eventLogEntry : managementService.getEventLogEntries(null, null)) {
-      managementService.deleteEventLogEntry(eventLogEntry.getLogNumber());
-    }
+	managementService.getEventLogEntries(null, null).forEach(eventLogEntry -> managementService.deleteEventLogEntry(eventLogEntry.getLogNumber()));
 
     // Database event logger teardown
     runtimeService.removeEventListener(databaseEventLogger);
@@ -507,16 +505,16 @@ public class ActivityEventsTest extends PluggableActivitiTestCase {
 
     // Check timeout-events have been dispatched
     assertEquals(4, listener.getEventsReceived().size());
-    List<String> eventIdList = new ArrayList<String>();
-    for (ActivitiEvent event : listener.getEventsReceived()) {
+    List<String> eventIdList = new ArrayList<>();
+    listener.getEventsReceived().forEach(event -> {
       assertEquals(ActivitiEventType.ACTIVITY_CANCELLED, event.getType());
       assertTrue("TIMER is the cause of the cancellation", ((ActivitiActivityCancelledEvent) event).getCause() instanceof JobEntity);
       eventIdList.add(((ActivitiActivityEventImpl) event).getActivityId());
-    }
-    assertTrue(eventIdList.indexOf("innerTask1") >= 0);
-    assertTrue(eventIdList.indexOf("innerTask2") >= 0);
-    assertTrue(eventIdList.indexOf("subprocess") >= 0);
-    assertTrue(eventIdList.indexOf("innerSubprocess") >= 0);
+    });
+    assertTrue(eventIdList.contains("innerTask1"));
+    assertTrue(eventIdList.contains("innerTask2"));
+    assertTrue(eventIdList.contains("subprocess"));
+    assertTrue(eventIdList.contains("innerSubprocess"));
   }
 
   @Deployment
@@ -534,12 +532,12 @@ public class ActivityEventsTest extends PluggableActivitiTestCase {
 
     // Check timeout-events have been dispatched
     assertEquals(4, listener.getEventsReceived().size());
-    List<String> eventIdList = new ArrayList<String>();
-    for (ActivitiEvent event : listener.getEventsReceived()) {
+    List<String> eventIdList = new ArrayList<>();
+    listener.getEventsReceived().forEach(event -> {
       assertEquals(ActivitiEventType.ACTIVITY_CANCELLED, event.getType());
       assertTrue("TIMER is the cause of the cancellation", ((ActivitiActivityCancelledEvent) event).getCause() instanceof JobEntity);
       eventIdList.add(((ActivitiActivityEventImpl) event).getActivityId());
-    }
+    });
     assertTrue(eventIdList.contains("innerTask1"));
     assertTrue(eventIdList.contains("innerTask2"));
     assertTrue(eventIdList.contains("callActivity"));

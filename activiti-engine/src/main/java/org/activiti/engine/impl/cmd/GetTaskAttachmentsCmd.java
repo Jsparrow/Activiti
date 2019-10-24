@@ -32,7 +32,8 @@ public class GetTaskAttachmentsCmd implements Command<List<? extends Attachment>
     this.taskId = taskId;
   }
 
-  public List<? extends Attachment> execute(CommandContext commandContext) {
+  @Override
+public List<? extends Attachment> execute(CommandContext commandContext) {
     return commandContext.getAttachmentEntityManager().findAttachmentsByTaskId(taskId);
   }
 }

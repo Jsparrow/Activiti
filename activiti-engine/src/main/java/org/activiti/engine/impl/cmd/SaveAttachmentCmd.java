@@ -35,7 +35,8 @@ public class SaveAttachmentCmd implements Command<Object>, Serializable {
     this.attachment = attachment;
   }
 
-  public Object execute(CommandContext commandContext) {
+  @Override
+public Object execute(CommandContext commandContext) {
     AttachmentEntity updateAttachment = commandContext.getAttachmentEntityManager().findById(attachment.getId());
 
     String processInstanceId = updateAttachment.getProcessInstanceId();

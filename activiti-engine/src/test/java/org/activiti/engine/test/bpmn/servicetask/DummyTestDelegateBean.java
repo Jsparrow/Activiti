@@ -22,7 +22,8 @@ public class DummyTestDelegateBean implements JavaDelegate, Serializable {
   
   private static final long serialVersionUID = 1L;
   
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     execution.setVariable("executed", true);
   }
 }

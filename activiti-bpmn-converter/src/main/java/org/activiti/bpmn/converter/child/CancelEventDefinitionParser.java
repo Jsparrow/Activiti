@@ -22,11 +22,13 @@ import org.activiti.bpmn.model.Event;
 
 public class CancelEventDefinitionParser extends BaseChildElementParser {
 
-    public String getElementName() {
+    @Override
+	public String getElementName() {
         return ELEMENT_EVENT_CANCELDEFINITION;
     }
 
-    public void parseChildElement(XMLStreamReader xtr,
+    @Override
+	public void parseChildElement(XMLStreamReader xtr,
                                   BaseElement parentElement,
                                   BpmnModel model) throws Exception {
         if (!(parentElement instanceof Event)) {

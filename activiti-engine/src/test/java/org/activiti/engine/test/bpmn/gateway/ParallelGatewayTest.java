@@ -142,11 +142,7 @@ public class ParallelGatewayTest extends PluggableActivitiTestCase {
 
     List<HistoricActivityInstance> history = historyService.createHistoricActivityInstanceQuery().processInstanceId(pi.getId()).list();
 
-    for (HistoricActivityInstance h : history) {
-      if (h.getActivityId().equals("parallelgateway2")) {
-        assertNotNull(h.getEndTime());
-      }
-    }
+    history.stream().filter(h -> "parallelgateway2".equals(h.getActivityId())).forEach(h -> assertNotNull(h.getEndTime()));
 
   }
 
@@ -165,15 +161,16 @@ public class ParallelGatewayTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testHistoricActivityInstanceEndTimes() {
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      runtimeService.startProcessInstanceByKey("nestedForkJoin");
-      List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery().list();
-      assertEquals(21, historicActivityInstances.size());
-      for (HistoricActivityInstance historicActivityInstance : historicActivityInstances) {
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	runtimeService.startProcessInstanceByKey("nestedForkJoin");
+	List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery().list();
+	assertEquals(21, historicActivityInstances.size());
+	historicActivityInstances.forEach(historicActivityInstance -> {
         Assert.assertTrue(historicActivityInstance.getStartTime() != null);
         Assert.assertTrue(historicActivityInstance.getEndTime() != null);
-      }
-    }
+      });
   }
 
 }

@@ -51,9 +51,7 @@ public class DebugInfoOperationExecuted extends AbstractDebugInfo {
     printOperationInfo(logger);
 
     if (getExecutionTrees().size() > 0) {
-      for (DebugInfoExecutionTree executionTree : getExecutionTrees()) {
-        executionTree.getProcessInstance().print(logger);
-      }
+      getExecutionTrees().forEach(executionTree -> executionTree.getProcessInstance().print(logger));
     }
   }
 

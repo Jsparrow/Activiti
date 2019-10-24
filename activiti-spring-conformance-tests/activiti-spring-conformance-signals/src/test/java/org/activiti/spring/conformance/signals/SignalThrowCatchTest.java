@@ -53,9 +53,7 @@ public class SignalThrowCatchTest {
         securityUtil.logInAs("admin");
         Page<ProcessInstance> processInstancePage = processAdminRuntime.processInstances(Pageable.of(0,
                                                                                                      50));
-        for (ProcessInstance pi : processInstancePage.getContent()) {
-            processAdminRuntime.delete(ProcessPayloadBuilder.delete(pi.getId()));
-        }
+        processInstancePage.getContent().forEach(pi -> processAdminRuntime.delete(ProcessPayloadBuilder.delete(pi.getId())));
         clearEvents();
     }
 
@@ -83,7 +81,7 @@ public class SignalThrowCatchTest {
 
         assertThat(RuntimeTestConfiguration.collectedEvents)
                 .filteredOn(event -> event.getEventType().equals(BPMNActivityEvent.ActivityEvents.ACTIVITY_STARTED))
-                .filteredOn(event -> ((BPMNActivity) event.getEntity()).getActivityType().equals("throwEvent"))
+                .filteredOn(event -> "throwEvent".equals(((BPMNActivity) event.getEntity()).getActivityType()))
                 .extracting(event -> ((BPMNActivity) event.getEntity()).getActivityType(),
                             event -> ((BPMNActivity) event.getEntity()).getProcessInstanceId())
                 .contains(

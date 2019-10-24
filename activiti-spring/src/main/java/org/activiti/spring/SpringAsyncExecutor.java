@@ -19,6 +19,8 @@ import org.activiti.engine.impl.asyncexecutor.ExecuteAsyncRunnable;
 import org.activiti.engine.impl.persistence.entity.JobEntity;
 import org.activiti.engine.runtime.Job;
 import org.springframework.core.task.TaskExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -33,7 +35,8 @@ import org.springframework.core.task.TaskExecutor;
  */
 public class SpringAsyncExecutor extends DefaultAsyncJobExecutor {
 
-  protected TaskExecutor taskExecutor;
+  private static final Logger logger = LoggerFactory.getLogger(SpringAsyncExecutor.class);
+protected TaskExecutor taskExecutor;
   protected SpringRejectedJobsHandler rejectedJobsHandler;
 
   public SpringAsyncExecutor() {
@@ -76,7 +79,8 @@ public class SpringAsyncExecutor extends DefaultAsyncJobExecutor {
       taskExecutor.execute(new ExecuteAsyncRunnable((JobEntity) job, processEngineConfiguration));
       return true;
     } catch (RejectedExecutionException e) {
-      rejectedJobsHandler.jobRejected(this, job);
+      logger.error(e.getMessage(), e);
+	rejectedJobsHandler.jobRejected(this, job);
       return false;
     }
   }

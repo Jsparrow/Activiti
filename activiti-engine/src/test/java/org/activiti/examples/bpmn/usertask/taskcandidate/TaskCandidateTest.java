@@ -29,7 +29,7 @@ import org.activiti.engine.test.Deployment;
 public class TaskCandidateTest extends PluggableActivitiTestCase {
 
   private static final String KERMIT = "kermit";
-  private static final List<String> KERMITSGROUPS = Arrays.asList("accountancy");
+  private static final List<String> KERMITSGROUPS = Collections.singletonList("accountancy");
 
   private static final String GONZO = "gonzo";
   private static final List<String> GONZOSGROUPS = Arrays.asList("management","accountancy","sales");
@@ -154,7 +154,7 @@ public class TaskCandidateTest extends PluggableActivitiTestCase {
   // with one parameter
   @Deployment
   public void testCandidateExpressionOneParam() {
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = new HashMap<>();
     params.put("testBean", new TestBean());
 
     runtimeService.startProcessInstanceByKey("candidateWithExpression", params);
@@ -166,7 +166,7 @@ public class TaskCandidateTest extends PluggableActivitiTestCase {
   // with two parameters
   @Deployment
   public void testCandidateExpressionTwoParams() {
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = new HashMap<>();
     params.put("testBean", new TestBean());
 
     runtimeService.startProcessInstanceByKey("candidateWithExpression", params);

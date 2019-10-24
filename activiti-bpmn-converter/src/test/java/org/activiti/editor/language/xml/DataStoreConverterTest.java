@@ -26,7 +26,8 @@ public class DataStoreConverterTest extends AbstractConverterTest {
     validateModel(parsedModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "datastore.bpmn";
   }
 

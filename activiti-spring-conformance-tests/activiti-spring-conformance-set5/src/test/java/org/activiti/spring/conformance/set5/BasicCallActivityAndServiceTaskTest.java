@@ -100,12 +100,8 @@ public class BasicCallActivityAndServiceTaskTest {
     public void cleanup() {
         securityUtil.logInAs("admin");
         Page<ProcessInstance> processInstancePage = processAdminRuntime.processInstances(Pageable.of(0, 50));
-        for (ProcessInstance pi : processInstancePage.getContent()) {
-            // We want to delete root processes instances because sub processes will be deleted automatically when the root ones are deleted
-            if(pi.getParentId() == null) {
-                processAdminRuntime.delete(ProcessPayloadBuilder.delete(pi.getId()));
-            }
-        }
+        // We want to delete root processes instances because sub processes will be deleted automatically when the root ones are deleted
+		processInstancePage.getContent().stream().filter(pi -> pi.getParentId() == null).forEach(pi -> processAdminRuntime.delete(ProcessPayloadBuilder.delete(pi.getId())));
         
         clearEvents();
     }

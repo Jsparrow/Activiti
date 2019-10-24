@@ -34,7 +34,8 @@ public class SingleResourceAutoDeploymentStrategyTest extends AbstractAutoDeploy
 
     private SingleResourceAutoDeploymentStrategy deploymentStrategy;
 
-    @Before
+    @Override
+	@Before
     public void before() throws Exception {
         super.before();
         deploymentStrategy = new SingleResourceAutoDeploymentStrategy(projectModelServiceMock);

@@ -56,25 +56,23 @@ public class DelegateTaskTest extends PluggableActivitiTestCase {
   public void testChangeCategoryInDelegateTask() {
 
     // Start process instance
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
     variables.put("approvers", Collections.singletonList("kermit")); // , "gonzo", "mispiggy"));
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("delegateTaskTest", variables);
 
     // Assert there are three tasks with the default category
     List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
-    for (Task task : tasks) {
+    tasks.forEach(task -> {
       assertEquals("approval", task.getCategory());
-      Map<String, Object> taskVariables = new HashMap<String, Object>();
+      Map<String, Object> taskVariables = new HashMap<>();
       taskVariables.put("outcome", "approve");
       taskService.complete(task.getId(), taskVariables, true);
-    }
+    });
 
     // After completion, the task category should be changed in the script
     // listener working on the delegate task
     assertEquals(0, taskService.createTaskQuery().processInstanceId(processInstance.getId()).count());
-    for (HistoricTaskInstance historicTaskInstance : historyService.createHistoricTaskInstanceQuery().list()) {
-      assertEquals("approved", historicTaskInstance.getCategory());
-    }
+    historyService.createHistoricTaskInstanceQuery().list().forEach(historicTaskInstance -> assertEquals("approved", historicTaskInstance.getCategory()));
   }
 
 }

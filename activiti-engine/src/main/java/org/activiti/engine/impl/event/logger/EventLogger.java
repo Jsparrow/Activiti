@@ -49,7 +49,7 @@ public class EventLogger implements ActivitiEventListener {
 	
 	// Mapping of type -> handler
 	protected Map<ActivitiEventType, Class<? extends EventLoggerEventHandler>> eventHandlers 
-		= new HashMap<ActivitiEventType, Class<? extends EventLoggerEventHandler>>();
+		= new HashMap<>();
 	
 	// Listeners for new events
 	protected List<EventLoggerListener> listeners;
@@ -86,57 +86,55 @@ public class EventLogger implements ActivitiEventListener {
 	@Override
 	public void onEvent(ActivitiEvent event) {
 		EventLoggerEventHandler eventHandler = getEventHandler(event);
-		if (eventHandler != null) {
-
-			// Events are flushed when command context is closed
-			CommandContext currentCommandContext = Context.getCommandContext();
-			EventFlusher eventFlusher = (EventFlusher) currentCommandContext.getAttribute(EVENT_FLUSHER_KEY);
-			
-			if (eventFlusher == null) {
-				
-				eventFlusher = createEventFlusher();
-				if (eventFlusher == null) {
-					eventFlusher = new DatabaseEventFlusher(); // Default
-				}
-				currentCommandContext.addAttribute(EVENT_FLUSHER_KEY, eventFlusher);
-				
-				currentCommandContext.addCloseListener(eventFlusher);
-				currentCommandContext
-				    .addCloseListener(new CommandContextCloseListener() {
-
-					    @Override
-					    public void closing(CommandContext commandContext) {
-					    }
-
-					    @Override
-					    public void closed(CommandContext commandContext) {
-						    // For those who are interested: we can now broadcast the events were added
-								if (listeners != null) {
-									for (EventLoggerListener listener : listeners) {
-										listener.eventsAdded(EventLogger.this);
-									}
-								}
-					    }
-
-              public void afterSessionsFlush(CommandContext commandContext) {
-              }
-
-              @Override
-              public void closeFailure(CommandContext commandContext) {
-              }
-					    
-				    });
-			}
-
-			eventFlusher.addEventHandler(eventHandler);
+		if (eventHandler == null) {
+			return;
 		}
+		// Events are flushed when command context is closed
+		CommandContext currentCommandContext = Context.getCommandContext();
+		EventFlusher eventFlusher = (EventFlusher) currentCommandContext.getAttribute(EVENT_FLUSHER_KEY);
+		if (eventFlusher == null) {
+			
+			eventFlusher = createEventFlusher();
+			if (eventFlusher == null) {
+				eventFlusher = new DatabaseEventFlusher(); // Default
+			}
+			currentCommandContext.addAttribute(EVENT_FLUSHER_KEY, eventFlusher);
+			
+			currentCommandContext.addCloseListener(eventFlusher);
+			currentCommandContext
+			    .addCloseListener(new CommandContextCloseListener() {
+
+				    @Override
+				    public void closing(CommandContext commandContext) {
+				    }
+
+				    @Override
+				    public void closed(CommandContext commandContext) {
+					    // For those who are interested: we can now broadcast the events were added
+							if (listeners != null) {
+								listeners.forEach(listener -> listener.eventsAdded(EventLogger.this));
+							}
+				    }
+
+		  @Override
+		public void afterSessionsFlush(CommandContext commandContext) {
+		  }
+
+		  @Override
+		  public void closeFailure(CommandContext commandContext) {
+		  }
+				    
+			    });
+		}
+		eventFlusher.addEventHandler(eventHandler);
 	}
 	
 	// Subclasses can override this if defaults are not ok
 	protected EventLoggerEventHandler getEventHandler(ActivitiEvent event) {
 
 		Class<? extends EventLoggerEventHandler> eventHandlerClass = null;
-		if (event.getType().equals(ActivitiEventType.ENTITY_INITIALIZED)) {
+		// Default: dedicated mapper for the type
+		if (event.getType() == ActivitiEventType.ENTITY_INITIALIZED) {
 			Object entity = ((ActivitiEntityEvent) event).getEntity();
 			if (entity instanceof ExecutionEntity) {
 				ExecutionEntity executionEntity = (ExecutionEntity) entity;
@@ -144,7 +142,7 @@ public class EventLogger implements ActivitiEventListener {
 					eventHandlerClass = ProcessInstanceStartedEventHandler.class;
 				}
 			}
-		} else if (event.getType().equals(ActivitiEventType.ENTITY_DELETED)) {
+		} else if (event.getType() == ActivitiEventType.ENTITY_DELETED) {
 			Object entity = ((ActivitiEntityEvent) event).getEntity();
 			if (entity instanceof ExecutionEntity) {
 				ExecutionEntity executionEntity = (ExecutionEntity) entity;
@@ -173,7 +171,8 @@ public class EventLogger implements ActivitiEventListener {
 			eventHandler.setObjectMapper(objectMapper);
 			return eventHandler;
 		} catch (Exception e) {
-			logger.warn("Could not instantiate " + eventHandlerClass + ", this is most likely a programmatic error");
+			logger.error(e.getMessage(), e);
+			logger.warn(new StringBuilder().append("Could not instantiate ").append(eventHandlerClass).append(", this is most likely a programmatic error").toString());
 		}
 		return null;
   }
@@ -189,7 +188,7 @@ public class EventLogger implements ActivitiEventListener {
 	
 	public void addEventLoggerListener(EventLoggerListener listener) {
 		if (listeners == null) {
-			listeners = new ArrayList<EventLoggerListener>(1);
+			listeners = new ArrayList<>(1);
 		}
 		listeners.add(listener);
 	}

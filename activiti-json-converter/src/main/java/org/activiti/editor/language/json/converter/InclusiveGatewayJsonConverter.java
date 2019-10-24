@@ -40,14 +40,17 @@ public class InclusiveGatewayJsonConverter extends BaseBpmnJsonConverter {
     convertersToJsonMap.put(InclusiveGateway.class, InclusiveGatewayJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     return STENCIL_GATEWAY_INCLUSIVE;
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     InclusiveGateway gateway = new InclusiveGateway();
     return gateway;
   }

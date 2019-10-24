@@ -42,9 +42,7 @@ public class ValidatorSet {
   }
 
   public void setValidators(Collection<? extends Validator> validators) {
-    for (Validator validator : validators) {
-      addValidator(validator);
-    }
+    validators.forEach(this::addValidator);
   }
 
   public void removeValidator(Class<? extends Validator> validatorClass) {
@@ -53,7 +51,7 @@ public class ValidatorSet {
 
   public void addValidator(Validator validator) {
     if (validators == null) {
-      validators = new HashMap<Class<? extends Validator>, Validator>();
+      validators = new HashMap<>();
     }
     validators.put(validator.getClass(), validator);
   }

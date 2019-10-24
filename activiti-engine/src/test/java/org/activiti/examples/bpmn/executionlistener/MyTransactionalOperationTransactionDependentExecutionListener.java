@@ -36,12 +36,12 @@ public class MyTransactionalOperationTransactionDependentExecutionListener exten
                      executionVariables,
                      customPropertiesMap);
 
-        if (Context.getCommandContext().getProcessEngineConfiguration().getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-            HistoryService historyService = Context.getCommandContext().getProcessEngineConfiguration().getHistoryService();
-
-            // delete first historic instance
-            List<HistoricProcessInstance> historicProcessInstances = historyService.createHistoricProcessInstanceQuery().list();
-            historyService.deleteHistoricProcessInstance(historicProcessInstances.get(0).getId());
-        }
+        if (!Context.getCommandContext().getProcessEngineConfiguration().getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+			return;
+		}
+		HistoryService historyService = Context.getCommandContext().getProcessEngineConfiguration().getHistoryService();
+		// delete first historic instance
+		List<HistoricProcessInstance> historicProcessInstances = historyService.createHistoricProcessInstanceQuery().list();
+		historyService.deleteHistoricProcessInstance(historicProcessInstances.get(0).getId());
     }
 }

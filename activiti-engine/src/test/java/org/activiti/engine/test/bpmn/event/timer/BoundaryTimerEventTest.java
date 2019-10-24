@@ -27,26 +27,17 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.TimerJobQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
 
-  private static boolean listenerExecutedStartEvent;
+  private static final Logger logger = LoggerFactory.getLogger(BoundaryTimerEventTest.class);
+private static boolean listenerExecutedStartEvent;
   private static boolean listenerExecutedEndEvent;
-
-  public static class MyExecutionListener implements ExecutionListener {
-    private static final long serialVersionUID = 1L;
-
-    public void notify(DelegateExecution execution) {
-      if ("end".equals(execution.getEventName())) {
-        listenerExecutedEndEvent = true;
-      } else if ("start".equals(execution.getEventName())) {
-        listenerExecutedStartEvent = true;
-      }
-    }
-  }
 
   /*
    * Test for when multiple boundary timer events are defined on the same user task
@@ -78,7 +69,7 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
     assertEquals("Third Task", task.getName());
   }
 
-  @Deployment
+@Deployment
   public void testTimerOnNestingOfSubprocesses() {
 
     Date testStartTime = processEngineConfiguration.getClock().getCurrentTime();
@@ -99,12 +90,12 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
     assertEquals("task outside subprocess", task.getName());
   }
 
-  @Deployment
+@Deployment
   public void testExpressionOnTimer() {
     // Set the clock fixed
     Date startTime = new Date();
 
-    HashMap<String, Object> variables = new HashMap<String, Object>();
+    HashMap<String, Object> variables = new HashMap<>();
     variables.put("duration", "PT1H");
 
     // After process start, there should be a timer created
@@ -127,12 +118,11 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
     // which means the process has ended
     assertProcessEnded(pi.getId());
   }
-  
 
-  @Deployment
+@Deployment
   public void testNullExpressionOnTimer(){
 	  
-    HashMap<String, Object> variables = new HashMap<String, Object>();
+    HashMap<String, Object> variables = new HashMap<>();
     variables.put("duration", null);
     
     // After process start, there should be a timer created
@@ -151,9 +141,8 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
     	      .singleResult();
     assertNotNull(processInstance);
   }
-  
-  
-  @Deployment
+
+@Deployment
   public void testTimerInSingleTransactionProcess() {
     // make sure that if a PI completes in single transaction, JobEntities
     // associated with the execution are deleted.
@@ -162,7 +151,7 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
     assertEquals(0, managementService.createJobQuery().count());
   }
 
-  @Deployment
+@Deployment
   public void testRepeatingTimerWithCancelActivity() {
     runtimeService.startProcessInstanceByKey("repeatingTimerAndCallActivity");
     assertEquals(1, managementService.createTimerJobQuery().count());
@@ -179,15 +168,15 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
     assertEquals(1, managementService.createTimerJobQuery().count());
     assertEquals(1, taskService.createTaskQuery().count());
   }
-  
-  @Deployment
+
+@Deployment
 	public void testInfiniteRepeatingTimer() throws Exception {
 		
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyy.MM.dd hh:mm");
 		Date currentTime = simpleDateFormat.parse("2015.10.01 11:01");
 		processEngineConfiguration.getClock().setCurrentTime(currentTime);
 		
-		Map<String, Object> vars = new HashMap<String, Object>();
+		Map<String, Object> vars = new HashMap<>();
 		vars.put("timerString", "R/2015-10-01T11:00:00/PT24H");
 		runtimeService.startProcessInstanceByKey("testTimerErrors", vars);
 		
@@ -213,8 +202,8 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
 		}
 		
 	}
-  
-  @Deployment
+
+@Deployment
   public void testRepeatTimerDuration() throws Exception {
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyy.MM.dd hh:mm");
@@ -245,14 +234,14 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
 
   }
 
-  @Deployment
+@Deployment
   public void testBoundaryTimerEvent() throws Exception {
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyy.MM.dd hh:mm");
     Date currentTime = simpleDateFormat.parse("2015.10.01 11:01");
     processEngineConfiguration.getClock().setCurrentTime(currentTime);
 
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("patient","kermit");
     runtimeService.startProcessInstanceByKey("process1", vars);
 
@@ -260,6 +249,7 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
     try {
       waitForJobExecutorToProcessAllJobsAndExecutableTimerJobs(2000, 200);
     } catch (Exception ex) {
+		logger.error(ex.getMessage(), ex);
       //expected exception because the boundary timer event created a timer job to be executed after 10 minutes
     }
 
@@ -280,6 +270,7 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
     try {
       waitForJobExecutorToProcessAllJobsAndExecutableTimerJobs(2000, 200);
     } catch (Exception ex) {
+		logger.error(ex.getMessage(), ex);
       //expected exception because the boundary timer event created a timer job to be executed after 10 minutes
     }
 
@@ -312,8 +303,7 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
     assertEquals(0, jobList.size());
   }
 
-
-  @Deployment
+@Deployment
   public void testBoundaryTimerEvent2() throws Exception {
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyy.MM.dd hh:mm");
@@ -326,6 +316,7 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
     try {
       waitForJobExecutorToProcessAllJobsAndExecutableTimerJobs(2000, 200);
     } catch (Exception ex) {
+		logger.error(ex.getMessage(), ex);
       //expected exception because the boundary timer event created a timer job to be executed after 10 minutes
     }
 
@@ -355,6 +346,20 @@ public class BoundaryTimerEventTest extends PluggableActivitiTestCase {
     assertEquals(0,jobList.size());
     jobList = managementService.createTimerJobQuery().list();
     assertEquals(0,jobList.size());
+  }
+
+
+public static class MyExecutionListener implements ExecutionListener {
+    private static final long serialVersionUID = 1L;
+
+    @Override
+	public void notify(DelegateExecution execution) {
+      if ("end".equals(execution.getEventName())) {
+        listenerExecutedEndEvent = true;
+      } else if ("start".equals(execution.getEventName())) {
+        listenerExecutedStartEvent = true;
+      }
+    }
   }
 
 }

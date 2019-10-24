@@ -17,7 +17,7 @@ import java.util.List;
 
 public abstract class TaskWithFieldExtensions extends Task {
 
-  protected List<FieldExtension> fieldExtensions = new ArrayList<FieldExtension>();
+  protected List<FieldExtension> fieldExtensions = new ArrayList<>();
   
   public List<FieldExtension> getFieldExtensions() {
     return fieldExtensions;

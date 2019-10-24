@@ -31,13 +31,14 @@ public class ParticipantParser implements BpmnXMLConstants {
 
   public void parse(XMLStreamReader xtr, BpmnModel model) throws Exception {
 
-    if (StringUtils.isNotEmpty(xtr.getAttributeValue(null, ATTRIBUTE_ID))) {
-      Pool pool = new Pool();
-      pool.setId(xtr.getAttributeValue(null, ATTRIBUTE_ID));
-      pool.setName(xtr.getAttributeValue(null, ATTRIBUTE_NAME));
-      pool.setProcessRef(xtr.getAttributeValue(null, ATTRIBUTE_PROCESS_REF));
-      BpmnXMLUtil.parseChildElements(ELEMENT_PARTICIPANT, pool, xtr, model);
-      model.getPools().add(pool);
-    }
+    if (!StringUtils.isNotEmpty(xtr.getAttributeValue(null, ATTRIBUTE_ID))) {
+		return;
+	}
+	Pool pool = new Pool();
+	pool.setId(xtr.getAttributeValue(null, ATTRIBUTE_ID));
+	pool.setName(xtr.getAttributeValue(null, ATTRIBUTE_NAME));
+	pool.setProcessRef(xtr.getAttributeValue(null, ATTRIBUTE_PROCESS_REF));
+	BpmnXMLUtil.parseChildElements(ELEMENT_PARTICIPANT, pool, xtr, model);
+	model.getPools().add(pool);
   }
 }

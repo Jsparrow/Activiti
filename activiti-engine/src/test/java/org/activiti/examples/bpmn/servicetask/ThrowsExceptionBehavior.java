@@ -16,13 +16,18 @@ package org.activiti.examples.bpmn.servicetask;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateHelper;
 import org.activiti.engine.impl.delegate.ActivityBehavior;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class ThrowsExceptionBehavior implements ActivityBehavior {
 
-  public void execute(DelegateExecution execution) {
+  private static final Logger logger = LoggerFactory.getLogger(ThrowsExceptionBehavior.class);
+
+@Override
+public void execute(DelegateExecution execution) {
     String var = (String) execution.getVariable("var");
     
     String sequenceFlowToTake = null; 
@@ -31,14 +36,15 @@ public class ThrowsExceptionBehavior implements ActivityBehavior {
       executeLogic(var);
       sequenceFlowToTake = "no-exception";
     } catch (Exception e) {
-      sequenceFlowToTake = "exception";
+      logger.error(e.getMessage(), e);
+	sequenceFlowToTake = "exception";
     }
     
     DelegateHelper.leaveDelegate(execution, sequenceFlowToTake);
   }
 
   protected void executeLogic(String value) {
-    if (value.equals("throw-exception")) {
+    if ("throw-exception".equals(value)) {
       throw new RuntimeException();
     }
   }

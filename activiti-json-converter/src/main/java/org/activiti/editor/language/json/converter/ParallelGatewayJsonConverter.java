@@ -40,14 +40,17 @@ public class ParallelGatewayJsonConverter extends BaseBpmnJsonConverter {
     convertersToJsonMap.put(ParallelGateway.class, ParallelGatewayJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     return STENCIL_GATEWAY_PARALLEL;
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     ParallelGateway gateway = new ParallelGateway();
     return gateway;
   }

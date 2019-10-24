@@ -87,7 +87,8 @@ public class ProcessEngineImpl implements ProcessEngine {
     processEngineConfiguration.getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createGlobalEvent(ActivitiEventType.ENGINE_CREATED));
   }
 
-  public void close() {
+  @Override
+public void close() {
     ProcessEngines.unregister(this);
     if (asyncExecutor != null && asyncExecutor.isActive()) {
       asyncExecutor.shutdown();
@@ -105,35 +106,43 @@ public class ProcessEngineImpl implements ProcessEngine {
   // getters and setters
   // //////////////////////////////////////////////////////
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
 
-  public ManagementService getManagementService() {
+  @Override
+public ManagementService getManagementService() {
     return managementService;
   }
 
-  public TaskService getTaskService() {
+  @Override
+public TaskService getTaskService() {
     return taskService;
   }
 
-  public HistoryService getHistoryService() {
+  @Override
+public HistoryService getHistoryService() {
     return historicDataService;
   }
 
-  public RuntimeService getRuntimeService() {
+  @Override
+public RuntimeService getRuntimeService() {
     return runtimeService;
   }
 
-  public RepositoryService getRepositoryService() {
+  @Override
+public RepositoryService getRepositoryService() {
     return repositoryService;
   }
 
-  public DynamicBpmnService getDynamicBpmnService() {
+  @Override
+public DynamicBpmnService getDynamicBpmnService() {
     return dynamicBpmnService;
   }
 
-  public ProcessEngineConfigurationImpl getProcessEngineConfiguration() {
+  @Override
+public ProcessEngineConfigurationImpl getProcessEngineConfiguration() {
     return processEngineConfiguration;
   }
 

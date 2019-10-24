@@ -23,13 +23,15 @@ import org.activiti.engine.impl.persistence.entity.JobEntity;
  */
 public class AsyncContinuationJobHandler implements JobHandler {
 
-  public final static String TYPE = "async-continuation";
+  public static final String TYPE = "async-continuation";
 
-  public String getType() {
+  @Override
+public String getType() {
     return TYPE;
   }
 
-  public void execute(JobEntity job, String configuration, ExecutionEntity execution, CommandContext commandContext) {
+  @Override
+public void execute(JobEntity job, String configuration, ExecutionEntity execution, CommandContext commandContext) {
     Context.getAgenda().planContinueProcessSynchronousOperation(execution);
   }
 

@@ -20,7 +20,8 @@ import org.activiti.engine.delegate.TaskListener;
  */
 public class CandidateUserAssignment implements TaskListener {
 
-  public void notify(DelegateTask delegateTask) {
+  @Override
+public void notify(DelegateTask delegateTask) {
     delegateTask.addCandidateUser("kermit");
     delegateTask.addCandidateUser("fozzie");
   }

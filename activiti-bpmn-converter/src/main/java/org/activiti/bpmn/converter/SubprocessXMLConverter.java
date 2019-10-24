@@ -50,9 +50,7 @@ public class SubprocessXMLConverter extends BpmnXMLConverter {
 
   @Override
   public byte[] convertToXML(BpmnModel model, String encoding) {
-    try {
-
-      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
       XMLOutputFactory xof = XMLOutputFactory.newInstance();
       OutputStreamWriter out = new OutputStreamWriter(outputStream, encoding);
@@ -102,8 +100,7 @@ public class SubprocessXMLConverter extends BpmnXMLConverter {
       byte[] bytes = outputStream.toByteArray().clone();
 
       // cleanup
-      outputStream.close();
-      xtw.close();
+	xtw.close();
 
       return bytes;
     } catch (Exception e) {
@@ -113,13 +110,13 @@ public class SubprocessXMLConverter extends BpmnXMLConverter {
   }
 
   protected List<BpmnModel> parseSubModels(BpmnModel model) {
-    List<BpmnModel> subModels = new ArrayList<BpmnModel>();
+    List<BpmnModel> subModels = new ArrayList<>();
 
     // find all subprocesses
     Collection<FlowElement> flowElements = model.getMainProcess().getFlowElements();
-    Map<String, GraphicInfo> locations = new HashMap<String, GraphicInfo>();
-    Map<String, List<GraphicInfo>> flowLocations = new HashMap<String, List<GraphicInfo>>();
-    Map<String, GraphicInfo> labelLocations = new HashMap<String, GraphicInfo>();
+    Map<String, GraphicInfo> locations = new HashMap<>();
+    Map<String, List<GraphicInfo>> flowLocations = new HashMap<>();
+    Map<String, GraphicInfo> labelLocations = new HashMap<>();
 
     locations.putAll(model.getLocationMap());
     flowLocations.putAll(model.getFlowLocationMap());
@@ -160,7 +157,7 @@ public class SubprocessXMLConverter extends BpmnXMLConverter {
 
   private List<BpmnModel> parseSubModels(FlowElement subElement, Map<String, GraphicInfo> locations, 
                                          Map<String, List<GraphicInfo>> flowLocations, Map<String, GraphicInfo> labelLocations) {
-    List<BpmnModel> subModels = new ArrayList<BpmnModel>();
+    List<BpmnModel> subModels = new ArrayList<>();
     BpmnModel subModel = new BpmnModel();
     String elementId = null;
 

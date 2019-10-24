@@ -41,7 +41,7 @@ public abstract class AbstractCompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
   protected void executeTaskComplete(CommandContext commandContext, TaskEntity taskEntity, Map<String, Object> variables, boolean localScope) {
     // Task complete logic
 
-    if (taskEntity.getDelegationState() != null && taskEntity.getDelegationState().equals(DelegationState.PENDING)) {
+    if (taskEntity.getDelegationState() != null && taskEntity.getDelegationState() == DelegationState.PENDING) {
       throw new ActivitiException("A delegated task cannot be completed, but should be resolved instead.");
     }
 
@@ -63,10 +63,11 @@ public abstract class AbstractCompleteTaskCmd extends NeedsActiveTaskCmd<Void> {
     commandContext.getTaskEntityManager().deleteTask(taskEntity, null, false, false);
 
     // Continue process (if not a standalone task)
-    if (taskEntity.getExecutionId() != null) {
-      ExecutionEntity executionEntity = commandContext.getExecutionEntityManager().findById(taskEntity.getExecutionId());
-      Context.getAgenda().planTriggerExecutionOperation(executionEntity);
-    }
+	if (taskEntity.getExecutionId() == null) {
+		return;
+	}
+	ExecutionEntity executionEntity = commandContext.getExecutionEntityManager().findById(taskEntity.getExecutionId());
+	Context.getAgenda().planTriggerExecutionOperation(executionEntity);
   }
 
 }

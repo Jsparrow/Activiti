@@ -33,7 +33,8 @@ public class DataGridField extends BaseElement {
     this.value = value;
   }
 
-  public DataGridField clone() {
+  @Override
+public DataGridField clone() {
     DataGridField clone = new DataGridField();
     clone.setValues(this);
     return clone;

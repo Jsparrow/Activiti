@@ -41,11 +41,7 @@ public class ActivityCancelledListenerDelegate implements ActivitiEventListener 
     public void onEvent(ActivitiEvent event) {
         if (event instanceof ActivitiActivityEvent) {
             converter.from((ActivitiActivityEvent) event)
-                    .ifPresent(convertedEvent -> {
-                        for ( BPMNElementEventListener<BPMNActivityCancelledEvent> listener : processRuntimeEventListeners ) {
-                            listener.onEvent(convertedEvent);
-                        }
-                    });
+                    .ifPresent(convertedEvent -> processRuntimeEventListeners.forEach(listener -> listener.onEvent(convertedEvent)));
         }
     }
 

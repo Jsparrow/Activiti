@@ -62,7 +62,8 @@ public class ServiceTaskDelegateExpressionActivityBehavior extends TaskActivityB
     }
   }
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
 
     try {
       boolean isSkipExpressionEnabled = SkipExpressionUtil.isSkipExpressionEnabled(execution, skipExpression);
@@ -92,7 +93,8 @@ public class ServiceTaskDelegateExpressionActivityBehavior extends TaskActivityB
           leave(execution);
 
         } else {
-          throw new ActivitiIllegalArgumentException("Delegate expression " + expression + " did neither resolve to an implementation of " + ActivityBehavior.class + " nor " + JavaDelegate.class);
+          throw new ActivitiIllegalArgumentException(new StringBuilder().append("Delegate expression ").append(expression).append(" did neither resolve to an implementation of ").append(ActivityBehavior.class).append(" nor ").append(JavaDelegate.class)
+				.toString());
         }
       } else {
         leave(execution);

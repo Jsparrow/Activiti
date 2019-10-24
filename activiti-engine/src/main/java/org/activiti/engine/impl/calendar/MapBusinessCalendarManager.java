@@ -24,7 +24,7 @@ public class MapBusinessCalendarManager implements BusinessCalendarManager {
   private final Map<String, BusinessCalendar> businessCalendars;
   
   public MapBusinessCalendarManager(){
-    this.businessCalendars = new HashMap<String, BusinessCalendar>();
+    this.businessCalendars = new HashMap<>();
   }
   
   public MapBusinessCalendarManager(Map<String, BusinessCalendar> businessCalendars) {
@@ -32,14 +32,14 @@ public class MapBusinessCalendarManager implements BusinessCalendarManager {
       throw new IllegalArgumentException("businessCalendars can not be null");
     }
   
-    this.businessCalendars = new HashMap<String, BusinessCalendar>(businessCalendars);
+    this.businessCalendars = new HashMap<>(businessCalendars);
   }
 
-  public BusinessCalendar getBusinessCalendar(String businessCalendarRef) {
+  @Override
+public BusinessCalendar getBusinessCalendar(String businessCalendarRef) {
     BusinessCalendar businessCalendar = businessCalendars.get(businessCalendarRef);
     if (businessCalendar == null) {
-      throw new ActivitiException("Requested business calendar " + businessCalendarRef +
-          " does not exist. Allowed calendars are " + this.businessCalendars.keySet() + ".");
+      throw new ActivitiException(new StringBuilder().append("Requested business calendar ").append(businessCalendarRef).append(" does not exist. Allowed calendars are ").append(this.businessCalendars.keySet()).append(".").toString());
     }
     return businessCalendar;
   }

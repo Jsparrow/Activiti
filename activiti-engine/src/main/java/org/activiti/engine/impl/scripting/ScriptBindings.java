@@ -38,7 +38,7 @@ public class ScriptBindings implements Bindings {
    * This list contains the keywords for JUEL, Javascript and Groovy.
    */
   protected static final Set<String> UNSTORED_KEYS = 
-    new HashSet<String>(Arrays.asList("out", "out:print", "lang:import", "context", "elcontext", "print", "println", "nashorn.global"));
+    new HashSet<>(Arrays.asList("out", "out:print", "lang:import", "context", "elcontext", "print", "println", "nashorn.global"));
 
   protected List<Resolver> scriptResolvers;
   protected VariableScope variableScope;
@@ -56,25 +56,19 @@ public class ScriptBindings implements Bindings {
     this.storeScriptVariables = storeScriptVariables;
   }
 
-  public boolean containsKey(Object key) {
-    for (Resolver scriptResolver : scriptResolvers) {
-      if (scriptResolver.containsKey(key)) {
-        return true;
-      }
-    }
-    return defaultBindings.containsKey(key);
+  @Override
+public boolean containsKey(Object key) {
+    return scriptResolvers.stream().filter(scriptResolver -> scriptResolver.containsKey(key)).findFirst().map(scriptResolver -> true)
+			.orElse(defaultBindings.containsKey(key));
   }
 
-  public Object get(Object key) {
-    for (Resolver scriptResolver : scriptResolvers) {
-      if (scriptResolver.containsKey(key)) {
-        return scriptResolver.get(key);
-      }
-    }
-    return defaultBindings.get(key);
+  @Override
+public Object get(Object key) {
+    return scriptResolvers.stream().filter(scriptResolver -> scriptResolver.containsKey(key)).findFirst().map(scriptResolver -> scriptResolver.get(key)).orElse(defaultBindings.get(key));
   }
 
-  public Object put(String name, Object value) {
+  @Override
+public Object put(String name, Object value) {
     if (storeScriptVariables) {
       Object oldValue = null;
       if (!UNSTORED_KEYS.contains(name)) {
@@ -86,42 +80,51 @@ public class ScriptBindings implements Bindings {
     return defaultBindings.put(name, value);
   }
 
-  public Set<Map.Entry<String, Object>> entrySet() {
+  @Override
+public Set<Map.Entry<String, Object>> entrySet() {
     return variableScope.getVariables().entrySet();
   }
 
-  public Set<String> keySet() {
+  @Override
+public Set<String> keySet() {
     return variableScope.getVariables().keySet();
   }
 
-  public int size() {
+  @Override
+public int size() {
     return variableScope.getVariables().size();
   }
 
-  public Collection<Object> values() {
+  @Override
+public Collection<Object> values() {
     return variableScope.getVariables().values();
   }
 
-  public void putAll(Map<? extends String, ? extends Object> toMerge) {
+  @Override
+public void putAll(Map<? extends String, ? extends Object> toMerge) {
     throw new UnsupportedOperationException();
   }
 
-  public Object remove(Object key) {
+  @Override
+public Object remove(Object key) {
     if (UNSTORED_KEYS.contains(key)) {
       return null;
     }
     return defaultBindings.remove(key);
   }
 
-  public void clear() {
+  @Override
+public void clear() {
     throw new UnsupportedOperationException();
   }
 
-  public boolean containsValue(Object value) {
+  @Override
+public boolean containsValue(Object value) {
     throw new UnsupportedOperationException();
   }
 
-  public boolean isEmpty() {
+  @Override
+public boolean isEmpty() {
     throw new UnsupportedOperationException();
   }
   

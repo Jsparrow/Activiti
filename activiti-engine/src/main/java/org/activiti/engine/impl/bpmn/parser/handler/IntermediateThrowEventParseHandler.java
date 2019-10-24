@@ -31,11 +31,13 @@ public class IntermediateThrowEventParseHandler extends AbstractActivityBpmnPars
 
   private static final Logger logger = LoggerFactory.getLogger(IntermediateThrowEventParseHandler.class);
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return ThrowEvent.class;
   }
 
-  protected void executeParse(BpmnParse bpmnParse, ThrowEvent intermediateEvent) {
+  @Override
+protected void executeParse(BpmnParse bpmnParse, ThrowEvent intermediateEvent) {
 
     EventDefinition eventDefinition = null;
     if (!intermediateEvent.getEventDefinitions().isEmpty()) {

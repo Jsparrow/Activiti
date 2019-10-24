@@ -28,14 +28,17 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class IOSpecificationParser extends BaseChildElementParser {
 
-  public String getElementName() {
+  @Override
+public String getElementName() {
     return ELEMENT_IOSPECIFICATION;
   }
 
-  public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
+  @Override
+public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
 
-    if (!(parentElement instanceof Activity) && !(parentElement instanceof Process))
-      return;
+    if (!(parentElement instanceof Activity) && !(parentElement instanceof Process)) {
+		return;
+	}
 
     IOSpecification ioSpecification = new IOSpecification();
     BpmnXMLUtil.addXMLLocation(ioSpecification, xtr);
@@ -93,9 +96,9 @@ public class IOSpecificationParser extends BaseChildElementParser {
       if (indexOfP != -1) {
         String prefix = itemSubjectRef.substring(0, indexOfP);
         String resolvedNamespace = model.getNamespace(prefix);
-        result = resolvedNamespace + ":" + itemSubjectRef.substring(indexOfP + 1);
+        result = new StringBuilder().append(resolvedNamespace).append(":").append(itemSubjectRef.substring(indexOfP + 1)).toString();
       } else {
-        result = model.getTargetNamespace() + ":" + itemSubjectRef;
+        result = new StringBuilder().append(model.getTargetNamespace()).append(":").append(itemSubjectRef).toString();
       }
     }
     return result;

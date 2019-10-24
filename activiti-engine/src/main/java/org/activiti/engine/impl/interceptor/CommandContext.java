@@ -187,9 +187,7 @@ public class CommandContext {
     protected void executeCloseListenersClosing() {
         if (closeListeners != null) {
             try {
-                for (CommandContextCloseListener listener : closeListeners) {
-                    listener.closing(this);
-                }
+                closeListeners.forEach(listener -> listener.closing(this));
             } catch (Throwable exception) {
                 exception(exception);
             }
@@ -199,9 +197,7 @@ public class CommandContext {
     protected void executeCloseListenersAfterSessionFlushed() {
         if (closeListeners != null) {
             try {
-                for (CommandContextCloseListener listener : closeListeners) {
-                    listener.afterSessionsFlush(this);
-                }
+                closeListeners.forEach(listener -> listener.afterSessionsFlush(this));
             } catch (Throwable exception) {
                 exception(exception);
             }
@@ -211,9 +207,7 @@ public class CommandContext {
     protected void executeCloseListenersClosed() {
         if (closeListeners != null) {
             try {
-                for (CommandContextCloseListener listener : closeListeners) {
-                    listener.closed(this);
-                }
+                closeListeners.forEach(listener -> listener.closed(this));
             } catch (Throwable exception) {
                 exception(exception);
             }
@@ -223,9 +217,7 @@ public class CommandContext {
     protected void executeCloseListenersCloseFailure() {
         if (closeListeners != null) {
             try {
-                for (CommandContextCloseListener listener : closeListeners) {
-                    listener.closeFailure(this);
-                }
+                closeListeners.forEach(listener -> listener.closeFailure(this));
             } catch (Throwable exception) {
                 exception(exception);
             }
@@ -233,19 +225,17 @@ public class CommandContext {
     }
 
     protected void flushSessions() {
-        for (Session session : sessions.values()) {
-            session.flush();
-        }
+        sessions.values().forEach(Session::flush);
     }
 
     protected void closeSessions() {
-        for (Session session : sessions.values()) {
+        sessions.values().forEach(session -> {
             try {
                 session.close();
             } catch (Throwable exception) {
                 exception(exception);
             }
-        }
+        });
     }
 
     /**

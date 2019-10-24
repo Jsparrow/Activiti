@@ -41,7 +41,7 @@ public class DeploymentPersistenceTest extends PluggableActivitiTestCase {
 
     String deploymentId = deployment.getId();
     List<String> resourceNames = repositoryService.getDeploymentResourceNames(deploymentId);
-    Set<String> expectedResourceNames = new HashSet<String>();
+    Set<String> expectedResourceNames = new HashSet<>();
     expectedResourceNames.add("org/activiti/test/HelloWorld.string");
     expectedResourceNames.add("org/activiti/test/TheAnswer.string");
     assertEquals(expectedResourceNames, new HashSet<String>(resourceNames));

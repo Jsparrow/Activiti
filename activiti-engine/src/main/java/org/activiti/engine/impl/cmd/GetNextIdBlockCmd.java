@@ -29,7 +29,8 @@ public class GetNextIdBlockCmd implements Command<IdBlock> {
     this.idBlockSize = idBlockSize;
   }
 
-  public IdBlock execute(CommandContext commandContext) {
+  @Override
+public IdBlock execute(CommandContext commandContext) {
     PropertyEntity property = (PropertyEntity) commandContext.getPropertyEntityManager().findById("next.dbid");
     long oldValue = Long.parseLong(property.getValue());
     long newValue = oldValue + idBlockSize;

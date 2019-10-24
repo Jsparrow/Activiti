@@ -24,7 +24,8 @@ public abstract class Gateway extends FlowNode {
     this.defaultFlow = defaultFlow;
   }
 
-  public abstract Gateway clone();
+  @Override
+public abstract Gateway clone();
 
   public void setValues(Gateway otherElement) {
     super.setValues(otherElement);

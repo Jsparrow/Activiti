@@ -29,7 +29,7 @@ public class DefaultActivitiEngineAgenda implements ActivitiEngineAgenda {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultActivitiEngineAgenda.class);
 
-    protected LinkedList<Runnable> operations = new LinkedList<Runnable>();
+    protected LinkedList<Runnable> operations = new LinkedList<>();
     protected CommandContext commandContext;
     
     public DefaultActivitiEngineAgenda(CommandContext commandContext) {

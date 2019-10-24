@@ -54,11 +54,13 @@ public class SubProcessJsonConverter extends BaseBpmnJsonConverter implements Fo
     convertersToJsonMap.put(Transaction.class, SubProcessJsonConverter.class);
   }
   
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     return STENCIL_SUB_PROCESS;
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
     SubProcess subProcess = (SubProcess) baseElement;
   
     propertiesNode.put("activitytype", "Sub-Process");
@@ -76,7 +78,8 @@ public class SubProcessJsonConverter extends BaseBpmnJsonConverter implements Fo
     BpmnJsonConverterUtil.convertDataPropertiesToJson(subProcess.getDataObjects(), propertiesNode);
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     SubProcess subProcess = null;
     if (getPropertyValueAsBoolean("istransaction", elementNode)) {
       subProcess = new Transaction();

@@ -41,7 +41,8 @@ public class SaveTaskCmd implements Command<Task>, Serializable {
     this.task = (TaskEntity) task;
   }
 
-  public Task execute(CommandContext commandContext) {
+  @Override
+public Task execute(CommandContext commandContext) {
     if (task == null) {
       throw new ActivitiIllegalArgumentException("task is null");
     }

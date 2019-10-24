@@ -47,6 +47,7 @@ public interface HistoricTaskInstance extends TaskInfo, HistoricData {
   Long getWorkTimeInMillis();
 
   /** Time when the task was claimed. */
-  Date getClaimTime();
+  @Override
+Date getClaimTime();
 
 }

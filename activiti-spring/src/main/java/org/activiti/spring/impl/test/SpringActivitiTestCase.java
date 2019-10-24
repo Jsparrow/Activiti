@@ -34,7 +34,7 @@ public abstract class SpringActivitiTestCase extends AbstractActivitiTestCase im
 
   // we need a data structure to store all the resolved ProcessEngines and map
   // them to something
-  protected Map<Object, ProcessEngine> cachedProcessEngines = new ConcurrentHashMap<Object, ProcessEngine>();
+  protected Map<Object, ProcessEngine> cachedProcessEngines = new ConcurrentHashMap<>();
 
   // protected static Map<String, ProcessEngine> cachedProcessEngines = new
   // HashMap<String, ProcessEngine>();
@@ -67,7 +67,8 @@ public abstract class SpringActivitiTestCase extends AbstractActivitiTestCase im
     this.processEngine = engine;
   }
 
-  public void setApplicationContext(ApplicationContext applicationContext) {
+  @Override
+public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
   }
 }

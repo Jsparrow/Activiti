@@ -28,11 +28,13 @@ public class TweetExceptionHandler implements JobHandler {
 
   protected int exceptionsRemaining = 2;
 
-  public String getType() {
+  @Override
+public String getType() {
     return "tweet-exception";
   }
 
-  public void execute(JobEntity job, String configuration, ExecutionEntity execution, CommandContext commandContext) {
+  @Override
+public void execute(JobEntity job, String configuration, ExecutionEntity execution, CommandContext commandContext) {
     if (exceptionsRemaining > 0) {
       exceptionsRemaining--;
       throw new RuntimeException("exception remaining: " + exceptionsRemaining);

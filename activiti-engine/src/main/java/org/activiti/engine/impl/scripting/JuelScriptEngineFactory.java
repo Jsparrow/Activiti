@@ -37,39 +37,48 @@ public class JuelScriptEngineFactory implements ScriptEngineFactory {
     mimeTypes = Collections.unmodifiableList(new ArrayList<String>(0));
   }
 
-  public String getEngineName() {
+  @Override
+public String getEngineName() {
     return "juel";
   }
 
-  public String getEngineVersion() {
+  @Override
+public String getEngineVersion() {
     return "1.0";
   }
 
-  public List<String> getExtensions() {
+  @Override
+public List<String> getExtensions() {
     return extensions;
   }
 
-  public String getLanguageName() {
+  @Override
+public String getLanguageName() {
     return "JSP 2.1 EL";
   }
 
-  public String getLanguageVersion() {
+  @Override
+public String getLanguageVersion() {
     return "2.1";
   }
 
-  public String getMethodCallSyntax(String obj, String method, String... arguments) {
+  @Override
+public String getMethodCallSyntax(String obj, String method, String... arguments) {
     throw new UnsupportedOperationException("Method getMethodCallSyntax is not supported");
   }
 
-  public List<String> getMimeTypes() {
+  @Override
+public List<String> getMimeTypes() {
     return mimeTypes;
   }
 
-  public List<String> getNames() {
+  @Override
+public List<String> getNames() {
     return names;
   }
 
-  public String getOutputStatement(String toDisplay) {
+  @Override
+public String getOutputStatement(String toDisplay) {
     // We will use out:print function to output statements
     StringBuilder stringBuffer = new StringBuilder();
     stringBuffer.append("out:print(\"");
@@ -93,7 +102,8 @@ public class JuelScriptEngineFactory implements ScriptEngineFactory {
     return stringBuffer.toString();
   }
 
-  public String getParameter(String key) {
+  @Override
+public String getParameter(String key) {
     if (key.equals(ScriptEngine.NAME)) {
       return getLanguageName();
     } else if (key.equals(ScriptEngine.ENGINE)) {
@@ -104,27 +114,29 @@ public class JuelScriptEngineFactory implements ScriptEngineFactory {
       return getLanguageName();
     } else if (key.equals(ScriptEngine.LANGUAGE_VERSION)) {
       return getLanguageVersion();
-    } else if (key.equals("THREADING")) {
+    } else if ("THREADING".equals(key)) {
       return "MULTITHREADED";
     } else {
       return null;
     }
   }
 
-  public String getProgram(String... statements) {
+  @Override
+public String getProgram(String... statements) {
     // Each statement is wrapped in '${}' to comply with EL
     StringBuilder buf = new StringBuilder();
     if (statements.length != 0) {
-      for (int i = 0; i < statements.length; i++) {
+      for (String statement : statements) {
         buf.append("${");
-        buf.append(statements[i]);
+        buf.append(statement);
         buf.append("} ");
       }
     }
     return buf.toString();
   }
 
-  public ScriptEngine getScriptEngine() {
+  @Override
+public ScriptEngine getScriptEngine() {
     return new JuelScriptEngine(this);
   }
 

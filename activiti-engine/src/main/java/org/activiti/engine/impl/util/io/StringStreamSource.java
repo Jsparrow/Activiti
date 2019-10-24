@@ -35,7 +35,8 @@ public class StringStreamSource implements StreamSource {
     this.byteArrayEncoding = byteArrayEncoding;
   }
 
-  public InputStream getInputStream() {
+  @Override
+public InputStream getInputStream() {
     try {
       return new ByteArrayInputStream(byteArrayEncoding == null ? string.getBytes() : string.getBytes(byteArrayEncoding));
     } catch (UnsupportedEncodingException e) {
@@ -43,7 +44,8 @@ public class StringStreamSource implements StreamSource {
     }
   }
 
-  public String toString() {
+  @Override
+public String toString() {
     return "String";
   }
 }

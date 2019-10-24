@@ -21,13 +21,16 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ModelQuery;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class ModelQueryTest extends PluggableActivitiTestCase {
 
-  private String modelOneId;
+  private static final Logger logger = LoggerFactory.getLogger(ModelQueryTest.class);
+private String modelOneId;
 
   @Override
   protected void setUp() throws Exception {
@@ -286,6 +289,7 @@ public class ModelQueryTest extends PluggableActivitiTestCase {
           repositoryService.deleteModel(model2.getId());
         }
       } catch (Throwable ignore) {
+		logger.error(ignore.getMessage(), ignore);
 
       }
     }

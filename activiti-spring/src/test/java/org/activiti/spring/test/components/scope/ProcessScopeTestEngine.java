@@ -15,8 +15,17 @@ import static org.junit.Assert.*;
 
 class ProcessScopeTestEngine {
   private int customerId = 43;
+private ProcessEngine processEngine;
+private RuntimeService runtimeService;
+private TaskService taskService;
 
-  private String keyForObjectType(Map<String, Object> runtimeVars, Class<?> clazz) {
+public ProcessScopeTestEngine(ProcessEngine processEngine) {
+    this.processEngine = processEngine;
+    this.runtimeService = this.processEngine.getRuntimeService();
+    this.taskService = this.processEngine.getTaskService();
+  }
+
+private String keyForObjectType(Map<String, Object> runtimeVars, Class<?> clazz) {
     for (Map.Entry<String, Object> e : runtimeVars.entrySet()) {
       Object value = e.getValue();
       if (value.getClass().isAssignableFrom(clazz)) {
@@ -26,8 +35,8 @@ class ProcessScopeTestEngine {
     return null;
   }
 
-  private StatefulObject run() {
-    Map<String, Object> vars = new HashMap<String, Object>();
+private StatefulObject run() {
+    Map<String, Object> vars = new HashMap<>();
     vars.put("customerId", customerId);
 
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("component-waiter", vars);
@@ -61,21 +70,11 @@ class ProcessScopeTestEngine {
     return scopedObject;
   }
 
-  private ProcessEngine processEngine;
-  private RuntimeService runtimeService;
-  private TaskService taskService;
-
-  public void testScopedProxyCreation() {
+public void testScopedProxyCreation() {
 
     StatefulObject one = run();
     StatefulObject two = run();
     assertNotSame(one.getName(), two.getName());
     assertEquals(one.getVisitedCount(), two.getVisitedCount());
-  }
-
-  public ProcessScopeTestEngine(ProcessEngine processEngine) {
-    this.processEngine = processEngine;
-    this.runtimeService = this.processEngine.getRuntimeService();
-    this.taskService = this.processEngine.getTaskService();
   }
 }

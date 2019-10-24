@@ -52,7 +52,8 @@ public class EventSubProcessMessageStartEventActivityBehavior extends AbstractBp
     this.messageExecutionContext = messageExecutionContext;
   }
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     StartEvent startEvent = (StartEvent) execution.getCurrentFlowElement();
     EventSubProcess eventSubProcess = (EventSubProcess) startEvent.getSubProcess();
 
@@ -74,12 +75,8 @@ public class EventSubProcessMessageStartEventActivityBehavior extends AbstractBp
     StartEvent startEvent = (StartEvent) execution.getCurrentFlowElement();
     if (startEvent.isInterrupting()) {  
       List<ExecutionEntity> childExecutions = executionEntityManager.findChildExecutionsByParentExecutionId(executionEntity.getParentId());
-      for (ExecutionEntity childExecution : childExecutions) {
-        if (!childExecution.getId().equals(executionEntity.getId())) {
-          executionEntityManager.deleteExecutionAndRelatedData(childExecution, 
-              DeleteReason.EVENT_SUBPROCESS_INTERRUPTING + "(" + startEvent.getId() + ")", false);
-        }
-      }
+      childExecutions.stream().filter(childExecution -> !childExecution.getId().equals(executionEntity.getId())).forEach(childExecution -> executionEntityManager.deleteExecutionAndRelatedData(childExecution,
+			new StringBuilder().append(DeleteReason.EVENT_SUBPROCESS_INTERRUPTING).append("(").append(startEvent.getId()).append(")").toString(), false));
     }
 
     // Should we use triggerName and triggerData, because message name expression can change?
@@ -87,12 +84,7 @@ public class EventSubProcessMessageStartEventActivityBehavior extends AbstractBp
     
     EventSubscriptionEntityManager eventSubscriptionEntityManager = Context.getCommandContext().getEventSubscriptionEntityManager();
     List<EventSubscriptionEntity> eventSubscriptions = executionEntity.getEventSubscriptions();
-    for (EventSubscriptionEntity eventSubscription : eventSubscriptions) {
-      if (eventSubscription instanceof MessageEventSubscriptionEntity && eventSubscription.getEventName().equals(messageName)) {
-
-        eventSubscriptionEntityManager.delete(eventSubscription);
-      }
-    }
+    eventSubscriptions.stream().filter(eventSubscription -> eventSubscription instanceof MessageEventSubscriptionEntity && eventSubscription.getEventName().equals(messageName)).forEach(eventSubscriptionEntityManager::delete);
     
     executionEntity.setCurrentFlowElement((SubProcess) executionEntity.getCurrentFlowElement().getParentContainer());
     executionEntity.setScope(true);
@@ -104,12 +96,10 @@ public class EventSubProcessMessageStartEventActivityBehavior extends AbstractBp
   }
 
   protected Map<String, Object> processDataObjects(Collection<ValuedDataObject> dataObjects) {
-    Map<String, Object> variablesMap = new HashMap<String, Object>();
+    Map<String, Object> variablesMap = new HashMap<>();
     // convert data objects to process variables
     if (dataObjects != null) {
-      for (ValuedDataObject dataObject : dataObjects) {
-        variablesMap.put(dataObject.getName(), dataObject.getValue());
-      }
+      dataObjects.forEach(dataObject -> variablesMap.put(dataObject.getName(), dataObject.getValue()));
     }
     return variablesMap;
   }

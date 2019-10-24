@@ -73,7 +73,7 @@ public class TransientVariablesTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testTaskCompleteWithTransientVariables() {
-    Map<String, Object> persistentVars = new HashMap<String, Object>();
+    Map<String, Object> persistentVars = new HashMap<>();
     persistentVars.put("persistentVar1", "Hello World");
     persistentVars.put("persistentVar2", 987654321);
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("transientVarsTest", persistentVars);
@@ -82,7 +82,7 @@ public class TransientVariablesTest extends PluggableActivitiTestCase {
     assertEquals("My Task", task.getName());
     
     persistentVars.clear();
-    Map<String, Object> transientVars = new HashMap<String, Object>();
+    Map<String, Object> transientVars = new HashMap<>();
     transientVars.put("unusedTransientVar", "Hello there");
     transientVars.put("transientVar", "OK");
     taskService.complete(task.getId(), persistentVars, transientVars);
@@ -102,7 +102,7 @@ public class TransientVariablesTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testTaskResolveWithTransientVariables() {
-    Map<String, Object> persistentVars = new HashMap<String, Object>();
+    Map<String, Object> persistentVars = new HashMap<>();
     persistentVars.put("persistentVar1", "Hello World");
     persistentVars.put("persistentVar2", 987654321);
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("transientVarsTest", persistentVars);
@@ -111,7 +111,7 @@ public class TransientVariablesTest extends PluggableActivitiTestCase {
     assertEquals("My Task", task.getName());
     
     persistentVars.clear();
-    Map<String, Object> transientVars = new HashMap<String, Object>();
+    Map<String, Object> transientVars = new HashMap<>();
     transientVars.put("unusedTransientVar", "Hello there");
     transientVars.put("transientVar", "OK");
     taskService.complete(task.getId(), persistentVars, transientVars);
@@ -260,9 +260,10 @@ public class TransientVariablesTest extends PluggableActivitiTestCase {
    * in a transient variable.  
    */
   public static class FetchDataServiceTask implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       execution.setTransientVariable("response", "author=kermit;version=3;message=Hello World");
-      execution.setTransientVariable("status", new Integer(200));
+      execution.setTransientVariable("status", Integer.valueOf(200));
     }
   }
   
@@ -270,11 +271,12 @@ public class TransientVariablesTest extends PluggableActivitiTestCase {
    * Processes the transient variable and puts the relevant bits in real variables
    */
   public static class ServiceTask02 implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String response = (String) execution.getTransientVariable("response");
       for (String s : response.split(";")) {
         String[] data = s.split("=");
-        if (data[0].equals("message")) {
+        if ("message".equals(data[0])) {
           execution.setVariable("message", data[1] + "!");
         }
       }
@@ -282,7 +284,8 @@ public class TransientVariablesTest extends PluggableActivitiTestCase {
   }
   
   public static class CombineVariablesExecutionListener implements ExecutionListener {
-    public void notify(DelegateExecution execution) {
+    @Override
+	public void notify(DelegateExecution execution) {
       String persistentVar1 = (String) execution.getVariable("persistentVar1");
       
       Object unusedTransientVar = execution.getVariable("unusedTransientVar");
@@ -293,14 +296,15 @@ public class TransientVariablesTest extends PluggableActivitiTestCase {
       String secondTransientVar = (String) execution.getVariable("secondTransientVar");
       Number thirdTransientVar = (Number) execution.getTransientVariable("thirdTransientVar");
       
-      String combinedVar = persistentVar1 + secondTransientVar + thirdTransientVar.intValue();
+      String combinedVar = new StringBuilder().append(persistentVar1).append(secondTransientVar).append(thirdTransientVar.intValue()).toString();
       execution.setVariable("combinedVar", combinedVar);
     }
   }
   
   public static class GetDataDelegate implements JavaDelegate {
     private Expression variableName; 
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String var = (String) variableName.getValue(execution);
       execution.setTransientVariable(var, "author=kermit;version=3;message=" + var);
     }
@@ -309,14 +313,15 @@ public class TransientVariablesTest extends PluggableActivitiTestCase {
   public static class ProcessDataDelegate implements JavaDelegate {
     private Expression dataVariableName;
     private Expression resultVariableName;
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       String varName = (String) dataVariableName.getValue(execution);
       String resultVar = (String) resultVariableName.getValue(execution);
       
       // Sets the name of the variable as 'resultVar'
       for (String s : ((String)execution.getVariable(varName)).split(";")) {
         String[] data = s.split("=");
-        if (data[0].equals("message")) {
+        if ("message".equals(data[0])) {
           execution.setTransientVariable(resultVar, data[1]);
         }
       }
@@ -324,33 +329,28 @@ public class TransientVariablesTest extends PluggableActivitiTestCase {
   }
   
   public static class MergeTransientVariablesTaskListener implements TaskListener {
-    public void notify(DelegateTask delegateTask) {
+    @Override
+	public void notify(DelegateTask delegateTask) {
       Map<String, Object> transientVariables = delegateTask.getTransientVariables();
       List<String> variableNames = new ArrayList(transientVariables.keySet());
       Collections.sort(variableNames);
       
       StringBuilder strb = new StringBuilder();
-      for (String variableName : variableNames) {
-        if (variableName.startsWith("transientResult")) {
-          String result = (String) transientVariables.get(variableName);
-         strb.append(result); 
-        }
-      }
+      variableNames.stream().filter(variableName -> variableName.startsWith("transientResult")).map(variableName -> (String) transientVariables.get(variableName)).forEach(strb::append);
       
       delegateTask.setVariable("mergedResult", strb.toString());
     }
   }
   
   public static class MergeVariableValues implements JavaDelegate {
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
       Map<String, Object> vars = execution.getVariables();
-      List<String> varNames = new ArrayList<String>(vars.keySet());
+      List<String> varNames = new ArrayList<>(vars.keySet());
       Collections.sort(varNames);
       
       StringBuilder strb = new StringBuilder();
-      for (String varName : varNames) {
-        strb.append(vars.get(varName));
-      }
+      varNames.forEach(varName -> strb.append(vars.get(varName)));
       
       execution.setVariable("result", strb.toString());
     }

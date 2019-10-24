@@ -38,41 +38,41 @@ public class SerializableType extends ByteArrayType {
   
   protected boolean trackDeserializedObjects;
   
-  public String getTypeName() {
-    return TYPE_NAME;
-  }
-  
   public SerializableType() {
     
   }
-  
-  public SerializableType(boolean trackDeserializedObjects) {
+
+public SerializableType(boolean trackDeserializedObjects) {
     this.trackDeserializedObjects = trackDeserializedObjects;
   }
 
-  public Object getValue(ValueFields valueFields) {
+@Override
+public String getTypeName() {
+    return TYPE_NAME;
+  }
+
+@Override
+public Object getValue(ValueFields valueFields) {
     Object cachedObject = valueFields.getCachedValue();
     if (cachedObject != null) {
       return cachedObject;
     }
     
     byte[] bytes = (byte[]) super.getValue(valueFields);
-    if (bytes != null) {
-      
-	    Object deserializedObject = deserialize(bytes, valueFields);
-      valueFields.setCachedValue(deserializedObject);
-      
-      if (trackDeserializedObjects && valueFields instanceof VariableInstanceEntity) {
+    if (bytes == null) {
+		return null; // byte array is null
+	}
+	Object deserializedObject = deserialize(bytes, valueFields);
+	valueFields.setCachedValue(deserializedObject);
+	if (trackDeserializedObjects && valueFields instanceof VariableInstanceEntity) {
         Context.getCommandContext().addCloseListener(new VerifyDeserializedObjectCommandContextCloseListener(
             new DeserializedObject(this, valueFields.getCachedValue(), bytes, (VariableInstanceEntity)valueFields)));
       }
-
-      return deserializedObject;
-    }
-    return null; // byte array is null
+	return deserializedObject;
   }
 
-  public void setValue(Object value, ValueFields valueFields) {
+@Override
+public void setValue(Object value, ValueFields valueFields) {
     byte[] bytes = serialize(value, valueFields);
     valueFields.setCachedValue(value);
     
@@ -85,7 +85,7 @@ public class SerializableType extends ByteArrayType {
 
   }
 
-  public byte[] serialize(Object value, ValueFields valueFields) {
+public byte[] serialize(Object value, ValueFields valueFields) {
     if (value == null) {
       return null;
     }
@@ -95,14 +95,14 @@ public class SerializableType extends ByteArrayType {
       oos = createObjectOutputStream(baos);
       oos.writeObject(value);
     } catch (Exception e) {
-      throw new ActivitiException("Couldn't serialize value '"+value+"' in variable '"+valueFields.getName()+"'", e);
+      throw new ActivitiException(new StringBuilder().append("Couldn't serialize value '").append(value).append("' in variable '").append(valueFields.getName()).append("'").toString(), e);
     } finally {
       IoUtil.closeSilently(oos);
     }
     return baos.toByteArray();
   }
-  
-  public Object deserialize(byte[] bytes, ValueFields valueFields) {
+
+public Object deserialize(byte[] bytes, ValueFields valueFields) {
     ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
     try {
       ObjectInputStream ois = createObjectInputStream(bais);
@@ -110,26 +110,28 @@ public class SerializableType extends ByteArrayType {
 
       return deserializedObject;
     } catch (Exception e) {
-      throw new ActivitiException("Couldn't deserialize object in variable '"+valueFields.getName()+"'", e);
+      throw new ActivitiException(new StringBuilder().append("Couldn't deserialize object in variable '").append(valueFields.getName()).append("'").toString(), e);
     } finally {
       IoUtil.closeSilently(bais);
     }
   }
 
-  public boolean isAbleToStore(Object value) {
+@Override
+public boolean isAbleToStore(Object value) {
     // TODO don't we need null support here?
     return value instanceof Serializable;
   }
 
-  protected ObjectInputStream createObjectInputStream(InputStream is) throws IOException {
+protected ObjectInputStream createObjectInputStream(InputStream is) throws IOException {
     return new ObjectInputStream(is) {
-      protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+      @Override
+	protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
         return ReflectUtil.loadClass(desc.getName());
       }
     };
   }
 
-	protected ObjectOutputStream createObjectOutputStream(OutputStream os) throws IOException {
-    return new ObjectOutputStream(os);
+protected ObjectOutputStream createObjectOutputStream(OutputStream os) throws IOException {
+return new ObjectOutputStream(os);
   }
 }

@@ -26,11 +26,13 @@ public class ScriptTaskParseHandler extends AbstractActivityBpmnParseHandler<Scr
 
   private static final Logger logger = LoggerFactory.getLogger(ScriptTaskParseHandler.class);
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return ScriptTask.class;
   }
 
-  protected void executeParse(BpmnParse bpmnParse, ScriptTask scriptTask) {
+  @Override
+protected void executeParse(BpmnParse bpmnParse, ScriptTask scriptTask) {
 
     if (StringUtils.isEmpty(scriptTask.getScript())) {
       logger.warn("No script provided for scriptTask " + scriptTask.getId());

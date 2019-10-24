@@ -61,7 +61,7 @@ public class RuntimeReceiveMessagePayloadEventListener implements ReceiveMessage
                                                 executionId,
                                                 variables);
         } else {
-            throw new ActivitiObjectNotFoundException("Message subscription name '" + messageName + "' with correlation key '" + correlationKey + "' not found.");
+            throw new ActivitiObjectNotFoundException(new StringBuilder().append("Message subscription name '").append(messageName).append("' with correlation key '").append(correlationKey).append("' not found.").toString());
         }
     }
     
@@ -75,7 +75,8 @@ public class RuntimeReceiveMessagePayloadEventListener implements ReceiveMessage
             this.correlationKey = correlationKey;
         }
 
-        public EventSubscriptionEntity execute(CommandContext commandContext) {
+        @Override
+		public EventSubscriptionEntity execute(CommandContext commandContext) {
             return new EventSubscriptionQueryImpl(commandContext).eventType("message")
                                                                  .eventName(messageName)
                                                                  .configuration(correlationKey)

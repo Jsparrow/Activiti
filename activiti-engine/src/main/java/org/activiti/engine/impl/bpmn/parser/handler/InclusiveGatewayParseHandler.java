@@ -21,11 +21,13 @@ import org.activiti.engine.impl.bpmn.parser.BpmnParse;
  */
 public class InclusiveGatewayParseHandler extends AbstractActivityBpmnParseHandler<InclusiveGateway> {
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return InclusiveGateway.class;
   }
 
-  protected void executeParse(BpmnParse bpmnParse, InclusiveGateway gateway) {
+  @Override
+protected void executeParse(BpmnParse bpmnParse, InclusiveGateway gateway) {
     gateway.setBehavior(bpmnParse.getActivityBehaviorFactory().createInclusiveGatewayActivityBehavior(gateway));
   }
 

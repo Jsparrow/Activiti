@@ -27,7 +27,8 @@ public class ReverseStringsFieldInjected implements JavaDelegate {
   private Expression text1;
   private Expression text2;
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     String value1 = (String) text1.getValue(execution);
     execution.setVariable("var1", new StringBuffer(value1).reverse().toString());
 

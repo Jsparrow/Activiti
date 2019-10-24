@@ -31,60 +31,72 @@ public class SpringBeanFactoryProxyMap implements Map<Object, Object> {
     this.beanFactory = beanFactory;
   }
 
-  public Object get(Object key) {
+  @Override
+public Object get(Object key) {
     if ((key == null) || (!String.class.isAssignableFrom(key.getClass()))) {
       return null;
     }
     return beanFactory.getBean((String) key);
   }
 
-  public boolean containsKey(Object key) {
+  @Override
+public boolean containsKey(Object key) {
     if ((key == null) || (!String.class.isAssignableFrom(key.getClass()))) {
       return false;
     }
     return beanFactory.containsBean((String) key);
   }
 
-  public Set<Object> keySet() {
+  @Override
+public Set<Object> keySet() {
     throw new ActivitiException("unsupported operation on configuration beans");
     // List<String> beanNames =
     // Arrays.asList(beanFactory.getBeanDefinitionNames());
     // return new HashSet<Object>(beanNames);
   }
 
-  public void clear() {
+  @Override
+public void clear() {
     throw new ActivitiException("can't clear configuration beans");
   }
 
-  public boolean containsValue(Object value) {
+  @Override
+public boolean containsValue(Object value) {
     throw new ActivitiException("can't search values in configuration beans");
   }
 
-  public Set<Map.Entry<Object, Object>> entrySet() {
+  @Override
+public Set<Map.Entry<Object, Object>> entrySet() {
     throw new ActivitiException("unsupported operation on configuration beans");
   }
 
-  public boolean isEmpty() {
+  @Override
+public boolean isEmpty() {
     throw new ActivitiException("unsupported operation on configuration beans");
   }
 
-  public Object put(Object key, Object value) {
+  @Override
+public Object put(Object key, Object value) {
     throw new ActivitiException("unsupported operation on configuration beans");
   }
 
-  public void putAll(Map<? extends Object, ? extends Object> m) {
+  @Override
+public void putAll(Map<? extends Object, ? extends Object> m) {
     throw new ActivitiException("unsupported operation on configuration beans");
   }
 
-  public Object remove(Object key) {
+  @Override
+public Object remove(Object key) {
     throw new ActivitiException("unsupported operation on configuration beans");
   }
 
-  public int size() {
+  @Override
+public int size() {
     throw new ActivitiException("unsupported operation on configuration beans");
   }
 
-  public Collection<Object> values() {
+  @Override
+public Collection<Object> values() {
     throw new ActivitiException("unsupported operation on configuration beans");
   }
 }

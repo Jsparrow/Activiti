@@ -26,11 +26,13 @@ import org.activiti.engine.impl.bpmn.parser.BpmnParse;
  */
 public class MessageEventDefinitionParseHandler extends AbstractBpmnParseHandler<MessageEventDefinition> {
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return MessageEventDefinition.class;
   }
 
-  protected void executeParse(BpmnParse bpmnParse, MessageEventDefinition messageDefinition) {
+  @Override
+protected void executeParse(BpmnParse bpmnParse, MessageEventDefinition messageDefinition) {
     BpmnModel bpmnModel = bpmnParse.getBpmnModel();
     String messageRef = messageDefinition.getMessageRef();
     if (bpmnModel.containsMessageId(messageRef)) {

@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class MyTransactionDependentExecutionListener implements TransactionDependentExecutionListener {
 
-  protected List<CurrentActivity> currentActivities = new ArrayList<CurrentActivity>();
+  protected List<CurrentActivity> currentActivities = new ArrayList<>();
 
   @Override
   public void notify(String processInstanceId, String executionId, FlowElement currentFlowElement, Map<String, Object> executionVariables, Map<String, Object> customPropertiesMap) {

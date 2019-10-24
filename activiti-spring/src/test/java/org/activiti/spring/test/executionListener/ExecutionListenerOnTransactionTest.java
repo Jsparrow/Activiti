@@ -22,6 +22,8 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.test.Deployment;
 import org.activiti.spring.impl.test.SpringActivitiTestCase;
 import org.springframework.test.context.ContextConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -29,7 +31,9 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration("classpath:org/activiti/spring/test/executionListener/TransactionDependentListenerTest-context.xml")
 public class ExecutionListenerOnTransactionTest extends SpringActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(ExecutionListenerOnTransactionTest.class);
+
+@Deployment
   public void testOnClosedExecutionListenersWithRollback() {
 
     CurrentActivityTransactionDependentExecutionListener.clear();
@@ -48,6 +52,7 @@ public class ExecutionListenerOnTransactionTest extends SpringActivitiTestCase {
       managementService.executeJob(managementService.createJobQuery().singleResult().getId());
 
     } catch (Exception ex) {
+		logger.error(ex.getMessage(), ex);
       // expected; serviceTask3 throws exception
     }
 
@@ -83,6 +88,7 @@ public class ExecutionListenerOnTransactionTest extends SpringActivitiTestCase {
     try {
       managementService.executeJob(managementService.createJobQuery().singleResult().getId());
     } catch (Exception ex) {
+		logger.error(ex.getMessage(), ex);
       // expected; serviceTask3 throws exception
     }
 

@@ -108,8 +108,8 @@ public abstract class ProcessEngineConfiguration {
   protected boolean useTLS;
   protected String mailServerDefaultFrom = "activiti@localhost";
   protected String mailSessionJndi;
-  protected Map<String, MailServerInfo> mailServers = new HashMap<String, MailServerInfo>();
-  protected Map<String, String> mailSessionsJndi = new HashMap<String, String>();
+  protected Map<String, MailServerInfo> mailServers = new HashMap<>();
+  protected Map<String, String> mailSessionsJndi = new HashMap<>();
 
   protected String databaseType;
   protected String databaseSchemaUpdate = DB_SCHEMA_UPDATE_FALSE;

@@ -148,7 +148,7 @@ public class TaskAdminRuntimeImpl implements TaskAdminRuntime {
     public Task complete(CompleteTaskPayload completeTaskPayload) {
         Task task = task(completeTaskPayload.getTaskId());
         if (task == null) {
-            throw new IllegalStateException("Task with id: " + completeTaskPayload.getTaskId() + " cannot be completed because it cannot be found.");
+            throw new IllegalStateException(new StringBuilder().append("Task with id: ").append(completeTaskPayload.getTaskId()).append(" cannot be completed because it cannot be found.").toString());
         }
         TaskImpl competedTaskData = new TaskImpl(task.getId(),
                 task.getName(),
@@ -187,40 +187,28 @@ public class TaskAdminRuntimeImpl implements TaskAdminRuntime {
     @Override
     public void addCandidateUsers(CandidateUsersPayload candidateUsersPayload) {
         if (candidateUsersPayload.getCandidateUsers() != null && !candidateUsersPayload.getCandidateUsers().isEmpty()) {
-            for ( String u : candidateUsersPayload.getCandidateUsers() ) {
-                taskService.addCandidateUser(candidateUsersPayload.getTaskId(),
-                        u);
-            }
+            candidateUsersPayload.getCandidateUsers().forEach(u -> taskService.addCandidateUser(candidateUsersPayload.getTaskId(), u));
         }
     }
 
     @Override
     public void deleteCandidateUsers(CandidateUsersPayload candidateUsersPayload) {
         if (candidateUsersPayload.getCandidateUsers() != null && !candidateUsersPayload.getCandidateUsers().isEmpty()) {
-            for ( String u : candidateUsersPayload.getCandidateUsers() ) {
-                taskService.deleteCandidateUser(candidateUsersPayload.getTaskId(),
-                        u);
-            }
+            candidateUsersPayload.getCandidateUsers().forEach(u -> taskService.deleteCandidateUser(candidateUsersPayload.getTaskId(), u));
         }
     }
 
     @Override
     public void addCandidateGroups(CandidateGroupsPayload candidateGroupsPayload) {
         if (candidateGroupsPayload.getCandidateGroups() != null && !candidateGroupsPayload.getCandidateGroups().isEmpty()) {
-            for ( String g : candidateGroupsPayload.getCandidateGroups() ) {
-                taskService.addCandidateGroup(candidateGroupsPayload.getTaskId(),
-                        g);
-            }
+            candidateGroupsPayload.getCandidateGroups().forEach(g -> taskService.addCandidateGroup(candidateGroupsPayload.getTaskId(), g));
         }
     }
 
     @Override
     public void deleteCandidateGroups(CandidateGroupsPayload candidateGroupsPayload) {
         if (candidateGroupsPayload.getCandidateGroups() != null && !candidateGroupsPayload.getCandidateGroups().isEmpty()) {
-            for ( String g : candidateGroupsPayload.getCandidateGroups() ) {
-                taskService.deleteCandidateGroup(candidateGroupsPayload.getTaskId(),
-                        g);
-            }
+            candidateGroupsPayload.getCandidateGroups().forEach(g -> taskService.deleteCandidateGroup(candidateGroupsPayload.getTaskId(), g));
         }
     }
 
@@ -229,13 +217,12 @@ public class TaskAdminRuntimeImpl implements TaskAdminRuntime {
         List<IdentityLink> identityLinks = getIdentityLinks(taskId);
         List<String> userCandidates = new ArrayList<>();
         if (identityLinks != null) {
-            for ( IdentityLink i : identityLinks ) {
-                if (i.getUserId() != null) {
-                    if (i.getType().equals(IdentityLinkType.CANDIDATE)) {
-                        userCandidates.add(i.getUserId());
-                    }
-                }
-            }
+            identityLinks.forEach(i -> {
+                boolean condition = i.getUserId() != null && i.getType().equals(IdentityLinkType.CANDIDATE);
+				if (condition) {
+				    userCandidates.add(i.getUserId());
+				}
+            });
 
         }
         return userCandidates;
@@ -246,13 +233,12 @@ public class TaskAdminRuntimeImpl implements TaskAdminRuntime {
         List<IdentityLink> identityLinks = getIdentityLinks(taskId);
         List<String> groupCandidates = new ArrayList<>();
         if (identityLinks != null) {
-            for ( IdentityLink i : identityLinks ) {
-                if (i.getGroupId() != null) {
-                    if (i.getType().equals(IdentityLinkType.CANDIDATE)) {
-                        groupCandidates.add(i.getGroupId());
-                    }
-                }
-            }
+            identityLinks.forEach(i -> {
+                boolean condition = i.getGroupId() != null && i.getType().equals(IdentityLinkType.CANDIDATE);
+				if (condition) {
+				    groupCandidates.add(i.getGroupId());
+				}
+            });
 
         }
         return groupCandidates;

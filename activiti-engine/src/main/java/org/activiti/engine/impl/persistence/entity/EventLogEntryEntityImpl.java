@@ -42,105 +42,129 @@ public class EventLogEntryEntityImpl extends AbstractEntityNoRevision implements
     return null; // Not updateable
   }
 
-  public long getLogNumber() {
+  @Override
+public long getLogNumber() {
     return logNumber;
   }
 
-  public void setLogNumber(long logNumber) {
+  @Override
+public void setLogNumber(long logNumber) {
     this.logNumber = logNumber;
   }
 
-  public String getType() {
+  @Override
+public String getType() {
     return type;
   }
 
-  public void setType(String type) {
+  @Override
+public void setType(String type) {
     this.type = type;
   }
 
-  public String getProcessDefinitionId() {
+  @Override
+public String getProcessDefinitionId() {
     return processDefinitionId;
   }
 
-  public void setProcessDefinitionId(String processDefinitionId) {
+  @Override
+public void setProcessDefinitionId(String processDefinitionId) {
     this.processDefinitionId = processDefinitionId;
   }
 
-  public String getProcessInstanceId() {
+  @Override
+public String getProcessInstanceId() {
     return processInstanceId;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
+  @Override
+public void setProcessInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
   }
 
-  public String getExecutionId() {
+  @Override
+public String getExecutionId() {
     return executionId;
   }
 
-  public void setExecutionId(String executionId) {
+  @Override
+public void setExecutionId(String executionId) {
     this.executionId = executionId;
   }
 
-  public String getTaskId() {
+  @Override
+public String getTaskId() {
     return taskId;
   }
 
-  public void setTaskId(String taskId) {
+  @Override
+public void setTaskId(String taskId) {
     this.taskId = taskId;
   }
 
-  public Date getTimeStamp() {
+  @Override
+public Date getTimeStamp() {
     return timeStamp;
   }
 
-  public void setTimeStamp(Date timeStamp) {
+  @Override
+public void setTimeStamp(Date timeStamp) {
     this.timeStamp = timeStamp;
   }
 
-  public String getUserId() {
+  @Override
+public String getUserId() {
     return userId;
   }
 
-  public void setUserId(String userId) {
+  @Override
+public void setUserId(String userId) {
     this.userId = userId;
   }
 
-  public byte[] getData() {
+  @Override
+public byte[] getData() {
     return data;
   }
 
-  public void setData(byte[] data) {
+  @Override
+public void setData(byte[] data) {
     this.data = data;
   }
 
-  public String getLockOwner() {
+  @Override
+public String getLockOwner() {
     return lockOwner;
   }
 
-  public void setLockOwner(String lockOwner) {
+  @Override
+public void setLockOwner(String lockOwner) {
     this.lockOwner = lockOwner;
   }
 
-  public String getLockTime() {
+  @Override
+public String getLockTime() {
     return lockTime;
   }
 
-  public void setLockTime(String lockTime) {
+  @Override
+public void setLockTime(String lockTime) {
     this.lockTime = lockTime;
   }
 
-  public int getProcessed() {
+  @Override
+public int getProcessed() {
     return isProcessed;
   }
 
-  public void setProcessed(int isProcessed) {
+  @Override
+public void setProcessed(int isProcessed) {
     this.isProcessed = isProcessed;
   }
 
   @Override
   public String toString() {
-    return timeStamp.toString() + " : " + type;
+    return new StringBuilder().append(timeStamp.toString()).append(" : ").append(type).toString();
   }
 
 }

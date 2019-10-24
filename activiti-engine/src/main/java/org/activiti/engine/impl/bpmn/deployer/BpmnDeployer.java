@@ -90,11 +90,11 @@ public class BpmnDeployer implements Deployer {
 
         cachingAndArtifactsManager.updateCachingAndArtifacts(parsedDeployment);
 
-        for (ProcessDefinitionEntity processDefinition : parsedDeployment.getAllProcessDefinitions()) {
+        parsedDeployment.getAllProcessDefinitions().forEach(processDefinition -> {
             BpmnModel bpmnModel = parsedDeployment.getBpmnModelForProcessDefinition(processDefinition);
             createLocalizationValues(processDefinition.getId(),
                                      bpmnModel.getProcessById(processDefinition.getKey()));
-        }
+        });
     }
 //
 //  /**
@@ -131,11 +131,11 @@ public class BpmnDeployer implements Deployer {
     protected void setProcessDefinitionDiagramNames(ParsedDeployment parsedDeployment) {
         Map<String, ResourceEntity> resources = parsedDeployment.getDeployment().getResources();
 
-        for (ProcessDefinitionEntity processDefinition : parsedDeployment.getAllProcessDefinitions()) {
+        parsedDeployment.getAllProcessDefinitions().forEach(processDefinition -> {
             String diagramResourceName = ResourceNameUtil.getProcessDiagramResourceNameFromDeployment(processDefinition,
                                                                                                       resources);
             processDefinition.setDiagramResourceName(diagramResourceName);
-        }
+        });
     }
 
     /**
@@ -145,16 +145,16 @@ public class BpmnDeployer implements Deployer {
     protected Map<ProcessDefinitionEntity, ProcessDefinitionEntity> getPreviousVersionsOfProcessDefinitions(
             ParsedDeployment parsedDeployment) {
 
-        Map<ProcessDefinitionEntity, ProcessDefinitionEntity> result = new LinkedHashMap<ProcessDefinitionEntity, ProcessDefinitionEntity>();
+        Map<ProcessDefinitionEntity, ProcessDefinitionEntity> result = new LinkedHashMap<>();
 
-        for (ProcessDefinitionEntity newDefinition : parsedDeployment.getAllProcessDefinitions()) {
+        parsedDeployment.getAllProcessDefinitions().forEach(newDefinition -> {
             ProcessDefinitionEntity existingDefinition = bpmnDeploymentHelper.getMostRecentVersionOfProcessDefinition(newDefinition);
 
             if (existingDefinition != null) {
                 result.put(newDefinition,
                            existingDefinition);
             }
-        }
+        });
 
         return result;
     }
@@ -170,7 +170,7 @@ public class BpmnDeployer implements Deployer {
 
         if(parsedDeployment.getDeployment().getProjectReleaseVersion() != null){
             Integer version = parsedDeployment.getDeployment().getVersion();
-            for (ProcessDefinitionEntity processDefinition : parsedDeployment.getAllProcessDefinitions()) {
+            parsedDeployment.getAllProcessDefinitions().forEach(processDefinition -> {
                 processDefinition.setVersion(version);
                 processDefinition.setId(getIdForNewProcessDefinition(processDefinition));
 
@@ -178,10 +178,10 @@ public class BpmnDeployer implements Deployer {
                     commandContext.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_CREATED,
                                                                                                                                              processDefinition));
                 }
-            }
+            });
         }else{
 
-            for (ProcessDefinitionEntity processDefinition : parsedDeployment.getAllProcessDefinitions()) {
+            parsedDeployment.getAllProcessDefinitions().forEach(processDefinition -> {
                 int version = 1;
 
                 ProcessDefinitionEntity latest = mapNewToOldProcessDefinitions.get(processDefinition);
@@ -196,7 +196,7 @@ public class BpmnDeployer implements Deployer {
                     commandContext.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_CREATED,
                                                                                                                                              processDefinition));
                 }
-            }
+            });
         }
 
 
@@ -210,35 +210,32 @@ public class BpmnDeployer implements Deployer {
         CommandContext commandContext = Context.getCommandContext();
         ProcessDefinitionEntityManager processDefinitionManager = commandContext.getProcessDefinitionEntityManager();
 
-        for (ProcessDefinitionEntity processDefinition : parsedDeployment.getAllProcessDefinitions()) {
+        parsedDeployment.getAllProcessDefinitions().forEach(processDefinition -> {
             processDefinitionManager.insert(processDefinition,
                                             false);
             bpmnDeploymentHelper.addAuthorizationsForNewProcessDefinition(parsedDeployment.getProcessModelForProcessDefinition(processDefinition),
                                                                           processDefinition);
-        }
+        });
     }
 
     protected void updateTimersAndEvents(ParsedDeployment parsedDeployment,
                                          Map<ProcessDefinitionEntity, ProcessDefinitionEntity> mapNewToOldProcessDefinitions) {
 
-        for (ProcessDefinitionEntity processDefinition : parsedDeployment.getAllProcessDefinitions()) {
-            bpmnDeploymentHelper.updateTimersAndEvents(processDefinition,
-                                                       mapNewToOldProcessDefinitions.get(processDefinition),
-                                                       parsedDeployment);
-        }
+        parsedDeployment.getAllProcessDefinitions().forEach(processDefinition -> bpmnDeploymentHelper.updateTimersAndEvents(processDefinition,
+				mapNewToOldProcessDefinitions.get(processDefinition), parsedDeployment));
     }
 
     protected void dispatchProcessDefinitionEntityInitializedEvent(ParsedDeployment parsedDeployment) {
         CommandContext commandContext = Context.getCommandContext();
-        for (ProcessDefinitionEntity processDefinitionEntity : parsedDeployment.getAllProcessDefinitions()) {
-            log.info("Process deployed: {id: " + processDefinitionEntity.getId() +
-                ", key: " + processDefinitionEntity.getKey() + ", name: " + processDefinitionEntity.getName() +" }");
+        parsedDeployment.getAllProcessDefinitions().forEach(processDefinitionEntity -> {
+            log.info(new StringBuilder().append("Process deployed: {id: ").append(processDefinitionEntity.getId()).append(", key: ").append(processDefinitionEntity.getKey()).append(", name: ").append(processDefinitionEntity.getName())
+					.append(" }").toString());
             if (commandContext.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
                 commandContext.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
                         ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_INITIALIZED,
                                                                processDefinitionEntity));
             }
-        }
+        });
     }
 
     /**
@@ -250,7 +247,7 @@ public class BpmnDeployer implements Deployer {
     protected String getIdForNewProcessDefinition(ProcessDefinitionEntity processDefinition) {
         String nextId = idGenerator.getNextId();
 
-        String result = processDefinition.getKey() + ":" + processDefinition.getVersion() + ":" + nextId; // ACT-505
+        String result = new StringBuilder().append(processDefinition.getKey()).append(":").append(processDefinition.getVersion()).append(":").append(nextId).toString(); // ACT-505
         // ACT-115: maximum id length is 64 characters
         if (result.length() > 64) {
             result = nextId;
@@ -264,7 +261,7 @@ public class BpmnDeployer implements Deployer {
      * version to be consistent.
      */
     protected void makeProcessDefinitionsConsistentWithPersistedVersions(ParsedDeployment parsedDeployment) {
-        for (ProcessDefinitionEntity processDefinition : parsedDeployment.getAllProcessDefinitions()) {
+        parsedDeployment.getAllProcessDefinitions().forEach(processDefinition -> {
             ProcessDefinitionEntity persistedProcessDefinition =
                     bpmnDeploymentHelper.getPersistedInstanceOfProcessDefinition(processDefinition);
 
@@ -273,7 +270,7 @@ public class BpmnDeployer implements Deployer {
                 processDefinition.setVersion(persistedProcessDefinition.getVersion());
                 processDefinition.setSuspensionState(persistedProcessDefinition.getSuspensionState());
             }
-        }
+        });
     }
 
     protected void createLocalizationValues(String processDefinitionId,

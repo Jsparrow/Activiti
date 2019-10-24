@@ -23,10 +23,12 @@ import org.apache.commons.lang3.StringUtils;
 public class CollaborationExport implements BpmnXMLConstants {
 
   public static void writePools(BpmnModel model, XMLStreamWriter xtw) throws Exception {
-    if (!model.getPools().isEmpty()) {
-      xtw.writeStartElement(ELEMENT_COLLABORATION);
-      xtw.writeAttribute(ATTRIBUTE_ID, "Collaboration");
-      for (Pool pool : model.getPools()) {
+    if (model.getPools().isEmpty()) {
+		return;
+	}
+	xtw.writeStartElement(ELEMENT_COLLABORATION);
+	xtw.writeAttribute(ATTRIBUTE_ID, "Collaboration");
+	for (Pool pool : model.getPools()) {
         xtw.writeStartElement(ELEMENT_PARTICIPANT);
         xtw.writeAttribute(ATTRIBUTE_ID, pool.getId());
         if (StringUtils.isNotEmpty(pool.getName())) {
@@ -37,8 +39,7 @@ public class CollaborationExport implements BpmnXMLConstants {
         }
         xtw.writeEndElement();
       }
-
-      for (MessageFlow messageFlow : model.getMessageFlows().values()) {
+	for (MessageFlow messageFlow : model.getMessageFlows().values()) {
         xtw.writeStartElement(ELEMENT_MESSAGE_FLOW);
         xtw.writeAttribute(ATTRIBUTE_ID, messageFlow.getId());
         if (StringUtils.isNotEmpty(messageFlow.getName())) {
@@ -55,8 +56,6 @@ public class CollaborationExport implements BpmnXMLConstants {
         }
         xtw.writeEndElement();
       }
-
-      xtw.writeEndElement();
-    }
+	xtw.writeEndElement();
   }
 }

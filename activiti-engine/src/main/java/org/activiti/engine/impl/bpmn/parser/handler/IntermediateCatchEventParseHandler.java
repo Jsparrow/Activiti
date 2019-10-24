@@ -30,11 +30,13 @@ public class IntermediateCatchEventParseHandler extends AbstractFlowNodeBpmnPars
 
   private static final Logger logger = LoggerFactory.getLogger(IntermediateCatchEventParseHandler.class);
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return IntermediateCatchEvent.class;
   }
 
-  protected void executeParse(BpmnParse bpmnParse, IntermediateCatchEvent event) {
+  @Override
+protected void executeParse(BpmnParse bpmnParse, IntermediateCatchEvent event) {
     EventDefinition eventDefinition = null;
     if (!event.getEventDefinitions().isEmpty()) {
       eventDefinition = event.getEventDefinitions().get(0);

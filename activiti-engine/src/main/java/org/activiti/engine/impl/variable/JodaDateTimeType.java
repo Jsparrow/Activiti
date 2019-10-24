@@ -19,22 +19,26 @@ import org.joda.time.DateTime;
  */
 public class JodaDateTimeType implements VariableType {
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return "jodadatetime";
   }
 
-  public boolean isCachable() {
+  @Override
+public boolean isCachable() {
     return true;
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     if (value == null) {
       return true;
     }
     return DateTime.class.isAssignableFrom(value.getClass());
   }
 
-  public Object getValue(ValueFields valueFields) {
+  @Override
+public Object getValue(ValueFields valueFields) {
     Long longValue = valueFields.getLongValue();
     if (longValue != null) {
       return new DateTime(longValue);
@@ -42,7 +46,8 @@ public class JodaDateTimeType implements VariableType {
     return null;
   }
 
-  public void setValue(Object value, ValueFields valueFields) {
+  @Override
+public void setValue(Object value, ValueFields valueFields) {
     if (value != null) {
       valueFields.setLongValue(((DateTime) value).getMillis());
     } else {

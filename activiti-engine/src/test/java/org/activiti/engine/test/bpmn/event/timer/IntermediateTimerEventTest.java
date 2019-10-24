@@ -98,10 +98,10 @@ public class IntermediateTimerEventTest extends PluggableActivitiTestCase {
   @Deployment
   public void testExpression() {
     // Set the clock fixed
-    HashMap<String, Object> variables1 = new HashMap<String, Object>();
+    HashMap<String, Object> variables1 = new HashMap<>();
     variables1.put("dueDate", new Date());
 
-    HashMap<String, Object> variables2 = new HashMap<String, Object>();
+    HashMap<String, Object> variables2 = new HashMap<>();
     variables2.put("dueDate", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
 
     // After process start, there should be timer created
@@ -114,10 +114,10 @@ public class IntermediateTimerEventTest extends PluggableActivitiTestCase {
     // After setting the clock to one second in the future the timers should fire
     List<Job> jobs = managementService.createTimerJobQuery().executable().list();
     assertEquals(2, jobs.size());
-    for (Job job : jobs) {
+    jobs.forEach(job -> {
       managementService.moveTimerToExecutableJob(job.getId());
       managementService.executeJob(job.getId());
-    }
+    });
 
     assertEquals(0, managementService.createTimerJobQuery().processInstanceId(pi1.getId()).count());
     assertEquals(0, managementService.createTimerJobQuery().processInstanceId(pi2.getId()).count());

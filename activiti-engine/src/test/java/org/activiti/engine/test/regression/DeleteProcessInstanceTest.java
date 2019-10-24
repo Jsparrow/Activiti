@@ -32,13 +32,13 @@ public class DeleteProcessInstanceTest extends PluggableActivitiTestCase {
 
     // Set the inputs for the first process instance, which we will be able
     // to completely delete.
-    Map<String, Object> inputParamsUser = new HashMap<String, Object>();
+    Map<String, Object> inputParamsUser = new HashMap<>();
     inputParamsUser.put("taskType", "user");
 
     // Start the process instance & ensure it's started.
     ProcessInstance instanceUser = runtimeService.startProcessInstanceByKey("DemoPartialDeletion", inputParamsUser);
     assertNotNull(instanceUser);
-    log.info("Process instance (of process model " + instanceUser.getProcessDefinitionId() + ") started with id: " + instanceUser.getId() + ".");
+    log.info(new StringBuilder().append("Process instance (of process model ").append(instanceUser.getProcessDefinitionId()).append(") started with id: ").append(instanceUser.getId()).append(".").toString());
 
     // Assert that the process instance is active.
     Execution executionUser = runtimeService.createExecutionQuery().processInstanceId(instanceUser.getProcessInstanceId()).onlyChildExecutions().singleResult();
@@ -56,7 +56,7 @@ public class DeleteProcessInstanceTest extends PluggableActivitiTestCase {
       // end time.
       HistoricProcessInstance hInstanceUser = historyService.createHistoricProcessInstanceQuery().processInstanceId(instanceUser.getId()).singleResult();
       assertNotNull(hInstanceUser.getEndTime());
-      log.info("End time for the deleted instance of \"Demo Partial Deletion\" that was started with a Task Type of \"user\": " + hInstanceUser.getEndTime() + ".");
+      log.info(new StringBuilder().append("End time for the deleted instance of \"Demo Partial Deletion\" that was started with a Task Type of \"user\": ").append(hInstanceUser.getEndTime()).append(".").toString());
       log.info("Successfully deleted the instance of \"Demo Partial Deletion\" that was started with a Task Type of \"user\".");
     }
 
@@ -65,13 +65,13 @@ public class DeleteProcessInstanceTest extends PluggableActivitiTestCase {
 
     // Set the inputs for the second process instance, which we will NOT be
     // able to completely delete.
-    Map<String, Object> inputParamsJava = new HashMap<String, Object>();
+    Map<String, Object> inputParamsJava = new HashMap<>();
     inputParamsJava.put("taskType", "java");
 
     // Start the process instance & ensure it's started.
     ProcessInstance instanceJava = runtimeService.startProcessInstanceByKey("DemoPartialDeletion", inputParamsJava);
     assertNotNull(instanceJava);
-    log.info("Process instance (of process model " + instanceJava.getProcessDefinitionId() + ") started with id: " + instanceJava.getId() + ".");
+    log.info(new StringBuilder().append("Process instance (of process model ").append(instanceJava.getProcessDefinitionId()).append(") started with id: ").append(instanceJava.getId()).append(".").toString());
 
     // Assert that the process instance is active.
     Execution executionJava = runtimeService.createExecutionQuery().processInstanceId(instanceJava.getProcessInstanceId()).onlyChildExecutions().singleResult();
@@ -85,6 +85,7 @@ public class DeleteProcessInstanceTest extends PluggableActivitiTestCase {
       managementService.executeJob(jobJava.getId());
       fail("Expected exception");
     } catch (Exception e) {
+		log.error(e.getMessage(), e);
       // expected
     }
 
@@ -93,6 +94,7 @@ public class DeleteProcessInstanceTest extends PluggableActivitiTestCase {
       managementService.executeJob(jobJava.getId());
       fail("Expected exception");
     } catch (Exception e) {
+		log.error(e.getMessage(), e);
       // expected
     }
 
@@ -101,6 +103,7 @@ public class DeleteProcessInstanceTest extends PluggableActivitiTestCase {
       managementService.executeJob(jobJava.getId());
       fail("Expected exception");
     } catch (Exception e) {
+		log.error(e.getMessage(), e);
       // expected
     }
 
@@ -112,12 +115,13 @@ public class DeleteProcessInstanceTest extends PluggableActivitiTestCase {
     // Delete the process instance.
     runtimeService.deleteProcessInstance(instanceJava.getId(), null);
 
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      // Retrieve the HistoricProcessInstance and assert that there is no
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	// Retrieve the HistoricProcessInstance and assert that there is no
       // end time.
       HistoricProcessInstance hInstanceJava = historyService.createHistoricProcessInstanceQuery().processInstanceId(instanceJava.getId()).singleResult();
-      assertNotNull(hInstanceJava.getEndTime());
-    }
+	assertNotNull(hInstanceJava.getEndTime());
   }
 
 }

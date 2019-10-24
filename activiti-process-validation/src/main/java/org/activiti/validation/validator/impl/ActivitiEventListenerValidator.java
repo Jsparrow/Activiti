@@ -31,13 +31,13 @@ public class ActivitiEventListenerValidator extends ProcessLevelValidator {
   protected void executeValidation(BpmnModel bpmnModel, Process process, List<ValidationError> errors) {
     List<EventListener> eventListeners = process.getEventListeners();
     if (eventListeners != null) {
-      for (EventListener eventListener : eventListeners) {
+      eventListeners.forEach(eventListener -> {
 
         if (eventListener.getImplementationType() != null && eventListener.getImplementationType().equals(ImplementationType.IMPLEMENTATION_TYPE_INVALID_THROW_EVENT)) {
 
           addError(errors, Problems.EVENT_LISTENER_INVALID_THROW_EVENT_TYPE, process, eventListener, "Invalid or unsupported throw event type on event listener");
 
-        } else if (eventListener.getImplementationType() == null || eventListener.getImplementationType().length() == 0) {
+        } else if (eventListener.getImplementationType() == null || eventListener.getImplementationType().isEmpty()) {
 
           addError(errors, Problems.EVENT_LISTENER_IMPLEMENTATION_MISSING, process, eventListener, "Element 'class', 'delegateExpression' or 'throwEvent' is mandatory on eventListener");
 
@@ -54,7 +54,7 @@ public class ActivitiEventListenerValidator extends ProcessLevelValidator {
 
         }
 
-      }
+      });
 
     }
   }

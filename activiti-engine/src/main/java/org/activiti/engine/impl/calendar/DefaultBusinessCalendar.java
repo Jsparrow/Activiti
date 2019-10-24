@@ -25,7 +25,7 @@ import org.activiti.engine.impl.context.Context;
 @Internal
 public class DefaultBusinessCalendar implements BusinessCalendar {
 
-  private static Map<String, Integer> units = new HashMap<String, Integer>();
+  private static Map<String, Integer> units = new HashMap<>();
   static {
     units.put("millis", Calendar.MILLISECOND);
     units.put("seconds", Calendar.SECOND);
@@ -49,7 +49,8 @@ public class DefaultBusinessCalendar implements BusinessCalendar {
     return resolveDuedate(duedateDescription);
   }
 
-  public Date resolveDuedate(String duedate) {
+  @Override
+public Date resolveDuedate(String duedate) {
     Date resolvedDuedate = Context.getProcessEngineConfiguration().getClock().getCurrentTime();
 
     String[] tokens = duedate.split(" and ");
@@ -77,7 +78,7 @@ public class DefaultBusinessCalendar implements BusinessCalendar {
     }
 
     String quantityText = singleUnitQuantity.substring(0, spaceIndex);
-    Integer quantity = new Integer(quantityText);
+    Integer quantity = Integer.valueOf(quantityText);
 
     String unitText = singleUnitQuantity.substring(spaceIndex + 1).trim().toLowerCase();
 

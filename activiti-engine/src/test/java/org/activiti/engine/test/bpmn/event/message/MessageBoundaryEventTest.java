@@ -23,13 +23,17 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.TimerJobQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class MessageBoundaryEventTest extends PluggableActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(MessageBoundaryEventTest.class);
+
+@Deployment
   public void testSingleBoundaryMessageEvent() {
     runtimeService.startProcessInstanceByKey("process");
 
@@ -77,7 +81,8 @@ public class MessageBoundaryEventTest extends PluggableActivitiTestCase {
       repositoryService.createDeployment().addClasspathResource("org/activiti/engine/test/bpmn/event/message/MessageBoundaryEventTest.testDoubleBoundaryMessageEventSameMessageId.bpmn20.xml").deploy();
       fail("Deployment should fail because Activiti cannot handle two boundary message events with same messageId.");
     } catch (Exception e) {
-      assertEquals(0, repositoryService.createDeploymentQuery().count());
+      logger.error(e.getMessage(), e);
+	assertEquals(0, repositoryService.createDeploymentQuery().count());
     }
   }
 
@@ -108,6 +113,7 @@ public class MessageBoundaryEventTest extends PluggableActivitiTestCase {
       runtimeService.messageEventReceived("messageName_2", execution2.getId());
       fail();
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -164,6 +170,7 @@ public class MessageBoundaryEventTest extends PluggableActivitiTestCase {
       runtimeService.messageEventReceived("messageName_2", execution2.getId());
       fail();
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -514,11 +521,7 @@ public class MessageBoundaryEventTest extends PluggableActivitiTestCase {
 
     // After setting the clock to time '1 hour and 5 seconds', the timer should fire.
     processEngineConfiguration.getClock().setCurrentTime(new Date(startTime.getTime() + ((60 * 60 * 1000) + 5000)));
-    waitForJobExecutorOnCondition(5000L, 100L, new Callable<Boolean>() {
-      public Boolean call() throws Exception {
-        return taskService.createTaskQuery().count() == 2;
-      }
-    });
+    waitForJobExecutorOnCondition(5000L, 100L, () -> taskService.createTaskQuery().count() == 2);
 
     // It is a repeating job, so it will come back.
     assertEquals(1L, jobQuery.count());
@@ -575,24 +578,14 @@ public class MessageBoundaryEventTest extends PluggableActivitiTestCase {
     // After setting the clock to time '2 hours and 5 seconds', the timer
     // should fire.
     processEngineConfiguration.getClock().setCurrentTime(new Date(startTime.getTime() + ((2 * 60 * 60 * 1000) + 5000)));
-    waitForJobExecutorOnCondition(2000L, 100L, new Callable<Boolean>() {
-      @Override
-      public Boolean call() throws Exception {
-        return taskService.createTaskQuery().count() == 2;
-      }
-    });
+    waitForJobExecutorOnCondition(2000L, 100L, () -> taskService.createTaskQuery().count() == 2);
 
     // It is a repeating job, so it will come back.
     assertEquals(1L, jobQuery.count());
 
     // After setting the clock to time '3 hours and 5 seconds', the timer should fire again.
     processEngineConfiguration.getClock().setCurrentTime(new Date(startTime.getTime() + ((3 * 60 * 60 * 1000) + 5000)));
-    waitForJobExecutorOnCondition(2000L, 100L, new Callable<Boolean>() {
-      @Override
-      public Boolean call() throws Exception {
-        return taskService.createTaskQuery().list().size() == 3;
-      }
-    });
+    waitForJobExecutorOnCondition(2000L, 100L, () -> taskService.createTaskQuery().list().size() == 3);
     // It is a repeating job, so it will come back.
     assertEquals(1L, jobQuery.count());
 

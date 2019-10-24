@@ -26,7 +26,8 @@ import org.activiti.bpmn.model.ParallelGateway;
  */
 public class ParallelGatewayXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return ParallelGateway.class;
   }
 

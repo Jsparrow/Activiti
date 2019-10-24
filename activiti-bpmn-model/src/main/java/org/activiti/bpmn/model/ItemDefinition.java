@@ -21,7 +21,8 @@ public class ItemDefinition extends BaseElement {
     this.itemKind = itemKind;
   }
 
-  public ItemDefinition clone() {
+  @Override
+public ItemDefinition clone() {
     ItemDefinition clone = new ItemDefinition();
     clone.setValues(this);
     return clone;

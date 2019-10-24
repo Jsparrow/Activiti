@@ -19,34 +19,29 @@ public class SignalAndMessageDefinitionExport implements BpmnXMLConstants {
     public static void writeSignalsAndMessages(BpmnModel model,
                                                XMLStreamWriter xtw) throws Exception {
 
-        for (Process process : model.getProcesses()) {
-            for (FlowElement flowElement : process.findFlowElementsOfType(Event.class)) {
-                Event event = (Event) flowElement;
-                if (!event.getEventDefinitions().isEmpty()) {
-                    EventDefinition eventDefinition = event.getEventDefinitions().get(0);
-                    if (eventDefinition instanceof SignalEventDefinition) {
-                        SignalEventDefinition signalEvent = (SignalEventDefinition) eventDefinition;
-                        if (StringUtils.isNotEmpty(signalEvent.getSignalRef())) {
-                            if (!model.containsSignalId(signalEvent.getSignalRef())) {
-                                Signal signal = new Signal(signalEvent.getSignalRef(),
-                                                           signalEvent.getSignalRef());
-                                model.addSignal(signal);
-                            }
-                        }
-                    } else if (eventDefinition instanceof MessageEventDefinition) {
-                        MessageEventDefinition messageEvent = (MessageEventDefinition) eventDefinition;
-                        if (StringUtils.isNotEmpty(messageEvent.getMessageRef())) {
-                            if (!model.containsMessageId(messageEvent.getMessageRef())) {
-                                Message message = new Message(messageEvent.getMessageRef(),
-                                                              messageEvent.getMessageRef(),
-                                                              null);
-                                model.addMessage(message);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        model.getProcesses().forEach(process -> process.findFlowElementsOfType(Event.class).forEach(flowElement -> {
+			Event event = (Event) flowElement;
+			if (!event.getEventDefinitions().isEmpty()) {
+				EventDefinition eventDefinition = event.getEventDefinitions().get(0);
+				if (eventDefinition instanceof SignalEventDefinition) {
+					SignalEventDefinition signalEvent = (SignalEventDefinition) eventDefinition;
+					boolean condition = StringUtils.isNotEmpty(signalEvent.getSignalRef())
+							&& !model.containsSignalId(signalEvent.getSignalRef());
+					if (condition) {
+						Signal signal = new Signal(signalEvent.getSignalRef(), signalEvent.getSignalRef());
+						model.addSignal(signal);
+					}
+				} else if (eventDefinition instanceof MessageEventDefinition) {
+					MessageEventDefinition messageEvent = (MessageEventDefinition) eventDefinition;
+					boolean condition1 = StringUtils.isNotEmpty(messageEvent.getMessageRef())
+							&& !model.containsMessageId(messageEvent.getMessageRef());
+					if (condition1) {
+						Message message = new Message(messageEvent.getMessageRef(), messageEvent.getMessageRef(), null);
+						model.addMessage(message);
+					}
+				}
+			}
+		}));
 
         for (Signal signal : model.getSignals()) {
             xtw.writeStartElement(ELEMENT_SIGNAL);

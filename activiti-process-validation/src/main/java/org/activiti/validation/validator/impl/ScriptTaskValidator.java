@@ -30,11 +30,7 @@ public class ScriptTaskValidator extends ProcessLevelValidator {
   @Override
   protected void executeValidation(BpmnModel bpmnModel, Process process, List<ValidationError> errors) {
     List<ScriptTask> scriptTasks = process.findFlowElementsOfType(ScriptTask.class);
-    for (ScriptTask scriptTask : scriptTasks) {
-      if (StringUtils.isEmpty(scriptTask.getScript())) {
-        addError(errors, Problems.SCRIPT_TASK_MISSING_SCRIPT, process, scriptTask, "No script provided for script task");
-      }
-    }
+    scriptTasks.stream().filter(scriptTask -> StringUtils.isEmpty(scriptTask.getScript())).forEach(scriptTask -> addError(errors, Problems.SCRIPT_TASK_MISSING_SCRIPT, process, scriptTask, "No script provided for script task"));
   }
 
 }

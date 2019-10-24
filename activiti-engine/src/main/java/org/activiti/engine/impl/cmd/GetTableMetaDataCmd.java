@@ -31,7 +31,8 @@ public class GetTableMetaDataCmd implements Command<TableMetaData>, Serializable
     this.tableName = tableName;
   }
 
-  public TableMetaData execute(CommandContext commandContext) {
+  @Override
+public TableMetaData execute(CommandContext commandContext) {
     if (tableName == null) {
       throw new ActivitiIllegalArgumentException("tableName is null");
     }

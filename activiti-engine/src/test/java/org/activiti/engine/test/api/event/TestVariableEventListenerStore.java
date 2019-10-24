@@ -29,7 +29,7 @@ public class TestVariableEventListenerStore implements ActivitiEventListener {
   private List<ActivitiEvent> eventsReceived;
   
   public TestVariableEventListenerStore() {
-    eventsReceived = new ArrayList<ActivitiEvent>();
+    eventsReceived = new ArrayList<>();
   }
   
   public List<ActivitiEvent> getEventsReceived() {
@@ -42,18 +42,19 @@ public class TestVariableEventListenerStore implements ActivitiEventListener {
   
   @Override
   public void onEvent(ActivitiEvent event) {
-    if(event instanceof ActivitiVariableEvent) {
-      eventsReceived.add(event);
-      EventLogEntryEntity eventLogEntry = new EventLogEntryEntityImpl();
-      eventLogEntry.setProcessDefinitionId(event.getProcessDefinitionId());
-      eventLogEntry.setProcessInstanceId(event.getProcessInstanceId());
-      eventLogEntry.setExecutionId(event.getExecutionId());
-      eventLogEntry.setTaskId(((ActivitiVariableEvent) event).getTaskId());
-      eventLogEntry.setType(event.getType().name());
-      eventLogEntry.setTimeStamp(new Date());
-      CommandContext commandContext = Context.getCommandContext();
-      commandContext.getEventLogEntryEntityManager().insert(eventLogEntry);
-    }
+    if (!(event instanceof ActivitiVariableEvent)) {
+		return;
+	}
+	eventsReceived.add(event);
+	EventLogEntryEntity eventLogEntry = new EventLogEntryEntityImpl();
+	eventLogEntry.setProcessDefinitionId(event.getProcessDefinitionId());
+	eventLogEntry.setProcessInstanceId(event.getProcessInstanceId());
+	eventLogEntry.setExecutionId(event.getExecutionId());
+	eventLogEntry.setTaskId(((ActivitiVariableEvent) event).getTaskId());
+	eventLogEntry.setType(event.getType().name());
+	eventLogEntry.setTimeStamp(new Date());
+	CommandContext commandContext = Context.getCommandContext();
+	commandContext.getEventLogEntryEntityManager().insert(eventLogEntry);
   }
 
   @Override

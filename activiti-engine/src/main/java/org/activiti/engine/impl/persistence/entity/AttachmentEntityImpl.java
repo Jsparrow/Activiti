@@ -44,90 +44,111 @@ public class AttachmentEntityImpl extends AbstractEntity implements AttachmentEn
     
   }
 
-  public Object getPersistentState() {
-    Map<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    Map<String, Object> persistentState = new HashMap<>();
     persistentState.put("name", name);
     persistentState.put("description", description);
     return persistentState;
   }
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
 
-  public String getDescription() {
+  @Override
+public String getDescription() {
     return description;
   }
 
-  public void setDescription(String description) {
+  @Override
+public void setDescription(String description) {
     this.description = description;
   }
 
-  public String getType() {
+  @Override
+public String getType() {
     return type;
   }
 
-  public void setType(String type) {
+  @Override
+public void setType(String type) {
     this.type = type;
   }
 
-  public String getTaskId() {
+  @Override
+public String getTaskId() {
     return taskId;
   }
 
-  public void setTaskId(String taskId) {
+  @Override
+public void setTaskId(String taskId) {
     this.taskId = taskId;
   }
 
-  public String getProcessInstanceId() {
+  @Override
+public String getProcessInstanceId() {
     return processInstanceId;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
+  @Override
+public void setProcessInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
   }
 
-  public String getUrl() {
+  @Override
+public String getUrl() {
     return url;
   }
 
-  public void setUrl(String url) {
+  @Override
+public void setUrl(String url) {
     this.url = url;
   }
 
-  public String getContentId() {
+  @Override
+public String getContentId() {
     return contentId;
   }
 
-  public void setContentId(String contentId) {
+  @Override
+public void setContentId(String contentId) {
     this.contentId = contentId;
   }
 
-  public ByteArrayEntity getContent() {
+  @Override
+public ByteArrayEntity getContent() {
     return content;
   }
 
-  public void setContent(ByteArrayEntity content) {
+  @Override
+public void setContent(ByteArrayEntity content) {
     this.content = content;
   }
 
-  public void setUserId(String userId) {
+  @Override
+public void setUserId(String userId) {
     this.userId = userId;
   }
 
-  public String getUserId() {
+  @Override
+public String getUserId() {
     return userId;
   }
 
-  public Date getTime() {
+  @Override
+public Date getTime() {
     return time;
   }
 
-  public void setTime(Date time) {
+  @Override
+public void setTime(Date time) {
     this.time = time;
   }
 

@@ -22,6 +22,8 @@ import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test case for all {@link ActivitiEventListener}s that throws a signal BPMN event when an {@link ActivitiEvent} has been dispatched.
@@ -30,7 +32,9 @@ import org.activiti.engine.test.Deployment;
  */
 public class SignalThrowingEventListenerTest extends PluggableActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(SignalThrowingEventListenerTest.class);
+
+@Deployment
   public void testThrowSignal() throws Exception {
     SignalThrowingEventListener listener = null;
     try {
@@ -136,6 +140,7 @@ public class SignalThrowingEventListenerTest extends PluggableActivitiTestCase {
         managementService.executeJob(signalJob.getId());
         fail("Exception expected");
       } catch (ActivitiException ae) {
+		logger.error(ae.getMessage(), ae);
         // Ignore, expected exception
       }
 
@@ -152,7 +157,8 @@ public class SignalThrowingEventListenerTest extends PluggableActivitiTestCase {
         managementService.executeJob(failedJob.getId());
         fail("Exception expected");
       } catch (ActivitiException ae) {
-        // Ignore, expected exception
+        logger.error(ae.getMessage(), ae);
+		// Ignore, expected exception
         assertEquals(2, taskService.createTaskQuery().processInstanceId(processInstance.getId()).count());
       }
     } finally {
@@ -182,6 +188,7 @@ public class SignalThrowingEventListenerTest extends PluggableActivitiTestCase {
         managementService.executeJob(signalJob.getId());
         fail("Exception expected");
       } catch (ActivitiException ae) {
+		logger.error(ae.getMessage(), ae);
         // Ignore, expected exception
       }
 
@@ -198,7 +205,8 @@ public class SignalThrowingEventListenerTest extends PluggableActivitiTestCase {
         managementService.executeJob(failedJob.getId());
         fail("Exception expected");
       } catch (ActivitiException ae) {
-        // Ignore, expected exception
+        logger.error(ae.getMessage(), ae);
+		// Ignore, expected exception
         assertEquals(0, taskService.createTaskQuery().processInstanceId(processInstance.getId()).count());
       }
     } finally {

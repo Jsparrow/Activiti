@@ -21,10 +21,14 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProcessDefinitionSuspensionTest extends PluggableActivitiTestCase {
 
-  @Deployment(resources = { "org/activiti/engine/test/db/processOne.bpmn20.xml" })
+  private static final Logger logger = LoggerFactory.getLogger(ProcessDefinitionSuspensionTest.class);
+
+@Deployment(resources = { "org/activiti/engine/test/db/processOne.bpmn20.xml" })
   public void testProcessDefinitionActiveByDefault() {
     ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().singleResult();
     assertFalse(processDefinition.isSuspended());
@@ -74,6 +78,7 @@ public class ProcessDefinitionSuspensionTest extends PluggableActivitiTestCase {
       repositoryService.activateProcessDefinitionById(processDefinition.getId());
       fail("Exception expected");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // expected
     }
 
@@ -91,6 +96,7 @@ public class ProcessDefinitionSuspensionTest extends PluggableActivitiTestCase {
       repositoryService.suspendProcessDefinitionById(processDefinition.getId());
       fail("Exception expected");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // expected
     }
   }
@@ -186,19 +192,18 @@ public class ProcessDefinitionSuspensionTest extends PluggableActivitiTestCase {
     repositoryService.suspendProcessDefinitionById(processDefinition.getId(), true, null);
 
     // Verify all process instances are also suspended
-    for (ProcessInstance processInstance : runtimeService.createProcessInstanceQuery().list()) {
-      assertTrue(processInstance.isSuspended());
-    }
+	runtimeService.createProcessInstanceQuery().list().forEach(processInstance -> assertTrue(processInstance.isSuspended()));
 
     // Verify all process instances can't be continued
-    for (Task task : taskService.createTaskQuery().list()) {
+	taskService.createTaskQuery().list().forEach(task -> {
       try {
         taskService.complete(task.getId());
         fail("A suspended task shouldn't be able to be continued");
       } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
         // This is good
       }
-    }
+    });
     assertEquals(nrOfProcessInstances, runtimeService.createProcessInstanceQuery().count());
     assertEquals(nrOfProcessInstances, runtimeService.createProcessInstanceQuery().suspended().count());
     assertEquals(0, runtimeService.createProcessInstanceQuery().active().count());
@@ -207,9 +212,7 @@ public class ProcessDefinitionSuspensionTest extends PluggableActivitiTestCase {
     repositoryService.activateProcessDefinitionById(processDefinition.getId(), true, null);
 
     // Verify that all process instances can be completed
-    for (Task task : taskService.createTaskQuery().list()) {
-      taskService.complete(task.getId());
-    }
+	taskService.createTaskQuery().list().forEach(task -> taskService.complete(task.getId()));
     assertEquals(0, runtimeService.createProcessInstanceQuery().count());
     assertEquals(0, runtimeService.createProcessInstanceQuery().suspended().count());
     assertEquals(0, runtimeService.createProcessInstanceQuery().active().count());
@@ -312,7 +315,7 @@ public class ProcessDefinitionSuspensionTest extends PluggableActivitiTestCase {
 
     // Verify we can start process instances
     runtimeService.startProcessInstanceById(processDefinition.getId());
-    nrOfProcessInstances = nrOfProcessInstances + 1;
+    nrOfProcessInstances += 1;
     assertEquals(nrOfProcessInstances, runtimeService.createProcessInstanceQuery().count());
 
     // verify there is a job created
@@ -426,9 +429,7 @@ public class ProcessDefinitionSuspensionTest extends PluggableActivitiTestCase {
     assertEquals(1, runtimeService.createProcessInstanceQuery().count());
 
     // Clean DB
-    for (org.activiti.engine.repository.Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+	repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
   }
 
   public void testDelayedSuspendMultipleProcessDefinitionsByKey() {
@@ -458,9 +459,7 @@ public class ProcessDefinitionSuspensionTest extends PluggableActivitiTestCase {
 
     // Verify a job is created for each process definition
     assertEquals(nrOfProcessDefinitions, managementService.createTimerJobQuery().count());
-    for (ProcessDefinition processDefinition : repositoryService.createProcessDefinitionQuery().list()) {
-      assertEquals(1, managementService.createTimerJobQuery().processDefinitionId(processDefinition.getId()).count());
-    }
+    repositoryService.createProcessDefinitionQuery().list().forEach(processDefinition -> assertEquals(1, managementService.createTimerJobQuery().processDefinitionId(processDefinition.getId()).count()));
 
     // Move time 3 hours and run job executor
     processEngineConfiguration.getClock().setCurrentTime(new Date(startTime.getTime() + (3 * hourInMs)));
@@ -486,9 +485,7 @@ public class ProcessDefinitionSuspensionTest extends PluggableActivitiTestCase {
     assertEquals(1, runtimeService.createProcessInstanceQuery().active().count());
 
     // Clean DB
-    for (org.activiti.engine.repository.Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+	repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
   }
 
 }

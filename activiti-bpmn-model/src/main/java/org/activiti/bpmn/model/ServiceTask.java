@@ -26,7 +26,7 @@ public class ServiceTask extends TaskWithFieldExtensions {
   protected String type;
   protected String operationRef;
   protected String extensionId;
-  protected List<CustomProperty> customProperties = new ArrayList<CustomProperty>();
+  protected List<CustomProperty> customProperties = new ArrayList<>();
   protected String skipExpression;
 
   public String getImplementation() {
@@ -97,7 +97,8 @@ public class ServiceTask extends TaskWithFieldExtensions {
     this.skipExpression = skipExpression;
   }
 
-  public ServiceTask clone() {
+  @Override
+public ServiceTask clone() {
     ServiceTask clone = new ServiceTask();
     clone.setValues(this);
     return clone;
@@ -113,18 +114,14 @@ public class ServiceTask extends TaskWithFieldExtensions {
     setExtensionId(otherElement.getExtensionId());
     setSkipExpression(otherElement.getSkipExpression());
 
-    fieldExtensions = new ArrayList<FieldExtension>();
+    fieldExtensions = new ArrayList<>();
     if (otherElement.getFieldExtensions() != null && !otherElement.getFieldExtensions().isEmpty()) {
-      for (FieldExtension extension : otherElement.getFieldExtensions()) {
-        fieldExtensions.add(extension.clone());
-      }
+      otherElement.getFieldExtensions().forEach(extension -> fieldExtensions.add(extension.clone()));
     }
 
-    customProperties = new ArrayList<CustomProperty>();
+    customProperties = new ArrayList<>();
     if (otherElement.getCustomProperties() != null && !otherElement.getCustomProperties().isEmpty()) {
-      for (CustomProperty property : otherElement.getCustomProperties()) {
-        customProperties.add(property.clone());
-      }
+      otherElement.getCustomProperties().forEach(property -> customProperties.add(property.clone()));
     }
   }
 }

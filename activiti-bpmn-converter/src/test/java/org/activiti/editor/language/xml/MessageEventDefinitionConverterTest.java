@@ -89,7 +89,8 @@ public class MessageEventDefinitionConverterTest extends AbstractConverterTest {
         
     }
 
-    protected String getResource() {
+    @Override
+	protected String getResource() {
         return "MessageEventDefinitionConverterTest.bpmn";
     }
 }

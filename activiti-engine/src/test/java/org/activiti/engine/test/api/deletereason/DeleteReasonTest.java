@@ -38,26 +38,24 @@ public class DeleteReasonTest extends PluggableActivitiTestCase {
     taskService.complete(task.getId());
     runtimeService.deleteProcessInstance(processInstance.getId(), null);
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      assertEquals(DeleteReason.PROCESS_INSTANCE_DELETED, historyService.createHistoricProcessInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	assertEquals(DeleteReason.PROCESS_INSTANCE_DELETED, historyService.createHistoricProcessInstanceQuery()
           .processInstanceId(processInstance.getId()).singleResult().getDeleteReason());
-      
-      List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
+	List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
           .processInstanceId(processInstance.getId()).list();
-      assertEquals(4, historicTaskInstances.size());
-      
-      // Task A is completed normally, the others are deleted
-      for (HistoricTaskInstance historicTaskInstance : historicTaskInstances) {
-        if (historicTaskInstance.getName().equals("A")) {
+	assertEquals(4, historicTaskInstances.size());
+	// Task A is completed normally, the others are deleted
+	historicTaskInstances.forEach(historicTaskInstance -> {
+        if ("A".equals(historicTaskInstance.getName())) {
           assertNull(historicTaskInstance.getDeleteReason());
         } else {
           assertEquals(DeleteReason.PROCESS_INSTANCE_DELETED, historicTaskInstance.getDeleteReason());
         }
-      }
-      
-      assertHistoricActivitiesDeleteReason(processInstance, null, "A");
-      assertHistoricActivitiesDeleteReason(processInstance, DeleteReason.PROCESS_INSTANCE_DELETED, "B", "C", "D");
-    }
+      });
+	assertHistoricActivitiesDeleteReason(processInstance, null, "A");
+	assertHistoricActivitiesDeleteReason(processInstance, DeleteReason.PROCESS_INSTANCE_DELETED, "B", "C", "D");
   }
   
   @Deployment
@@ -72,26 +70,24 @@ public class DeleteReasonTest extends PluggableActivitiTestCase {
     runtimeService.deleteProcessInstance(processInstance.getId(), customDeleteReason);
     assertEquals(0L, runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).count());
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      assertEquals(customDeleteReason, historyService.createHistoricProcessInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	assertEquals(customDeleteReason, historyService.createHistoricProcessInstanceQuery()
           .processInstanceId(processInstance.getId()).singleResult().getDeleteReason());
-      
-      List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
+	List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
           .processInstanceId(processInstance.getId()).list();
-      assertEquals(4, historicTaskInstances.size());
-      
-      // Task A is completed normally, the others are deleted
-      for (HistoricTaskInstance historicTaskInstance : historicTaskInstances) {
-        if (historicTaskInstance.getName().equals("A")) {
+	assertEquals(4, historicTaskInstances.size());
+	// Task A is completed normally, the others are deleted
+	historicTaskInstances.forEach(historicTaskInstance -> {
+        if ("A".equals(historicTaskInstance.getName())) {
           assertNull(historicTaskInstance.getDeleteReason());
         } else {
           assertEquals(customDeleteReason, historicTaskInstance.getDeleteReason());
         }
-      }
-      
-      assertHistoricActivitiesDeleteReason(processInstance, null, "A");
-      assertHistoricActivitiesDeleteReason(processInstance, customDeleteReason, "B", "C", "D");
-    }
+      });
+	assertHistoricActivitiesDeleteReason(processInstance, null, "A");
+	assertHistoricActivitiesDeleteReason(processInstance, customDeleteReason, "B", "C", "D");
   }
   
   @Deployment
@@ -99,27 +95,21 @@ public class DeleteReasonTest extends PluggableActivitiTestCase {
     ProcessInstance  processInstance = runtimeService.startProcessInstanceByKey("deleteReasonProcess");
     List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
     while (!tasks.isEmpty()) {
-      for (Task task : tasks) {
-        taskService.complete(task.getId());
-      }
+      tasks.forEach(task -> taskService.complete(task.getId()));
       tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
     }
     assertEquals(0L, runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).count());
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      assertNull(historyService.createHistoricProcessInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	assertNull(historyService.createHistoricProcessInstanceQuery()
           .processInstanceId(processInstance.getId()).singleResult().getDeleteReason());
-      
-      List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
+	List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
           .processInstanceId(processInstance.getId()).list();
-      assertEquals(5, historicTaskInstances.size());
-      
-      for (HistoricTaskInstance historicTaskInstance : historicTaskInstances) {
-        assertNull(historicTaskInstance.getDeleteReason());
-      }
-      
-      assertHistoricActivitiesDeleteReason(processInstance, null, "A", "B", "C", "D", "E");
-    }
+	assertEquals(5, historicTaskInstances.size());
+	historicTaskInstances.forEach(historicTaskInstance -> assertNull(historicTaskInstance.getDeleteReason()));
+	assertHistoricActivitiesDeleteReason(processInstance, null, "A", "B", "C", "D", "E");
   }
   
   @Deployment
@@ -138,9 +128,7 @@ public class DeleteReasonTest extends PluggableActivitiTestCase {
           .activityId("A").processInstanceId(processInstance.getId()).list();
       assertEquals(1, historicActivityInstances.size());
       
-      for (HistoricActivityInstance historicActivityInstance : historicActivityInstances) {
-        assertEquals(DeleteReason.PROCESS_INSTANCE_DELETED, historicActivityInstance.getDeleteReason());
-      }
+      historicActivityInstances.forEach(historicActivityInstance -> assertEquals(DeleteReason.PROCESS_INSTANCE_DELETED, historicActivityInstance.getDeleteReason()));
     }
     
     // Second case: two receive tasks in embedded subprocess
@@ -156,13 +144,13 @@ public class DeleteReasonTest extends PluggableActivitiTestCase {
     
     runtimeService.deleteProcessInstance(processInstance.getId(), null);
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      assertEquals(DeleteReason.PROCESS_INSTANCE_DELETED, historyService.createHistoricProcessInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	assertEquals(DeleteReason.PROCESS_INSTANCE_DELETED, historyService.createHistoricProcessInstanceQuery()
           .processInstanceId(processInstance.getId()).singleResult().getDeleteReason());
-      
-      assertHistoricActivitiesDeleteReason(processInstance, null, "A");
-      assertHistoricActivitiesDeleteReason(processInstance, DeleteReason.PROCESS_INSTANCE_DELETED, "B", "C");
-    }
+	assertHistoricActivitiesDeleteReason(processInstance, null, "A");
+	assertHistoricActivitiesDeleteReason(processInstance, DeleteReason.PROCESS_INSTANCE_DELETED, "B", "C");
   }
   
   @Deployment

@@ -21,7 +21,8 @@ import org.activiti.engine.impl.bpmn.parser.BpmnParse;
  */
 public class BusinessRuleParseHandler extends AbstractActivityBpmnParseHandler<BusinessRuleTask> {
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return BusinessRuleTask.class;
   }
 

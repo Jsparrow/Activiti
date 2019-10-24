@@ -37,7 +37,8 @@ public class DelegateExpressionTaskListener implements TaskListener {
     this.fieldDeclarations = fieldDeclarations;
   }
 
-  public void notify(DelegateTask delegateTask) {
+  @Override
+public void notify(DelegateTask delegateTask) {
     Object delegate = DelegateExpressionUtil.resolveDelegateExpression(expression, delegateTask, fieldDeclarations);
     if (delegate instanceof TaskListener) {
       try {
@@ -46,7 +47,7 @@ public class DelegateExpressionTaskListener implements TaskListener {
         throw new ActivitiException("Exception while invoking TaskListener: " + e.getMessage(), e);
       }
     } else {
-      throw new ActivitiIllegalArgumentException("Delegate expression " + expression + " did not resolve to an implementation of " + TaskListener.class);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("Delegate expression ").append(expression).append(" did not resolve to an implementation of ").append(TaskListener.class).toString());
     }
   }
 

@@ -26,6 +26,8 @@ import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -33,7 +35,9 @@ import org.activiti.engine.test.Deployment;
  */
 public class HistoricActivityInstanceTest extends PluggableActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(HistoricActivityInstanceTest.class);
+
+@Deployment
   public void testHistoricActivityInstanceNoop() {
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("noopProcess");
 
@@ -138,10 +142,11 @@ public class HistoricActivityInstanceTest extends PluggableActivitiTestCase {
       assertEquals(0, historyService.createHistoricActivityInstanceQuery().finished().list().size());
     }
 
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      HistoricActivityInstance historicActivityInstance = historyService.createHistoricActivityInstanceQuery().list().get(0);
-      assertEquals(1, historyService.createHistoricActivityInstanceQuery().activityInstanceId(historicActivityInstance.getId()).list().size());
-    }
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	HistoricActivityInstance historicActivityInstance = historyService.createHistoricActivityInstanceQuery().list().get(0);
+	assertEquals(1, historyService.createHistoricActivityInstanceQuery().activityInstanceId(historicActivityInstance.getId()).list().size());
   }
 
   @Deployment
@@ -247,6 +252,7 @@ public class HistoricActivityInstanceTest extends PluggableActivitiTestCase {
       historyService.createHistoricActivityInstanceQuery().asc().list();
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
 
     }
 
@@ -254,6 +260,7 @@ public class HistoricActivityInstanceTest extends PluggableActivitiTestCase {
       historyService.createHistoricActivityInstanceQuery().desc().list();
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
 
     }
 
@@ -261,6 +268,7 @@ public class HistoricActivityInstanceTest extends PluggableActivitiTestCase {
       historyService.createHistoricActivityInstanceQuery().orderByHistoricActivityInstanceDuration().list();
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
 
     }
   }
@@ -362,17 +370,17 @@ public class HistoricActivityInstanceTest extends PluggableActivitiTestCase {
     // Verify history
     List<HistoricActivityInstance> taskActivityInstances = historyService.createHistoricActivityInstanceQuery().activityType("userTask").list();
     assertEquals(10, taskActivityInstances.size());
-    for (HistoricActivityInstance historicActivityInstance : taskActivityInstances) {
+    taskActivityInstances.forEach(historicActivityInstance -> {
       assertNotNull(historicActivityInstance.getStartTime());
       assertNotNull(historicActivityInstance.getEndTime());
-    }
+    });
     
     List<HistoricActivityInstance> serviceTaskInstances = historyService.createHistoricActivityInstanceQuery().activityType("serviceTask").list();
     assertEquals(15, serviceTaskInstances.size());
-    for (HistoricActivityInstance historicActivityInstance : serviceTaskInstances) {
+    serviceTaskInstances.forEach(historicActivityInstance -> {
       assertNotNull(historicActivityInstance.getStartTime());
       assertNotNull(historicActivityInstance.getEndTime());
-    }
+    });
   }
 
 }

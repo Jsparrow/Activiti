@@ -31,7 +31,8 @@ public class TransactionContextInterceptor extends AbstractCommandInterceptor {
     this.transactionContextFactory = transactionContextFactory;
   }
 
-  public <T> T execute(CommandConfig config, Command<T> command) {
+  @Override
+public <T> T execute(CommandConfig config, Command<T> command) {
     
     CommandContext commandContext = Context.getCommandContext();
     // Storing it in a variable, to reference later (it can change during command execution)

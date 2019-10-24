@@ -31,7 +31,7 @@ public class SecurityUtil {
 
         UserDetails user = userDetailsService.loadUserByUsername(username);
         if (user == null) {
-            throw new IllegalStateException("User " + username + " doesn't exist, please provide a valid user");
+            throw new IllegalStateException(new StringBuilder().append("User ").append(username).append(" doesn't exist, please provide a valid user").toString());
         }
         logger.info("> Logged in as: " + username);
         SecurityContextHolder.setContext(new SecurityContextImpl(new Authentication() {
@@ -61,7 +61,7 @@ public class SecurityUtil {
             }
 
             @Override
-            public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+            public void setAuthenticated(boolean isAuthenticated) {
 
             }
 

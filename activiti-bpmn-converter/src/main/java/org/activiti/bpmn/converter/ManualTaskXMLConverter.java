@@ -25,7 +25,8 @@ import org.activiti.bpmn.model.ManualTask;
  */
 public class ManualTaskXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return ManualTask.class;
   }
 

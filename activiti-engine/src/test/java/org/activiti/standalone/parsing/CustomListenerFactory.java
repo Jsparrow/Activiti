@@ -24,11 +24,7 @@ public class CustomListenerFactory extends DefaultListenerFactory {
 
   @Override
   public TaskListener createExpressionTaskListener(ActivitiListener activitiListener) {
-    return new TaskListener() {
-      public void notify(DelegateTask delegateTask) {
-        CustomListenerFactoryTest.COUNTER.addAndGet(100);
-      }
-    };
+    return (DelegateTask delegateTask) -> CustomListenerFactoryTest.COUNTER.addAndGet(100);
   }
 
 }

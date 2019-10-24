@@ -39,12 +39,14 @@ public class NoExecutionVariableScope implements VariableScope {
     return INSTANCE;
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
+@SuppressWarnings("unchecked")
   public Map<String, Object> getVariables() {
     return Collections.EMPTY_MAP;
   }
   
-  @SuppressWarnings("unchecked")
+  @Override
+@SuppressWarnings("unchecked")
   public Map<String, Object> getVariablesLocal() {
     return Collections.EMPTY_MAP;
   }
@@ -73,7 +75,8 @@ public class NoExecutionVariableScope implements VariableScope {
     return Collections.EMPTY_MAP;
   }
 
-  public Object getVariable(String variableName) {
+  @Override
+public Object getVariable(String variableName) {
     return null;
   }
 
@@ -82,7 +85,8 @@ public class NoExecutionVariableScope implements VariableScope {
     return null;
   }
 
-  public Object getVariableLocal(String variableName) {
+  @Override
+public Object getVariableLocal(String variableName) {
     return null;
   }
 
@@ -151,16 +155,19 @@ public class NoExecutionVariableScope implements VariableScope {
     return null;
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
+@SuppressWarnings("unchecked")
   public Set<String> getVariableNames() {
     return Collections.EMPTY_SET;
   }
 
-  public Set<String> getVariableNamesLocal() {
+  @Override
+public Set<String> getVariableNamesLocal() {
     return null;
   }
 
-  public void setVariable(String variableName, Object value) {
+  @Override
+public void setVariable(String variableName, Object value) {
     throw new UnsupportedOperationException("No execution active, no variables can be set");
   }
 
@@ -169,7 +176,8 @@ public class NoExecutionVariableScope implements VariableScope {
     throw new UnsupportedOperationException("No execution active, no variables can be set");
   }
 
-  public Object setVariableLocal(String variableName, Object value) {
+  @Override
+public Object setVariableLocal(String variableName, Object value) {
     throw new UnsupportedOperationException("No execution active, no variables can be set");
   }
 
@@ -178,27 +186,33 @@ public class NoExecutionVariableScope implements VariableScope {
     throw new UnsupportedOperationException("No execution active, no variables can be set");
   }
 
-  public void setVariables(Map<String, ? extends Object> variables) {
+  @Override
+public void setVariables(Map<String, ? extends Object> variables) {
     throw new UnsupportedOperationException("No execution active, no variables can be set");
   }
 
-  public void setVariablesLocal(Map<String, ? extends Object> variables) {
+  @Override
+public void setVariablesLocal(Map<String, ? extends Object> variables) {
     throw new UnsupportedOperationException("No execution active, no variables can be set");
   }
 
-  public boolean hasVariables() {
+  @Override
+public boolean hasVariables() {
     return false;
   }
 
-  public boolean hasVariablesLocal() {
+  @Override
+public boolean hasVariablesLocal() {
     return false;
   }
 
-  public boolean hasVariable(String variableName) {
+  @Override
+public boolean hasVariable(String variableName) {
     return false;
   }
 
-  public boolean hasVariableLocal(String variableName) {
+  @Override
+public boolean hasVariableLocal(String variableName) {
     return false;
   }
 
@@ -210,75 +224,93 @@ public class NoExecutionVariableScope implements VariableScope {
     throw new UnsupportedOperationException("No execution active, no variables can be created");
   }
 
-  public void removeVariable(String variableName) {
+  @Override
+public void removeVariable(String variableName) {
     throw new UnsupportedOperationException("No execution active, no variables can be removed");
   }
 
-  public void removeVariableLocal(String variableName) {
+  @Override
+public void removeVariableLocal(String variableName) {
     throw new UnsupportedOperationException("No execution active, no variables can be removed");
   }
 
-  public void removeVariables() {
+  @Override
+public void removeVariables() {
     throw new UnsupportedOperationException("No execution active, no variables can be removed");
   }
 
-  public void removeVariablesLocal() {
+  @Override
+public void removeVariablesLocal() {
     throw new UnsupportedOperationException("No execution active, no variables can be removed");
   }
 
-  public void removeVariables(Collection<String> variableNames) {
+  @Override
+public void removeVariables(Collection<String> variableNames) {
     throw new UnsupportedOperationException("No execution active, no variables can be removed");
   }
 
-  public void removeVariablesLocal(Collection<String> variableNames) {
+  @Override
+public void removeVariablesLocal(Collection<String> variableNames) {
     throw new UnsupportedOperationException("No execution active, no variables can be removed");
   }
 
-  public void setTransientVariablesLocal(Map<String, Object> transientVariables) {
+  @Override
+public void setTransientVariablesLocal(Map<String, Object> transientVariables) {
     throw new UnsupportedOperationException("No execution active, no variables can be set");
   }
 
-  public void setTransientVariableLocal(String variableName, Object variableValue) {
+  @Override
+public void setTransientVariableLocal(String variableName, Object variableValue) {
     throw new UnsupportedOperationException("No execution active, no variables can be set");
   }
 
-  public void setTransientVariables(Map<String, Object> transientVariables) {
+  @Override
+public void setTransientVariables(Map<String, Object> transientVariables) {
     throw new UnsupportedOperationException("No execution active, no variables can be set");
   }
 
-  public void setTransientVariable(String variableName, Object variableValue) {
+  @Override
+public void setTransientVariable(String variableName, Object variableValue) {
     throw new UnsupportedOperationException("No execution active, no variables can be set");
   }
 
-  public Object getTransientVariableLocal(String variableName) {
+  @Override
+public Object getTransientVariableLocal(String variableName) {
     return null;
   }
 
-  public Map<String, Object> getTransientVariablesLocal() {
+  @Override
+public Map<String, Object> getTransientVariablesLocal() {
     return null;
   }
 
-  public Object getTransientVariable(String variableName) {
+  @Override
+public Object getTransientVariable(String variableName) {
     return null;
   }
 
-  public Map<String, Object> getTransientVariables() {
+  @Override
+public Map<String, Object> getTransientVariables() {
     return null;
   }
 
-  public void removeTransientVariableLocal(String variableName) {
+  @Override
+public void removeTransientVariableLocal(String variableName) {
     throw new UnsupportedOperationException("No execution active, no variables can be removed");
   }
 
-  public void removeTransientVariablesLocal() {
+  @Override
+public void removeTransientVariablesLocal() {
     throw new UnsupportedOperationException("No execution active, no variables can be removed");
   }
 
-  public void removeTransientVariable(String variableName) {
+  @Override
+public void removeTransientVariable(String variableName) {
     throw new UnsupportedOperationException("No execution active, no variables can be removed");
   }
 
-  public void removeTransientVariables() {
+  @Override
+public void removeTransientVariables() {
     throw new UnsupportedOperationException("No execution active, no variables can be removed");
   }
 }

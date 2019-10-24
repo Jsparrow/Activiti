@@ -150,7 +150,7 @@ public class DelegateHelper {
         if (flowElement instanceof TaskWithFieldExtensions) {
             return ((TaskWithFieldExtensions) flowElement).getFieldExtensions();
         }
-        return new ArrayList<FieldExtension>();
+        return new ArrayList<>();
     }
 
     public static List<FieldExtension> getListenerFields(DelegateExecution execution) {
@@ -187,12 +187,7 @@ public class DelegateHelper {
         if (fieldExtensions == null || fieldExtensions.size() == 0) {
             return null;
         }
-        for (FieldExtension fieldExtension : fieldExtensions) {
-            if (fieldExtension.getFieldName() != null && fieldExtension.getFieldName().equals(fieldName)) {
-                return fieldExtension;
-            }
-        }
-        return null;
+        return fieldExtensions.stream().filter(fieldExtension -> fieldExtension.getFieldName() != null && fieldExtension.getFieldName().equals(fieldName)).findFirst().orElse(null);
     }
 
     public static FieldExtension getListenerField(DelegateExecution execution,
@@ -201,12 +196,7 @@ public class DelegateHelper {
         if (fieldExtensions == null || fieldExtensions.size() == 0) {
             return null;
         }
-        for (FieldExtension fieldExtension : fieldExtensions) {
-            if (fieldExtension.getFieldName() != null && fieldExtension.getFieldName().equals(fieldName)) {
-                return fieldExtension;
-            }
-        }
-        return null;
+        return fieldExtensions.stream().filter(fieldExtension -> fieldExtension.getFieldName() != null && fieldExtension.getFieldName().equals(fieldName)).findFirst().orElse(null);
     }
 
     /**

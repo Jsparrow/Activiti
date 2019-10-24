@@ -24,6 +24,5 @@ import org.springframework.context.event.EventListener;
  */
 public interface ReceiveMessagePayloadEventListener {
     
-    @EventListener
-    public void receiveMessage(ReceiveMessagePayload messagePayload);
+    @EventListener void receiveMessage(ReceiveMessagePayload messagePayload);
 }

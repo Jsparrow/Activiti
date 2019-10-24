@@ -61,7 +61,7 @@ public class DelegateActivitiEventListener extends BaseDelegateEventListener {
         // Force failing of the listener invocation, since the delegate
         // cannot be created
         failOnException = true;
-        throw new ActivitiIllegalArgumentException("Class " + className + " does not implement " + ActivitiEventListener.class.getName());
+        throw new ActivitiIllegalArgumentException(new StringBuilder().append("Class ").append(className).append(" does not implement ").append(ActivitiEventListener.class.getName()).toString());
       }
     }
     return delegateInstance;

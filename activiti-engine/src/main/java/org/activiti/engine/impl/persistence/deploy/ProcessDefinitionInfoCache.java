@@ -45,7 +45,7 @@ public class ProcessDefinitionInfoCache {
   /** Cache with no limit */
   public ProcessDefinitionInfoCache(CommandExecutor commandExecutor) {
     this.commandExecutor = commandExecutor;
-    this.cache = Collections.synchronizedMap(new HashMap<String, ProcessDefinitionInfoCacheObject>());
+    this.cache = Collections.synchronizedMap(new HashMap<>());
   }
   
   /** Cache which has a hard limit: no more elements will be cached than the limit. */
@@ -57,7 +57,8 @@ public class ProcessDefinitionInfoCache {
           // true will keep the 'access-order', which is needed to have a real LRU cache
       private static final long serialVersionUID = 1L;
 
-      protected boolean removeEldestEntry(Map.Entry<String, ProcessDefinitionInfoCacheObject> eldest) {
+      @Override
+	protected boolean removeEldestEntry(Map.Entry<String, ProcessDefinitionInfoCacheObject> eldest) {
         boolean removeEldest = size() > limit;
         if (removeEldest) {
           logger.trace("Cache limit is reached, {} will be evicted",  eldest.getKey());
@@ -70,13 +71,7 @@ public class ProcessDefinitionInfoCache {
   
   public ProcessDefinitionInfoCacheObject get(final String processDefinitionId) {
     ProcessDefinitionInfoCacheObject infoCacheObject = null;
-    Command<ProcessDefinitionInfoCacheObject> cacheCommand = new Command<ProcessDefinitionInfoCacheObject>() {
-
-      @Override
-      public ProcessDefinitionInfoCacheObject execute(CommandContext commandContext) {
-        return retrieveProcessDefinitionInfoCacheObject(processDefinitionId, commandContext);
-      }
-    };
+    Command<ProcessDefinitionInfoCacheObject> cacheCommand = (CommandContext commandContext) -> retrieveProcessDefinitionInfoCacheObject(processDefinitionId, commandContext);
     
     if (Context.getCommandContext() != null) {
       infoCacheObject = retrieveProcessDefinitionInfoCacheObject(processDefinitionId, Context.getCommandContext());

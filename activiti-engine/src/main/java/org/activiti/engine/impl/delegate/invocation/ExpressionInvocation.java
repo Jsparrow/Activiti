@@ -27,7 +27,8 @@ public abstract class ExpressionInvocation extends DelegateInvocation {
     this.valueExpression = valueExpression;
   }
 
-  public Object getTarget() {
+  @Override
+public Object getTarget() {
     return valueExpression;
   }
 

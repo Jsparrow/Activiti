@@ -31,7 +31,8 @@ public class UserTaskConverterTest extends AbstractConverterTest {
     deployProcess(parsedModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "usertaskmodel.bpmn";
   }
 

@@ -48,7 +48,7 @@ public class GetTaskVariableInstancesCmd implements Command<Map<String, Variable
         TaskEntity task = commandContext.getTaskEntityManager().findById(taskId);
 
         if (task == null) {
-            throw new ActivitiObjectNotFoundException("task " + taskId + " doesn't exist", Task.class);
+            throw new ActivitiObjectNotFoundException(new StringBuilder().append("task ").append(taskId).append(" doesn't exist").toString(), Task.class);
         }
 
         Map<String, VariableInstance> variables = null;
@@ -70,11 +70,7 @@ public class GetTaskVariableInstancesCmd implements Command<Map<String, Variable
         }
 
         if (variables != null) {
-            for (Entry<String, VariableInstance> entry : variables.entrySet()) {
-                if (entry.getValue() != null) {
-                    entry.getValue().getValue();
-                }
-            }
+            variables.entrySet().stream().filter(entry -> entry.getValue() != null).forEach(entry -> entry.getValue().getValue());
         }
 
         return variables;

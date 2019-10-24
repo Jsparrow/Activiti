@@ -36,7 +36,8 @@ public class ResourceStreamSource implements StreamSource {
     this.classLoader = classLoader;
   }
 
-  public InputStream getInputStream() {
+  @Override
+public InputStream getInputStream() {
     InputStream inputStream = null;
     if (classLoader == null) {
       inputStream = ReflectUtil.getResourceAsStream(resource);
@@ -44,12 +45,13 @@ public class ResourceStreamSource implements StreamSource {
       inputStream = classLoader.getResourceAsStream(resource);
     }
     if (inputStream == null) {
-      throw new ActivitiIllegalArgumentException("resource '" + resource + "' doesn't exist");
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("resource '").append(resource).append("' doesn't exist").toString());
     }
     return new BufferedInputStream(inputStream);
   }
 
-  public String toString() {
-    return "Resource[" + resource + "]";
+  @Override
+public String toString() {
+    return new StringBuilder().append("Resource[").append(resource).append("]").toString();
   }
 }

@@ -20,17 +20,21 @@ import javax.xml.bind.JAXBException;
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.test.Deployment;
 import org.activiti.standalone.testing.helpers.ServiceTaskTestMock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class BoundaryErrorMapTest extends PluggableActivitiTestCase {
 
-  // exception matches the only mapping, directly
+  private static final Logger logger = LoggerFactory.getLogger(BoundaryErrorMapTest.class);
+
+// exception matches the only mapping, directly
   @Deployment
   public void testClassDelegateSingleDirectMap() {
     FlagDelegate.reset();
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("exceptionClass", BoundaryErrorParentException.class.getName());
 
     runtimeService.startProcessInstanceByKey("processWithSingleExceptionMap", vars);
@@ -42,7 +46,7 @@ public class BoundaryErrorMapTest extends PluggableActivitiTestCase {
   public void testClassDelegateSingleDirectMapNotMatchingException() {
     FlagDelegate.reset();
 
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("exceptionClass", JAXBException.class.getName());
     assertEquals(0, ServiceTaskTestMock.CALL_COUNT.get());
 
@@ -50,14 +54,15 @@ public class BoundaryErrorMapTest extends PluggableActivitiTestCase {
       runtimeService.startProcessInstanceByKey("processWithSingleExceptionMap", vars);
       fail("exception expected, as there is no matching exception map");
     } catch (Exception e) {
-      assertFalse(FlagDelegate.isVisited());
+      logger.error(e.getMessage(), e);
+	assertFalse(FlagDelegate.isVisited());
     }
   }
 
   // exception matches by inheritance
   @Deployment
   public void testClassDelegateSingleInheritedMap() {
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("exceptionClass", BoundaryEventChildException.class.getName());
     FlagDelegate.reset();
 
@@ -68,7 +73,7 @@ public class BoundaryErrorMapTest extends PluggableActivitiTestCase {
   // check the default map
   @Deployment
   public void testClassDelegateDefaultMap() {
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("exceptionClass", Exception.class.getName());
     FlagDelegate.reset();
 
@@ -80,7 +85,7 @@ public class BoundaryErrorMapTest extends PluggableActivitiTestCase {
   @Deployment
   public void testSeqMultInstanceSingleDirectMap() {
     FlagDelegate.reset();
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("exceptionClass", BoundaryErrorParentException.class.getName());
 
     runtimeService.startProcessInstanceByKey("processWithSingleExceptionMap", vars);
@@ -90,7 +95,7 @@ public class BoundaryErrorMapTest extends PluggableActivitiTestCase {
   @Deployment
   public void testSubProcessSingleDirectMap() {
     FlagDelegate.reset();
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("exceptionClass", BoundaryErrorParentException.class.getName());
 
     runtimeService.startProcessInstanceByKey("subprocssWithSingleExceptionMap", vars);

@@ -30,7 +30,8 @@ public class ServiceTaskConverterTest extends AbstractConverterTest {
     deployProcess(parsedModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "servicetaskmodel.bpmn";
   }
 

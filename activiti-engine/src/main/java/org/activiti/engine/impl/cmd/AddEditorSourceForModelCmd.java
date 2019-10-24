@@ -33,7 +33,8 @@ public class AddEditorSourceForModelCmd implements Command<Object>, Serializable
     this.bytes = bytes;
   }
 
-  public Object execute(CommandContext commandContext) {
+  @Override
+public Object execute(CommandContext commandContext) {
     commandContext.getModelEntityManager().insertEditorSourceForModel(modelId, bytes);
 
     return null;

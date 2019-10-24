@@ -23,7 +23,8 @@ public class LogInterceptor extends AbstractCommandInterceptor {
 
   private static Logger log = LoggerFactory.getLogger(LogInterceptor.class);
 
-  public <T> T execute(CommandConfig config, Command<T> command) {
+  @Override
+public <T> T execute(CommandConfig config, Command<T> command) {
     if (!log.isDebugEnabled()) {
       // do nothing here if we cannot log
       return next.execute(config, command);

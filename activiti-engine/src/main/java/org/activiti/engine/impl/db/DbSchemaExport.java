@@ -23,20 +23,24 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class DbSchemaExport {
 
-  public static void main(String[] args) throws Exception {
+  private static final Logger logger = LoggerFactory.getLogger(DbSchemaExport.class);
+
+public static void main(String[] args) throws Exception {
     if (args == null || args.length != 1) {
-      System.err.println("Syntax: java -cp ... org.activiti.engine.impl.db.DbSchemaExport <path-to-properties-file> <path-to-export-file>");
+      logger.error("Syntax: java -cp ... org.activiti.engine.impl.db.DbSchemaExport <path-to-properties-file> <path-to-export-file>");
       return;
     }
     File propertiesFile = new File(args[0]);
     if (!propertiesFile.exists()) {
-      System.err.println("File '" + args[0] + "' doesn't exist \n" + "Syntax: java -cp ... org.activiti.engine.impl.db.DbSchemaExport <path-to-properties-file> <path-to-export-file>\n");
+      logger.error(new StringBuilder().append("File '").append(args[0]).append("' doesn't exist \n").append("Syntax: java -cp ... org.activiti.engine.impl.db.DbSchemaExport <path-to-properties-file> <path-to-export-file>\n").toString());
       return;
     }
     Properties properties = new Properties();
@@ -52,43 +56,39 @@ public class DbSchemaExport {
     try {
       DatabaseMetaData meta = connection.getMetaData();
 
-      SortedSet<String> tableNames = new TreeSet<String>();
+      SortedSet<String> tableNames = new TreeSet<>();
       ResultSet tables = meta.getTables(null, null, null, null);
       while (tables.next()) {
         String tableName = tables.getString(3);
         tableNames.add(tableName);
       }
 
-      System.out.println("TABLES");
+      logger.info("TABLES");
       for (String tableName : tableNames) {
-        Map<String, String> columnDescriptions = new HashMap<String, String>();
+        Map<String, String> columnDescriptions = new HashMap<>();
         ResultSet columns = meta.getColumns(null, null, tableName, null);
         while (columns.next()) {
           String columnName = columns.getString(4);
-          String columnTypeAndSize = columns.getString(6) + " " + columns.getInt(7);
+          String columnTypeAndSize = new StringBuilder().append(columns.getString(6)).append(" ").append(columns.getInt(7)).toString();
           columnDescriptions.put(columnName, columnTypeAndSize);
         }
 
-        System.out.println(tableName);
-        for (String columnName : new TreeSet<String>(columnDescriptions.keySet())) {
-          System.out.println("  " + columnName + " " + columnDescriptions.get(columnName));
-        }
+        logger.info(tableName);
+        new TreeSet<String>(columnDescriptions.keySet()).forEach(columnName -> logger.info(new StringBuilder().append("  ").append(columnName).append(" ").append(columnDescriptions.get(columnName)).toString()));
 
-        System.out.println("INDEXES");
-        SortedSet<String> indexNames = new TreeSet<String>();
+        logger.info("INDEXES");
+        SortedSet<String> indexNames = new TreeSet<>();
         ResultSet indexes = meta.getIndexInfo(null, null, tableName, false, true);
         while (indexes.next()) {
           String indexName = indexes.getString(6);
           indexNames.add(indexName);
         }
-        for (String indexName : indexNames) {
-          System.out.println(indexName);
-        }
+        indexNames.forEach(logger::info);
         System.out.println();
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(), e);
       connection.close();
     }
   }

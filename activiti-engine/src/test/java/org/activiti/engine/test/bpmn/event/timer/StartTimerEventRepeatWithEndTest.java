@@ -26,13 +26,16 @@ import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.api.event.TestActivitiEntityEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class StartTimerEventRepeatWithEndTest extends PluggableActivitiTestCase {
 
-  private TestActivitiEntityEventListener listener;
+  private static final Logger logger = LoggerFactory.getLogger(StartTimerEventRepeatWithEndTest.class);
+private TestActivitiEntityEventListener listener;
 
   @Override
   protected void setUp() throws Exception {
@@ -121,7 +124,8 @@ public class StartTimerEventRepeatWithEndTest extends PluggableActivitiTestCase 
     try {
       waitForJobExecutorToProcessAllJobs(10000, 200);
     } catch (Exception e) {
-      fail("Because the endDate is reached no other jobs created");
+      logger.error(e.getMessage(), e);
+	fail("Because the endDate is reached no other jobs created");
     }
     // After the second startEvent Execution should have 2 process instances started
     // (since the first one was not completed)
@@ -145,7 +149,7 @@ public class StartTimerEventRepeatWithEndTest extends PluggableActivitiTestCase 
     int timerFiredCount = 0;
     List<ActivitiEvent> eventsReceived = listener.getEventsReceived();
     for (ActivitiEvent eventReceived : eventsReceived) {
-      if (ActivitiEventType.TIMER_FIRED.equals(eventReceived.getType())) {
+      if (ActivitiEventType.TIMER_FIRED == eventReceived.getType()) {
         timerFiredCount++;
       }
     }
@@ -153,7 +157,7 @@ public class StartTimerEventRepeatWithEndTest extends PluggableActivitiTestCase 
     // count "entity created" events
     int eventCreatedCount = 0;
     for (ActivitiEvent eventReceived : eventsReceived) {
-      if (ActivitiEventType.ENTITY_CREATED.equals(eventReceived.getType())) {
+      if (ActivitiEventType.ENTITY_CREATED == eventReceived.getType()) {
         eventCreatedCount++;
       }
     }
@@ -161,7 +165,7 @@ public class StartTimerEventRepeatWithEndTest extends PluggableActivitiTestCase 
     // count "entity deleted" events
     int eventDeletedCount = 0;
     for (ActivitiEvent eventReceived : eventsReceived) {
-      if (ActivitiEventType.ENTITY_DELETED.equals(eventReceived.getType())) {
+      if (ActivitiEventType.ENTITY_DELETED == eventReceived.getType()) {
         eventDeletedCount++;
       }
     }

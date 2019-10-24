@@ -36,7 +36,8 @@ public class DisabledDefinitionInfoCacheTest extends AbstractActivitiTestCase {
 
   protected static ProcessEngine cachedProcessEngine;
   
-  protected void initializeProcessEngine() {
+  @Override
+protected void initializeProcessEngine() {
     if (cachedProcessEngine==null) {
       ProcessEngineConfigurationImpl processEngineConfiguration = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
           .createProcessEngineConfigurationFromResource("org/activiti/engine/test/bpmn/usertask/activiti.cfg.xml");
@@ -74,7 +75,7 @@ public class DisabledDefinitionInfoCacheTest extends AbstractActivitiTestCase {
   @Deployment
   public void testChangeClassName() {
     // first test without changing the class name
-    Map<String, Object> varMap = new HashMap<String, Object>();
+    Map<String, Object> varMap = new HashMap<>();
     varMap.put("count", 0);
     varMap.put("count2", 0);
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("dynamicServiceTask", varMap);
@@ -91,7 +92,7 @@ public class DisabledDefinitionInfoCacheTest extends AbstractActivitiTestCase {
     assertProcessEnded(processInstance.getId());
     
     // now test with changing the class name
-    varMap = new HashMap<String, Object>();
+    varMap = new HashMap<>();
     varMap.put("count", 0);
     varMap.put("count2", 0);
     processInstance = runtimeService.startProcessInstanceByKey("dynamicServiceTask", varMap);

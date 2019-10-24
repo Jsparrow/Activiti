@@ -28,19 +28,21 @@ public class SendTaskParseHandler extends AbstractActivityBpmnParseHandler<SendT
 
   private static final Logger logger = LoggerFactory.getLogger(SendTaskParseHandler.class);
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return SendTask.class;
   }
 
-  protected void executeParse(BpmnParse bpmnParse, SendTask sendTask) {
+  @Override
+protected void executeParse(BpmnParse bpmnParse, SendTask sendTask) {
 
     if (StringUtils.isNotEmpty(sendTask.getType())) {
       
-      if (sendTask.getType().equalsIgnoreCase("mail")) {
+      if ("mail".equalsIgnoreCase(sendTask.getType())) {
         sendTask.setBehavior(bpmnParse.getActivityBehaviorFactory().createMailActivityBehavior(sendTask));
-      } else if (sendTask.getType().equalsIgnoreCase("mule")) {
+      } else if ("mule".equalsIgnoreCase(sendTask.getType())) {
         sendTask.setBehavior(bpmnParse.getActivityBehaviorFactory().createMuleActivityBehavior(sendTask));
-      } else if (sendTask.getType().equalsIgnoreCase("camel")) {
+      } else if ("camel".equalsIgnoreCase(sendTask.getType())) {
         sendTask.setBehavior(bpmnParse.getActivityBehaviorFactory().createCamelActivityBehavior(sendTask));
       }
 

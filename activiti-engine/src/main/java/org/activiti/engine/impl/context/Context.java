@@ -30,10 +30,10 @@ import java.util.*;
  */
 public class Context {
 
-  protected static ThreadLocal<Stack<CommandContext>> commandContextThreadLocal = new ThreadLocal<Stack<CommandContext>>();
-  protected static ThreadLocal<Stack<ProcessEngineConfigurationImpl>> processEngineConfigurationStackThreadLocal = new ThreadLocal<Stack<ProcessEngineConfigurationImpl>>();
-  protected static ThreadLocal<Stack<TransactionContext>> transactionContextThreadLocal = new ThreadLocal<Stack<TransactionContext>>();
-  protected static ThreadLocal<Map<String, ObjectNode>> bpmnOverrideContextThreadLocal = new ThreadLocal<Map<String, ObjectNode>>();
+  protected static ThreadLocal<Stack<CommandContext>> commandContextThreadLocal = new ThreadLocal<>();
+  protected static ThreadLocal<Stack<ProcessEngineConfigurationImpl>> processEngineConfigurationStackThreadLocal = new ThreadLocal<>();
+  protected static ThreadLocal<Stack<TransactionContext>> transactionContextThreadLocal = new ThreadLocal<>();
+  protected static ThreadLocal<Map<String, ObjectNode>> bpmnOverrideContextThreadLocal = new ThreadLocal<>();
 
   protected static ResourceBundle.Control resourceBundleControl = new ResourceBundleControl();
 
@@ -92,7 +92,7 @@ public class Context {
   protected static <T> Stack<T> getStack(ThreadLocal<Stack<T>> threadLocal) {
     Stack<T> stack = threadLocal.get();
     if (stack == null) {
-      stack = new Stack<T>();
+      stack = new Stack<>();
       threadLocal.set(stack);
     }
     return stack;
@@ -116,7 +116,7 @@ public class Context {
             language, id, definitionInfoNode);
 
       } else {
-        HashSet<Locale> candidateLocales = new LinkedHashSet<Locale>();
+        HashSet<Locale> candidateLocales = new LinkedHashSet<>();
         candidateLocales.addAll(resourceBundleControl.getCandidateLocales(id, Locale.forLanguageTag(language)));
         for (Locale locale : candidateLocales) {
           localizationProperties = getProcessEngineConfiguration().getDynamicBpmnService().getLocalizationElementProperties(
@@ -151,7 +151,7 @@ public class Context {
   protected static Map<String, ObjectNode> getBpmnOverrideContext() {
     Map<String, ObjectNode> bpmnOverrideMap = bpmnOverrideContextThreadLocal.get();
     if (bpmnOverrideMap == null) {
-      bpmnOverrideMap = new HashMap<String, ObjectNode>();
+      bpmnOverrideMap = new HashMap<>();
     }
     return bpmnOverrideMap;
   }
@@ -159,7 +159,7 @@ public class Context {
   protected static void addBpmnOverrideElement(String id, ObjectNode infoNode) {
     Map<String, ObjectNode> bpmnOverrideMap = bpmnOverrideContextThreadLocal.get();
     if (bpmnOverrideMap == null) {
-      bpmnOverrideMap = new HashMap<String, ObjectNode>();
+      bpmnOverrideMap = new HashMap<>();
       bpmnOverrideContextThreadLocal.set(bpmnOverrideMap);
     }
     bpmnOverrideMap.put(id, infoNode);

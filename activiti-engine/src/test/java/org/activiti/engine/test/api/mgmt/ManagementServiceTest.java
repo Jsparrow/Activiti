@@ -28,6 +28,8 @@ import org.activiti.engine.management.TableMetaData;
 import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -37,7 +39,9 @@ import org.activiti.engine.test.Deployment;
  */
 public class ManagementServiceTest extends PluggableActivitiTestCase {
 
-  public void testGetMetaDataForUnexistingTable() {
+  private static final Logger logger = LoggerFactory.getLogger(ManagementServiceTest.class);
+
+public void testGetMetaDataForUnexistingTable() {
     TableMetaData metaData = managementService.getTableMetaData("unexistingtable");
     assertNull(metaData);
   }
@@ -228,6 +232,7 @@ public class ManagementServiceTest extends PluggableActivitiTestCase {
       managementService.deleteJob(timerJob.getId());
       fail();
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // Exception is expected
     }
 

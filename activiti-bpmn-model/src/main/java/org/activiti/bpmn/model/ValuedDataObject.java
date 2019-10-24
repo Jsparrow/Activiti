@@ -10,7 +10,8 @@ public abstract class ValuedDataObject extends DataObject {
 
     public abstract void setValue(Object value);
 
-    public abstract ValuedDataObject clone();
+    @Override
+	public abstract ValuedDataObject clone();
 
     public void setValues(ValuedDataObject otherElement) {
         super.setValues(otherElement);

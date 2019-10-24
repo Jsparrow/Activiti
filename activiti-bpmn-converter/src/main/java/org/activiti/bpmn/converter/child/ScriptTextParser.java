@@ -23,13 +23,16 @@ import org.activiti.bpmn.model.ScriptTask;
  */
 public class ScriptTextParser extends BaseChildElementParser {
 
-  public String getElementName() {
+  @Override
+public String getElementName() {
     return ATTRIBUTE_TASK_SCRIPT_TEXT;
   }
 
-  public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
-    if (!(parentElement instanceof ScriptTask))
-      return;
+  @Override
+public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
+    if (!(parentElement instanceof ScriptTask)) {
+		return;
+	}
 
     ((ScriptTask) parentElement).setScript(xtr.getElementText());
   }

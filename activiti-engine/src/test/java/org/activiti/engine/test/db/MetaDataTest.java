@@ -32,8 +32,7 @@ public class MetaDataTest extends PluggableActivitiTestCase {
   private static Logger log = LoggerFactory.getLogger(MetaDataTest.class);
 
   public void testMetaData() {
-    ((ProcessEngineImpl) processEngine).getProcessEngineConfiguration().getCommandExecutor().execute(new Command<Object>() {
-      public Object execute(CommandContext commandContext) {
+    ((ProcessEngineImpl) processEngine).getProcessEngineConfiguration().getCommandExecutor().execute((CommandContext commandContext) -> {
         // PRINT THE TABLE NAMES TO CHECK IF WE CAN USE METADATA INSTEAD
         // THIS IS INTENDED FOR TEST THAT SHOULD RUN ON OUR QA
         // INFRASTRUCTURE TO SEE IF METADATA
@@ -50,10 +49,9 @@ public class MetaDataTest extends PluggableActivitiTestCase {
             log.info("-------------------------------------------------------");
           }
         } catch (Exception e) {
-          e.printStackTrace();
+          log.error(e.getMessage(), e);
         }
         return null;
-      }
-    });
+      });
   }
 }

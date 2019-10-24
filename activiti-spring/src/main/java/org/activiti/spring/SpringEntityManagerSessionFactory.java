@@ -43,11 +43,13 @@ public class SpringEntityManagerSessionFactory implements SessionFactory {
     this.closeEntityManager = closeEntityManager;
   }
 
-  public Class<?> getSessionType() {
+  @Override
+public Class<?> getSessionType() {
     return EntityManagerFactory.class;
   }
 
-  public Session openSession(CommandContext commandContext) {
+  @Override
+public Session openSession(CommandContext commandContext) {
     EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(entityManagerFactory);
     if (entityManager == null) {
       return new EntityManagerSessionImpl(entityManagerFactory, handleTransactions, closeEntityManager);

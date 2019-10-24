@@ -22,48 +22,44 @@ public class BPMNLayout extends mxGraphLayout {
 
   protected BpmnAutoLayout bpmnAutoLayout;
 
-  public void setBpmnAutoLayout(BpmnAutoLayout bpmnAutoLayout) {
-    this.bpmnAutoLayout = bpmnAutoLayout;
-  }
-
-  // NEW
+// NEW
 
   /**
    * Specifies the orientation of the layout. Default is true.
    */
   protected boolean horizontal;
 
-  /**
+/**
    * Specifies if edge directions should be inverted. Default is false.
    */
   protected boolean invert;
 
-  /**
+/**
    * If the parent should be resized to match the width/height of the tree. Default is true.
    */
   protected boolean resizeParent = true;
 
-  /**
+/**
    * Specifies if the tree should be moved to the top, left corner if it is inside a top-level layer. Default is true.
    */
   protected boolean moveTree = true;
 
-  /**
+/**
    * Specifies if all edge points of traversed edges should be removed. Default is true.
    */
   protected boolean resetEdges = true;
 
-  /**
+/**
    * Holds the levelDistance. Default is 40.
    */
   protected int levelDistance = 40;
 
-  /**
+/**
    * Holds the nodeDistance. Default is 20.
    */
   protected int nodeDistance = 20;
 
-  /**
+/**
    * 
    * @param graph
    */
@@ -71,7 +67,7 @@ public class BPMNLayout extends mxGraphLayout {
     this(graph, true);
   }
 
-  /**
+/**
    * 
    * @param graph
    * @param horizontal
@@ -80,7 +76,7 @@ public class BPMNLayout extends mxGraphLayout {
     this(graph, horizontal, false);
   }
 
-  /**
+/**
    * 
    * @param graph
    * @param horizontal
@@ -93,29 +89,35 @@ public class BPMNLayout extends mxGraphLayout {
     this.invert = invert;
   }
 
-  public mxGraph getGraph() {
+public void setBpmnAutoLayout(BpmnAutoLayout bpmnAutoLayout) {
+    this.bpmnAutoLayout = bpmnAutoLayout;
+  }
+
+@Override
+public mxGraph getGraph() {
     return (mxGraph) graph;
   }
 
-  /**
+/**
    * Returns a boolean indicating if the given <em>mxCell</em> should be ignored as a vertex. This returns true if the cell has no connections.
    * 
    * @param vertex
    *          Object that represents the vertex to be tested.
    * @return Returns true if the vertex should be ignored.
    */
-  public boolean isVertexIgnored(Object vertex) {
+  @Override
+public boolean isVertexIgnored(Object vertex) {
     return super.isVertexIgnored(vertex) || graph.isSwimlane(vertex) || graph.getModel().getGeometry(vertex).isRelative() || graph.getConnections(vertex).length == 0;
   }
 
-  /**
+/**
    * @return the horizontal
    */
   public boolean isHorizontal() {
     return horizontal;
   }
 
-  /**
+/**
    * @param horizontal
    *          the horizontal to set
    */
@@ -123,14 +125,14 @@ public class BPMNLayout extends mxGraphLayout {
     this.horizontal = horizontal;
   }
 
-  /**
+/**
    * @return the invert
    */
   public boolean isInvert() {
     return invert;
   }
 
-  /**
+/**
    * @param invert
    *          the invert to set
    */
@@ -138,14 +140,14 @@ public class BPMNLayout extends mxGraphLayout {
     this.invert = invert;
   }
 
-  /**
+/**
    * @return the resizeParent
    */
   public boolean isResizeParent() {
     return resizeParent;
   }
 
-  /**
+/**
    * @param resizeParent
    *          the resizeParent to set
    */
@@ -153,14 +155,14 @@ public class BPMNLayout extends mxGraphLayout {
     this.resizeParent = resizeParent;
   }
 
-  /**
+/**
    * @return the moveTree
    */
   public boolean isMoveTree() {
     return moveTree;
   }
 
-  /**
+/**
    * @param moveTree
    *          the moveTree to set
    */
@@ -168,14 +170,14 @@ public class BPMNLayout extends mxGraphLayout {
     this.moveTree = moveTree;
   }
 
-  /**
+/**
    * @return the resetEdges
    */
   public boolean isResetEdges() {
     return resetEdges;
   }
 
-  /**
+/**
    * @param resetEdges
    *          the resetEdges to set
    */
@@ -183,14 +185,14 @@ public class BPMNLayout extends mxGraphLayout {
     this.resetEdges = resetEdges;
   }
 
-  /**
+/**
    * @return the levelDistance
    */
   public int getLevelDistance() {
     return levelDistance;
   }
 
-  /**
+/**
    * @param levelDistance
    *          the levelDistance to set
    */
@@ -198,14 +200,14 @@ public class BPMNLayout extends mxGraphLayout {
     this.levelDistance = levelDistance;
   }
 
-  /**
+/**
    * @return the nodeDistance
    */
   public int getNodeDistance() {
     return nodeDistance;
   }
 
-  /**
+/**
    * @param nodeDistance
    *          the nodeDistance to set
    */
@@ -213,7 +215,8 @@ public class BPMNLayout extends mxGraphLayout {
     this.nodeDistance = nodeDistance;
   }
 
-  public void execute(Object parent) {
+@Override
+public void execute(Object parent) {
     mxIGraphModel model = graph.getModel();
     List<Object> roots = graph.findTreeRoots(parent, true, invert);
     // if (getGraph().isOrganizationElement(parent)) {
@@ -311,15 +314,15 @@ public class BPMNLayout extends mxGraphLayout {
     }
   }
 
-  protected boolean isBoundaryEvent(Object obj) {
-    if (obj instanceof mxCell) {
-      mxCell cell = (mxCell) obj;
-      return cell.getId().startsWith("boundary-event-");
-    }
-    return false;
+protected boolean isBoundaryEvent(Object obj) {
+    if (!(obj instanceof mxCell)) {
+		return false;
+	}
+	mxCell cell = (mxCell) obj;
+	return cell.getId().startsWith("boundary-event-");
   }
 
-  /**
+/**
    * Moves the specified node and all of its children by the given amount.
    */
   protected void moveNode(TreeNode node, double dx, double dy) {
@@ -335,12 +338,12 @@ public class BPMNLayout extends mxGraphLayout {
     }
   }
 
-  /**
+/**
    * Does a depth first search starting at the specified cell. Makes sure the specified swimlane is never left by the algorithm.
    */
   protected TreeNode dfs(Object cell, Object parent, Set<Object> visited) {
     if (visited == null) {
-      visited = new HashSet<Object>();
+      visited = new HashSet<>();
     }
 
     TreeNode node = null;
@@ -353,9 +356,7 @@ public class BPMNLayout extends mxGraphLayout {
       TreeNode prev = null;
       Object[] out = graph.getEdges(cell, parent, invert, !invert, false);
 
-      for (int i = 0; i < out.length; i++) {
-        Object edge = out[i];
-
+      for (Object edge : out) {
         if (!isEdgeIgnored(edge)) {
           // Resets the points on the traversed edge
           if (resetEdges) {
@@ -382,27 +383,26 @@ public class BPMNLayout extends mxGraphLayout {
     return node;
   }
 
-  /**
+/**
    * Starts the actual compact tree layout algorithm at the given node.
    */
   protected void layout(TreeNode node) {
-    if (node != null) {
-      TreeNode child = node.child;
-
-      while (child != null) {
+    if (node == null) {
+		return;
+	}
+	TreeNode child = node.child;
+	while (child != null) {
         layout(child);
         child = child.next;
       }
-
-      if (node.child != null) {
+	if (node.child != null) {
         attachParent(node, join(node));
       } else {
         layoutLeaf(node);
       }
-    }
   }
 
-  protected mxRectangle horizontalLayout(TreeNode node, double x0, double y0, mxRectangle bounds) {
+protected mxRectangle horizontalLayout(TreeNode node, double x0, double y0, mxRectangle bounds) {
     node.x += x0 + node.offsetX;
     node.y += y0 + node.offsetY;
     bounds = apply(node, bounds);
@@ -423,7 +423,7 @@ public class BPMNLayout extends mxGraphLayout {
     return bounds;
   }
 
-  protected mxRectangle verticalLayout(TreeNode node, Object parent, double x0, double y0, mxRectangle bounds) {
+protected mxRectangle verticalLayout(TreeNode node, Object parent, double x0, double y0, mxRectangle bounds) {
     node.x += x0 + node.offsetY;
     node.y += y0 + node.offsetX;
     bounds = apply(node, bounds);
@@ -444,7 +444,7 @@ public class BPMNLayout extends mxGraphLayout {
     return bounds;
   }
 
-  /**
+/**
 	 * 
 	 */
   protected void attachParent(TreeNode node, double height) {
@@ -463,7 +463,7 @@ public class BPMNLayout extends mxGraphLayout {
     node.contour.lowerHead = createLine(node.height, 0, createLine(x, y2, node.contour.lowerHead));
   }
 
-  /**
+/**
 	 * 
 	 */
   protected void layoutLeaf(TreeNode node) {
@@ -475,7 +475,7 @@ public class BPMNLayout extends mxGraphLayout {
     node.contour.lowerHead = createLine(node.height + dist, 0, node.contour.lowerTail);
   }
 
-  /**
+/**
 	 * 
 	 */
   protected double join(TreeNode node) {
@@ -499,7 +499,7 @@ public class BPMNLayout extends mxGraphLayout {
     return sum;
   }
 
-  /**
+/**
 	 * 
 	 */
   protected double merge(Polygon p1, Polygon p2) {
@@ -543,7 +543,7 @@ public class BPMNLayout extends mxGraphLayout {
     return total;
   }
 
-  /**
+/**
 	 * 
 	 */
   protected double offset(double p1, double p2, double a1, double a2, double b1, double b2) {
@@ -582,7 +582,7 @@ public class BPMNLayout extends mxGraphLayout {
     return 0;
   }
 
-  /**
+/**
 	 * 
 	 */
   protected Polyline bridge(Polyline line1, double x1, double y1, Polyline line2, double x2, double y2) {
@@ -603,7 +603,7 @@ public class BPMNLayout extends mxGraphLayout {
     return r;
   }
 
-  /**
+/**
 	 * 
 	 */
   protected TreeNode createNode(Object cell) {
@@ -624,7 +624,7 @@ public class BPMNLayout extends mxGraphLayout {
     return node;
   }
 
-  /**
+/**
 	 * 
 	 */
   protected mxRectangle apply(TreeNode node, mxRectangle bounds) {
@@ -646,7 +646,7 @@ public class BPMNLayout extends mxGraphLayout {
     return bounds;
   }
 
-  /**
+/**
 	 * 
 	 */
   protected Polyline createLine(double dx, double dy, Polyline next) {
@@ -665,12 +665,36 @@ public class BPMNLayout extends mxGraphLayout {
     /**
 		 * 
 		 */
-    protected double x, y, width, height, offsetX, offsetY;
+    protected double x;
+
+	/**
+	 */
+	protected double y;
+
+	/**
+	 */
+	protected double width;
+
+	/**
+	 */
+	protected double height;
+
+	/**
+	 */
+	protected double offsetX;
+
+	/**
+	 */
+	protected double offsetY;
 
     /**
 		 * 
 		 */
-    protected TreeNode child, next; // parent, sibling
+    protected TreeNode child; // parent, sibling
+
+	/**
+	 */
+	protected TreeNode next;
 
     /**
 		 * 
@@ -694,7 +718,16 @@ public class BPMNLayout extends mxGraphLayout {
     /**
 		 * 
 		 */
-    protected Polyline lowerHead, lowerTail, upperHead, upperTail;
+    protected Polyline lowerHead;
+	/**
+	 */
+	protected Polyline lowerTail;
+	/**
+	 */
+	protected Polyline upperHead;
+	/**
+	 */
+	protected Polyline upperTail;
 
   }
 
@@ -706,7 +739,11 @@ public class BPMNLayout extends mxGraphLayout {
     /**
 		 * 
 		 */
-    protected double dx, dy;
+    protected double dx;
+
+	/**
+	 */
+	protected double dy;
 
     /**
 		 * 

@@ -45,7 +45,8 @@ public class AcquireTimerJobsRunnable implements Runnable {
     this.jobManager = jobManager;
   }
 
-  public synchronized void run() {
+  @Override
+public synchronized void run() {
     log.info("{} starting to acquire async jobs due");
     Thread.currentThread().setName("activiti-acquire-timer-jobs");
 
@@ -56,16 +57,10 @@ public class AcquireTimerJobsRunnable implements Runnable {
       try {
         final AcquiredTimerJobEntities acquiredJobs = commandExecutor.execute(new AcquireTimerJobsCmd(asyncExecutor));
 
-        commandExecutor.execute(new Command<Void>() {
-
-          @Override
-          public Void execute(CommandContext commandContext) {
-            for (TimerJobEntity job : acquiredJobs.getJobs()) {
-              jobManager.moveTimerJobToExecutableJob(job);
-            }
+        commandExecutor.execute((CommandContext commandContext) -> {
+            acquiredJobs.getJobs().forEach(jobManager::moveTimerJobToExecutableJob);
             return null;
-          }
-        });
+          });
         
         // if all jobs were executed
         millisToWait = asyncExecutor.getDefaultTimerJobAcquireWaitTimeInMillis();
@@ -76,10 +71,7 @@ public class AcquireTimerJobsRunnable implements Runnable {
 
       } catch (ActivitiOptimisticLockingException optimisticLockingException) {
         if (log.isDebugEnabled()) {
-          log.debug("Optimistic locking exception during timer job acquisition. If you have multiple timer executors running against the same database, "
-              + "this exception means that this thread tried to acquire a timer job, which already was acquired by another timer executor acquisition thread."
-              + "This is expected behavior in a clustered environment. "
-              + "You can ignore this message if you indeed have multiple timer executor acquisition threads running against the same database. " + "Exception message: {}",
+          log.debug(new StringBuilder().append("Optimistic locking exception during timer job acquisition. If you have multiple timer executors running against the same database, ").append("this exception means that this thread tried to acquire a timer job, which already was acquired by another timer executor acquisition thread.").append("This is expected behavior in a clustered environment. ").append("You can ignore this message if you indeed have multiple timer executor acquisition threads running against the same database. ").append("Exception message: {}").toString(),
               optimisticLockingException.getMessage());
         }
       } catch (Throwable e) {
@@ -103,7 +95,8 @@ public class AcquireTimerJobsRunnable implements Runnable {
             log.debug("timer job acquisition thread woke up");
           }
         } catch (InterruptedException e) {
-          if (log.isDebugEnabled()) {
+          log.error(e.getMessage(), e);
+		if (log.isDebugEnabled()) {
             log.debug("timer job acquisition wait interrupted");
           }
         } finally {

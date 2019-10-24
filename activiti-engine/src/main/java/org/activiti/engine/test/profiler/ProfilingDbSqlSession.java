@@ -108,7 +108,7 @@ public class ProfilingDbSqlSession extends DbSqlSession {
   @Override
   protected void flushBulkInsert(Collection<Entity> entities, Class<? extends Entity> clazz) {
     if (getCurrentCommandExecution() != null && entities.size() > 0) {
-      getCurrentCommandExecution().addDbInsert(clazz.getName() + "-bulk-with-" + entities.size());
+      getCurrentCommandExecution().addDbInsert(new StringBuilder().append(clazz.getName()).append("-bulk-with-").append(entities.size()).toString());
     }
     super.flushBulkInsert(entities, clazz);
   }
@@ -119,9 +119,7 @@ public class ProfilingDbSqlSession extends DbSqlSession {
   protected void flushUpdates() {
     super.flushUpdates();
     if (getCurrentCommandExecution() != null) {
-      for (Entity persistentObject : updatedObjects) {
-        getCurrentCommandExecution().addDbUpdate(persistentObject.getClass().getName());
-      }
+      updatedObjects.forEach(persistentObject -> getCurrentCommandExecution().addDbUpdate(persistentObject.getClass().getName()));
     }
   }
 
@@ -131,21 +129,16 @@ public class ProfilingDbSqlSession extends DbSqlSession {
   protected void flushDeleteEntities(Class<? extends Entity> entityClass, Collection<Entity> entitiesToDelete) {
     super.flushDeleteEntities(entityClass, entitiesToDelete);
     if (getCurrentCommandExecution() != null) {
-      for (Entity entity : entitiesToDelete) {
-        getCurrentCommandExecution().addDbDelete(entity.getClass().getName());
-      }
+      entitiesToDelete.forEach(entity -> getCurrentCommandExecution().addDbDelete(entity.getClass().getName()));
     }
   }
 
   @Override
   protected void flushBulkDeletes(Class<? extends Entity> entityClass) {
-    if (getCurrentCommandExecution() != null) {
-      if (bulkDeleteOperations.containsKey(entityClass)) {
-        for (BulkDeleteOperation bulkDeleteOperation : bulkDeleteOperations.get(entityClass)) {
-          getCurrentCommandExecution().addDbDelete("Bulk-delete-" + bulkDeleteOperation.getClass());
-        }
+    boolean condition = getCurrentCommandExecution() != null && bulkDeleteOperations.containsKey(entityClass);
+	if (condition) {
+        bulkDeleteOperations.get(entityClass).forEach(bulkDeleteOperation -> getCurrentCommandExecution().addDbDelete("Bulk-delete-" + bulkDeleteOperation.getClass()));
       }
-    }
     super.flushBulkDeletes(entityClass);
   }
 

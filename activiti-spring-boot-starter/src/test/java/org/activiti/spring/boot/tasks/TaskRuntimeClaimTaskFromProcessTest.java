@@ -22,27 +22,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class TaskRuntimeClaimTaskFromProcessTest {
 
-    @Autowired
-    private TaskRuntime taskRuntime;
-
-    @Autowired
-    private ProcessRuntime processRuntime;
-
-    @Autowired
-    private SecurityUtil securityUtil;
-
     private static final String TWOTASK_PROCESS = "twoTaskProcess";
 
+	@Autowired
+    private TaskRuntime taskRuntime;
 
-    @Autowired
+	@Autowired
+    private ProcessRuntime processRuntime;
+
+	@Autowired
+    private SecurityUtil securityUtil;
+
+	@Autowired
     private ProcessCleanUpUtil processCleanUpUtil;
 
-    @After
+	@After
     public void cleanUp(){
         processCleanUpUtil.cleanUpWithAdmin();
     }
 
-    @Test
+	@Test
     public void claimTaskWithoutGroup() {
 
         securityUtil.logInAs("user");

@@ -35,7 +35,8 @@ public abstract class NeedsActiveExecutionCmd<T> implements Command<T>, Serializ
     this.executionId = executionId;
   }
 
-  public T execute(CommandContext commandContext) {
+  @Override
+public T execute(CommandContext commandContext) {
     if (executionId == null) {
       throw new ActivitiIllegalArgumentException("executionId is null");
     }
@@ -43,7 +44,7 @@ public abstract class NeedsActiveExecutionCmd<T> implements Command<T>, Serializ
     ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(executionId);
 
     if (execution == null) {
-      throw new ActivitiObjectNotFoundException("execution " + executionId + " doesn't exist", Execution.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("execution ").append(executionId).append(" doesn't exist").toString(), Execution.class);
     }
 
     if (execution.isSuspended()) {
@@ -62,7 +63,7 @@ public abstract class NeedsActiveExecutionCmd<T> implements Command<T>, Serializ
    * Subclasses can override this to provide a more detailed exception message that will be thrown when the execution is suspended.
    */
   protected String getSuspendedExceptionMessage() {
-    return "Cannot execution operation because execution '" + executionId + "' is suspended";
+    return new StringBuilder().append("Cannot execution operation because execution '").append(executionId).append("' is suspended").toString();
   }
 
 }

@@ -40,15 +40,18 @@ public class MailTaskJsonConverter extends BaseBpmnJsonConverter {
     // will be handled by ServiceTaskJsonConverter
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     return STENCIL_TASK_MAIL;
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
     // will be handled by ServiceTaskJsonConverter
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     ServiceTask task = new ServiceTask();
     task.setType(ServiceTask.MAIL_TASK);
     addField(PROPERTY_MAILTASK_TO, elementNode, task);

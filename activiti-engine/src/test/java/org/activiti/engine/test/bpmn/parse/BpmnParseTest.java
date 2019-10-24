@@ -24,6 +24,8 @@ import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.impl.test.TestHelper;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -31,12 +33,15 @@ import org.activiti.engine.test.Deployment;
  */
 public class BpmnParseTest extends PluggableActivitiTestCase {
 
-  public void testInvalidProcessDefinition() {
+  private static final Logger logger = LoggerFactory.getLogger(BpmnParseTest.class);
+
+public void testInvalidProcessDefinition() {
     try {
       String resource = TestHelper.getBpmnProcessDefinitionResource(getClass(), "testInvalidProcessDefinition");
       repositoryService.createDeployment().name(resource).addClasspathResource(resource).deploy();
       fail();
     } catch (XMLException e) {
+		logger.error(e.getMessage(), e);
       // expected exception
     }
   }

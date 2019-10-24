@@ -37,7 +37,8 @@ public class GetJobExceptionStacktraceCmd implements Command<String>, Serializab
     this.jobType = jobType;
   }
 
-  public String execute(CommandContext commandContext) {
+  @Override
+public String execute(CommandContext commandContext) {
     if (jobId == null) {
       throw new ActivitiIllegalArgumentException("jobId is null");
     }

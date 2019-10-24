@@ -36,7 +36,8 @@ public class GetTaskEventCmd implements Command<Event>, Serializable {
     }
   }
 
-  public Event execute(CommandContext commandContext) {
+  @Override
+public Event execute(CommandContext commandContext) {
     return commandContext.getCommentEntityManager().findEvent(eventId);
   }
 }

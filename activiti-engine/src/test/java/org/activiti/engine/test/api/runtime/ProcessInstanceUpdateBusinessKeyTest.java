@@ -31,10 +31,11 @@ public class ProcessInstanceUpdateBusinessKeyTest extends PluggableActivitiTestC
     ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().singleResult();
     assertEquals("bzKey", processInstance.getBusinessKey());
 
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().singleResult();
-      assertEquals("bzKey", historicProcessInstance.getBusinessKey());
-    }
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().singleResult();
+	assertEquals("bzKey", historicProcessInstance.getBusinessKey());
   }
 
   @Deployment
@@ -54,17 +55,19 @@ public class ProcessInstanceUpdateBusinessKeyTest extends PluggableActivitiTestC
     processInstance = runtimeService.createProcessInstanceQuery().singleResult();
     assertEquals("newKey", processInstance.getBusinessKey());
 
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().singleResult();
-      assertEquals("newKey", historicProcessInstance.getBusinessKey());
-    }
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().singleResult();
+	assertEquals("newKey", historicProcessInstance.getBusinessKey());
   }
 
   public static class UpdateBusinessKeyExecutionListener implements ExecutionListener {
 
     private static final long serialVersionUID = 1L;
 
-    public void notify(DelegateExecution delegateExecution) {
+    @Override
+	public void notify(DelegateExecution delegateExecution) {
       Context.getCommandContext().getExecutionEntityManager().updateProcessInstanceBusinessKey((ExecutionEntity)delegateExecution, "bzKey");
     }
   }

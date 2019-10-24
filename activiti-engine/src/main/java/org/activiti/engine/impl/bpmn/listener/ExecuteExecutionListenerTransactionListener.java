@@ -41,13 +41,11 @@ public class ExecuteExecutionListenerTransactionListener implements TransactionL
   public void execute(CommandContext commandContext) {
     CommandExecutor commandExecutor = commandContext.getProcessEngineConfiguration().getCommandExecutor();
     CommandConfig commandConfig = new CommandConfig(false, TransactionPropagation.REQUIRES_NEW);
-    commandExecutor.execute(commandConfig, new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    commandExecutor.execute(commandConfig, (CommandContext commandContext1) -> {
         listener.notify(scope.getProcessInstanceId(), scope.getExecutionId(), scope.getFlowElement(), 
             scope.getExecutionVariables(), scope.getCustomPropertiesMap());
         return null;
-      }
-    });
+      });
   }
 
 }

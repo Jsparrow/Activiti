@@ -22,13 +22,11 @@ public class FailedJobRetryCountExport implements BpmnXMLConstants {
 
   public static void writeFailedJobRetryCount(Activity activity, XMLStreamWriter xtw) throws Exception {
     String failedJobRetryCycle = activity.getFailedJobRetryTimeCycleValue();
-    if (failedJobRetryCycle != null) {
-
-      if (StringUtils.isNotEmpty(failedJobRetryCycle)) {
+    boolean condition = failedJobRetryCycle != null && StringUtils.isNotEmpty(failedJobRetryCycle);
+	if (condition) {
         xtw.writeStartElement(ACTIVITI_EXTENSIONS_PREFIX, FAILED_JOB_RETRY_TIME_CYCLE, ACTIVITI_EXTENSIONS_NAMESPACE);
         xtw.writeCharacters(failedJobRetryCycle);
         xtw.writeEndElement();
       }
-    }
   }
 }

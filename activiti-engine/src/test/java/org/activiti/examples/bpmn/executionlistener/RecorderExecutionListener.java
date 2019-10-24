@@ -31,9 +31,32 @@ public class RecorderExecutionListener implements ExecutionListener {
 
   private static final long serialVersionUID = 1L;
 
-  private FixedValue parameter;
+private static List<RecorderExecutionListener.RecordedEvent> recordedEvents = new ArrayList<>();
 
-  private static List<RecorderExecutionListener.RecordedEvent> recordedEvents = new ArrayList<RecorderExecutionListener.RecordedEvent>();
+private FixedValue parameter;
+
+@Override
+public void notify(DelegateExecution execution) {
+    ExecutionEntity executionCasted = ((ExecutionEntity) execution);
+    
+    org.activiti.bpmn.model.Process process = ProcessDefinitionUtil.getProcess(execution.getProcessDefinitionId());
+    String activityId = execution.getCurrentActivityId();
+    FlowElement currentFlowElement = process.getFlowElement(activityId, true);
+    
+    recordedEvents.add(new RecordedEvent(
+        executionCasted.getActivityId(),
+        (currentFlowElement != null) ? currentFlowElement.getName() : null,
+        execution.getEventName(), 
+        (String) parameter.getValue(execution)));
+  }
+
+public static void clear() {
+    recordedEvents.clear();
+  }
+
+public static List<RecordedEvent> getRecordedEvents() {
+    return recordedEvents;
+  }
 
   public static class RecordedEvent {
     private final String activityId;
@@ -64,28 +87,6 @@ public class RecorderExecutionListener implements ExecutionListener {
       return parameter;
     }
 
-  }
-
-  public void notify(DelegateExecution execution) {
-    ExecutionEntity executionCasted = ((ExecutionEntity) execution);
-    
-    org.activiti.bpmn.model.Process process = ProcessDefinitionUtil.getProcess(execution.getProcessDefinitionId());
-    String activityId = execution.getCurrentActivityId();
-    FlowElement currentFlowElement = process.getFlowElement(activityId, true);
-    
-    recordedEvents.add(new RecordedEvent(
-        executionCasted.getActivityId(),
-        (currentFlowElement != null) ? currentFlowElement.getName() : null,
-        execution.getEventName(), 
-        (String) parameter.getValue(execution)));
-  }
-
-  public static void clear() {
-    recordedEvents.clear();
-  }
-
-  public static List<RecordedEvent> getRecordedEvents() {
-    return recordedEvents;
   }
 
 }

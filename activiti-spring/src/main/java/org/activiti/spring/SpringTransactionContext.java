@@ -50,18 +50,21 @@ public class SpringTransactionContext implements TransactionContext {
     }
   }
 
-  public void commit() {
+  @Override
+public void commit() {
     // Do nothing, transaction is managed by spring
   }
 
-  public void rollback() {
+  @Override
+public void rollback() {
     // Just in case the rollback isn't triggered by an
     // exception, we mark the current transaction rollBackOnly.
     transactionManager.getTransaction(null).setRollbackOnly();
   }
 
-  public void addTransactionListener(final TransactionState transactionState, final TransactionListener transactionListener) {
-    if (transactionState.equals(TransactionState.COMMITTING)) {
+  @Override
+public void addTransactionListener(final TransactionState transactionState, final TransactionListener transactionListener) {
+    if (transactionState == TransactionState.COMMITTING) {
 
       TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
         @Override
@@ -70,7 +73,7 @@ public class SpringTransactionContext implements TransactionContext {
         }
       });
 
-    } else if (transactionState.equals(TransactionState.COMMITTED)) {
+    } else if (transactionState == TransactionState.COMMITTED) {
 
       TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
         @Override
@@ -79,7 +82,7 @@ public class SpringTransactionContext implements TransactionContext {
         }
       });
 
-    } else if (transactionState.equals(TransactionState.ROLLINGBACK)) {
+    } else if (transactionState == TransactionState.ROLLINGBACK) {
 
       TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
         @Override
@@ -88,7 +91,7 @@ public class SpringTransactionContext implements TransactionContext {
         }
       });
 
-    } else if (transactionState.equals(TransactionState.ROLLED_BACK)) {
+    } else if (transactionState == TransactionState.ROLLED_BACK) {
 
       TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
         @Override
@@ -103,25 +106,32 @@ public class SpringTransactionContext implements TransactionContext {
 
   protected abstract class TransactionSynchronizationAdapter implements TransactionSynchronization, Ordered {
 
-    public void suspend() {
+    @Override
+	public void suspend() {
     }
 
-    public void resume() {
+    @Override
+	public void resume() {
     }
 
-    public void flush() {
+    @Override
+	public void flush() {
     }
 
-    public void beforeCommit(boolean readOnly) {
+    @Override
+	public void beforeCommit(boolean readOnly) {
     }
 
-    public void beforeCompletion() {
+    @Override
+	public void beforeCompletion() {
     }
 
-    public void afterCommit() {
+    @Override
+	public void afterCommit() {
     }
 
-    public void afterCompletion(int status) {
+    @Override
+	public void afterCompletion(int status) {
     }
 
     @Override

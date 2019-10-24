@@ -23,7 +23,7 @@ import org.activiti.engine.impl.persistence.entity.JobEntity;
  */
 public class AcquiredJobEntities {
 
-  protected Map<String, JobEntity> acquiredJobs = new HashMap<String, JobEntity>();
+  protected Map<String, JobEntity> acquiredJobs = new HashMap<>();
 
   public void addJob(JobEntity job) {
     acquiredJobs.put(job.getId(), job);

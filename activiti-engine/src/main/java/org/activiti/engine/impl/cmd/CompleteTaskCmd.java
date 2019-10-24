@@ -44,7 +44,8 @@ public class CompleteTaskCmd extends AbstractCompleteTaskCmd {
     this.transientVariables = transientVariables;
   }
 
-  protected Void execute(CommandContext commandContext, TaskEntity task) {
+  @Override
+protected Void execute(CommandContext commandContext, TaskEntity task) {
     if (variables != null) {
       if (localScope) {
         task.setVariablesLocal(variables);

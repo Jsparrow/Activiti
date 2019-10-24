@@ -26,7 +26,7 @@ public class FormProperty extends BaseElement {
   protected boolean readable = true;
   protected boolean writeable = true;
   protected boolean required;
-  protected List<FormValue> formValues = new ArrayList<FormValue>();
+  protected List<FormValue> formValues = new ArrayList<>();
 
   public String getName() {
     return name;
@@ -108,7 +108,8 @@ public class FormProperty extends BaseElement {
     this.formValues = formValues;
   }
 
-  public FormProperty clone() {
+  @Override
+public FormProperty clone() {
     FormProperty clone = new FormProperty();
     clone.setValues(this);
     return clone;
@@ -126,11 +127,9 @@ public class FormProperty extends BaseElement {
     setWriteable(otherProperty.isWriteable());
     setRequired(otherProperty.isRequired());
 
-    formValues = new ArrayList<FormValue>();
+    formValues = new ArrayList<>();
     if (otherProperty.getFormValues() != null && !otherProperty.getFormValues().isEmpty()) {
-      for (FormValue formValue : otherProperty.getFormValues()) {
-        formValues.add(formValue.clone());
-      }
+      otherProperty.getFormValues().forEach(formValue -> formValues.add(formValue.clone()));
     }
   }
 }

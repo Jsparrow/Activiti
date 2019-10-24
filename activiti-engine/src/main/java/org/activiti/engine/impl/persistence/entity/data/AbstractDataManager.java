@@ -71,7 +71,8 @@ public abstract class AbstractDataManager<EntityImpl extends Entity> extends Abs
     getDbSqlSession().insert(entity);
   }
   
-  public EntityImpl update(EntityImpl entity) {
+  @Override
+public EntityImpl update(EntityImpl entity) {
     getDbSqlSession().update(entity);
     return entity;
   }
@@ -127,12 +128,10 @@ public abstract class AbstractDataManager<EntityImpl extends Entity> extends Abs
       
       if ( (cachedObjects != null && cachedObjects.size() > 0) || getManagedEntitySubClasses() != null) {
         
-        HashMap<String, EntityImpl> entityMap = new HashMap<String, EntityImpl>(result.size());
+        HashMap<String, EntityImpl> entityMap = new HashMap<>(result.size());
         
         // Database entities
-        for (EntityImpl entity : result) {
-          entityMap.put(entity.getId(), entity);
-        }
+		result.forEach(entity -> entityMap.put(entity.getId(), entity));
 
         // Cache entities
         if (cachedObjects != null && cachedEntityMatcher != null) {
@@ -174,7 +173,7 @@ public abstract class AbstractDataManager<EntityImpl extends Entity> extends Abs
       }
     }
 
-    return new ArrayList<EntityImpl>(result);
+    return new ArrayList<>(result);
   }
   
   protected List<EntityImpl> getListFromCache(CachedEntityMatcher<EntityImpl> entityMatcher, Object parameter) {
@@ -182,26 +181,26 @@ public abstract class AbstractDataManager<EntityImpl extends Entity> extends Abs
     
     DbSqlSession dbSqlSession = getDbSqlSession();
     
-    List<EntityImpl> result = new ArrayList<EntityImpl>(cachedObjects.size());
+    List<EntityImpl> result = new ArrayList<>(cachedObjects.size());
     if (cachedObjects != null && entityMatcher != null) {
-      for (CachedEntity cachedObject : cachedObjects) {
+      cachedObjects.forEach(cachedObject -> {
         EntityImpl cachedEntity = (EntityImpl) cachedObject.getEntity();
         if (entityMatcher.isRetained(null, cachedObjects, cachedEntity, parameter) && !dbSqlSession.isEntityToBeDeleted(cachedEntity)) {
           result.add(cachedEntity);
         }
-      }
+      });
     }
     
     if (getManagedEntitySubClasses() != null && entityMatcher != null) {
       for (Class<? extends EntityImpl> entitySubClass : getManagedEntitySubClasses()) {
         Collection<CachedEntity> subclassCachedObjects = getEntityCache().findInCacheAsCachedObjects(entitySubClass);
         if (subclassCachedObjects != null) {
-          for (CachedEntity subclassCachedObject : subclassCachedObjects) {
+          subclassCachedObjects.forEach(subclassCachedObject -> {
             EntityImpl cachedSubclassEntity = (EntityImpl) subclassCachedObject.getEntity();
             if (entityMatcher.isRetained(null, cachedObjects, cachedSubclassEntity, parameter) && !dbSqlSession.isEntityToBeDeleted(cachedSubclassEntity)) {
               result.add(cachedSubclassEntity);
             }
-          }
+          });
         }
       }
     }

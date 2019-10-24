@@ -40,7 +40,8 @@ public class ExecuteJobCmd implements Command<Object>, Serializable {
     this.jobId = jobId;
   }
 
-  public Object execute(CommandContext commandContext) {
+  @Override
+public Object execute(CommandContext commandContext) {
 
     if (jobId == null) {
       throw new ActivitiIllegalArgumentException("jobId and job is null");
@@ -62,7 +63,7 @@ public class ExecuteJobCmd implements Command<Object>, Serializable {
       commandContext.getJobManager().execute(job);
     } catch (Throwable exception) {
       // Finally, Throw the exception to indicate the ExecuteJobCmd failed
-      throw new ActivitiException("Job " + jobId + " failed", exception);
+      throw new ActivitiException(new StringBuilder().append("Job ").append(jobId).append(" failed").toString(), exception);
     }
 
     return null;

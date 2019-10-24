@@ -80,22 +80,18 @@ public class InclusiveGatewayActivityBehavior extends GatewayActivityBehavior im
     }
 
     // If no execution can reach the gateway, the gateway activates and executes fork behavior
-    if (!oneExecutionCanReachGateway) {
-
-      logger.debug("Inclusive gateway cannot be reached by any execution and is activated");
-
-      // Kill all executions here (except the incoming)
+	if (oneExecutionCanReachGateway) {
+		return;
+	}
+	logger.debug("Inclusive gateway cannot be reached by any execution and is activated");
+	// Kill all executions here (except the incoming)
       Collection<ExecutionEntity> executionsInGateway = executionEntityManager
           .findInactiveExecutionsByActivityIdAndProcessInstanceId(execution.getCurrentActivityId(), execution.getProcessInstanceId());
-      for (ExecutionEntity executionEntityInGateway : executionsInGateway) {
-        if (!executionEntityInGateway.getId().equals(execution.getId())) {
-          commandContext.getHistoryManager().recordActivityEnd(executionEntityInGateway, null);
-          executionEntityManager.deleteExecutionAndRelatedData(executionEntityInGateway, null, false);
-        }
-      }
-
-      // Leave
+	executionsInGateway.stream().filter(executionEntityInGateway -> !executionEntityInGateway.getId().equals(execution.getId())).forEach(executionEntityInGateway -> {
+	  commandContext.getHistoryManager().recordActivityEnd(executionEntityInGateway, null);
+	  executionEntityManager.deleteExecutionAndRelatedData(executionEntityInGateway, null, false);
+	});
+	// Leave
       commandContext.getAgenda().planTakeOutgoingSequenceFlowsOperation(execution, true);
-    }
   }
 }

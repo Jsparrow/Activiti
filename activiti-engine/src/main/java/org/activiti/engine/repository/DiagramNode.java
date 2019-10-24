@@ -28,7 +28,6 @@ public class DiagramNode extends DiagramElement {
   private Double height;
 
   public DiagramNode() {
-    super();
   }
 
   public DiagramNode(String id) {
@@ -77,7 +76,8 @@ public class DiagramNode extends DiagramElement {
 
   @Override
   public String toString() {
-    return super.toString() + ", x=" + getX() + ", y=" + getY() + ", width=" + getWidth() + ", height=" + getHeight();
+    return new StringBuilder().append(super.toString()).append(", x=").append(getX()).append(", y=").append(getY()).append(", width=")
+			.append(getWidth()).append(", height=").append(getHeight()).toString();
   }
 
   @Override

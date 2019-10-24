@@ -33,7 +33,7 @@ public class BitronixDataSourceFactoryBean extends ResourceBean implements Facto
     if (ds == null) {
       ds = new PoolingDataSource();
       ds.setClassName(getClassName());
-      ds.setUniqueName(getUniqueName() + "_" + System.currentTimeMillis());
+      ds.setUniqueName(new StringBuilder().append(getUniqueName()).append("_").append(System.currentTimeMillis()).toString());
       ds.setAutomaticEnlistingEnabled(getAutomaticEnlistingEnabled());
       ds.setUseTmJoin(getUseTmJoin());
       ds.setMinPoolSize(getMinPoolSize());

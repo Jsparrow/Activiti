@@ -224,9 +224,10 @@ public class IdentityLinkEventsTest extends PluggableActivitiTestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
 
-    if (listener != null) {
-      listener.clearEventsReceived();
-      processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
-    }
+    if (listener == null) {
+		return;
+	}
+	listener.clearEventsReceived();
+	processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
   }
 }

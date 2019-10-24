@@ -48,7 +48,7 @@ public class GetTaskVariableInstanceCmd implements Command<VariableInstance>, Se
         TaskEntity task = commandContext.getTaskEntityManager().findById(taskId);
 
         if (task == null) {
-            throw new ActivitiObjectNotFoundException("task " + taskId + " doesn't exist", Task.class);
+            throw new ActivitiObjectNotFoundException(new StringBuilder().append("task ").append(taskId).append(" doesn't exist").toString(), Task.class);
         }
 
         VariableInstance variableEntity;

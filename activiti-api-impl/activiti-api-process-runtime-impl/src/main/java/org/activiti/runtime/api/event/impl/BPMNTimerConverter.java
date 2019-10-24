@@ -52,6 +52,6 @@ public class BPMNTimerConverter {
     public boolean isTimerRelatedEvent(ActivitiEvent event) {
         return event instanceof ActivitiEntityEvent &&
                 AbstractJobEntity.class.isAssignableFrom(((ActivitiEntityEvent) event).getEntity().getClass()) &&
-                ((AbstractJobEntity) ((ActivitiEntityEvent) event).getEntity()).getJobType().equals("timer");
+                "timer".equals(((AbstractJobEntity) ((ActivitiEntityEvent) event).getEntity()).getJobType());
     }
 }

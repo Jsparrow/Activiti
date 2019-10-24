@@ -32,7 +32,7 @@ public abstract class AbstractVariableQueryImpl<T extends Query<?, ?>, U> extend
 
   private static final long serialVersionUID = 1L;
 
-  protected List<QueryVariableValue> queryVariableValues = new ArrayList<QueryVariableValue>();
+  protected List<QueryVariableValue> queryVariableValues = new ArrayList<>();
 
   public AbstractVariableQueryImpl() {
   }
@@ -209,12 +209,11 @@ public abstract class AbstractVariableQueryImpl<T extends Query<?, ?>, U> extend
   }
 
   protected void ensureVariablesInitialized() {
-    if (!queryVariableValues.isEmpty()) {
-      VariableTypes variableTypes = Context.getProcessEngineConfiguration().getVariableTypes();
-      for (QueryVariableValue queryVariableValue : queryVariableValues) {
-        queryVariableValue.initialize(variableTypes);
-      }
-    }
+    if (queryVariableValues.isEmpty()) {
+		return;
+	}
+	VariableTypes variableTypes = Context.getProcessEngineConfiguration().getVariableTypes();
+	queryVariableValues.forEach(queryVariableValue -> queryVariableValue.initialize(variableTypes));
   }
 
   public List<QueryVariableValue> getQueryVariableValues() {
@@ -222,21 +221,11 @@ public abstract class AbstractVariableQueryImpl<T extends Query<?, ?>, U> extend
   }   
 
   public boolean hasLocalQueryVariableValue() {
-    for (QueryVariableValue qvv : queryVariableValues) {
-        if (qvv.isLocal()) {
-            return true;
-        }
-    }
-    return false;
+    return queryVariableValues.stream().anyMatch(QueryVariableValue::isLocal);
   }
 
   public boolean hasNonLocalQueryVariableValue() {
-    for (QueryVariableValue qvv : queryVariableValues) {
-        if (!qvv.isLocal()) {
-            return true;
-        }
-    }
-    return false;
+    return queryVariableValues.stream().anyMatch(qvv -> !qvv.isLocal());
   }
 
 }

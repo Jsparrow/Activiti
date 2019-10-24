@@ -55,26 +55,25 @@ public class ProcessDeployedEventProducer implements ApplicationListener<Applica
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        if (!WebApplicationType.NONE.equals(event.getSpringApplication().getWebApplicationType())) {
-            List<ProcessDefinition> processDefinitions = converter.from(repositoryService.createProcessDefinitionQuery().list());
-            List<ProcessDeployedEvent> processDeployedEvents = new ArrayList<>();
-            for (ProcessDefinition processDefinition : processDefinitions) {
-                try (InputStream inputStream = repositoryService.getProcessModel(processDefinition.getId())) {
-                    String xmlModel = IOUtils.toString(inputStream,
-                                                       StandardCharsets.UTF_8);
-                    ProcessDeployedEventImpl processDeployedEvent = new ProcessDeployedEventImpl(processDefinition, xmlModel);
-                    processDeployedEvents.add(processDeployedEvent);
-                    for (ProcessRuntimeEventListener<ProcessDeployedEvent> listener : listeners) {
-                        listener.onEvent(processDeployedEvent);
-                    }
-                } catch (IOException e) {
-                    throw new ActivitiException("Error occurred while getting process model '" + processDefinition.getId() + "' : ",
-                                                e);
-                }
-            }
-            if (!processDeployedEvents.isEmpty()) {
-                eventPublisher.publishEvent(new ProcessDeployedEvents(processDeployedEvents));
-            }
-        }
+        if (WebApplicationType.NONE == event.getSpringApplication().getWebApplicationType()) {
+			return;
+		}
+		List<ProcessDefinition> processDefinitions = converter.from(repositoryService.createProcessDefinitionQuery().list());
+		List<ProcessDeployedEvent> processDeployedEvents = new ArrayList<>();
+		for (ProcessDefinition processDefinition : processDefinitions) {
+		    try (InputStream inputStream = repositoryService.getProcessModel(processDefinition.getId())) {
+		        String xmlModel = IOUtils.toString(inputStream,
+		                                           StandardCharsets.UTF_8);
+		        ProcessDeployedEventImpl processDeployedEvent = new ProcessDeployedEventImpl(processDefinition, xmlModel);
+		        processDeployedEvents.add(processDeployedEvent);
+		        listeners.forEach(listener -> listener.onEvent(processDeployedEvent));
+		    } catch (IOException e) {
+		        throw new ActivitiException(new StringBuilder().append("Error occurred while getting process model '").append(processDefinition.getId()).append("' : ").toString(),
+		                                    e);
+		    }
+		}
+		if (!processDeployedEvents.isEmpty()) {
+		    eventPublisher.publishEvent(new ProcessDeployedEvents(processDeployedEvents));
+		}
     }
 }

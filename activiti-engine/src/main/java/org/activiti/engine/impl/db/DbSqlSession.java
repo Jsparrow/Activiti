@@ -80,7 +80,7 @@ public class DbSqlSession implements Session {
 
     protected static final String LAST_V5_VERSION = "5.99.0.0";
 
-    protected static final List<ActivitiVersion> ACTIVITI_VERSIONS = new ArrayList<ActivitiVersion>();
+    protected static final List<ActivitiVersion> ACTIVITI_VERSIONS = new ArrayList<>();
 
     static {
 
@@ -144,22 +144,30 @@ public class DbSqlSession implements Session {
         ACTIVITI_VERSIONS.add(new ActivitiVersion(ProcessEngine.VERSION));
     }
 
-    protected SqlSession sqlSession;
-    protected DbSqlSessionFactory dbSqlSessionFactory;
-    protected EntityCache entityCache;
+	public static String[] JDBC_METADATA_TABLE_TYPES = {"TABLE"};
 
-    protected Map<Class<? extends Entity>, Map<String, Entity>> insertedObjects
-            = new HashMap<Class<? extends Entity>, Map<String, Entity>>();
-    protected Map<Class<? extends Entity>, Map<String, Entity>> deletedObjects
-            = new HashMap<Class<? extends Entity>, Map<String, Entity>>();
-    protected Map<Class<? extends Entity>, List<BulkDeleteOperation>> bulkDeleteOperations
-            = new HashMap<Class<? extends Entity>, List<BulkDeleteOperation>>();
-    protected List<Entity> updatedObjects = new ArrayList<Entity>();
+	protected SqlSession sqlSession;
 
-    protected String connectionMetadataDefaultCatalog;
-    protected String connectionMetadataDefaultSchema;
+	protected DbSqlSessionFactory dbSqlSessionFactory;
 
-    public DbSqlSession(DbSqlSessionFactory dbSqlSessionFactory,
+	protected EntityCache entityCache;
+
+	protected Map<Class<? extends Entity>, Map<String, Entity>> insertedObjects
+            = new HashMap<>();
+
+	protected Map<Class<? extends Entity>, Map<String, Entity>> deletedObjects
+            = new HashMap<>();
+
+	protected Map<Class<? extends Entity>, List<BulkDeleteOperation>> bulkDeleteOperations
+            = new HashMap<>();
+
+	protected List<Entity> updatedObjects = new ArrayList<>();
+
+	protected String connectionMetadataDefaultCatalog;
+
+	protected String connectionMetadataDefaultSchema;
+
+	public DbSqlSession(DbSqlSessionFactory dbSqlSessionFactory,
                         EntityCache entityCache) {
         this.dbSqlSessionFactory = dbSqlSessionFactory;
         this.sqlSession = dbSqlSessionFactory.getSqlSessionFactory().openSession();
@@ -168,7 +176,7 @@ public class DbSqlSession implements Session {
         this.connectionMetadataDefaultSchema = dbSqlSessionFactory.getDatabaseSchema();
     }
 
-    public DbSqlSession(DbSqlSessionFactory dbSqlSessionFactory,
+	public DbSqlSession(DbSqlSessionFactory dbSqlSessionFactory,
                         EntityCache entityCache,
                         Connection connection,
                         String catalog,
@@ -180,7 +188,7 @@ public class DbSqlSession implements Session {
         this.connectionMetadataDefaultSchema = schema;
     }
 
-    // insert ///////////////////////////////////////////////////////////////////
+	// insert ///////////////////////////////////////////////////////////////////
 
     public void insert(Entity entity) {
         if (entity.getId() == null) {
@@ -189,10 +197,8 @@ public class DbSqlSession implements Session {
         }
 
         Class<? extends Entity> clazz = entity.getClass();
-        if (!insertedObjects.containsKey(clazz)) {
-            insertedObjects.put(clazz,
-                                new LinkedHashMap<String, Entity>()); // order of insert is important, hence LinkedHashMap
-        }
+        // order of insert is important, hence LinkedHashMap
+		insertedObjects.putIfAbsent(clazz, new LinkedHashMap<>());
 
         insertedObjects.get(clazz).put(entity.getId(),
                                        entity);
@@ -201,7 +207,7 @@ public class DbSqlSession implements Session {
         entity.setInserted(true);
     }
 
-    // update
+	// update
     // ///////////////////////////////////////////////////////////////////
 
     public void update(Entity entity) {
@@ -210,14 +216,14 @@ public class DbSqlSession implements Session {
         entity.setUpdated(true);
     }
 
-    public int update(String statement,
+	public int update(String statement,
                       Object parameters) {
         String updateStatement = dbSqlSessionFactory.mapStatement(statement);
         return getSqlSession().update(updateStatement,
                                       parameters);
     }
 
-    // delete
+	// delete
     // ///////////////////////////////////////////////////////////////////
 
     /**
@@ -228,26 +234,21 @@ public class DbSqlSession implements Session {
     public void delete(String statement,
                        Object parameter,
                        Class<? extends Entity> entityClass) {
-        if (!bulkDeleteOperations.containsKey(entityClass)) {
-            bulkDeleteOperations.put(entityClass,
-                                     new ArrayList<BulkDeleteOperation>(1));
-        }
+        bulkDeleteOperations.putIfAbsent(entityClass, new ArrayList<>(1));
         bulkDeleteOperations.get(entityClass).add(new BulkDeleteOperation(dbSqlSessionFactory.mapStatement(statement),
                                                                           parameter));
     }
 
-    public void delete(Entity entity) {
+	public void delete(Entity entity) {
         Class<? extends Entity> clazz = entity.getClass();
-        if (!deletedObjects.containsKey(clazz)) {
-            deletedObjects.put(clazz,
-                               new LinkedHashMap<String, Entity>()); // order of insert is important, hence LinkedHashMap
-        }
+        // order of insert is important, hence LinkedHashMap
+		deletedObjects.putIfAbsent(clazz, new LinkedHashMap<>());
         deletedObjects.get(clazz).put(entity.getId(),
                                       entity);
         entity.setDeleted(true);
     }
 
-    // select
+	// select
     // ///////////////////////////////////////////////////////////////////
 
     @SuppressWarnings({"rawtypes"})
@@ -258,7 +259,7 @@ public class DbSqlSession implements Session {
                           Integer.MAX_VALUE);
     }
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
     public List selectList(String statement,
                            Object parameter) {
         return selectList(statement,
@@ -267,7 +268,7 @@ public class DbSqlSession implements Session {
                           Integer.MAX_VALUE);
     }
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
     public List selectList(String statement,
                            Object parameter,
                            boolean useCache) {
@@ -278,7 +279,7 @@ public class DbSqlSession implements Session {
                           useCache);
     }
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
     public List selectList(String statement,
                            Object parameter,
                            Page page) {
@@ -288,7 +289,7 @@ public class DbSqlSession implements Session {
                           true);
     }
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
     public List selectList(String statement,
                            Object parameter,
                            Page page,
@@ -308,7 +309,7 @@ public class DbSqlSession implements Session {
         }
     }
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
     public List selectList(String statement,
                            ListQueryParameterObject parameter,
                            Page page) {
@@ -318,7 +319,7 @@ public class DbSqlSession implements Session {
                           true);
     }
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
     public List selectList(String statement,
                            ListQueryParameterObject parameter,
                            Page page,
@@ -339,7 +340,7 @@ public class DbSqlSession implements Session {
                           useCache);
     }
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
     public List selectList(String statement,
                            Object parameter,
                            int firstResult,
@@ -351,7 +352,7 @@ public class DbSqlSession implements Session {
                           true);
     }
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
     public List selectList(String statement,
                            Object parameter,
                            int firstResult,
@@ -364,7 +365,7 @@ public class DbSqlSession implements Session {
                           useCache);
     }
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
     public List selectList(String statement,
                            ListQueryParameterObject parameter) {
         return selectList(statement,
@@ -372,7 +373,7 @@ public class DbSqlSession implements Session {
                           true);
     }
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
     public List selectList(String statement,
                            ListQueryParameterObject parameter,
                            boolean useCache) {
@@ -383,7 +384,7 @@ public class DbSqlSession implements Session {
                                           useCache);
     }
 
-    @SuppressWarnings("rawtypes")
+	@SuppressWarnings("rawtypes")
     public List selectListWithRawParameter(String statement,
                                            Object parameter,
                                            int firstResult,
@@ -395,7 +396,7 @@ public class DbSqlSession implements Session {
                                           true);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings({"rawtypes", "unchecked"})
     public List selectListWithRawParameter(String statement,
                                            Object parameter,
                                            int firstResult,
@@ -415,7 +416,7 @@ public class DbSqlSession implements Session {
         }
     }
 
-    @SuppressWarnings({"rawtypes"})
+	@SuppressWarnings({"rawtypes"})
     public List selectListWithRawParameterWithoutFilter(String statement,
                                                         Object parameter,
                                                         int firstResult,
@@ -428,7 +429,7 @@ public class DbSqlSession implements Session {
                                      parameter);
     }
 
-    public Object selectOne(String statement,
+	public Object selectOne(String statement,
                             Object parameter) {
         statement = dbSqlSessionFactory.mapStatement(statement);
         Object result = sqlSession.selectOne(statement,
@@ -440,14 +441,14 @@ public class DbSqlSession implements Session {
         return result;
     }
 
-    public <T extends Entity> T selectById(Class<T> entityClass,
+	public <T extends Entity> T selectById(Class<T> entityClass,
                                            String id) {
         return selectById(entityClass,
                           id,
                           true);
     }
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
     public <T extends Entity> T selectById(Class<T> entityClass,
                                            String id,
                                            boolean useCache) {
@@ -474,7 +475,7 @@ public class DbSqlSession implements Session {
         return entity;
     }
 
-    // internal session cache
+	// internal session cache
     // ///////////////////////////////////////////////////
 
     @SuppressWarnings("rawtypes")
@@ -486,15 +487,12 @@ public class DbSqlSession implements Session {
             return loadedObjects;
         }
 
-        List<Entity> filteredObjects = new ArrayList<Entity>(loadedObjects.size());
-        for (Object loadedObject : loadedObjects) {
-            Entity cachedEntity = cacheLoadOrStore((Entity) loadedObject);
-            filteredObjects.add(cachedEntity);
-        }
+        List<Entity> filteredObjects = new ArrayList<>(loadedObjects.size());
+        loadedObjects.stream().map(loadedObject -> cacheLoadOrStore((Entity) loadedObject)).forEach(filteredObjects::add);
         return filteredObjects;
     }
 
-    /**
+	/**
      * Returns the object in the cache. If this object was loaded before, then the original object is returned (the cached version is more recent).
      * If this is the first time this object is loaded, then the loadedObject is added to the cache.
      */
@@ -509,10 +507,11 @@ public class DbSqlSession implements Session {
         return entity;
     }
 
-    // flush
+	// flush
     // ////////////////////////////////////////////////////////////////////
 
-    public void flush() {
+    @Override
+	public void flush() {
         determineUpdatedObjects(); // Needs to be done before the removeUnnecessaryOperations, as removeUnnecessaryOperations will remove stuff from the cache
         removeUnnecessaryOperations();
 
@@ -525,7 +524,7 @@ public class DbSqlSession implements Session {
         flushDeletes();
     }
 
-    /**
+	/**
      * Clears all deleted and inserted objects from the cache,
      * and removes inserts and deletes that cancel each other.
      * <p>
@@ -536,7 +535,7 @@ public class DbSqlSession implements Session {
         for (Class<? extends Entity> entityClass : deletedObjects.keySet()) {
 
             // Collect ids of deleted entities + remove duplicates
-            Set<String> ids = new HashSet<String>();
+            Set<String> ids = new HashSet<>();
             Iterator<Entity> entitiesToDeleteIterator = deletedObjects.get(entityClass).values().iterator();
             while (entitiesToDeleteIterator.hasNext()) {
                 Entity entityToDelete = entitiesToDeleteIterator.next();
@@ -548,22 +547,20 @@ public class DbSqlSession implements Session {
             }
 
             // Now we have the deleted ids, we can remove the inserted objects (as they cancel each other)
-            for (String id : ids) {
-                if (insertedObjects.containsKey(entityClass) && insertedObjects.get(entityClass).containsKey(id)) {
-                    insertedObjects.get(entityClass).remove(id);
-                    deletedObjects.get(entityClass).remove(id);
-                }
-            }
+			ids.stream().filter(id -> insertedObjects.containsKey(entityClass) && insertedObjects.get(entityClass).containsKey(id)).forEach(id -> {
+			    insertedObjects.get(entityClass).remove(id);
+			    deletedObjects.get(entityClass).remove(id);
+			});
         }
     }
 
-    public void determineUpdatedObjects() {
-        updatedObjects = new ArrayList<Entity>();
+	public void determineUpdatedObjects() {
+        updatedObjects = new ArrayList<>();
         Map<Class<?>, Map<String, CachedEntity>> cachedObjects = entityCache.getAllCachedEntities();
         for (Class<?> clazz : cachedObjects.keySet()) {
 
             Map<String, CachedEntity> classCache = cachedObjects.get(clazz);
-            for (CachedEntity cachedObject : classCache.values()) {
+            classCache.values().forEach(cachedObject -> {
 
                 Entity cachedEntity = cachedObject.getEntity();
 
@@ -577,13 +574,15 @@ public class DbSqlSession implements Session {
                         ) {
                     updatedObjects.add(cachedEntity);
                 }
-            }
+            });
         }
     }
 
-    protected void debugFlush() {
+	protected void debugFlush() {
         log.debug("Flushing dbSqlSession");
-        int nrOfInserts = 0, nrOfUpdates = 0, nrOfDeletes = 0;
+        int nrOfInserts = 0;
+		int nrOfUpdates = 0;
+		int nrOfDeletes = 0;
         for (Map<String, Entity> insertedObjectMap : insertedObjects.values()) {
             for (Entity insertedObject : insertedObjectMap.values()) {
                 log.debug("  insert {}",
@@ -618,19 +617,19 @@ public class DbSqlSession implements Session {
         log.debug("now executing flush...");
     }
 
-    public boolean isEntityInserted(Entity entity) {
+	public boolean isEntityInserted(Entity entity) {
         return insertedObjects.containsKey(entity.getClass())
                 && insertedObjects.get(entity.getClass()).containsKey(entity.getId());
     }
 
-    public boolean isEntityToBeDeleted(Entity entity) {
+	public boolean isEntityToBeDeleted(Entity entity) {
         return deletedObjects.containsKey(entity.getClass())
                 && deletedObjects.get(entity.getClass()).containsKey(entity.getId());
     }
 
-    protected void flushInserts() {
+	protected void flushInserts() {
 
-        if (insertedObjects.size() == 0) {
+        if (insertedObjects.isEmpty()) {
             return;
         }
 
@@ -654,32 +653,29 @@ public class DbSqlSession implements Session {
         insertedObjects.clear();
     }
 
-    protected void flushInsertEntities(Class<? extends Entity> entityClass,
+	protected void flushInsertEntities(Class<? extends Entity> entityClass,
                                        Collection<Entity> entitiesToInsert) {
         if (entitiesToInsert.size() == 1) {
             flushRegularInsert(entitiesToInsert.iterator().next(),
                                entityClass);
         } else if (Boolean.FALSE.equals(dbSqlSessionFactory.isBulkInsertable(entityClass))) {
-            for (Entity entity : entitiesToInsert) {
-                flushRegularInsert(entity,
-                                   entityClass);
-            }
+            entitiesToInsert.forEach(entity -> flushRegularInsert(entity, entityClass));
         } else {
             flushBulkInsert(entitiesToInsert,
                             entityClass);
         }
     }
 
-    protected Collection<Entity> orderExecutionEntities(Map<String, Entity> executionEntities,
+	protected Collection<Entity> orderExecutionEntities(Map<String, Entity> executionEntities,
                                                         boolean parentBeforeChildExecution) {
 
         // For insertion: parent executions should go before child executions
 
-        List<Entity> result = new ArrayList<Entity>(executionEntities.size());
+        List<Entity> result = new ArrayList<>(executionEntities.size());
 
         // Gather parent-child relationships
-        Map<String, String> childToParentExecutionMapping = new HashMap<String, String>();
-        Map<String, List<ExecutionEntity>> parentToChildrenMapping = new HashMap<String, List<ExecutionEntity>>();
+        Map<String, String> childToParentExecutionMapping = new HashMap<>();
+        Map<String, List<ExecutionEntity>> parentToChildrenMapping = new HashMap<>();
 
         Collection<Entity> executionCollection = executionEntities.values();
         Iterator<Entity> executionIterator = executionCollection.iterator();
@@ -692,15 +688,12 @@ public class DbSqlSession implements Session {
             childToParentExecutionMapping.put(currentExecutionEntity.getId(),
                                               parentKey);
 
-            if (!parentToChildrenMapping.containsKey(parentKey)) {
-                parentToChildrenMapping.put(parentKey,
-                                            new ArrayList<ExecutionEntity>());
-            }
+            parentToChildrenMapping.putIfAbsent(parentKey, new ArrayList<>());
             parentToChildrenMapping.get(parentKey).add(currentExecutionEntity);
         }
 
         // Loop over all entities, and insert in the correct order
-        Set<String> handledExecutionIds = new HashSet<String>(executionEntities.size());
+        Set<String> handledExecutionIds = new HashSet<>(executionEntities.size());
         executionIterator = executionCollection.iterator();
         while (executionIterator.hasNext()) {
             ExecutionEntity currentExecutionEntity = (ExecutionEntity) executionIterator.next();
@@ -743,7 +736,7 @@ public class DbSqlSession implements Session {
         return result;
     }
 
-    protected void collectChildExecutionsForInsertion(List<Entity> result,
+	protected void collectChildExecutionsForInsertion(List<Entity> result,
                                                       Map<String, List<ExecutionEntity>> parentToChildrenMapping,
                                                       Set<String> handledExecutionIds,
                                                       String parentId,
@@ -754,7 +747,7 @@ public class DbSqlSession implements Session {
             return;
         }
 
-        for (ExecutionEntity childExecutionEntity : childExecutionEntities) {
+        childExecutionEntities.forEach(childExecutionEntity -> {
             handledExecutionIds.add(childExecutionEntity.getId());
             if (parentBeforeChildExecution) {
                 result.add(childExecutionEntity);
@@ -768,16 +761,16 @@ public class DbSqlSession implements Session {
                                                handledExecutionIds,
                                                childExecutionEntity.getId(),
                                                parentBeforeChildExecution);
-        }
+        });
     }
 
-    protected void flushRegularInsert(Entity entity,
+	protected void flushRegularInsert(Entity entity,
                                       Class<? extends Entity> clazz) {
         String insertStatement = dbSqlSessionFactory.getInsertStatement(entity);
         insertStatement = dbSqlSessionFactory.mapStatement(insertStatement);
 
         if (insertStatement == null) {
-            throw new ActivitiException("no insert statement for " + entity.getClass() + " in the ibatis mapping files");
+            throw new ActivitiException(new StringBuilder().append("no insert statement for ").append(entity.getClass()).append(" in the ibatis mapping files").toString());
         }
 
         log.debug("inserting: {}",
@@ -791,20 +784,20 @@ public class DbSqlSession implements Session {
         }
     }
 
-    protected void flushBulkInsert(Collection<Entity> entities,
+	protected void flushBulkInsert(Collection<Entity> entities,
                                    Class<? extends Entity> clazz) {
         String insertStatement = dbSqlSessionFactory.getBulkInsertStatement(clazz);
         insertStatement = dbSqlSessionFactory.mapStatement(insertStatement);
 
         if (insertStatement == null) {
-            throw new ActivitiException("no insert statement for " + entities.iterator().next().getClass() + " in the ibatis mapping files");
+            throw new ActivitiException(new StringBuilder().append("no insert statement for ").append(entities.iterator().next().getClass()).append(" in the ibatis mapping files").toString());
         }
 
         Iterator<Entity> entityIterator = entities.iterator();
         Boolean hasRevision = null;
 
         while (entityIterator.hasNext()) {
-            List<Entity> subList = new ArrayList<Entity>();
+            List<Entity> subList = new ArrayList<>();
             int index = 0;
             while (entityIterator.hasNext() && index < dbSqlSessionFactory.getMaxNrOfStatementsInBulkInsert()) {
                 Entity entity = entityIterator.next();
@@ -819,28 +812,29 @@ public class DbSqlSession implements Session {
                               subList);
         }
 
-        if (hasRevision != null && hasRevision) {
-            entityIterator = entities.iterator();
-            while (entityIterator.hasNext()) {
-                incrementRevision(entityIterator.next());
-            }
-        }
+        if (!(hasRevision != null && hasRevision)) {
+			return;
+		}
+		entityIterator = entities.iterator();
+		while (entityIterator.hasNext()) {
+		    incrementRevision(entityIterator.next());
+		}
     }
 
-    protected void incrementRevision(Entity insertedObject) {
+	protected void incrementRevision(Entity insertedObject) {
         HasRevision revisionEntity = (HasRevision) insertedObject;
         if (revisionEntity.getRevision() == 0) {
             revisionEntity.setRevision(revisionEntity.getRevisionNext());
         }
     }
 
-    protected void flushUpdates() {
+	protected void flushUpdates() {
         for (Entity updatedObject : updatedObjects) {
             String updateStatement = dbSqlSessionFactory.getUpdateStatement(updatedObject);
             updateStatement = dbSqlSessionFactory.mapStatement(updateStatement);
 
             if (updateStatement == null) {
-                throw new ActivitiException("no update statement for " + updatedObject.getClass() + " in the ibatis mapping files");
+                throw new ActivitiException(new StringBuilder().append("no update statement for ").append(updatedObject.getClass()).append(" in the ibatis mapping files").toString());
             }
 
             log.debug("updating: {}",
@@ -859,9 +853,9 @@ public class DbSqlSession implements Session {
         updatedObjects.clear();
     }
 
-    protected void flushDeletes() {
+	protected void flushDeletes() {
 
-        if (deletedObjects.size() == 0 && bulkDeleteOperations.size() == 0) {
+        if (deletedObjects.isEmpty() && bulkDeleteOperations.isEmpty()) {
             return;
         }
 
@@ -887,22 +881,20 @@ public class DbSqlSession implements Session {
         deletedObjects.clear();
     }
 
-    protected void flushBulkDeletes(Class<? extends Entity> entityClass) {
+	protected void flushBulkDeletes(Class<? extends Entity> entityClass) {
         // Bulk deletes
         if (bulkDeleteOperations.containsKey(entityClass)) {
-            for (BulkDeleteOperation bulkDeleteOperation : bulkDeleteOperations.get(entityClass)) {
-                bulkDeleteOperation.execute(sqlSession);
-            }
+            bulkDeleteOperations.get(entityClass).forEach(bulkDeleteOperation -> bulkDeleteOperation.execute(sqlSession));
         }
     }
 
-    protected void flushDeleteEntities(Class<? extends Entity> entityClass,
+	protected void flushDeleteEntities(Class<? extends Entity> entityClass,
                                        Collection<Entity> entitiesToDelete) {
         for (Entity entity : entitiesToDelete) {
             String deleteStatement = dbSqlSessionFactory.getDeleteStatement(entity.getClass());
             deleteStatement = dbSqlSessionFactory.mapStatement(deleteStatement);
             if (deleteStatement == null) {
-                throw new ActivitiException("no delete statement for " + entity.getClass() + " in the ibatis mapping files");
+                throw new ActivitiException(new StringBuilder().append("no delete statement for ").append(entity.getClass()).append(" in the ibatis mapping files").toString());
             }
 
             // It only makes sense to check for optimistic locking exceptions
@@ -920,19 +912,20 @@ public class DbSqlSession implements Session {
         }
     }
 
-    public void close() {
+	@Override
+	public void close() {
         sqlSession.close();
     }
 
-    public void commit() {
+	public void commit() {
         sqlSession.commit();
     }
 
-    public void rollback() {
+	public void rollback() {
         sqlSession.rollback();
     }
 
-    // schema operations
+	// schema operations
     // ////////////////////////////////////////////////////////
 
     public void dbSchemaCheckVersion() {
@@ -974,20 +967,20 @@ public class DbSqlSession implements Session {
         log.debug("activiti db schema check successful");
     }
 
-    protected String addMissingComponent(String missingComponents,
+	protected String addMissingComponent(String missingComponents,
                                          String component) {
         if (missingComponents == null) {
             return "Tables missing for component(s) " + component;
         }
-        return missingComponents + ", " + component;
+        return new StringBuilder().append(missingComponents).append(", ").append(component).toString();
     }
 
-    protected String getDbVersion() {
+	protected String getDbVersion() {
         String selectSchemaVersionStatement = dbSqlSessionFactory.mapStatement("selectDbSchemaVersion");
         return (String) sqlSession.selectOne(selectSchemaVersionStatement);
     }
 
-    public void dbSchemaCreate() {
+	public void dbSchemaCreate() {
         if (isEngineTablePresent()) {
             String dbVersion = getDbVersion();
             if (!ProcessEngine.VERSION.equals(dbVersion)) {
@@ -1003,17 +996,17 @@ public class DbSqlSession implements Session {
         }
     }
 
-    protected void dbSchemaCreateHistory() {
+	protected void dbSchemaCreateHistory() {
         executeMandatorySchemaResource("create",
                                        "history");
     }
 
-    protected void dbSchemaCreateEngine() {
+	protected void dbSchemaCreateEngine() {
         executeMandatorySchemaResource("create",
                                        "engine");
     }
 
-    public void dbSchemaDrop() {
+	public void dbSchemaDrop() {
         executeMandatorySchemaResource("drop",
                                        "engine");
         if (dbSqlSessionFactory.isDbHistoryUsed()) {
@@ -1022,14 +1015,14 @@ public class DbSqlSession implements Session {
         }
     }
 
-    public void dbSchemaPrune() {
+	public void dbSchemaPrune() {
         if (isHistoryTablePresent() && !dbSqlSessionFactory.isDbHistoryUsed()) {
             executeMandatorySchemaResource("drop",
                                            "history");
         }
     }
 
-    public void executeMandatorySchemaResource(String operation,
+	public void executeMandatorySchemaResource(String operation,
                                                String component) {
         executeSchemaResource(operation,
                               component,
@@ -1039,9 +1032,7 @@ public class DbSqlSession implements Session {
                               false);
     }
 
-    public static String[] JDBC_METADATA_TABLE_TYPES = {"TABLE"};
-
-    public String dbSchemaUpdate() {
+	public String dbSchemaUpdate() {
 
         String feedback = null;
         boolean isUpgradeNeeded = false;
@@ -1064,7 +1055,7 @@ public class DbSqlSession implements Session {
 
             // Exception when no match was found: unknown/unsupported version
             if (matchingVersionIndex < 0) {
-                throw new ActivitiException("Could not update Activiti database schema: unknown version from database: '" + dbVersion + "'");
+                throw new ActivitiException(new StringBuilder().append("Could not update Activiti database schema: unknown version from database: '").append(dbVersion).append("'").toString());
             }
 
             isUpgradeNeeded = (matchingVersionIndex != (ACTIVITI_VERSIONS.size() - 1));
@@ -1084,13 +1075,14 @@ public class DbSqlSession implements Session {
                 }
 
                 // Set upgrade history
-                String dbHistoryValue = dbHistoryProperty.getValue() + " upgrade(" + dbVersion + "->" + ProcessEngine.VERSION + ")";
+                String dbHistoryValue = new StringBuilder().append(dbHistoryProperty.getValue()).append(" upgrade(").append(dbVersion).append("->").append(ProcessEngine.VERSION)
+						.append(")").toString();
                 dbHistoryProperty.setValue(dbHistoryValue);
 
                 // Engine upgrade
                 dbSchemaUpgrade("engine",
                                 matchingVersionIndex);
-                feedback = "upgraded Activiti from " + dbVersion + " to " + ProcessEngine.VERSION;
+                feedback = new StringBuilder().append("upgraded Activiti from ").append(dbVersion).append(" to ").append(ProcessEngine.VERSION).toString();
             }
         } else {
             dbSchemaCreateEngine();
@@ -1107,7 +1099,7 @@ public class DbSqlSession implements Session {
         return feedback;
     }
 
-    /**
+	/**
      * Returns the index in the list of {@link #ACTIVITI_VERSIONS} matching the provided string version.
      * Returns -1 if no match can be found.
      */
@@ -1124,15 +1116,15 @@ public class DbSqlSession implements Session {
         return matchingVersionIndex;
     }
 
-    public boolean isEngineTablePresent() {
+	public boolean isEngineTablePresent() {
         return isTablePresent("ACT_RU_EXECUTION");
     }
 
-    public boolean isHistoryTablePresent() {
+	public boolean isHistoryTablePresent() {
         return isTablePresent("ACT_HI_PROCINST");
     }
 
-    public boolean isTablePresent(String tableName) {
+	public boolean isTablePresent(String tableName) {
         // ACT-1610: in case the prefix IS the schema itself, we don't add the
         // prefix, since the check is already aware of the schema
         if (!dbSqlSessionFactory.isTablePrefixIsSchema()) {
@@ -1165,7 +1157,7 @@ public class DbSqlSession implements Session {
                 schema = schema.toUpperCase();
             }
 
-            if (catalog != null && catalog.length() == 0) {
+            if (catalog != null && catalog.isEmpty()) {
                 catalog = null;
             }
 
@@ -1189,7 +1181,7 @@ public class DbSqlSession implements Session {
         }
     }
 
-    protected boolean isUpgradeNeeded(String versionInDatabase) {
+	protected boolean isUpgradeNeeded(String versionInDatabase) {
         if (ProcessEngine.VERSION.equals(versionInDatabase)) {
             return false;
         }
@@ -1205,7 +1197,7 @@ public class DbSqlSession implements Session {
         int engineMinorVersion = Integer.valueOf(cleanEngineVersionSplitted[1]);
 
         if ((dbMajorVersion > engineMajorVersion) || ((dbMajorVersion <= engineMajorVersion) && (dbMinorVersion > engineMinorVersion))) {
-            throw new ActivitiException("Version of activiti database (" + versionInDatabase + ") is more recent than the engine (" + ProcessEngine.VERSION + ")");
+            throw new ActivitiException(new StringBuilder().append("Version of activiti database (").append(versionInDatabase).append(") is more recent than the engine (").append(ProcessEngine.VERSION).append(")").toString());
         } else if (cleanDbVersion.compareTo(cleanEngineVersion) == 0) {
             // Versions don't match exactly, possibly snapshot is being used
             log.warn("Engine-version is the same, but not an exact match: {} vs. {}. Not performing database-upgrade.",
@@ -1216,7 +1208,7 @@ public class DbSqlSession implements Session {
         return true;
     }
 
-    protected String getCleanVersion(String versionString) {
+	protected String getCleanVersion(String versionString) {
         Matcher matcher = CLEAN_VERSION_REGEX.matcher(versionString);
         if (!matcher.find()) {
             throw new ActivitiException("Illegal format for version: " + versionString);
@@ -1228,15 +1220,16 @@ public class DbSqlSession implements Session {
             // really a number
             return cleanString;
         } catch (NumberFormatException nfe) {
-            throw new ActivitiException("Illegal format for version: " + versionString);
+            log.error(nfe.getMessage(), nfe);
+			throw new ActivitiException("Illegal format for version: " + versionString);
         }
     }
 
-    protected String prependDatabaseTablePrefix(String tableName) {
+	protected String prependDatabaseTablePrefix(String tableName) {
         return dbSqlSessionFactory.getDatabaseTablePrefix() + tableName;
     }
 
-    protected void dbSchemaUpgrade(final String component,
+	protected void dbSchemaUpgrade(final String component,
                                    final int currentDatabaseVersionsIndex) {
         ActivitiVersion activitiVersion = ACTIVITI_VERSIONS.get(currentDatabaseVersionsIndex);
         String dbVersion = activitiVersion.getMainVersion();
@@ -1266,21 +1259,23 @@ public class DbSqlSession implements Session {
             executeSchemaResource("upgrade",
                                   component,
                                   getResourceForDbOperation("upgrade",
-                                                            "upgradestep." + dbVersion + ".to." + nextVersion,
+                                                            new StringBuilder().append("upgradestep.").append(dbVersion).append(".to.")
+																	.append(nextVersion).toString(),
                                                             component),
                                   true);
             dbVersion = nextVersion;
         }
     }
 
-    public String getResourceForDbOperation(String directory,
+	public String getResourceForDbOperation(String directory,
                                             String operation,
                                             String component) {
         String databaseType = dbSqlSessionFactory.getDatabaseType();
-        return "org/activiti/db/" + directory + "/activiti." + databaseType + "." + operation + "." + component + ".sql";
+        return new StringBuilder().append("org/activiti/db/").append(directory).append("/activiti.").append(databaseType).append(".").append(operation).append(".")
+				.append(component).append(".sql").toString();
     }
 
-    public void executeSchemaResource(String operation,
+	public void executeSchemaResource(String operation,
                                       String component,
                                       String resourceName,
                                       boolean isOptional) {
@@ -1293,7 +1288,7 @@ public class DbSqlSession implements Session {
                              resourceName,
                              operation);
                 } else {
-                    throw new ActivitiException("resource '" + resourceName + "' is not available");
+                    throw new ActivitiException(new StringBuilder().append("resource '").append(resourceName).append("' is not available").toString());
                 }
             } else {
                 executeSchemaResource(operation,
@@ -1306,7 +1301,7 @@ public class DbSqlSession implements Session {
         }
     }
 
-    private void executeSchemaResource(String operation,
+	private void executeSchemaResource(String operation,
                                        String component,
                                        String resourceName,
                                        InputStream inputStream) {
@@ -1329,7 +1324,7 @@ public class DbSqlSession implements Session {
                     DatabaseMetaData databaseMetaData = connection.getMetaData();
                     int majorVersion = databaseMetaData.getDatabaseMajorVersion();
                     int minorVersion = databaseMetaData.getDatabaseMinorVersion();
-                    log.info("Found MySQL: majorVersion=" + majorVersion + " minorVersion=" + minorVersion);
+                    log.info(new StringBuilder().append("Found MySQL: majorVersion=").append(majorVersion).append(" minorVersion=").append(minorVersion).toString());
 
                     // Special care for MySQL < 5.6
                     if (majorVersion <= 5 && minorVersion < 6) {
@@ -1355,7 +1350,7 @@ public class DbSqlSession implements Session {
                     try {
                         dbUpgradeStep = (DbUpgradeStep) ReflectUtil.instantiate(upgradestepClassName);
                     } catch (ActivitiException e) {
-                        throw new ActivitiException("database update java class '" + upgradestepClassName + "' can't be instantiated: " + e.getMessage(),
+                        throw new ActivitiException(new StringBuilder().append("database update java class '").append(upgradestepClassName).append("' can't be instantiated: ").append(e.getMessage()).toString(),
                                                     e);
                     }
                     try {
@@ -1363,7 +1358,7 @@ public class DbSqlSession implements Session {
                                   upgradestepClassName);
                         dbUpgradeStep.execute(this);
                     } catch (Exception e) {
-                        throw new ActivitiException("error while executing database update java class '" + upgradestepClassName + "': " + e.getMessage(),
+                        throw new ActivitiException(new StringBuilder().append("error while executing database update java class '").append(upgradestepClassName).append("': ").append(e.getMessage()).toString(),
                                                     e);
                     }
                 } else if (line.length() > 0) {
@@ -1418,12 +1413,12 @@ public class DbSqlSession implements Session {
                       operation,
                       component);
         } catch (Exception e) {
-            throw new ActivitiException("couldn't " + operation + " db schema: " + exceptionSqlStatement,
+            throw new ActivitiException(new StringBuilder().append("couldn't ").append(operation).append(" db schema: ").append(exceptionSqlStatement).toString(),
                                         e);
         }
     }
 
-    /**
+	/**
      * MySQL is funny when it comes to timestamps and dates.
      * <p>
      * More specifically, for a DDL statement like 'MYCOLUMN timestamp(3)': - MySQL 5.6.4+ has support for timestamps/dates with millisecond (or smaller) precision. The DDL above works and the data in
@@ -1445,15 +1440,15 @@ public class DbSqlSession implements Session {
                                                                                                    "DATETIME");
     }
 
-    protected String addSqlStatementPiece(String sqlStatement,
+	protected String addSqlStatementPiece(String sqlStatement,
                                           String line) {
         if (sqlStatement == null) {
             return line;
         }
-        return sqlStatement + " \n" + line;
+        return new StringBuilder().append(sqlStatement).append(" \n").append(line).toString();
     }
 
-    protected String readNextTrimmedLine(BufferedReader reader) throws IOException {
+	protected String readNextTrimmedLine(BufferedReader reader) throws IOException {
         String line = reader.readLine();
         if (line != null) {
             line = line.trim();
@@ -1461,34 +1456,35 @@ public class DbSqlSession implements Session {
         return line;
     }
 
-    protected boolean isMissingTablesException(Exception e) {
+	protected boolean isMissingTablesException(Exception e) {
         String exceptionMessage = e.getMessage();
         if (e.getMessage() != null) {
             // Matches message returned from H2
-            if ((exceptionMessage.indexOf("Table") != -1) && (exceptionMessage.indexOf("not found") != -1)) {
+            if ((exceptionMessage.contains("Table")) && (exceptionMessage.contains("not found"))) {
                 return true;
             }
 
             // Message returned from MySQL and Oracle
-            if (((exceptionMessage.indexOf("Table") != -1 || exceptionMessage.indexOf("table") != -1)) && (exceptionMessage.indexOf("doesn't exist") != -1)) {
+            if (((exceptionMessage.contains("Table") || exceptionMessage.contains("table"))) && (exceptionMessage.contains("doesn't exist"))) {
                 return true;
             }
 
             // Message returned from Postgres
-            if (((exceptionMessage.indexOf("relation") != -1 || exceptionMessage.indexOf("table") != -1)) && (exceptionMessage.indexOf("does not exist") != -1)) {
+            if (((exceptionMessage.contains("relation") || exceptionMessage.contains("table"))) && (exceptionMessage.contains("does not exist"))) {
                 return true;
             }
         }
         return false;
     }
 
-    public void performSchemaOperationsProcessEngineBuild() {
+	public void performSchemaOperationsProcessEngineBuild() {
         String databaseSchemaUpdate = Context.getProcessEngineConfiguration().getDatabaseSchemaUpdate();
         log.debug("Executing performSchemaOperationsProcessEngineBuild with setting " + databaseSchemaUpdate);
         if (ProcessEngineConfigurationImpl.DB_SCHEMA_UPDATE_DROP_CREATE.equals(databaseSchemaUpdate)) {
             try {
                 dbSchemaDrop();
             } catch (RuntimeException e) {
+				log.error(e.getMessage(), e);
                 // ignore
             }
         }
@@ -1502,84 +1498,84 @@ public class DbSqlSession implements Session {
         }
     }
 
-    public void performSchemaOperationsProcessEngineClose() {
+	public void performSchemaOperationsProcessEngineClose() {
         String databaseSchemaUpdate = Context.getProcessEngineConfiguration().getDatabaseSchemaUpdate();
         if (org.activiti.engine.ProcessEngineConfiguration.DB_SCHEMA_UPDATE_CREATE_DROP.equals(databaseSchemaUpdate)) {
             dbSchemaDrop();
         }
     }
 
-    public <T> T getCustomMapper(Class<T> type) {
+	public <T> T getCustomMapper(Class<T> type) {
         return sqlSession.getMapper(type);
     }
 
-    public boolean isMysql() {
-        return dbSqlSessionFactory.getDatabaseType().equals("mysql");
+	public boolean isMysql() {
+        return "mysql".equals(dbSqlSessionFactory.getDatabaseType());
     }
 
-    public boolean isOracle() {
-        return dbSqlSessionFactory.getDatabaseType().equals("oracle");
+	public boolean isOracle() {
+        return "oracle".equals(dbSqlSessionFactory.getDatabaseType());
     }
 
-    // query factory methods
+	// query factory methods
     // ////////////////////////////////////////////////////
 
     public DeploymentQueryImpl createDeploymentQuery() {
         return new DeploymentQueryImpl();
     }
 
-    public ModelQueryImpl createModelQueryImpl() {
+	public ModelQueryImpl createModelQueryImpl() {
         return new ModelQueryImpl();
     }
 
-    public ProcessDefinitionQueryImpl createProcessDefinitionQuery() {
+	public ProcessDefinitionQueryImpl createProcessDefinitionQuery() {
         return new ProcessDefinitionQueryImpl();
     }
 
-    public ProcessInstanceQueryImpl createProcessInstanceQuery() {
+	public ProcessInstanceQueryImpl createProcessInstanceQuery() {
         return new ProcessInstanceQueryImpl();
     }
 
-    public ExecutionQueryImpl createExecutionQuery() {
+	public ExecutionQueryImpl createExecutionQuery() {
         return new ExecutionQueryImpl();
     }
 
-    public TaskQueryImpl createTaskQuery() {
+	public TaskQueryImpl createTaskQuery() {
         return new TaskQueryImpl();
     }
 
-    public JobQueryImpl createJobQuery() {
+	public JobQueryImpl createJobQuery() {
         return new JobQueryImpl();
     }
 
-    public HistoricProcessInstanceQueryImpl createHistoricProcessInstanceQuery() {
+	public HistoricProcessInstanceQueryImpl createHistoricProcessInstanceQuery() {
         return new HistoricProcessInstanceQueryImpl();
     }
 
-    public HistoricActivityInstanceQueryImpl createHistoricActivityInstanceQuery() {
+	public HistoricActivityInstanceQueryImpl createHistoricActivityInstanceQuery() {
         return new HistoricActivityInstanceQueryImpl();
     }
 
-    public HistoricTaskInstanceQueryImpl createHistoricTaskInstanceQuery() {
+	public HistoricTaskInstanceQueryImpl createHistoricTaskInstanceQuery() {
         return new HistoricTaskInstanceQueryImpl();
     }
 
-    public HistoricDetailQueryImpl createHistoricDetailQuery() {
+	public HistoricDetailQueryImpl createHistoricDetailQuery() {
         return new HistoricDetailQueryImpl();
     }
 
-    public HistoricVariableInstanceQueryImpl createHistoricVariableInstanceQuery() {
+	public HistoricVariableInstanceQueryImpl createHistoricVariableInstanceQuery() {
         return new HistoricVariableInstanceQueryImpl();
     }
 
-    // getters and setters
+	// getters and setters
     // //////////////////////////////////////////////////////
 
     public SqlSession getSqlSession() {
         return sqlSession;
     }
 
-    public DbSqlSessionFactory getDbSqlSessionFactory() {
+	public DbSqlSessionFactory getDbSqlSessionFactory() {
         return dbSqlSessionFactory;
     }
 }

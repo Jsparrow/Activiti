@@ -47,47 +47,40 @@ public class TimerManager {
     }
 
     if (jobsToDelete != null) {
-      for (TimerJobEntity job :jobsToDelete) {
-        new CancelJobsCmd(job.getId()).execute(Context.getCommandContext());
-      }
+      jobsToDelete.forEach(job -> new CancelJobsCmd(job.getId()).execute(Context.getCommandContext()));
     }
   }
   
   protected void scheduleTimers(ProcessDefinitionEntity processDefinition, Process process) {
     JobManager jobManager = Context.getCommandContext().getJobManager();
     List<TimerJobEntity> timers = getTimerDeclarations(processDefinition, process);
-    for (TimerJobEntity timer : timers) {
-      jobManager.scheduleTimerJob(timer);
-    }
+    timers.forEach(jobManager::scheduleTimerJob);
   }
   
   protected List<TimerJobEntity> getTimerDeclarations(ProcessDefinitionEntity processDefinition, Process process) {
     JobManager jobManager = Context.getCommandContext().getJobManager();
-    List<TimerJobEntity> timers = new ArrayList<TimerJobEntity>();
+    List<TimerJobEntity> timers = new ArrayList<>();
     if (CollectionUtil.isNotEmpty(process.getFlowElements())) {
-      for (FlowElement element : process.getFlowElements()) {
-        if (element instanceof StartEvent) {
-          StartEvent startEvent = (StartEvent) element;
-          if (CollectionUtil.isNotEmpty(startEvent.getEventDefinitions())) {
-            EventDefinition eventDefinition = startEvent.getEventDefinitions().get(0);
-            if (eventDefinition instanceof TimerEventDefinition) {
-              TimerEventDefinition timerEventDefinition = (TimerEventDefinition) eventDefinition;
-              TimerJobEntity timerJob = jobManager.createTimerJob(timerEventDefinition, false, null, TimerStartEventJobHandler.TYPE,
-                  TimerEventHandler.createConfiguration(startEvent.getId(), timerEventDefinition.getEndDate(), timerEventDefinition.getCalendarName()));
+      process.getFlowElements().stream().filter(element -> element instanceof StartEvent).map(element -> (StartEvent) element).forEach(startEvent -> {
+		if (CollectionUtil.isNotEmpty(startEvent.getEventDefinitions())) {
+		    EventDefinition eventDefinition = startEvent.getEventDefinitions().get(0);
+		    if (eventDefinition instanceof TimerEventDefinition) {
+		      TimerEventDefinition timerEventDefinition = (TimerEventDefinition) eventDefinition;
+		      TimerJobEntity timerJob = jobManager.createTimerJob(timerEventDefinition, false, null, TimerStartEventJobHandler.TYPE,
+		          TimerEventHandler.createConfiguration(startEvent.getId(), timerEventDefinition.getEndDate(), timerEventDefinition.getCalendarName()));
 
-              if (timerJob != null) {
-                timerJob.setProcessDefinitionId(processDefinition.getId());
+		      if (timerJob != null) {
+		        timerJob.setProcessDefinitionId(processDefinition.getId());
 
-                if (processDefinition.getTenantId() != null) {
-                  timerJob.setTenantId(processDefinition.getTenantId());
-                }
-                timers.add(timerJob);
-              }
+		        if (processDefinition.getTenantId() != null) {
+		          timerJob.setTenantId(processDefinition.getTenantId());
+		        }
+		        timers.add(timerJob);
+		      }
 
-            }
-          }
-        }
-      }
+		    }
+		  }
+	});
     }
 
     return timers;

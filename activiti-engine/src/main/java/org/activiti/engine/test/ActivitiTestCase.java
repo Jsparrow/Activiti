@@ -76,11 +76,12 @@ public abstract class ActivitiTestCase extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
-    if (processEngine == null) {
-      initializeProcessEngine();
-      initializeServices();
-      initializeMockSupport();
-    }
+    if (processEngine != null) {
+		return;
+	}
+	initializeProcessEngine();
+	initializeServices();
+	initializeMockSupport();
 
   }
 

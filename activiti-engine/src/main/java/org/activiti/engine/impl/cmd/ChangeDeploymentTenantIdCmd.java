@@ -39,7 +39,8 @@ public class ChangeDeploymentTenantIdCmd implements Command<Void>, Serializable 
     this.newTenantId = newTenantId;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     if (deploymentId == null) {
       throw new ActivitiIllegalArgumentException("deploymentId is null");
     }
@@ -67,9 +68,7 @@ public class ChangeDeploymentTenantIdCmd implements Command<Void>, Serializable 
 
     // Doing process definitions in memory, cause we need to clear the process definition cache
     List<ProcessDefinition> processDefinitions = new ProcessDefinitionQueryImpl().deploymentId(deploymentId).list();
-    for (ProcessDefinition processDefinition : processDefinitions) {
-      commandContext.getProcessEngineConfiguration().getProcessDefinitionCache().remove(processDefinition.getId());
-    }
+    processDefinitions.forEach(processDefinition -> commandContext.getProcessEngineConfiguration().getProcessDefinitionCache().remove(processDefinition.getId()));
 
     // Clear process definition cache
     commandContext.getProcessEngineConfiguration().getProcessDefinitionCache().clear();

@@ -25,7 +25,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class StartEventXMLConverter extends BaseBpmnXMLConverter {
 
-    public Class<? extends BaseElement> getBpmnElementType() {
+    @Override
+	public Class<? extends BaseElement> getBpmnElementType() {
         return StartEvent.class;
     }
 

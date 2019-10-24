@@ -25,15 +25,18 @@ import org.apache.commons.lang3.StringUtils;
 
 public class FormPropertyParser extends BaseChildElementParser {
 
-    public String getElementName() {
+    @Override
+	public String getElementName() {
         return ELEMENT_FORMPROPERTY;
     }
 
-    public boolean accepts(BaseElement element) {
+    @Override
+	public boolean accepts(BaseElement element) {
         return ((element instanceof UserTask) || (element instanceof StartEvent));
     }
 
-    public void parseChildElement(XMLStreamReader xtr,
+    @Override
+	public void parseChildElement(XMLStreamReader xtr,
                                   BaseElement parentElement,
                                   BpmnModel model) throws Exception {
 

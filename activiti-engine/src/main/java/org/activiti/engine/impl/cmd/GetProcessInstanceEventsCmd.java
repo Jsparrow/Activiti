@@ -32,7 +32,8 @@ public class GetProcessInstanceEventsCmd implements Command<List<Event>>, Serial
     this.processInstanceId = processInstanceId;
   }
 
-  public List<Event> execute(CommandContext commandContext) {
+  @Override
+public List<Event> execute(CommandContext commandContext) {
     return commandContext.getCommentEntityManager().findEventsByProcessInstanceId(processInstanceId);
   }
 }

@@ -26,7 +26,8 @@ public class JsonMessagePayloadMappingProvider implements MessagePayloadMappingP
         this.variablesMappingProvider = variablesMappingProvider;
     }
     
-    public Optional<Map<String, Object>> getMessagePayload(DelegateExecution execution) {
+    @Override
+	public Optional<Map<String, Object>> getMessagePayload(DelegateExecution execution) {
         return Optional.of(variablesMappingProvider.calculateInputVariables(execution))
                        .filter(payload -> !payload.isEmpty());
     }

@@ -30,10 +30,12 @@ public class PotentialStarterParser implements BpmnXMLConstants {
 
   public void parse(XMLStreamReader xtr, Process activeProcess) throws Exception {
     String resourceElement = XMLStreamReaderUtil.moveDown(xtr);
-    if (StringUtils.isNotEmpty(resourceElement) && "resourceAssignmentExpression".equals(resourceElement)) {
-      String expression = XMLStreamReaderUtil.moveDown(xtr);
-      if (StringUtils.isNotEmpty(expression) && "formalExpression".equals(expression)) {
-        List<String> assignmentList = new ArrayList<String>();
+    if (!(StringUtils.isNotEmpty(resourceElement) && "resourceAssignmentExpression".equals(resourceElement))) {
+		return;
+	}
+	String expression = XMLStreamReaderUtil.moveDown(xtr);
+	if (StringUtils.isNotEmpty(expression) && "formalExpression".equals(expression)) {
+        List<String> assignmentList = new ArrayList<>();
         String assignmentText = xtr.getElementText();
         if (assignmentText.contains(",")) {
           String[] assignmentArray = assignmentText.split(",");
@@ -42,11 +44,13 @@ public class PotentialStarterParser implements BpmnXMLConstants {
           assignmentList.add(assignmentText);
         }
         for (String assignmentValue : assignmentList) {
-          if (assignmentValue == null)
-            continue;
+          if (assignmentValue == null) {
+			continue;
+		}
           assignmentValue = assignmentValue.trim();
-          if (assignmentValue.length() == 0)
-            continue;
+          if (assignmentValue.isEmpty()) {
+			continue;
+		}
 
           String userPrefix = "user(";
           String groupPrefix = "group(";
@@ -61,6 +65,5 @@ public class PotentialStarterParser implements BpmnXMLConstants {
           }
         }
       }
-    }
   }
 }

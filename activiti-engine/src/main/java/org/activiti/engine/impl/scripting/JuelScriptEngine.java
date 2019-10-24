@@ -49,6 +49,8 @@ import org.activiti.engine.impl.el.JsonNodeELResolver;
 import org.activiti.engine.impl.util.ReflectUtil;
 
 import de.odysseus.el.util.SimpleResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ScriptEngine that used JUEL for script evaluation and compilation (JSR-223).
@@ -59,7 +61,8 @@ import de.odysseus.el.util.SimpleResolver;
  */
 public class JuelScriptEngine extends AbstractScriptEngine implements Compilable {
 
-  private ScriptEngineFactory scriptEngineFactory;
+  private static final Logger logger = LoggerFactory.getLogger(JuelScriptEngine.class);
+private ScriptEngineFactory scriptEngineFactory;
   private ExpressionFactory expressionFactory;
 
   public JuelScriptEngine(ScriptEngineFactory scriptEngineFactory) {
@@ -72,26 +75,31 @@ public class JuelScriptEngine extends AbstractScriptEngine implements Compilable
     this(null);
   }
 
-  public CompiledScript compile(String script) throws ScriptException {
+  @Override
+public CompiledScript compile(String script) throws ScriptException {
     ValueExpression expr = parse(script, context);
     return new JuelCompiledScript(expr);
   }
 
-  public CompiledScript compile(Reader reader) throws ScriptException {
+  @Override
+public CompiledScript compile(Reader reader) throws ScriptException {
     // Create a String based on the reader and compile it
     return compile(readFully(reader));
   }
 
-  public Object eval(String script, ScriptContext scriptContext) throws ScriptException {
+  @Override
+public Object eval(String script, ScriptContext scriptContext) throws ScriptException {
     ValueExpression expr = parse(script, scriptContext);
     return evaluateExpression(expr, scriptContext);
   }
 
-  public Object eval(Reader reader, ScriptContext scriptContext) throws ScriptException {
+  @Override
+public Object eval(Reader reader, ScriptContext scriptContext) throws ScriptException {
     return eval(readFully(reader), scriptContext);
   }
 
-  public ScriptEngineFactory getFactory() {
+  @Override
+public ScriptEngineFactory getFactory() {
     synchronized (this) {
       if (scriptEngineFactory == null) {
         scriptEngineFactory = new JuelScriptEngineFactory();
@@ -100,7 +108,8 @@ public class JuelScriptEngine extends AbstractScriptEngine implements Compilable
     return scriptEngineFactory;
   }
 
-  public Bindings createBindings() {
+  @Override
+public Bindings createBindings() {
     return new SimpleBindings();
   }
 
@@ -193,20 +202,22 @@ public class JuelScriptEngine extends AbstractScriptEngine implements Compilable
     try {
       return JuelScriptEngine.class.getMethod("print", new Class[] { Object.class });
     } catch (Exception exp) {
-      // Will never occur
+      logger.error(exp.getMessage(), exp);
+	// Will never occur
       return null;
     }
   }
 
   public static void print(Object object) {
-    System.out.print(object);
+    logger.info(String.valueOf(object));
   }
 
   private static Method getImportMethod() {
     try {
       return JuelScriptEngine.class.getMethod("importFunctions", new Class[] { ScriptContext.class, String.class, Object.class });
     } catch (Exception exp) {
-      // Will never occur
+      logger.error(exp.getMessage(), exp);
+	// Will never occur
       return null;
     }
   }
@@ -228,7 +239,7 @@ public class JuelScriptEngine extends AbstractScriptEngine implements Compilable
     for (Method m : methods) {
       int mod = m.getModifiers();
       if (Modifier.isStatic(mod) && Modifier.isPublic(mod)) {
-        String name = namespace + ":" + m.getName();
+        String name = new StringBuilder().append(namespace).append(":").append(m.getName()).toString();
         ctx.setAttribute(name, m, ScriptContext.ENGINE_SCOPE);
       }
     }
@@ -247,12 +258,14 @@ public class JuelScriptEngine extends AbstractScriptEngine implements Compilable
       this.valueExpression = valueExpression;
     }
 
-    public ScriptEngine getEngine() {
+    @Override
+	public ScriptEngine getEngine() {
       // Return outer class instance
       return JuelScriptEngine.this;
     }
 
-    public Object eval(ScriptContext ctx) throws ScriptException {
+    @Override
+	public Object eval(ScriptContext ctx) throws ScriptException {
       return evaluateExpression(valueExpression, ctx);
     }
   }
@@ -308,7 +321,7 @@ public class JuelScriptEngine extends AbstractScriptEngine implements Compilable
     }
 
     private String getFullFunctionName(String prefix, String localName) {
-      return prefix + ":" + localName;
+      return new StringBuilder().append(prefix).append(":").append(localName).toString();
     }
 
     @Override

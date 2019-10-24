@@ -34,25 +34,21 @@ public class ExecutionGraphUtil {
    * Takes in a collection of executions belonging to the same process instance. Orders the executions in a list, first elements are the leaf, last element is the root elements.
    */
   public static List<ExecutionEntity> orderFromRootToLeaf(Collection<ExecutionEntity> executions) {
-    List<ExecutionEntity> orderedList = new ArrayList<ExecutionEntity>(executions.size());
+    List<ExecutionEntity> orderedList = new ArrayList<>(executions.size());
 
     // Root elements
-    HashSet<String> previousIds = new HashSet<String>();
-    for (ExecutionEntity execution : executions) {
-      if (execution.getParentId() == null) {
+    HashSet<String> previousIds = new HashSet<>();
+    executions.stream().filter(execution -> execution.getParentId() == null).forEach(execution -> {
         orderedList.add(execution);
         previousIds.add(execution.getId());
-      }
-    }
+      });
 
     // Non-root elements
     while (orderedList.size() < executions.size()) {
-      for (ExecutionEntity execution : executions) {
-        if (!previousIds.contains(execution.getId()) && previousIds.contains(execution.getParentId())) {
-          orderedList.add(execution);
-          previousIds.add(execution.getId());
-        }
-      }
+      executions.stream().filter(execution -> !previousIds.contains(execution.getId()) && previousIds.contains(execution.getParentId())).forEach(execution -> {
+	  orderedList.add(execution);
+	  previousIds.add(execution.getId());
+	});
     }
 
     return orderedList;
@@ -89,13 +85,13 @@ public class ExecutionGraphUtil {
     }
 
     if (sourceElement == null) {
-      throw new ActivitiException("Invalid sourceElementId '" + sourceElementId + "': no element found for this id n process definition '" + processDefinitionId + "'");
+      throw new ActivitiException(new StringBuilder().append("Invalid sourceElementId '").append(sourceElementId).append("': no element found for this id n process definition '").append(processDefinitionId).append("'").toString());
     }
     if (targetElement == null) {
-      throw new ActivitiException("Invalid targetElementId '" + targetElementId + "': no element found for this id n process definition '" + processDefinitionId + "'");
+      throw new ActivitiException(new StringBuilder().append("Invalid targetElementId '").append(targetElementId).append("': no element found for this id n process definition '").append(processDefinitionId).append("'").toString());
     }
 
-    Set<String> visitedElements = new HashSet<String>();
+    Set<String> visitedElements = new HashSet<>();
     return isReachable(process, sourceElement, targetElement, visitedElements);
   }
 

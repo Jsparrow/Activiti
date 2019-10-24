@@ -41,11 +41,7 @@ public class MessageReceivedListenerDelegate implements ActivitiEventListener {
     public void onEvent(ActivitiEvent event) {
         if (event instanceof ActivitiMessageEvent) {
             converter.from((ActivitiMessageEvent) event)
-                    .ifPresent(convertedEvent -> {
-                        for (BPMNElementEventListener<BPMNMessageReceivedEvent> listener : processRuntimeEventListeners) {
-                            listener.onEvent(convertedEvent);
-                        }
-                    });
+                    .ifPresent(convertedEvent -> processRuntimeEventListeners.forEach(listener -> listener.onEvent(convertedEvent)));
         }
     }
 

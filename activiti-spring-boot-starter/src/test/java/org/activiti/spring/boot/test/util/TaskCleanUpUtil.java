@@ -22,14 +22,7 @@ public class TaskCleanUpUtil {
         securityUtil.logInAs("admin");
         Page<Task> tasks = taskAdminRuntime.tasks(Pageable.of(0,
                 50));
-        for (Task task : tasks.getContent()) {
-            if (task.getProcessInstanceId() == null) {
-                taskAdminRuntime.delete(TaskPayloadBuilder
-                                                .delete()
-                                                .withTaskId(task.getId())
-                                                .withReason("test clean up")
-                                                .build());
-            }
-        }
+        tasks.getContent().stream().filter(task -> task.getProcessInstanceId() == null).forEach(task -> taskAdminRuntime
+				.delete(TaskPayloadBuilder.delete().withTaskId(task.getId()).withReason("test clean up").build()));
     }
 }

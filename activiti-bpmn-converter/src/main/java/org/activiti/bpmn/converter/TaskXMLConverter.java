@@ -26,7 +26,8 @@ import org.activiti.bpmn.model.Task;
  */
 public class TaskXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return Task.class;
   }
 

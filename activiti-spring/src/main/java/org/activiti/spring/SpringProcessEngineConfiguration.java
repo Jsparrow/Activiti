@@ -101,7 +101,7 @@ public class SpringProcessEngineConfiguration extends ProcessEngineConfiguration
   @Override
   public CommandInterceptor createTransactionInterceptor() {
     if (transactionManager == null) {
-      throw new ActivitiException("transactionManager is required property for SpringProcessEngineConfiguration, use " + StandaloneProcessEngineConfiguration.class.getName() + " otherwise");
+      throw new ActivitiException(new StringBuilder().append("transactionManager is required property for SpringProcessEngineConfiguration, use ").append(StandaloneProcessEngineConfiguration.class.getName()).append(" otherwise").toString());
     }
 
     return new SpringTransactionInterceptor(transactionManager);
@@ -123,10 +123,11 @@ public class SpringProcessEngineConfiguration extends ProcessEngineConfiguration
   }
 
   protected void autoDeployResources(ProcessEngine processEngine) {
-    if (deploymentResources != null && deploymentResources.length > 0) {
-      final AutoDeploymentStrategy strategy = getAutoDeploymentStrategy(deploymentMode);
-      strategy.deployResources(deploymentName, deploymentResources, processEngine.getRepositoryService());
-    }
+    if (!(deploymentResources != null && deploymentResources.length > 0)) {
+		return;
+	}
+	final AutoDeploymentStrategy strategy = getAutoDeploymentStrategy(deploymentMode);
+	strategy.deployResources(deploymentName, deploymentResources, processEngine.getRepositoryService());
   }
 
   @Override
@@ -169,7 +170,7 @@ public class SpringProcessEngineConfiguration extends ProcessEngineConfiguration
   }
 
   @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+  public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
   }
 
@@ -190,13 +191,7 @@ public class SpringProcessEngineConfiguration extends ProcessEngineConfiguration
    * @return the deployment strategy to use for the mode. Never <code>null</code>
    */
   protected AutoDeploymentStrategy getAutoDeploymentStrategy(final String mode) {
-      AutoDeploymentStrategy result = defaultAutoDeploymentStrategy;
-      for (final AutoDeploymentStrategy strategy : deploymentStrategies) {
-          if (strategy.handlesMode(mode)) {
-              result = strategy;
-              break;
-          }
-      }
+      AutoDeploymentStrategy result = deploymentStrategies.stream().filter(strategy -> strategy.handlesMode(mode)).findFirst().orElse(defaultAutoDeploymentStrategy);
       return result;
   }
 

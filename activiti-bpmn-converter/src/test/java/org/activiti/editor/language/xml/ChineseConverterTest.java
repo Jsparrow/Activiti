@@ -18,7 +18,8 @@ public class ChineseConverterTest extends AbstractConverterTest {
     deployProcess(parsedModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "chinese.bpmn";
   }
 }

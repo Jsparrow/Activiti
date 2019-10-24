@@ -45,11 +45,13 @@ public class CallActivityJsonConverter extends BaseBpmnJsonConverter {
     convertersToJsonMap.put(CallActivity.class, CallActivityJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     return STENCIL_CALL_ACTIVITY;
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
     CallActivity callActivity = (CallActivity) baseElement;
     if (StringUtils.isNotEmpty(callActivity.getCalledElement())) {
       propertiesNode.put(PROPERTY_CALLACTIVITY_CALLEDELEMENT, callActivity.getCalledElement());
@@ -62,7 +64,7 @@ public class CallActivityJsonConverter extends BaseBpmnJsonConverter {
   private void addJsonParameters(String propertyName, String valueName, List<IOParameter> parameterList, ObjectNode propertiesNode) {
     ObjectNode parametersNode = objectMapper.createObjectNode();
     ArrayNode itemsNode = objectMapper.createArrayNode();
-    for (IOParameter parameter : parameterList) {
+    parameterList.forEach(parameter -> {
       ObjectNode parameterItemNode = objectMapper.createObjectNode();
       if (StringUtils.isNotEmpty(parameter.getSource())) {
         parameterItemNode.put(PROPERTY_IOPARAMETER_SOURCE, parameter.getSource());
@@ -81,13 +83,14 @@ public class CallActivityJsonConverter extends BaseBpmnJsonConverter {
       }
 
       itemsNode.add(parameterItemNode);
-    }
+    });
 
     parametersNode.set(valueName, itemsNode);
     propertiesNode.set(propertyName, parametersNode);
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     CallActivity callActivity = new CallActivity();
     if (StringUtils.isNotEmpty(getPropertyValueAsString(PROPERTY_CALLACTIVITY_CALLEDELEMENT, elementNode))) {
       callActivity.setCalledElement(getPropertyValueAsString(PROPERTY_CALLACTIVITY_CALLEDELEMENT, elementNode));
@@ -100,7 +103,7 @@ public class CallActivityJsonConverter extends BaseBpmnJsonConverter {
   }
 
   private List<IOParameter> convertToIOParameters(String propertyName, String valueName, JsonNode elementNode) {
-    List<IOParameter> ioParameters = new ArrayList<IOParameter>();
+    List<IOParameter> ioParameters = new ArrayList<>();
     JsonNode parametersNode = getProperty(propertyName, elementNode);
     if (parametersNode != null) {
       parametersNode = BpmnJsonConverterUtil.validateIfNodeIsTextual(parametersNode);

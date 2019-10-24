@@ -33,15 +33,18 @@ public class SuspendProcessDefinitionCmd extends AbstractSetProcessDefinitionSta
     super(processDefinitionId, processDefinitionKey, suspendProcessInstances, suspensionDate, tenantId);
   }
 
-  protected SuspensionState getProcessDefinitionSuspensionState() {
+  @Override
+protected SuspensionState getProcessDefinitionSuspensionState() {
     return SuspensionState.SUSPENDED;
   }
 
-  protected String getDelayedExecutionJobHandlerType() {
+  @Override
+protected String getDelayedExecutionJobHandlerType() {
     return TimerSuspendProcessDefinitionHandler.TYPE;
   }
 
-  protected AbstractSetProcessInstanceStateCmd getProcessInstanceChangeStateCmd(ProcessInstance processInstance) {
+  @Override
+protected AbstractSetProcessInstanceStateCmd getProcessInstanceChangeStateCmd(ProcessInstance processInstance) {
     return new SuspendProcessInstanceCmd(processInstance.getId());
   }
 

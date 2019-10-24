@@ -36,37 +36,41 @@ public class ReadOnlyMapELResolver extends ELResolver {
     this.wrappedMap = map;
   }
 
-  public Object getValue(ELContext context, Object base, Object property) {
-    if (base == null) {
-      if (wrappedMap.containsKey(property)) {
+  @Override
+public Object getValue(ELContext context, Object base, Object property) {
+    boolean condition = base == null && wrappedMap.containsKey(property);
+	if (condition) {
         context.setPropertyResolved(true);
         return wrappedMap.get(property);
       }
-    }
     return null;
   }
 
-  public boolean isReadOnly(ELContext context, Object base, Object property) {
+  @Override
+public boolean isReadOnly(ELContext context, Object base, Object property) {
     return true;
   }
 
-  public void setValue(ELContext context, Object base, Object property, Object value) {
-    if (base == null) {
-      if (wrappedMap.containsKey(property)) {
-        throw new ActivitiException("Cannot set value of '" + property + "', it's readonly!");
+  @Override
+public void setValue(ELContext context, Object base, Object property, Object value) {
+    boolean condition = base == null && wrappedMap.containsKey(property);
+	if (condition) {
+        throw new ActivitiException(new StringBuilder().append("Cannot set value of '").append(property).append("', it's readonly!").toString());
       }
-    }
   }
 
-  public Class<?> getCommonPropertyType(ELContext context, Object arg) {
+  @Override
+public Class<?> getCommonPropertyType(ELContext context, Object arg) {
     return Object.class;
   }
 
-  public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object arg) {
+  @Override
+public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object arg) {
     return null;
   }
 
-  public Class<?> getType(ELContext context, Object arg1, Object arg2) {
+  @Override
+public Class<?> getType(ELContext context, Object arg1, Object arg2) {
     return Object.class;
   }
 }

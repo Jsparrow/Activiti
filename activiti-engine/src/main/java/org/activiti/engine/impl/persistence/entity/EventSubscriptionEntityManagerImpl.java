@@ -115,12 +115,13 @@ public class EventSubscriptionEntityManagerImpl extends AbstractEntityManager<Ev
   public void insert(EventSubscriptionEntity entity, boolean fireCreateEvent) {
     super.insert(entity, fireCreateEvent);
     
-    if (entity.getExecutionId() != null && isExecutionRelatedEntityCountEnabledGlobally()) {
-      CountingExecutionEntity executionEntity = (CountingExecutionEntity) entity.getExecution();
-      if (isExecutionRelatedEntityCountEnabled(executionEntity)) {
+    if (!(entity.getExecutionId() != null && isExecutionRelatedEntityCountEnabledGlobally())) {
+		return;
+	}
+	CountingExecutionEntity executionEntity = (CountingExecutionEntity) entity.getExecution();
+	if (isExecutionRelatedEntityCountEnabled(executionEntity)) {
         executionEntity.setEventSubscriptionCount(executionEntity.getEventSubscriptionCount() + 1);
       }
-    }
   }
   
   @Override
@@ -142,24 +143,21 @@ public class EventSubscriptionEntityManagerImpl extends AbstractEntityManager<Ev
   @Override
   public List<CompensateEventSubscriptionEntity> findCompensateEventSubscriptionsByExecutionIdAndActivityId(String executionId, String activityId) {
     List<EventSubscriptionEntity> eventSubscriptions = findEventSubscriptionsByExecutionAndType(executionId, "compensate");
-    List<CompensateEventSubscriptionEntity> result = new ArrayList<CompensateEventSubscriptionEntity>();
-    for (EventSubscriptionEntity eventSubscriptionEntity : eventSubscriptions) {
-      if (eventSubscriptionEntity instanceof CompensateEventSubscriptionEntity) {
-        if (activityId == null || activityId.equals(eventSubscriptionEntity.getActivityId())) {
-          result.add((CompensateEventSubscriptionEntity) eventSubscriptionEntity);
-        }
-      }
-    }
+    List<CompensateEventSubscriptionEntity> result = new ArrayList<>();
+    eventSubscriptions.forEach(eventSubscriptionEntity -> {
+      boolean condition = eventSubscriptionEntity instanceof CompensateEventSubscriptionEntity && (activityId == null || activityId.equals(eventSubscriptionEntity.getActivityId()));
+	if (condition) {
+	  result.add((CompensateEventSubscriptionEntity) eventSubscriptionEntity);
+	}
+    });
     return result;
   }
   
   @Override
   public List<CompensateEventSubscriptionEntity> findCompensateEventSubscriptionsByProcessInstanceIdAndActivityId(String processInstanceId, String activityId) {
     List<EventSubscriptionEntity> eventSubscriptions = findEventSubscriptionsByProcessInstanceAndActivityId(processInstanceId, activityId, "compensate");
-    List<CompensateEventSubscriptionEntity> result = new ArrayList<CompensateEventSubscriptionEntity>();
-    for (EventSubscriptionEntity eventSubscriptionEntity : eventSubscriptions) {
-      result.add((CompensateEventSubscriptionEntity) eventSubscriptionEntity);
-    }
+    List<CompensateEventSubscriptionEntity> result = new ArrayList<>();
+    eventSubscriptions.forEach(eventSubscriptionEntity -> result.add((CompensateEventSubscriptionEntity) eventSubscriptionEntity));
     return result;
   }
   
@@ -266,7 +264,7 @@ public class EventSubscriptionEntityManagerImpl extends AbstractEntityManager<Ev
     
     EventHandler eventHandler = getProcessEngineConfiguration().getEventHandler(eventSubscriptionEntity.getEventType());
     if (eventHandler == null) {
-      throw new ActivitiException("Could not find eventhandler for event of type '" + eventSubscriptionEntity.getEventType() + "'.");
+      throw new ActivitiException(new StringBuilder().append("Could not find eventhandler for event of type '").append(eventSubscriptionEntity.getEventType()).append("'.").toString());
     }
     eventHandler.handleEvent(eventSubscriptionEntity, payload, getCommandContext());
   }
@@ -287,18 +285,14 @@ public class EventSubscriptionEntityManagerImpl extends AbstractEntityManager<Ev
   }
   
   protected List<SignalEventSubscriptionEntity> toSignalEventSubscriptionEntityList(List<EventSubscriptionEntity> result) {
-    List<SignalEventSubscriptionEntity> signalEventSubscriptionEntities = new ArrayList<SignalEventSubscriptionEntity>(result.size());
-    for (EventSubscriptionEntity eventSubscriptionEntity : result ) {
-      signalEventSubscriptionEntities.add((SignalEventSubscriptionEntity) eventSubscriptionEntity);
-    }
+    List<SignalEventSubscriptionEntity> signalEventSubscriptionEntities = new ArrayList<>(result.size());
+    result.forEach(eventSubscriptionEntity -> signalEventSubscriptionEntities.add((SignalEventSubscriptionEntity) eventSubscriptionEntity));
     return signalEventSubscriptionEntities;
   }
   
   protected List<MessageEventSubscriptionEntity> toMessageEventSubscriptionEntityList(List<EventSubscriptionEntity> result) {
-    List<MessageEventSubscriptionEntity> messageEventSubscriptionEntities = new ArrayList<MessageEventSubscriptionEntity>(result.size());
-    for (EventSubscriptionEntity eventSubscriptionEntity : result ) {
-      messageEventSubscriptionEntities.add((MessageEventSubscriptionEntity) eventSubscriptionEntity);
-    }
+    List<MessageEventSubscriptionEntity> messageEventSubscriptionEntities = new ArrayList<>(result.size());
+    result.forEach(eventSubscriptionEntity -> messageEventSubscriptionEntities.add((MessageEventSubscriptionEntity) eventSubscriptionEntity));
     return messageEventSubscriptionEntities;
   }
 

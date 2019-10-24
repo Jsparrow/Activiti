@@ -35,7 +35,9 @@ import org.springframework.core.io.Resource;
  */
 public class ResourceParentFolderAutoDeploymentStrategy extends AbstractAutoDeploymentStrategy {
 
-  /**
+  private static final Logger logger = LoggerFactory.getLogger(ResourceParentFolderAutoDeploymentStrategy.class);
+
+/**
    * The deployment mode this strategy handles.
    */
   public static final String DEPLOYMENT_MODE = "resource-parent-folder";
@@ -59,31 +61,31 @@ public class ResourceParentFolderAutoDeploymentStrategy extends AbstractAutoDepl
     // as a prefix
     final Map<String, Set<Resource>> resourcesMap = createMap(resources);
 
-    for (final Entry<String, Set<Resource>> group : resourcesMap.entrySet()) {
+    resourcesMap.entrySet().forEach((final Entry<String, Set<Resource>> group) -> {
 
       final String deploymentName = determineDeploymentName(deploymentNameHint, group.getKey());
 
       DeploymentBuilder deploymentBuilder = repositoryService.createDeployment().enableDuplicateFiltering().name(deploymentName);
 
-      for (final Resource resource : group.getValue()) {
+      group.getValue().forEach((final Resource resource) -> {
         final String resourceName = determineResourceName(resource);
 
         deploymentBuilder.addInputStream(resourceName,
                                          resource);
-      }
+      });
 
       loadProjectManifest(deploymentBuilder).deploy();
-    }
+    });
 
   }
 
   private Map<String, Set<Resource>> createMap(final Resource[] resources) {
-    final Map<String, Set<Resource>> resourcesMap = new HashMap<String, Set<Resource>>();
+    final Map<String, Set<Resource>> resourcesMap = new HashMap<>();
 
     for (final Resource resource : resources) {
       final String parentFolderName = determineGroupName(resource);
       if (resourcesMap.get(parentFolderName) == null) {
-        resourcesMap.put(parentFolderName, new HashSet<Resource>());
+        resourcesMap.put(parentFolderName, new HashSet<>());
       }
       resourcesMap.get(parentFolderName).add(resource);
     }
@@ -97,6 +99,7 @@ public class ResourceParentFolderAutoDeploymentStrategy extends AbstractAutoDepl
         result = resource.getFile().getParentFile().getName();
       }
     } catch (IOException e) {
+		logger.error(e.getMessage(), e);
       // no-op, fallback to resource name
     }
     return result;

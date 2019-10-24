@@ -23,7 +23,8 @@ import org.activiti.bpmn.model.*;
  */
 public class InclusiveGatewayXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return InclusiveGateway.class;
   }
 

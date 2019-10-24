@@ -41,9 +41,7 @@ public class ExecutionTreeStringBuilder {
     
     List<? extends ExecutionEntity> children = executionEntity.getExecutions();
     if (children != null) {
-      for (ExecutionEntity childExecution : children) {
-        internalToString(childExecution, strb, "", true);
-      }
+      children.forEach(childExecution -> internalToString(childExecution, strb, "", true));
     }
     return strb.toString();
   }
@@ -60,14 +58,15 @@ public class ExecutionTreeStringBuilder {
         .append("\r\n");
     
     List<? extends ExecutionEntity> children = executionEntity.getExecutions();
-    if (children != null) {
-      for (int i = 0; i < children.size() - 1; i++) {
+    if (children == null) {
+		return;
+	}
+	for (int i = 0; i < children.size() - 1; i++) {
         internalToString(children.get(i), strb, prefix + (isTail ? "    " : "│   "), false);
       }
-      if (children.size() > 0) {
+	if (children.size() > 0) {
         internalToString(children.get(children.size() - 1), strb, prefix + (isTail ? "    " : "│   "), true);
       }
-    }
   }
 
 }

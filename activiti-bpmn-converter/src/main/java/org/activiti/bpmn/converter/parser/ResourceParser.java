@@ -34,15 +34,12 @@ public class ResourceParser implements BpmnXMLConstants {
     if (model.containsResourceId(resourceId)) { 
       resource = model.getResource(resourceId);
       resource.setName(resourceName);
-      for (org.activiti.bpmn.model.Process process : model.getProcesses()) {
-        for (FlowElement fe : process.getFlowElements()) {
-          if (fe instanceof UserTask 
-              && ((UserTask) fe).getCandidateGroups().contains(resourceId)) {
-            ((UserTask) fe).getCandidateGroups().remove(resourceId);
-            ((UserTask) fe).getCandidateGroups().add(resourceName);
-          }
-        }
-      }
+      model.getProcesses().forEach(process -> process.getFlowElements().stream()
+			.filter(fe -> fe instanceof UserTask && ((UserTask) fe).getCandidateGroups().contains(resourceId))
+			.forEach(fe -> {
+				((UserTask) fe).getCandidateGroups().remove(resourceId);
+				((UserTask) fe).getCandidateGroups().add(resourceName);
+			}));
     } else { 
       resource = new Resource(resourceId, resourceName);        
       model.addResource(resource);

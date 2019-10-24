@@ -21,22 +21,27 @@ public class UUIDType implements VariableType {
 
   private static final long serialVersionUID = 1L;
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return "uuid";
   }
 
-  public boolean isCachable() {
+  @Override
+public boolean isCachable() {
     return true;
   }
 
-  public Object getValue(ValueFields valueFields) {
+  @Override
+public Object getValue(ValueFields valueFields) {
     String textValue = valueFields.getTextValue();
-    if (textValue == null)
-      return null;
+    if (textValue == null) {
+		return null;
+	}
     return UUID.fromString(textValue);
   }
 
-  public void setValue(Object value, ValueFields valueFields) {
+  @Override
+public void setValue(Object value, ValueFields valueFields) {
     if (value != null) {
       valueFields.setTextValue(value.toString());
     } else {
@@ -44,7 +49,8 @@ public class UUIDType implements VariableType {
     }
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     if (value == null) {
       return true;
     }

@@ -39,9 +39,7 @@ public class ClassDelegateUtil {
 
   public static void applyFieldDeclaration(List<FieldDeclaration> fieldDeclarations, Object target) {
     if (fieldDeclarations != null) {
-      for (FieldDeclaration declaration : fieldDeclarations) {
-        applyFieldDeclaration(declaration, target);
-      }
+      fieldDeclarations.forEach(declaration -> applyFieldDeclaration(declaration, target));
     }
   }
 
@@ -52,21 +50,21 @@ public class ClassDelegateUtil {
       try {
         setterMethod.invoke(target, declaration.getValue());
       } catch (IllegalArgumentException e) {
-        throw new ActivitiException("Error while invoking '" + declaration.getName() + "' on class " + target.getClass().getName(), e);
+        throw new ActivitiException(new StringBuilder().append("Error while invoking '").append(declaration.getName()).append("' on class ").append(target.getClass().getName()).toString(), e);
       } catch (IllegalAccessException e) {
-        throw new ActivitiException("Illegal access when calling '" + declaration.getName() + "' on class " + target.getClass().getName(), e);
+        throw new ActivitiException(new StringBuilder().append("Illegal access when calling '").append(declaration.getName()).append("' on class ").append(target.getClass().getName()).toString(), e);
       } catch (InvocationTargetException e) {
-        throw new ActivitiException("Exception while invoking '" + declaration.getName() + "' on class " + target.getClass().getName(), e);
+        throw new ActivitiException(new StringBuilder().append("Exception while invoking '").append(declaration.getName()).append("' on class ").append(target.getClass().getName()).toString(), e);
       }
     } else {
       Field field = ReflectUtil.getField(declaration.getName(), target);
       if (field == null) {
-        throw new ActivitiIllegalArgumentException("Field definition uses non-existing field '" + declaration.getName() + "' on class " + target.getClass().getName());
+        throw new ActivitiIllegalArgumentException(new StringBuilder().append("Field definition uses non-existing field '").append(declaration.getName()).append("' on class ").append(target.getClass().getName()).toString());
       }
       // Check if the delegate field's type is correct
       if (!fieldTypeCompatible(declaration, field)) {
-        throw new ActivitiIllegalArgumentException("Incompatible type set on field declaration '" + declaration.getName() + "' for class " + target.getClass().getName() + ". Declared value has type "
-            + declaration.getValue().getClass().getName() + ", while expecting " + field.getType().getName());
+        throw new ActivitiIllegalArgumentException(new StringBuilder().append("Incompatible type set on field declaration '").append(declaration.getName()).append("' for class ").append(target.getClass().getName()).append(". Declared value has type ").append(declaration.getValue().getClass().getName())
+				.append(", while expecting ").append(field.getType().getName()).toString());
       }
       ReflectUtil.setField(field, target, declaration.getValue());
     }

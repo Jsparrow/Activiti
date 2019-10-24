@@ -43,19 +43,23 @@ public class IntegrationContextEntityImpl extends AbstractEntity implements Inte
         this.executionId = executionId;
     }
 
-    public String getProcessDefinitionId() {
+    @Override
+	public String getProcessDefinitionId() {
         return processDefinitionId;
     }
 
-    public void setProcessDefinitionId(String processDefinitionId) {
+    @Override
+	public void setProcessDefinitionId(String processDefinitionId) {
         this.processDefinitionId = processDefinitionId;
     }
 
-    public String getProcessInstanceId() {
+    @Override
+	public String getProcessInstanceId() {
         return processInstanceId;
     }
 
-    public void setProcessInstanceId(String processInstanceId) {
+    @Override
+	public void setProcessInstanceId(String processInstanceId) {
         this.processInstanceId = processInstanceId;
     }
 
@@ -69,11 +73,13 @@ public class IntegrationContextEntityImpl extends AbstractEntity implements Inte
         this.flowNodeId = flowNodeId;
     }
 
-    public Date getCreatedDate() {
+    @Override
+	public Date getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    @Override
+	public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 

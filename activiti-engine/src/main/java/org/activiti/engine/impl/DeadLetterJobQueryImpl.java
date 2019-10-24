@@ -28,7 +28,7 @@ import org.activiti.engine.runtime.Job;
 
 
  */
-public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Job> implements DeadLetterJobQuery, Serializable {
+public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Job> implements DeadLetterJobQuery {
 
   private static final long serialVersionUID = 1L;
   protected String id;
@@ -59,7 +59,8 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     super(commandExecutor);
   }
 
-  public DeadLetterJobQueryImpl jobId(String jobId) {
+  @Override
+public DeadLetterJobQueryImpl jobId(String jobId) {
     if (jobId == null) {
       throw new ActivitiIllegalArgumentException("Provided job id is null");
     }
@@ -67,7 +68,8 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     return this;
   }
 
-  public DeadLetterJobQueryImpl processInstanceId(String processInstanceId) {
+  @Override
+public DeadLetterJobQueryImpl processInstanceId(String processInstanceId) {
     if (processInstanceId == null) {
       throw new ActivitiIllegalArgumentException("Provided process instance id is null");
     }
@@ -75,7 +77,8 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     return this;
   }
 
-  public DeadLetterJobQueryImpl processDefinitionId(String processDefinitionId) {
+  @Override
+public DeadLetterJobQueryImpl processDefinitionId(String processDefinitionId) {
     if (processDefinitionId == null) {
       throw new ActivitiIllegalArgumentException("Provided process definition id is null");
     }
@@ -83,7 +86,8 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     return this;
   }
 
-  public DeadLetterJobQueryImpl executionId(String executionId) {
+  @Override
+public DeadLetterJobQueryImpl executionId(String executionId) {
     if (executionId == null) {
       throw new ActivitiIllegalArgumentException("Provided execution id is null");
     }
@@ -91,12 +95,14 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     return this;
   }
 
-  public DeadLetterJobQueryImpl executable() {
+  @Override
+public DeadLetterJobQueryImpl executable() {
     executable = true;
     return this;
   }
 
-  public DeadLetterJobQueryImpl timers() {
+  @Override
+public DeadLetterJobQueryImpl timers() {
     if (onlyMessages) {
       throw new ActivitiIllegalArgumentException("Cannot combine onlyTimers() with onlyMessages() in the same query");
     }
@@ -104,7 +110,8 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     return this;
   }
 
-  public DeadLetterJobQueryImpl messages() {
+  @Override
+public DeadLetterJobQueryImpl messages() {
     if (onlyTimers) {
       throw new ActivitiIllegalArgumentException("Cannot combine onlyTimers() with onlyMessages() in the same query");
     }
@@ -112,7 +119,8 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     return this;
   }
 
-  public DeadLetterJobQueryImpl duedateHigherThan(Date date) {
+  @Override
+public DeadLetterJobQueryImpl duedateHigherThan(Date date) {
     if (date == null) {
       throw new ActivitiIllegalArgumentException("Provided date is null");
     }
@@ -120,7 +128,8 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     return this;
   }
 
-  public DeadLetterJobQueryImpl duedateLowerThan(Date date) {
+  @Override
+public DeadLetterJobQueryImpl duedateLowerThan(Date date) {
     if (date == null) {
       throw new ActivitiIllegalArgumentException("Provided date is null");
     }
@@ -152,12 +161,14 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     return this;
   }
   
-  public DeadLetterJobQueryImpl withException() {
+  @Override
+public DeadLetterJobQueryImpl withException() {
     this.withException = true;
     return this;
   }
 
-  public DeadLetterJobQueryImpl exceptionMessage(String exceptionMessage) {
+  @Override
+public DeadLetterJobQueryImpl exceptionMessage(String exceptionMessage) {
     if (exceptionMessage == null) {
       throw new ActivitiIllegalArgumentException("Provided exception message is null");
     }
@@ -165,7 +176,8 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     return this;
   }
 
-  public DeadLetterJobQueryImpl jobTenantId(String tenantId) {
+  @Override
+public DeadLetterJobQueryImpl jobTenantId(String tenantId) {
     if (tenantId == null) {
       throw new ActivitiIllegalArgumentException("job is null");
     }
@@ -173,7 +185,8 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     return this;
   }
 
-  public DeadLetterJobQueryImpl jobTenantIdLike(String tenantIdLike) {
+  @Override
+public DeadLetterJobQueryImpl jobTenantIdLike(String tenantIdLike) {
     if (tenantIdLike == null) {
       throw new ActivitiIllegalArgumentException("job is null");
     }
@@ -181,45 +194,54 @@ public class DeadLetterJobQueryImpl extends AbstractQuery<DeadLetterJobQuery, Jo
     return this;
   }
 
-  public DeadLetterJobQueryImpl jobWithoutTenantId() {
+  @Override
+public DeadLetterJobQueryImpl jobWithoutTenantId() {
     this.withoutTenantId = true;
     return this;
   }
 
   // sorting //////////////////////////////////////////
 
-  public DeadLetterJobQuery orderByJobDuedate() {
+  @Override
+public DeadLetterJobQuery orderByJobDuedate() {
     return orderBy(JobQueryProperty.DUEDATE);
   }
 
-  public DeadLetterJobQuery orderByExecutionId() {
+  @Override
+public DeadLetterJobQuery orderByExecutionId() {
     return orderBy(JobQueryProperty.EXECUTION_ID);
   }
 
-  public DeadLetterJobQuery orderByJobId() {
+  @Override
+public DeadLetterJobQuery orderByJobId() {
     return orderBy(JobQueryProperty.JOB_ID);
   }
 
-  public DeadLetterJobQuery orderByProcessInstanceId() {
+  @Override
+public DeadLetterJobQuery orderByProcessInstanceId() {
     return orderBy(JobQueryProperty.PROCESS_INSTANCE_ID);
   }
 
-  public DeadLetterJobQuery orderByJobRetries() {
+  @Override
+public DeadLetterJobQuery orderByJobRetries() {
     return orderBy(JobQueryProperty.RETRIES);
   }
 
-  public DeadLetterJobQuery orderByTenantId() {
+  @Override
+public DeadLetterJobQuery orderByTenantId() {
     return orderBy(JobQueryProperty.TENANT_ID);
   }
 
   // results //////////////////////////////////////////
 
-  public long executeCount(CommandContext commandContext) {
+  @Override
+public long executeCount(CommandContext commandContext) {
     checkQueryOk();
     return commandContext.getDeadLetterJobEntityManager().findJobCountByQueryCriteria(this);
   }
 
-  public List<Job> executeList(CommandContext commandContext, Page page) {
+  @Override
+public List<Job> executeList(CommandContext commandContext, Page page) {
     checkQueryOk();
     return commandContext.getDeadLetterJobEntityManager().findJobsByQueryCriteria(this, page);
   }

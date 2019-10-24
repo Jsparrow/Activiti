@@ -35,31 +35,31 @@ import java.util.Iterator;
 public class XML {
 
   /** The Character '&'. */
-  public static final Character AMP = new Character('&');
+  public static final Character AMP = Character.valueOf('&');
 
   /** The Character '''. */
-  public static final Character APOS = new Character('\'');
+  public static final Character APOS = Character.valueOf('\'');
 
   /** The Character '!'. */
-  public static final Character BANG = new Character('!');
+  public static final Character BANG = Character.valueOf('!');
 
   /** The Character '='. */
-  public static final Character EQ = new Character('=');
+  public static final Character EQ = Character.valueOf('=');
 
   /** The Character '>'. */
-  public static final Character GT = new Character('>');
+  public static final Character GT = Character.valueOf('>');
 
 /** The Character '<'. */
-  public static final Character LT = new Character('<');
+  public static final Character LT = Character.valueOf('<');
 
   /** The Character '?'. */
-  public static final Character QUEST = new Character('?');
+  public static final Character QUEST = Character.valueOf('?');
 
   /** The Character '"'. */
-  public static final Character QUOT = new Character('"');
+  public static final Character QUOT = Character.valueOf('"');
 
   /** The Character '/'. */
-  public static final Character SLASH = new Character('/');
+  public static final Character SLASH = Character.valueOf('/');
 
   /**
    * Replace special characters with XML escapes:
@@ -105,14 +105,15 @@ public class XML {
    * @param string
    * @throws JSONException
    */
-  public static void noSpace(String string) throws JSONException {
-    int i, length = string.length();
+  public static void noSpace(String string) {
+    int i;
+	int length = string.length();
     if (length == 0) {
       throw new JSONException("Empty string.");
     }
     for (i = 0; i < length; i += 1) {
       if (Character.isWhitespace(string.charAt(i))) {
-        throw new JSONException("'" + string + "' contains a space character.");
+        throw new JSONException(new StringBuilder().append("'").append(string).append("' contains a space character.").toString());
       }
     }
   }
@@ -129,7 +130,7 @@ public class XML {
    * @return true if the close tag is processed.
    * @throws JSONException
    */
-  private static boolean parse(XMLTokener x, JSONObject context, String name) throws JSONException {
+  private static boolean parse(XMLTokener x, JSONObject context, String name) {
     char c;
     int i;
     String n;
@@ -161,15 +162,14 @@ public class XML {
         x.back();
       } else if (c == '[') {
         t = x.nextToken();
-        if (t.equals("CDATA")) {
-          if (x.next() == '[') {
+        boolean condition = t.equals("CDATA") && x.next() == '[';
+		if (condition) {
             s = x.nextCDATA();
             if (s.length() > 0) {
               context.accumulate("content", s);
             }
             return false;
           }
-        }
         throw x.syntaxError("Expected 'CDATA['");
       }
       i = 1;
@@ -199,7 +199,7 @@ public class XML {
         throw x.syntaxError("Mismatched close tag" + t);
       }
       if (!t.equals(name)) {
-        throw x.syntaxError("Mismatched " + name + " and " + t);
+        throw x.syntaxError(new StringBuilder().append("Mismatched ").append(name).append(" and ").append(t).toString());
       }
       if (x.nextToken() != GT) {
         throw x.syntaxError("Misshaped close tag");
@@ -294,7 +294,7 @@ public class XML {
    * @return A JSONObject containing the structured signalData from the XML string.
    * @throws JSONException
    */
-  public static JSONObject toJSONObject(String string) throws JSONException {
+  public static JSONObject toJSONObject(String string) {
     JSONObject o = new JSONObject();
     XMLTokener x = new XMLTokener(string);
     while (x.more() && x.skipPast("<")) {
@@ -311,7 +311,7 @@ public class XML {
    * @return A string.
    * @throws JSONException
    */
-  public static String toString(Object o) throws JSONException {
+  public static String toString(Object o) {
     return toString(o, null);
   }
 
@@ -325,7 +325,7 @@ public class XML {
    * @return A string.
    * @throws JSONException
    */
-  public static String toString(Object o, String tagName) throws JSONException {
+  public static String toString(Object o, String tagName) {
     StringBuilder b = new StringBuilder();
     int i;
     JSONArray ja;
@@ -363,7 +363,7 @@ public class XML {
 
         // Emit content in body
 
-        if (k.equals("content")) {
+        if ("content".equals(k)) {
           if (v instanceof JSONArray) {
             ja = (JSONArray) v;
             len = ja.length();
@@ -431,7 +431,8 @@ public class XML {
       return b.toString();
     } else {
       s = (o == null) ? "null" : escape(o.toString());
-      return (tagName == null) ? "\"" + s + "\"" : (s.length() == 0) ? "<" + tagName + "/>" : "<" + tagName + ">" + s + "</" + tagName + ">";
+      return (tagName == null) ? new StringBuilder().append("\"").append(s).append("\"").toString() : (s.isEmpty()) ? new StringBuilder().append("<").append(tagName).append("/>").toString() : new StringBuilder().append("<").append(tagName).append(">").append(s).append("</").append(tagName).append(">")
+			.toString();
     }
   }
 }

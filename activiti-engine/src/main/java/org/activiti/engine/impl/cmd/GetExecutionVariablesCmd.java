@@ -40,7 +40,8 @@ public class GetExecutionVariablesCmd implements Command<Map<String, Object>>, S
     this.isLocal = isLocal;
   }
 
-  public Map<String, Object> execute(CommandContext commandContext) {
+  @Override
+public Map<String, Object> execute(CommandContext commandContext) {
 
     // Verify existance of execution
     if (executionId == null) {
@@ -50,7 +51,7 @@ public class GetExecutionVariablesCmd implements Command<Map<String, Object>>, S
     ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(executionId);
 
     if (execution == null) {
-      throw new ActivitiObjectNotFoundException("execution " + executionId + " doesn't exist", Execution.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("execution ").append(executionId).append(" doesn't exist").toString(), Execution.class);
     }
     
     if (variableNames == null || variableNames.isEmpty()) {

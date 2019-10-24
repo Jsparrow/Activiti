@@ -58,7 +58,7 @@ public class DeleteIdentityLinkCmd extends NeedsActiveTaskCmd<Void> {
     // userId may be null
     if (IdentityLinkType.ASSIGNEE.equals(type) || IdentityLinkType.OWNER.equals(type)) {
       if (groupId != null) {
-        throw new ActivitiIllegalArgumentException("Incompatible usage: cannot use type '" + type + "' together with a groupId");
+        throw new ActivitiIllegalArgumentException(new StringBuilder().append("Incompatible usage: cannot use type '").append(type).append("' together with a groupId").toString());
       }
     } else {
       if (userId == null && groupId == null) {
@@ -67,7 +67,8 @@ public class DeleteIdentityLinkCmd extends NeedsActiveTaskCmd<Void> {
     }
   }
 
-  protected Void execute(CommandContext commandContext, TaskEntity task) {
+  @Override
+protected Void execute(CommandContext commandContext, TaskEntity task) {
     if (IdentityLinkType.ASSIGNEE.equals(type)) {
       commandContext.getTaskEntityManager().changeTaskAssignee(task, null);
     } else if (IdentityLinkType.OWNER.equals(type)) {

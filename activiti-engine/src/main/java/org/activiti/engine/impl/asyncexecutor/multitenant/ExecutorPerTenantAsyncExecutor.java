@@ -39,7 +39,7 @@ public class ExecutorPerTenantAsyncExecutor implements TenantAwareAsyncExecutor 
   protected TenantInfoHolder tenantInfoHolder;
   protected TenantAwareAsyncExecutorFactory tenantAwareAyncExecutorFactory;
   
-  protected Map<String, AsyncExecutor> tenantExecutors = new HashMap<String, AsyncExecutor>();
+  protected Map<String, AsyncExecutor> tenantExecutors = new HashMap<>();
   
   protected ProcessEngineConfigurationImpl processEngineConfiguration;
   protected boolean active;
@@ -59,7 +59,8 @@ public class ExecutorPerTenantAsyncExecutor implements TenantAwareAsyncExecutor 
     return tenantExecutors.keySet();
   }
 
-  public void addTenantAsyncExecutor(String tenantId, boolean startExecutor) {
+  @Override
+public void addTenantAsyncExecutor(String tenantId, boolean startExecutor) {
     AsyncExecutor tenantExecutor = null;
     
     if (tenantAwareAyncExecutorFactory == null) {
@@ -95,7 +96,8 @@ public class ExecutorPerTenantAsyncExecutor implements TenantAwareAsyncExecutor 
     return tenantExecutors.get(tenantInfoHolder.getCurrentTenantId());
   }
 
-  public boolean executeAsyncJob(Job job) {
+  @Override
+public boolean executeAsyncJob(Job job) {
     return determineAsyncExecutor().executeAsyncJob(job);
   }
 
@@ -107,9 +109,7 @@ public class ExecutorPerTenantAsyncExecutor implements TenantAwareAsyncExecutor 
   @Override
   public void setProcessEngineConfiguration(ProcessEngineConfigurationImpl processEngineConfiguration) {
     this.processEngineConfiguration = processEngineConfiguration;
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.setProcessEngineConfiguration(processEngineConfiguration);
-    }
+    tenantExecutors.values().forEach(asyncExecutor -> asyncExecutor.setProcessEngineConfiguration(processEngineConfiguration));
   }
   
   @Override
@@ -117,29 +117,30 @@ public class ExecutorPerTenantAsyncExecutor implements TenantAwareAsyncExecutor 
     throw new UnsupportedOperationException();
   }
 
-  public boolean isAutoActivate() {
+  @Override
+public boolean isAutoActivate() {
     return autoActivate;
   }
 
-  public void setAutoActivate(boolean isAutoActivate) {
+  @Override
+public void setAutoActivate(boolean isAutoActivate) {
     autoActivate = isAutoActivate;
   }
 
-  public boolean isActive() {
+  @Override
+public boolean isActive() {
     return active;
   }
 
-  public void start() {
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.start();
-    }
+  @Override
+public void start() {
+    tenantExecutors.values().forEach(AsyncExecutor::start);
     active = true;
   }
 
-  public synchronized void shutdown() {
-    for (String tenantId : tenantExecutors.keySet()) {
-      shutdownTenantExecutor(tenantId);
-    }
+  @Override
+public synchronized void shutdown() {
+    tenantExecutors.keySet().forEach(this::shutdownTenantExecutor);
     active = false;
   }
   
@@ -148,88 +149,89 @@ public class ExecutorPerTenantAsyncExecutor implements TenantAwareAsyncExecutor 
     tenantExecutors.get(tenantId).shutdown();
   }
 
-  public String getLockOwner() {
+  @Override
+public String getLockOwner() {
     return determineAsyncExecutor().getLockOwner();
   }
 
-  public int getTimerLockTimeInMillis() {
+  @Override
+public int getTimerLockTimeInMillis() {
     return determineAsyncExecutor().getTimerLockTimeInMillis();
   }
 
-  public void setTimerLockTimeInMillis(int lockTimeInMillis) {
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.setTimerLockTimeInMillis(lockTimeInMillis);
-    }
+  @Override
+public void setTimerLockTimeInMillis(int lockTimeInMillis) {
+    tenantExecutors.values().forEach(asyncExecutor -> asyncExecutor.setTimerLockTimeInMillis(lockTimeInMillis));
   }
 
-  public int getAsyncJobLockTimeInMillis() {
+  @Override
+public int getAsyncJobLockTimeInMillis() {
     return determineAsyncExecutor().getAsyncJobLockTimeInMillis();
   }
 
-  public void setAsyncJobLockTimeInMillis(int lockTimeInMillis) {
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.setAsyncJobLockTimeInMillis(lockTimeInMillis);
-    }
+  @Override
+public void setAsyncJobLockTimeInMillis(int lockTimeInMillis) {
+    tenantExecutors.values().forEach(asyncExecutor -> asyncExecutor.setAsyncJobLockTimeInMillis(lockTimeInMillis));
   }
 
-  public int getDefaultTimerJobAcquireWaitTimeInMillis() {
+  @Override
+public int getDefaultTimerJobAcquireWaitTimeInMillis() {
     return determineAsyncExecutor().getDefaultTimerJobAcquireWaitTimeInMillis();
   }
 
-  public void setDefaultTimerJobAcquireWaitTimeInMillis(int waitTimeInMillis) {
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.setDefaultTimerJobAcquireWaitTimeInMillis(waitTimeInMillis);
-    }
+  @Override
+public void setDefaultTimerJobAcquireWaitTimeInMillis(int waitTimeInMillis) {
+    tenantExecutors.values().forEach(asyncExecutor -> asyncExecutor.setDefaultTimerJobAcquireWaitTimeInMillis(waitTimeInMillis));
   }
 
-  public int getDefaultAsyncJobAcquireWaitTimeInMillis() {
+  @Override
+public int getDefaultAsyncJobAcquireWaitTimeInMillis() {
     return determineAsyncExecutor().getDefaultAsyncJobAcquireWaitTimeInMillis();
   }
 
-  public void setDefaultAsyncJobAcquireWaitTimeInMillis(int waitTimeInMillis) {
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.setDefaultAsyncJobAcquireWaitTimeInMillis(waitTimeInMillis);
-    }
+  @Override
+public void setDefaultAsyncJobAcquireWaitTimeInMillis(int waitTimeInMillis) {
+    tenantExecutors.values().forEach(asyncExecutor -> asyncExecutor.setDefaultAsyncJobAcquireWaitTimeInMillis(waitTimeInMillis));
   }
   
-  public int getDefaultQueueSizeFullWaitTimeInMillis() {
+  @Override
+public int getDefaultQueueSizeFullWaitTimeInMillis() {
     return determineAsyncExecutor().getDefaultQueueSizeFullWaitTimeInMillis();
   }
   
-  public void setDefaultQueueSizeFullWaitTimeInMillis(int defaultQueueSizeFullWaitTimeInMillis) {
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.setDefaultQueueSizeFullWaitTimeInMillis(defaultQueueSizeFullWaitTimeInMillis);
-    }
+  @Override
+public void setDefaultQueueSizeFullWaitTimeInMillis(int defaultQueueSizeFullWaitTimeInMillis) {
+    tenantExecutors.values().forEach(asyncExecutor -> asyncExecutor.setDefaultQueueSizeFullWaitTimeInMillis(defaultQueueSizeFullWaitTimeInMillis));
   }
 
-  public int getMaxAsyncJobsDuePerAcquisition() {
+  @Override
+public int getMaxAsyncJobsDuePerAcquisition() {
     return determineAsyncExecutor().getMaxAsyncJobsDuePerAcquisition();
   }
 
-  public void setMaxAsyncJobsDuePerAcquisition(int maxJobs) {
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.setMaxAsyncJobsDuePerAcquisition(maxJobs);
-    }
+  @Override
+public void setMaxAsyncJobsDuePerAcquisition(int maxJobs) {
+    tenantExecutors.values().forEach(asyncExecutor -> asyncExecutor.setMaxAsyncJobsDuePerAcquisition(maxJobs));
   }
 
-  public int getMaxTimerJobsPerAcquisition() {
+  @Override
+public int getMaxTimerJobsPerAcquisition() {
     return determineAsyncExecutor().getMaxTimerJobsPerAcquisition();
   }
 
-  public void setMaxTimerJobsPerAcquisition(int maxJobs) {
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.setMaxTimerJobsPerAcquisition(maxJobs);
-    }
+  @Override
+public void setMaxTimerJobsPerAcquisition(int maxJobs) {
+    tenantExecutors.values().forEach(asyncExecutor -> asyncExecutor.setMaxTimerJobsPerAcquisition(maxJobs));
   }
 
-  public int getRetryWaitTimeInMillis() {
+  @Override
+public int getRetryWaitTimeInMillis() {
     return determineAsyncExecutor().getRetryWaitTimeInMillis();
   }
 
-  public void setRetryWaitTimeInMillis(int retryWaitTimeInMillis) {
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.setRetryWaitTimeInMillis(retryWaitTimeInMillis);
-    }
+  @Override
+public void setRetryWaitTimeInMillis(int retryWaitTimeInMillis) {
+    tenantExecutors.values().forEach(asyncExecutor -> asyncExecutor.setRetryWaitTimeInMillis(retryWaitTimeInMillis));
   }
   
   @Override
@@ -239,9 +241,7 @@ public class ExecutorPerTenantAsyncExecutor implements TenantAwareAsyncExecutor 
   
   @Override
   public void setResetExpiredJobsInterval(int resetExpiredJobsInterval) {
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.setResetExpiredJobsInterval(resetExpiredJobsInterval);
-    }
+    tenantExecutors.values().forEach(asyncExecutor -> asyncExecutor.setResetExpiredJobsInterval(resetExpiredJobsInterval));
   }
   
   @Override
@@ -251,9 +251,7 @@ public class ExecutorPerTenantAsyncExecutor implements TenantAwareAsyncExecutor 
   
   @Override
   public void setResetExpiredJobsPageSize(int resetExpiredJobsPageSize) {
-    for (AsyncExecutor asyncExecutor : tenantExecutors.values()) {
-      asyncExecutor.setResetExpiredJobsPageSize(resetExpiredJobsPageSize);
-    }    
+    tenantExecutors.values().forEach(asyncExecutor -> asyncExecutor.setResetExpiredJobsPageSize(resetExpiredJobsPageSize));    
   }
 
 }

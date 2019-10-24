@@ -26,7 +26,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class BusinessRuleTaskXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return BusinessRuleTask.class;
   }
 

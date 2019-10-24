@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class Extension {
 
-    private final ProcessVariablesMapping EMPTY_PROCESS_VARIABLES_MAPPING = new ProcessVariablesMapping();
+    private final ProcessVariablesMapping emptyProcessVariablesMapping = new ProcessVariablesMapping();
     private Map<String, VariableDefinition> properties = new HashMap<>();
     private Map<String, ProcessVariablesMapping> mappings = new HashMap<>();
     private Map<String, ProcessConstantsMapping> constants = new HashMap<>();
@@ -57,7 +57,7 @@ public class Extension {
 
     public ProcessVariablesMapping getMappingForFlowElement(String flowElementUUID) {
         ProcessVariablesMapping processVariablesMapping = mappings.get(flowElementUUID);
-        return processVariablesMapping != null ? processVariablesMapping : EMPTY_PROCESS_VARIABLES_MAPPING;
+        return processVariablesMapping != null ? processVariablesMapping : emptyProcessVariablesMapping;
     }
 
     public VariableDefinition getProperty(String propertyUUID) {
@@ -67,11 +67,10 @@ public class Extension {
     public VariableDefinition getPropertyByName(String name) {
         if (properties != null) {
             for (Map.Entry<String, VariableDefinition> variableDefinition : properties.entrySet()) {
-                if (variableDefinition.getValue() != null) {
-                    if (Objects.equals(variableDefinition.getValue().getName(), name)) {
-                        return variableDefinition.getValue();
-                    }
-                }
+                boolean condition = variableDefinition.getValue() != null && Objects.equals(variableDefinition.getValue().getName(), name);
+				if (condition) {
+				    return variableDefinition.getValue();
+				}
             }
         }
 
@@ -80,12 +79,12 @@ public class Extension {
 
     public boolean hasEmptyInputsMapping(String elementId) {
         ProcessVariablesMapping processVariablesMapping = mappings.get(elementId);
-        return processVariablesMapping != null && processVariablesMapping.getInputs().size() == 0;
+        return processVariablesMapping != null && processVariablesMapping.getInputs().isEmpty();
     }
 
     public boolean hasEmptyOutputsMapping(String elementId) {
         ProcessVariablesMapping processVariablesMapping = mappings.get(elementId);
-        return processVariablesMapping != null && processVariablesMapping.getOutputs().size() == 0;
+        return processVariablesMapping != null && processVariablesMapping.getOutputs().isEmpty();
     }
 
     public boolean hasMapping(String taskId) {

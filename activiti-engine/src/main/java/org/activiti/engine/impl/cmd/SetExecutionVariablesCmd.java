@@ -34,18 +34,15 @@ public class SetExecutionVariablesCmd extends NeedsActiveExecutionCmd<Object> {
     this.isLocal = isLocal;
   }
 
-  protected Object execute(CommandContext commandContext, ExecutionEntity execution) {
+  @Override
+protected Object execute(CommandContext commandContext, ExecutionEntity execution) {
     if (isLocal) {
       if (variables != null) {
-        for (String variableName : variables.keySet()) {
-          execution.setVariableLocal(variableName, variables.get(variableName), false);
-        }
+        variables.keySet().forEach(variableName -> execution.setVariableLocal(variableName, variables.get(variableName), false));
       }
     } else {
       if (variables != null) {
-        for (String variableName : variables.keySet()) {
-          execution.setVariable(variableName, variables.get(variableName), false);
-        }
+        variables.keySet().forEach(variableName -> execution.setVariable(variableName, variables.get(variableName), false));
       }
     }
 
@@ -59,7 +56,7 @@ public class SetExecutionVariablesCmd extends NeedsActiveExecutionCmd<Object> {
 
   @Override
   protected String getSuspendedExceptionMessage() {
-    return "Cannot set variables because execution '" + executionId + "' is suspended";
+    return new StringBuilder().append("Cannot set variables because execution '").append(executionId).append("' is suspended").toString();
   }
 
 }

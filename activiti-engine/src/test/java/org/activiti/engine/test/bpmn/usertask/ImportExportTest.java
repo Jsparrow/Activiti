@@ -32,11 +32,9 @@ public class ImportExportTest extends ResourceActivitiTestCase {
         assertNotNull(execution);
     }
 
-    protected void tearDown() throws Exception {
-        for (Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-            repositoryService.deleteDeployment(deployment.getId(),
-                                               true);
-        }
+    @Override
+	protected void tearDown() throws Exception {
+        repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
         super.tearDown();
     }
 

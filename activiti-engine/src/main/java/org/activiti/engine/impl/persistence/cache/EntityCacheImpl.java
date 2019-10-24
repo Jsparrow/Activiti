@@ -26,13 +26,13 @@ import org.activiti.engine.impl.persistence.entity.Entity;
  */
 public class EntityCacheImpl implements EntityCache {
   
-  protected Map<Class<?>, Map<String, CachedEntity>> cachedObjects = new HashMap<Class<?>, Map<String,CachedEntity>>();
+  protected Map<Class<?>, Map<String, CachedEntity>> cachedObjects = new HashMap<>();
   
   @Override
   public CachedEntity put(Entity entity, boolean storeState) {
     Map<String, CachedEntity> classCache = cachedObjects.get(entity.getClass());
     if (classCache == null) {
-      classCache = new HashMap<String, CachedEntity>();
+      classCache = new HashMap<>();
       cachedObjects.put(entity.getClass(), classCache);
     }
     CachedEntity cachedObject = new CachedEntity(entity, storeState);
@@ -97,18 +97,16 @@ public class EntityCacheImpl implements EntityCache {
       classCache = findClassCacheByCheckingSubclasses(entityClass);
     }
     
-    if (classCache != null) {
-      List<T> entities = new ArrayList<T>(classCache.size());
-      for (CachedEntity cachedObject : classCache.values()) {
-        entities.add((T) cachedObject.getEntity());
-      }
-      return entities;
-    }
-    
-    return Collections.emptyList();
+    if (classCache == null) {
+		return Collections.emptyList();
+	}
+	List<T> entities = new ArrayList<>(classCache.size());
+	classCache.values().forEach(cachedObject -> entities.add((T) cachedObject.getEntity()));
+	return entities;
   }
   
-  public Map<Class<?>, Map<String, CachedEntity>> getAllCachedEntities() {
+  @Override
+public Map<Class<?>, Map<String, CachedEntity>> getAllCachedEntities() {
     return cachedObjects;
   }
   

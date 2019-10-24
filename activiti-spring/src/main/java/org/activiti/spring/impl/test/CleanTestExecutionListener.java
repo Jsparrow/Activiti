@@ -20,9 +20,7 @@ public class CleanTestExecutionListener extends AbstractTestExecutionListener {
   @Override
   public void afterTestClass(TestContext testContext) throws Exception {
     RepositoryService repositoryService = testContext.getApplicationContext().getBean(RepositoryService.class);
-    for (Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+    repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
   }
 
 }

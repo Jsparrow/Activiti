@@ -29,12 +29,10 @@ public class DbSchemaUpdate {
     ProcessEngineImpl processEngine = (ProcessEngineImpl) ProcessEngines.getDefaultProcessEngine();
     CommandExecutor commandExecutor = processEngine.getProcessEngineConfiguration().getCommandExecutor();
     CommandConfig config = new CommandConfig().transactionNotSupported();
-    commandExecutor.execute(config, new Command<Object>() {
-      public Object execute(CommandContext commandContext) {
+    commandExecutor.execute(config, (CommandContext commandContext) -> {
         commandContext.getDbSqlSession().dbSchemaUpdate();
         return null;
-      }
-    });
+      });
   }
 
 }

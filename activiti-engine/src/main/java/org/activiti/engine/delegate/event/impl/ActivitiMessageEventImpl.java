@@ -36,7 +36,8 @@ public class ActivitiMessageEventImpl extends ActivitiActivityEventImpl implemen
     this.messageName = messageName;
   }
 
-  public String getMessageName() {
+  @Override
+public String getMessageName() {
     return messageName;
   }
 
@@ -44,11 +45,13 @@ public class ActivitiMessageEventImpl extends ActivitiActivityEventImpl implemen
     this.messageData = messageData;
   }
 
-  public Object getMessageData() {
+  @Override
+public Object getMessageData() {
     return messageData;
   }
 
-  public String getMessageCorrelationKey() {
+  @Override
+public String getMessageCorrelationKey() {
     return correlationKey;
   }
 
@@ -56,7 +59,8 @@ public class ActivitiMessageEventImpl extends ActivitiActivityEventImpl implemen
       this.correlationKey = correlationKey;
   }
 
-  public String getMessageBusinessKey() {
+  @Override
+public String getMessageBusinessKey() {
       return businessKey;
   }
 

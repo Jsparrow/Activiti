@@ -89,30 +89,28 @@ public class UserTaskTest extends PluggableActivitiTestCase {
     assertEquals("Task with category", taskService.createTaskQuery().taskCategory(testCategory).singleResult().getName());
     assertTrue(taskService.createTaskQuery().taskCategory("Does not exist").count() == 0);
 
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      // Check historic task
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	// Check historic task
       HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(task.getId()).singleResult();
-      assertEquals(testCategory, historicTaskInstance.getCategory());
-      assertEquals("Task with category", historyService.createHistoricTaskInstanceQuery().taskCategory(testCategory).singleResult().getName());
-      assertTrue(historyService.createHistoricTaskInstanceQuery().taskCategory("Does not exist").count() == 0);
-
-      // Update category
+	assertEquals(testCategory, historicTaskInstance.getCategory());
+	assertEquals("Task with category", historyService.createHistoricTaskInstanceQuery().taskCategory(testCategory).singleResult().getName());
+	assertTrue(historyService.createHistoricTaskInstanceQuery().taskCategory("Does not exist").count() == 0);
+	// Update category
       String newCategory = "New Test Category";
-      task.setCategory(newCategory);
-      taskService.saveTask(task);
-
-      task = taskService.createTaskQuery().singleResult();
-      assertEquals(newCategory, task.getCategory());
-      assertEquals("Task with category", taskService.createTaskQuery().taskCategory(newCategory).singleResult().getName());
-      assertTrue(taskService.createTaskQuery().taskCategory(testCategory).count() == 0);
-
-      // Complete task and verify history
+	task.setCategory(newCategory);
+	taskService.saveTask(task);
+	task = taskService.createTaskQuery().singleResult();
+	assertEquals(newCategory, task.getCategory());
+	assertEquals("Task with category", taskService.createTaskQuery().taskCategory(newCategory).singleResult().getName());
+	assertTrue(taskService.createTaskQuery().taskCategory(testCategory).count() == 0);
+	// Complete task and verify history
       taskService.complete(task.getId());
-      historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(task.getId()).singleResult();
-      assertEquals(newCategory, historicTaskInstance.getCategory());
-      assertEquals("Task with category", historyService.createHistoricTaskInstanceQuery().taskCategory(newCategory).singleResult().getName());
-      assertTrue(historyService.createHistoricTaskInstanceQuery().taskCategory(testCategory).count() == 0);
-    }
+	historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(task.getId()).singleResult();
+	assertEquals(newCategory, historicTaskInstance.getCategory());
+	assertEquals("Task with category", historyService.createHistoricTaskInstanceQuery().taskCategory(newCategory).singleResult().getName());
+	assertTrue(historyService.createHistoricTaskInstanceQuery().taskCategory(testCategory).count() == 0);
   }
   
   // See https://activiti.atlassian.net/browse/ACT-4041
@@ -123,7 +121,7 @@ public class UserTaskTest extends PluggableActivitiTestCase {
     // Set variables
     Task task = taskService.createTaskQuery().singleResult();
     assertNotNull(task);
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     for (int i=0; i<20; i++) {
       vars.put("var" + i, i*2);
     }

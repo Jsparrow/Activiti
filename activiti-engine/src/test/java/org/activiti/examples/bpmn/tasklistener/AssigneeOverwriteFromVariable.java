@@ -23,7 +23,8 @@ import org.activiti.engine.delegate.TaskListener;
  */
 public class AssigneeOverwriteFromVariable implements TaskListener {
 
-  @SuppressWarnings("unchecked")
+  @Override
+@SuppressWarnings("unchecked")
   public void notify(DelegateTask delegateTask) {
     // get mapping table from variable
     DelegateExecution execution = delegateTask.getExecution();
@@ -33,10 +34,11 @@ public class AssigneeOverwriteFromVariable implements TaskListener {
     String assigneeFromProcessDefinition = delegateTask.getAssignee();
 
     // overwrite assignee if there is an entry in the mapping table
-    if (assigneeMappingTable.containsKey(assigneeFromProcessDefinition)) {
-      String assigneeFromMappingTable = assigneeMappingTable.get(assigneeFromProcessDefinition);
-      delegateTask.setAssignee(assigneeFromMappingTable);
-    }
+	if (!assigneeMappingTable.containsKey(assigneeFromProcessDefinition)) {
+		return;
+	}
+	String assigneeFromMappingTable = assigneeMappingTable.get(assigneeFromProcessDefinition);
+	delegateTask.setAssignee(assigneeFromMappingTable);
   }
 
 }

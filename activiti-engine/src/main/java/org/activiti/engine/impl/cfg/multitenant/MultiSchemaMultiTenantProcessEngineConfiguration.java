@@ -89,15 +89,14 @@ public class MultiSchemaMultiTenantProcessEngineConfiguration extends ProcessEng
   public void registerTenant(String tenantId, DataSource dataSource) {
     ((TenantAwareDataSource) super.getDataSource()).addDataSource(tenantId, dataSource);
     
-    if (booted) {
-      createTenantSchema(tenantId);
-      
-      createTenantAsyncJobExecutor(tenantId);
-      
-      tenantInfoHolder.setCurrentTenantId(tenantId);
-      super.postProcessEngineInitialisation();
-      tenantInfoHolder.clearCurrentTenantId();
-    }
+    if (!booted) {
+		return;
+	}
+	createTenantSchema(tenantId);
+	createTenantAsyncJobExecutor(tenantId);
+	tenantInfoHolder.setCurrentTenantId(tenantId);
+	super.postProcessEngineInitialisation();
+	tenantInfoHolder.clearCurrentTenantId();
   }
   
   @Override
@@ -110,9 +109,8 @@ public class MultiSchemaMultiTenantProcessEngineConfiguration extends ProcessEng
     super.initAsyncExecutor();
     
     if (asyncExecutor instanceof TenantAwareAsyncExecutor) {
-      for (String tenantId : tenantInfoHolder.getAllTenants()) {
-        ((TenantAwareAsyncExecutor) asyncExecutor).addTenantAsyncExecutor(tenantId, false); // false -> will be started later with all the other executors
-      }
+      // false -> will be started later with all the other executors
+	tenantInfoHolder.getAllTenants().forEach(tenantId -> ((TenantAwareAsyncExecutor) asyncExecutor).addTenantAsyncExecutor(tenantId, false));
     }
   }
   
@@ -135,9 +133,7 @@ public class MultiSchemaMultiTenantProcessEngineConfiguration extends ProcessEng
     this.asyncExecutorActivate = originalIsAutoActivateAsyncExecutor;
     
     // Create tenant schema
-    for (String tenantId : tenantInfoHolder.getAllTenants()) {
-      createTenantSchema(tenantId);
-    }
+	tenantInfoHolder.getAllTenants().forEach(this::createTenantSchema);
     
     // Start async executor
     if (asyncExecutor != null && originalIsAutoActivateAsyncExecutor) {

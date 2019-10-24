@@ -40,7 +40,7 @@ import org.activiti.engine.ActivitiException;
 public class TenantAwareDataSource implements DataSource {
   
   protected TenantInfoHolder tenantInfoHolder;
-  protected Map<Object, DataSource> dataSources = new HashMap<Object, DataSource>();
+  protected Map<Object, DataSource> dataSources = new HashMap<>();
   
   public TenantAwareDataSource(TenantInfoHolder tenantInfoHolder) {
     this.tenantInfoHolder = tenantInfoHolder;
@@ -54,11 +54,13 @@ public class TenantAwareDataSource implements DataSource {
     dataSources.remove(key);
   }
   
-  public Connection getConnection() throws SQLException {
+  @Override
+public Connection getConnection() throws SQLException {
     return getCurrentDataSource().getConnection();
   }
 
-  public Connection getConnection(String username, String password) throws SQLException {
+  @Override
+public Connection getConnection(String username, String password) throws SQLException {
     return  getCurrentDataSource().getConnection(username, password);
   }
   
@@ -71,23 +73,27 @@ public class TenantAwareDataSource implements DataSource {
     return dataSource;
   }
 
-  public int getLoginTimeout() throws SQLException {
+  @Override
+public int getLoginTimeout() throws SQLException {
     return 0; // Default
   }
   
-  public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+  @Override
+public Logger getParentLogger() throws SQLFeatureNotSupportedException {
     return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
+@SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> iface) throws SQLException {
     if (iface.isInstance(this)) {
       return (T) this;
     }
-    throw new SQLException("Cannot unwrap " + getClass().getName() + " as an instance of " + iface.getName()); 
+    throw new SQLException(new StringBuilder().append("Cannot unwrap ").append(getClass().getName()).append(" as an instance of ").append(iface.getName()).toString()); 
   }
 
-  public boolean isWrapperFor(Class<?> iface) throws SQLException {
+  @Override
+public boolean isWrapperFor(Class<?> iface) throws SQLException {
     return iface.isInstance(this);
   }
   
@@ -101,15 +107,18 @@ public class TenantAwareDataSource implements DataSource {
   
   // Unsupported //////////////////////////////////////////////////////////
   
-  public PrintWriter getLogWriter() throws SQLException {
+  @Override
+public PrintWriter getLogWriter() throws SQLException {
     throw new UnsupportedOperationException();
   }
 
-  public void setLogWriter(PrintWriter out) throws SQLException {
+  @Override
+public void setLogWriter(PrintWriter out) throws SQLException {
     throw new UnsupportedOperationException();
   }
   
-  public void setLoginTimeout(int seconds) throws SQLException {
+  @Override
+public void setLoginTimeout(int seconds) throws SQLException {
     throw new UnsupportedOperationException();
   }
 

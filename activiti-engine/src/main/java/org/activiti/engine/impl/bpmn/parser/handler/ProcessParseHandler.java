@@ -36,13 +36,15 @@ public class ProcessParseHandler extends AbstractBpmnParseHandler<Process> {
 
   public static final String PROPERTYNAME_DOCUMENTATION = "documentation";
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return Process.class;
   }
 
-  protected void executeParse(BpmnParse bpmnParse, Process process) {
+  @Override
+protected void executeParse(BpmnParse bpmnParse, Process process) {
     if (process.isExecutable() == false) {
-      LOGGER.info("Ignoring non-executable process with id='" + process.getId() + "'. Set the attribute isExecutable=\"true\" to deploy this process.");
+      LOGGER.info(new StringBuilder().append("Ignoring non-executable process with id='").append(process.getId()).append("'. Set the attribute isExecutable=\"true\" to deploy this process.").toString());
     } else {
       bpmnParse.getProcessDefinitions().add(transformProcess(bpmnParse, process));
     }
@@ -80,7 +82,7 @@ public class ProcessParseHandler extends AbstractBpmnParseHandler<Process> {
   protected void createEventListeners(BpmnParse bpmnParse, List<EventListener> eventListeners) {
 
     if (eventListeners != null && !eventListeners.isEmpty()) {
-      for (EventListener eventListener : eventListeners) {
+      eventListeners.forEach(eventListener -> {
         // Extract specific event-types (if any)
         ActivitiEventType[] types = ActivitiEventType.getTypesFromString(eventListener.getEvents());
 
@@ -98,9 +100,9 @@ public class ProcessParseHandler extends AbstractBpmnParseHandler<Process> {
           getEventSupport(bpmnParse.getBpmnModel()).addEventListener(bpmnParse.getListenerFactory().createEventThrowingEventListener(eventListener), types);
         
         } else {
-          LOGGER.warn("Unsupported implementation type for EventListener: " + eventListener.getImplementationType() + " for element " + bpmnParse.getCurrentFlowElement().getId());
+          LOGGER.warn(new StringBuilder().append("Unsupported implementation type for EventListener: ").append(eventListener.getImplementationType()).append(" for element ").append(bpmnParse.getCurrentFlowElement().getId()).toString());
         }
-      }
+      });
     }
 
   }

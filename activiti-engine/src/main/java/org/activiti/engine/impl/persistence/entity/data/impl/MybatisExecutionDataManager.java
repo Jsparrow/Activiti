@@ -121,12 +121,7 @@ public class MybatisExecutionDataManager extends AbstractDataManager<ExecutionEn
     List<ExecutionEntity> executionEntities = getList("selectExecutionsWithSameRootProcessInstanceId", executionId, 
         executionsWithSameRootProcessInstanceIdMatcher, true);
     
-    for (ExecutionEntity executionEntity : executionEntities) {
-      if (executionId.equals(executionEntity.getId())) {
-        return executionEntity;
-      }
-    }
-    return null;
+    return executionEntities.stream().filter(executionEntity -> executionId.equals(executionEntity.getId())).findFirst().orElse(null);
   }
   
   @Override
@@ -163,7 +158,7 @@ public class MybatisExecutionDataManager extends AbstractDataManager<ExecutionEn
 
   @Override
   public List<ExecutionEntity> findExecutionsByParentExecutionAndActivityIds(final String parentExecutionId, final Collection<String> activityIds) {
-    Map<String, Object> parameters = new HashMap<String, Object>(2);
+    Map<String, Object> parameters = new HashMap<>(2);
     parameters.put("parentExecutionId", parentExecutionId);
     parameters.put("activityIds", activityIds);
     
@@ -197,7 +192,7 @@ public class MybatisExecutionDataManager extends AbstractDataManager<ExecutionEn
   
   @Override
   public Collection<ExecutionEntity> findInactiveExecutionsByProcessInstanceId(final String processInstanceId) {
-    HashMap<String, Object> params = new HashMap<String, Object>(2);
+    HashMap<String, Object> params = new HashMap<>(2);
     params.put("processInstanceId", processInstanceId);
     params.put("isActive", false);
     
@@ -211,7 +206,7 @@ public class MybatisExecutionDataManager extends AbstractDataManager<ExecutionEn
   
   @Override
   public Collection<ExecutionEntity> findInactiveExecutionsByActivityIdAndProcessInstanceId(final String activityId, final String processInstanceId) {
-    HashMap<String, Object> params = new HashMap<String, Object>(3);
+    HashMap<String, Object> params = new HashMap<>(3);
     params.put("activityId", activityId);
     params.put("processInstanceId", processInstanceId);
     params.put("isActive", false);
@@ -310,7 +305,7 @@ public class MybatisExecutionDataManager extends AbstractDataManager<ExecutionEn
   
   @Override
   public void updateExecutionTenantIdForDeployment(String deploymentId, String newTenantId) {
-    HashMap<String, Object> params = new HashMap<String, Object>();
+    HashMap<String, Object> params = new HashMap<>();
     params.put("deploymentId", deploymentId);
     params.put("tenantId", newTenantId);
     getDbSqlSession().update("updateExecutionTenantIdForDeployment", params);
@@ -318,7 +313,7 @@ public class MybatisExecutionDataManager extends AbstractDataManager<ExecutionEn
   
   @Override
   public void updateProcessInstanceLockTime(String processInstanceId, Date lockDate, Date expirationTime) {
-    HashMap<String, Object> params = new HashMap<String, Object>();
+    HashMap<String, Object> params = new HashMap<>();
     params.put("id", processInstanceId);
     params.put("lockTime", lockDate);
     params.put("expirationTime", expirationTime);
@@ -336,7 +331,7 @@ public class MybatisExecutionDataManager extends AbstractDataManager<ExecutionEn
   
   @Override
   public void clearProcessInstanceLockTime(String processInstanceId) {
-    HashMap<String, Object> params = new HashMap<String, Object>();
+    HashMap<String, Object> params = new HashMap<>();
     params.put("id", processInstanceId);
     getDbSqlSession().update("clearProcessInstanceLockTime", params);
   }

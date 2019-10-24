@@ -43,9 +43,7 @@ public class VariableUpdatedListenerDelegate implements ActivitiEventListener {
             converter.from((ActivitiVariableEvent) event)
                     .ifPresent(convertedEvent -> {
                         if (listeners != null) {
-                            for ( VariableEventListener<VariableUpdatedEvent> listener : listeners ) {
-                                listener.onEvent(convertedEvent);
-                            }
+                            listeners.forEach(listener -> listener.onEvent(convertedEvent));
                         }
                     });
         }

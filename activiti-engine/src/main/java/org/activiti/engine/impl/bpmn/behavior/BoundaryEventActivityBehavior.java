@@ -138,14 +138,10 @@ public class BoundaryEventActivityBehavior extends FlowNodeActivityBehavior {
     ExecutionEntityManager executionEntityManager = commandContext.getExecutionEntityManager();
     Collection<ExecutionEntity> childExecutions = executionEntityManager.findChildExecutionsByParentExecutionId(parentExecution.getId());
     if (CollectionUtil.isNotEmpty(childExecutions)) {
-      for (ExecutionEntity childExecution : childExecutions) {
-        if (childExecution.getId().equals(notToDeleteExecution.getId()) == false) {
-          deleteChildExecutions(childExecution, notToDeleteExecution, commandContext);
-        }
-      }
+      childExecutions.stream().filter(childExecution -> childExecution.getId().equals(notToDeleteExecution.getId()) == false).forEach(childExecution -> deleteChildExecutions(childExecution, notToDeleteExecution, commandContext));
     }
 
-    String deleteReason = DeleteReason.BOUNDARY_EVENT_INTERRUPTING + " (" + notToDeleteExecution.getCurrentActivityId() + ")";
+    String deleteReason = new StringBuilder().append(DeleteReason.BOUNDARY_EVENT_INTERRUPTING).append(" (").append(notToDeleteExecution.getCurrentActivityId()).append(")").toString();
     if (parentExecution.getCurrentFlowElement() instanceof CallActivity) {
       ExecutionEntity subProcessExecution = executionEntityManager.findSubProcessInstanceBySuperExecutionId(parentExecution.getId());
       if (subProcessExecution != null) {

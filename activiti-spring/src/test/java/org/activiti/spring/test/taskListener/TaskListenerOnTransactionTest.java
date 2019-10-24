@@ -23,6 +23,8 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
 import org.activiti.spring.impl.test.SpringActivitiTestCase;
 import org.springframework.test.context.ContextConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -30,7 +32,9 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration("classpath:org/activiti/spring/test/executionListener/TransactionDependentListenerTest-context.xml")
 public class TaskListenerOnTransactionTest extends SpringActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(TaskListenerOnTransactionTest.class);
+
+@Deployment
   public void testOnCompleteCommitted() {
     CurrentTaskTransactionDependentTaskListener.clear();
 
@@ -82,6 +86,7 @@ public class TaskListenerOnTransactionTest extends SpringActivitiTestCase {
     try {
       taskService.complete(task.getId());
     } catch (Exception ex) {
+		logger.error(ex.getMessage(), ex);
 
     }
 

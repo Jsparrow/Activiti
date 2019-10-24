@@ -18,7 +18,7 @@ public class ProcessInstanceHistoryLogImpl implements ProcessInstanceHistoryLog 
 
   protected HistoricProcessInstance historicProcessInstance;
 
-  protected List<HistoricData> historicData = new ArrayList<HistoricData>();
+  protected List<HistoricData> historicData = new ArrayList<>();
 
   public ProcessInstanceHistoryLogImpl(HistoricProcessInstance historicProcessInstance) {
     this.historicProcessInstance = historicProcessInstance;
@@ -93,7 +93,7 @@ public class ProcessInstanceHistoryLogImpl implements ProcessInstanceHistoryLog 
   }
 
   public void orderHistoricData() {
-    Collections.sort(historicData, new Comparator<HistoricData>() {
+    historicData.sort(new Comparator<HistoricData>() {
       @Override
       public int compare(HistoricData data1, HistoricData data2) {
         return data1.getTime().compareTo(data2.getTime());

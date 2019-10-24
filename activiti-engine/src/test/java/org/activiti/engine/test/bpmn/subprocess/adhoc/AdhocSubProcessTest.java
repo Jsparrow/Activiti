@@ -27,13 +27,17 @@ import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class AdhocSubProcessTest extends PluggableActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(AdhocSubProcessTest.class);
+
+@Deployment
   public void testSimpleAdhocSubProcess() {
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess");
     Execution execution = runtimeService.createExecutionQuery().activityId("adhocSubProcess").singleResult();
@@ -66,7 +70,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testSimpleCompletionCondition() {
-    Map<String, Object> variableMap = new HashMap<String, Object>();
+    Map<String, Object> variableMap = new HashMap<>();
     variableMap.put("completed", false);
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess", variableMap);
     Execution execution = runtimeService.createExecutionQuery().activityId("adhocSubProcess").singleResult();
@@ -92,7 +96,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
     subProcessTask = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
     assertEquals("Task2 in subprocess", subProcessTask.getName());
     
-    variableMap = new HashMap<String, Object>();
+    variableMap = new HashMap<>();
     variableMap.put("completed", true);
     taskService.complete(subProcessTask.getId(), variableMap);
     
@@ -110,7 +114,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
           .list();
       
       assertEquals(3, historicTasks.size());
-      List<String> taskDefinitionKeys = new ArrayList<String>(3);
+      List<String> taskDefinitionKeys = new ArrayList<>(3);
       taskDefinitionKeys.add(historicTasks.get(0).getTaskDefinitionKey());
       taskDefinitionKeys.add(historicTasks.get(1).getTaskDefinitionKey());
       taskDefinitionKeys.add(historicTasks.get(2).getTaskDefinitionKey());
@@ -125,7 +129,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testParallelAdhocSubProcess() {
-    Map<String, Object> variableMap = new HashMap<String, Object>();
+    Map<String, Object> variableMap = new HashMap<>();
     variableMap.put("completed", false);
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess", variableMap);
     Execution execution = runtimeService.createExecutionQuery().activityId("adhocSubProcess").singleResult();
@@ -142,7 +146,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
     List<Task> tasks = taskService.createTaskQuery().processInstanceId(pi.getId()).list();
     assertEquals(2, tasks.size());
 
-    variableMap = new HashMap<String, Object>();
+    variableMap = new HashMap<>();
     variableMap.put("completed", true);
     taskService.complete(subProcessTask.getId(), variableMap);
     
@@ -156,7 +160,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testSequentialAdhocSubProcess() {
-    Map<String, Object> variableMap = new HashMap<String, Object>();
+    Map<String, Object> variableMap = new HashMap<>();
     variableMap.put("completed", false);
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess", variableMap);
     Execution execution = runtimeService.createExecutionQuery().activityId("adhocSubProcess").singleResult();
@@ -173,6 +177,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
       runtimeService.executeActivityInAdhocSubProcess(execution.getId(), "subProcessTask2");
       fail("exception expected because can only enable one activity in a sequential ad-hoc sub process");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // expected
     }
     
@@ -184,7 +189,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
     subProcessTask = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
     assertEquals("Task2 in subprocess", subProcessTask.getName());
 
-    variableMap = new HashMap<String, Object>();
+    variableMap = new HashMap<>();
     variableMap.put("completed", true);
     taskService.complete(subProcessTask.getId(), variableMap);
     
@@ -198,7 +203,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testFlowsInAdhocSubProcess() {
-    Map<String, Object> variableMap = new HashMap<String, Object>();
+    Map<String, Object> variableMap = new HashMap<>();
     variableMap.put("completed", false);
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess", variableMap);
     Execution execution = runtimeService.createExecutionQuery().activityId("adhocSubProcess").singleResult();
@@ -217,13 +222,14 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
       runtimeService.executeActivityInAdhocSubProcess(execution.getId(), "subProcessTask2");
       fail("exception expected because can only enable one activity in a sequential ad-hoc sub process");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // expected
     }
     
     subProcessTask = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
     assertEquals("The next task", subProcessTask.getName());
     
-    variableMap = new HashMap<String, Object>();
+    variableMap = new HashMap<>();
     variableMap.put("completed", true);
     taskService.complete(subProcessTask.getId(), variableMap);
     
@@ -237,7 +243,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
   
   @Deployment(resources="org/activiti/engine/test/bpmn/subprocess/adhoc/AdhocSubProcessTest.testFlowsInAdhocSubProcess.bpmn20.xml")
   public void testCompleteFlowBeforeEndInAdhocSubProcess() {
-    Map<String, Object> variableMap = new HashMap<String, Object>();
+    Map<String, Object> variableMap = new HashMap<>();
     variableMap.put("completed", false);
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess", variableMap);
     Execution execution = runtimeService.createExecutionQuery().activityId("adhocSubProcess").singleResult();
@@ -250,7 +256,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
     Task subProcessTask = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
     assertEquals("Task in subprocess", subProcessTask.getName());
     
-    variableMap = new HashMap<String, Object>();
+    variableMap = new HashMap<>();
     variableMap.put("completed", true);
     taskService.complete(subProcessTask.getId(), variableMap);
     
@@ -264,7 +270,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testParallelFlowsInAdhocSubProcess() {
-    Map<String, Object> variableMap = new HashMap<String, Object>();
+    Map<String, Object> variableMap = new HashMap<>();
     variableMap.put("completed", false);
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess", variableMap);
     Execution execution = runtimeService.createExecutionQuery().activityId("adhocSubProcess").singleResult();
@@ -290,7 +296,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
     List<Task> tasks = taskService.createTaskQuery().processInstanceId(pi.getId()).list();
     assertEquals(3, tasks.size());
     
-    variableMap = new HashMap<String, Object>();
+    variableMap = new HashMap<>();
     variableMap.put("completed", true);
     taskService.complete(subProcessTask.getId(), variableMap);
     
@@ -304,7 +310,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testKeepRemainingInstancesAdhocSubProcess() {
-    Map<String, Object> variableMap = new HashMap<String, Object>();
+    Map<String, Object> variableMap = new HashMap<>();
     variableMap.put("completed", false);
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess", variableMap);
     Execution execution = runtimeService.createExecutionQuery().activityId("adhocSubProcess").singleResult();
@@ -321,7 +327,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
     List<Task> tasks = taskService.createTaskQuery().processInstanceId(pi.getId()).list();
     assertEquals(2, tasks.size());
 
-    variableMap = new HashMap<String, Object>();
+    variableMap = new HashMap<>();
     variableMap.put("completed", true);
     taskService.complete(subProcessTask.getId(), variableMap);
     
@@ -342,7 +348,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testParallelFlowsWithKeepRemainingInstancesAdhocSubProcess() {
-    Map<String, Object> variableMap = new HashMap<String, Object>();
+    Map<String, Object> variableMap = new HashMap<>();
     variableMap.put("completed", false);
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess", variableMap);
     Execution execution = runtimeService.createExecutionQuery().activityId("adhocSubProcess").singleResult();
@@ -368,7 +374,7 @@ public class AdhocSubProcessTest extends PluggableActivitiTestCase {
     List<Task> tasks = taskService.createTaskQuery().processInstanceId(pi.getId()).list();
     assertEquals(3, tasks.size());
     
-    variableMap = new HashMap<String, Object>();
+    variableMap = new HashMap<>();
     variableMap.put("completed", true);
     taskService.complete(subProcessTask.getId(), variableMap);
     

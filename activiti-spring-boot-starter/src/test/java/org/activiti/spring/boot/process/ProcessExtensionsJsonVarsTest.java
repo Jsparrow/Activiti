@@ -73,7 +73,7 @@ public class ProcessExtensionsJsonVarsTest {
                 .withProcessDefinitionKey(JSON_VARS_PROCESS)
                 .withVariable("var2",new ObjectMapper().readValue("{ \"testvar2element\":\"testvar2element\"}", JsonNode.class))
                 .withVariable("var4",customType)
-                .withVariable("var5",new ObjectMapper().readValue("{ \"verylongjson\":\""+ StringUtils.repeat("a", 4000)+"\"}", JsonNode.class))
+                .withVariable("var5",new ObjectMapper().readValue(new StringBuilder().append("{ \"verylongjson\":\"").append(StringUtils.repeat("a", 4000)).append("\"}").toString(), JsonNode.class))
                 .withVariable("var6",bigObject)
                 .withBusinessKey("my business key")
                 .build());
@@ -96,14 +96,14 @@ public class ProcessExtensionsJsonVarsTest {
                         tuple("var6","longJson"));
 
 
-        assertThat(variableInstances)
-                .filteredOn("name","var2")
-                .extracting("value")
-                .hasSize(1)
-                .hasOnlyElementsOfType(ObjectNode.class)
-                .first()
-                .toString()
-                .equalsIgnoreCase("{ \"testvar2element\":\"testvar2element\"}");
+        "{ \"testvar2element\":\"testvar2element\"}"
+                .equalsIgnoreCase(assertThat(variableInstances)
+				        .filteredOn("name","var2")
+				        .extracting("value")
+				        .hasSize(1)
+				        .hasOnlyElementsOfType(ObjectNode.class)
+				        .first()
+				        .toString());
 
         assertThat(variableInstances)
                 .filteredOn("name","var3")
@@ -145,13 +145,9 @@ public class ProcessExtensionsJsonVarsTest {
         //by default jackson won't ser empty bean so it can't be handled as json
         assertThat(objectMapper.canSerialize(EmptyBean.class)).isFalse();
 
-        assertThatExceptionOfType(ActivitiException.class).isThrownBy(() -> {
-            processRuntime.start(ProcessPayloadBuilder.start()
-                    .withProcessDefinitionKey(JSON_VARS_PROCESS)
-                    .withVariable("var2", new EmptyBean())
-                    .withVariable("var5","this one is ok as doesn't have to be json")
-                    .build());
-        }).withMessage("Can't start process '" + JSON_VARS_PROCESS + "' as variables fail type validation - var2");
+        assertThatExceptionOfType(ActivitiException.class).isThrownBy(() -> processRuntime.start(ProcessPayloadBuilder.start().withProcessDefinitionKey(JSON_VARS_PROCESS)
+				.withVariable("var2", new EmptyBean()).withVariable("var5", "this one is ok as doesn't have to be json")
+				.build())).withMessage(new StringBuilder().append("Can't start process '").append(JSON_VARS_PROCESS).append("' as variables fail type validation - var2").toString());
 
         //we don't test for bad json in the extension file because the context doesn't load for that scenario as failure is during parsing
     }
@@ -169,13 +165,10 @@ public class ProcessExtensionsJsonVarsTest {
         //by default jackson won't ser empty bean so it can't be handled as json
         assertThat(objectMapper.canSerialize(EmptyBean.class)).isFalse();
 
-        assertThatExceptionOfType(ActivitiException.class).isThrownBy(() -> {
-            processRuntime.start(ProcessPayloadBuilder.start()
-                    .withProcessDefinitionKey(JSON_VARS_PROCESS)
-                    .withVariable("var2",new ObjectMapper().readValue("{ \"testvar2element\":\"testvar2element\"}", JsonNode.class))
-                    .withVariable("var5",new EmptyBean())
-                    .build());
-        }).withMessageStartingWith("couldn't find a variable type that is able to serialize");
+        assertThatExceptionOfType(ActivitiException.class).isThrownBy(() -> processRuntime.start(ProcessPayloadBuilder.start().withProcessDefinitionKey(JSON_VARS_PROCESS)
+				.withVariable("var2",
+						new ObjectMapper().readValue("{ \"testvar2element\":\"testvar2element\"}", JsonNode.class))
+				.withVariable("var5", new EmptyBean()).build())).withMessageStartingWith("couldn't find a variable type that is able to serialize");
 
     }
 

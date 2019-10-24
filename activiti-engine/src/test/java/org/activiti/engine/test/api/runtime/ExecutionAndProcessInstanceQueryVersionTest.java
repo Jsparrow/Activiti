@@ -10,7 +10,8 @@ public class ExecutionAndProcessInstanceQueryVersionTest extends PluggableActivi
   private org.activiti.engine.repository.Deployment oldDeployment;
   private org.activiti.engine.repository.Deployment newDeployment;
 
-  protected void setUp() throws Exception {
+  @Override
+protected void setUp() throws Exception {
     super.setUp();
     oldDeployment = repositoryService.createDeployment()
       .addClasspathResource(DEPLOYMENT_FILE_PATH)
@@ -25,7 +26,8 @@ public class ExecutionAndProcessInstanceQueryVersionTest extends PluggableActivi
     runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY).getId();
   }
 
-  protected void tearDown() throws Exception {
+  @Override
+protected void tearDown() throws Exception {
     repositoryService.deleteDeployment(oldDeployment.getId(), true);
     repositoryService.deleteDeployment(newDeployment.getId(), true);
   }

@@ -32,26 +32,31 @@ public class ClassStructureDefinition implements FieldBaseStructureDefinition {
     this.classStructure = classStructure;
   }
 
-  public String getId() {
+  @Override
+public String getId() {
     return this.id;
   }
 
-  public int getFieldSize() {
+  @Override
+public int getFieldSize() {
     // TODO
     return 0;
   }
 
-  public String getFieldNameAt(int index) {
+  @Override
+public String getFieldNameAt(int index) {
     // TODO
     return null;
   }
 
-  public Class<?> getFieldTypeAt(int index) {
+  @Override
+public Class<?> getFieldTypeAt(int index) {
     // TODO
     return null;
   }
 
-  public StructureInstance createInstance() {
+  @Override
+public StructureInstance createInstance() {
     return new FieldBaseStructureInstance(this);
   }
 }

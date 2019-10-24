@@ -28,7 +28,8 @@ public class SubProcessConverterTest extends AbstractConverterTest {
     validateModel(bpmnModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "test.subprocessmodel.json";
   }
 

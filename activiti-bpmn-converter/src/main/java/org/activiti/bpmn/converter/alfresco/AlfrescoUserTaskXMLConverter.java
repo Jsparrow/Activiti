@@ -21,7 +21,8 @@ import org.activiti.bpmn.model.alfresco.AlfrescoUserTask;
  */
 public class AlfrescoUserTaskXMLConverter extends UserTaskXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return AlfrescoUserTask.class;
   }
 

@@ -14,7 +14,8 @@ package org.activiti.bpmn.model;
 
 public class ParallelGateway extends Gateway {
 
-  public ParallelGateway clone() {
+  @Override
+public ParallelGateway clone() {
     ParallelGateway clone = new ParallelGateway();
     clone.setValues(this);
     return clone;

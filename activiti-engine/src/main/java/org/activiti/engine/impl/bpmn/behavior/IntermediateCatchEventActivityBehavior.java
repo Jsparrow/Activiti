@@ -31,7 +31,8 @@ public class IntermediateCatchEventActivityBehavior extends AbstractBpmnActivity
 
   private static final long serialVersionUID = 1L;
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     // Do nothing: waitstate behavior
   }
 
@@ -93,13 +94,9 @@ public class IntermediateCatchEventActivityBehavior extends AbstractBpmnActivity
     
     // Gather all activity ids for the events after the event based gateway that need to be destroyed
     List<SequenceFlow> outgoingSequenceFlows = eventGateway.getOutgoingFlows();
-    Set<String> eventActivityIds = new HashSet<String>(outgoingSequenceFlows.size() - 1); // -1, the event being triggered does not need to be deleted
-    for (SequenceFlow outgoingSequenceFlow : outgoingSequenceFlows) {
-      if (outgoingSequenceFlow.getTargetFlowElement() != null
-          && !outgoingSequenceFlow.getTargetFlowElement().getId().equals(execution.getCurrentActivityId())) {
-        eventActivityIds.add(outgoingSequenceFlow.getTargetFlowElement().getId());
-      }
-    }
+    Set<String> eventActivityIds = new HashSet<>(outgoingSequenceFlows.size() - 1); // -1, the event being triggered does not need to be deleted
+    outgoingSequenceFlows.stream().filter(outgoingSequenceFlow -> outgoingSequenceFlow.getTargetFlowElement() != null
+          && !outgoingSequenceFlow.getTargetFlowElement().getId().equals(execution.getCurrentActivityId())).forEach(outgoingSequenceFlow -> eventActivityIds.add(outgoingSequenceFlow.getTargetFlowElement().getId()));
     
     CommandContext commandContext = Context.getCommandContext();
     ExecutionEntityManager executionEntityManager = commandContext.getExecutionEntityManager();
@@ -109,15 +106,13 @@ public class IntermediateCatchEventActivityBehavior extends AbstractBpmnActivity
         .findExecutionsByParentExecutionAndActivityIds(execution.getParentId(), eventActivityIds);
     
     // Execute the cancel behaviour of the IntermediateCatchEvent
-    for (ExecutionEntity executionEntity : executionEntities) {
-      if (eventActivityIds.contains(executionEntity.getActivityId()) && execution.getCurrentFlowElement() instanceof IntermediateCatchEvent) {
+	executionEntities.stream().filter(executionEntity -> eventActivityIds.contains(executionEntity.getActivityId()) && execution.getCurrentFlowElement() instanceof IntermediateCatchEvent).forEach(executionEntity -> {
         IntermediateCatchEvent intermediateCatchEvent = (IntermediateCatchEvent) execution.getCurrentFlowElement();
         if (intermediateCatchEvent.getBehavior() instanceof IntermediateCatchEventActivityBehavior) {
           ((IntermediateCatchEventActivityBehavior) intermediateCatchEvent.getBehavior()).eventCancelledByEventGateway(executionEntity);
           eventActivityIds.remove(executionEntity.getActivityId()); // We only need to delete ONE execution at the event.
         }
-      }
-    }
+      });
   }
   
 }
