@@ -31,7 +31,8 @@ public class SaveModelCmd implements Command<Void>, Serializable {
     this.model = model;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     if (model == null) {
       throw new ActivitiIllegalArgumentException("model is null");
     }

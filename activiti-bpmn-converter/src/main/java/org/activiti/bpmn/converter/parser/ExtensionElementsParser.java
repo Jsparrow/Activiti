@@ -55,11 +55,9 @@ public class ExtensionElementsParser implements BpmnXMLConstants {
           parentElement.addExtensionElement(extensionElement);
         }
 
-      } else if (xtr.isEndElement()) {
-        if (ELEMENT_EXTENSIONS.equals(xtr.getLocalName())) {
-          readyWithChildElements = true;
-        }
-      }
+      } else if (xtr.isEndElement() && ELEMENT_EXTENSIONS.equals(xtr.getLocalName())) {
+	  readyWithChildElements = true;
+	}
     }
   }
 }

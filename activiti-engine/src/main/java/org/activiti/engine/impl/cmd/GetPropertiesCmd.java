@@ -29,14 +29,13 @@ public class GetPropertiesCmd implements Command<Map<String, String>>, Serializa
 
   private static final long serialVersionUID = 1L;
 
-  @SuppressWarnings("unchecked")
+  @Override
+@SuppressWarnings("unchecked")
   public Map<String, String> execute(CommandContext commandContext) {
     List<PropertyEntity> propertyEntities = commandContext.getPropertyEntityManager().findAll();
 
-    Map<String, String> properties = new HashMap<String, String>();
-    for (PropertyEntity propertyEntity : propertyEntities) {
-      properties.put(propertyEntity.getName(), propertyEntity.getValue());
-    }
+    Map<String, String> properties = new HashMap<>();
+    propertyEntities.forEach(propertyEntity -> properties.put(propertyEntity.getName(), propertyEntity.getValue()));
     return properties;
   }
 

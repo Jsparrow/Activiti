@@ -22,6 +22,8 @@ import org.activiti.spring.impl.test.SpringActivitiTestCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -29,7 +31,9 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration("classpath:org/activiti/spring/test/transaction/SpringTransactionIntegrationTest-context.xml")
 public class SpringTransactionIntegrationTest extends SpringActivitiTestCase {
 
-  @Autowired
+  private static final Logger logger = LoggerFactory.getLogger(SpringTransactionIntegrationTest.class);
+
+@Autowired
   protected UserBean userBean;
 
   @Autowired
@@ -64,6 +68,7 @@ public class SpringTransactionIntegrationTest extends SpringActivitiTestCase {
       userBean.completeTask(taskService.createTaskQuery().singleResult().getId());
       fail();
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
     }
 
     // Since the service task after the user tasks throws an exception, both
@@ -83,6 +88,7 @@ public class SpringTransactionIntegrationTest extends SpringActivitiTestCase {
       deployBean.deployProcesses();
       fail();
     } catch (XMLException e) {
+		logger.error(e.getMessage(), e);
       // Parse exception should happen
     }
     assertEquals(0, repositoryService.createProcessDefinitionQuery().count());

@@ -5,7 +5,8 @@ import org.activiti.engine.delegate.JavaDelegate;
 
 public class ChangeVariableType implements JavaDelegate {
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     // Initially set to null, stored as NullType
     execution.setVariable("myVar", null);
 

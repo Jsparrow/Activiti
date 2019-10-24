@@ -196,12 +196,13 @@ public class TimerJobEntityManagerImpl extends AbstractEntityManager<TimerJobEnt
      * Subclasses may override to provide custom implementations.
      */
     protected void removeExecutionLink(TimerJobEntity jobEntity) {
-        if (jobEntity.getExecutionId() != null) {
-            ExecutionEntity execution = getExecutionEntityManager().findById(jobEntity.getExecutionId());
-            if (execution != null) {
-                execution.getTimerJobs().remove(jobEntity);
-            }
-        }
+        if (jobEntity.getExecutionId() == null) {
+			return;
+		}
+		ExecutionEntity execution = getExecutionEntityManager().findById(jobEntity.getExecutionId());
+		if (execution != null) {
+		    execution.getTimerJobs().remove(jobEntity);
+		}
     }
 
     /**
@@ -240,10 +241,10 @@ public class TimerJobEntityManagerImpl extends AbstractEntityManager<TimerJobEnt
                                         expression.size());
         StringBuilder repeatBuilder = new StringBuilder("R");
         repeatBuilder.append(newRepeatValue);
-        for (String value : expression) {
+        expression.forEach(value -> {
             repeatBuilder.append("/");
             repeatBuilder.append(value);
-        }
+        });
         timerEntity.setRepeat(repeatBuilder.toString());
     }
 
@@ -290,7 +291,8 @@ public class TimerJobEntityManagerImpl extends AbstractEntityManager<TimerJobEnt
         return businessCalendarName;
     }
 
-    protected TimerJobDataManager getDataManager() {
+    @Override
+	protected TimerJobDataManager getDataManager() {
         return jobDataManager;
     }
 

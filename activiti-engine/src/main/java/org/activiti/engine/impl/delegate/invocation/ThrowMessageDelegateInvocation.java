@@ -34,11 +34,13 @@ public class ThrowMessageDelegateInvocation extends DelegateInvocation {
     this.message = message;
   }
 
-  protected void invoke() {
+  @Override
+protected void invoke() {
     this.invocationResult = delegateInstance.send(execution, message);
   }
 
-  public Object getTarget() {
+  @Override
+public Object getTarget() {
     return delegateInstance;
   }
 

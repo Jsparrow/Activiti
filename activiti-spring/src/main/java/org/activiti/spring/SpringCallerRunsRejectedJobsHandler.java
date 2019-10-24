@@ -28,7 +28,8 @@ public class SpringCallerRunsRejectedJobsHandler implements SpringRejectedJobsHa
 
   private static Logger log = LoggerFactory.getLogger(SpringCallerRunsRejectedJobsHandler.class);
 
-  public void jobRejected(AsyncExecutor asyncExecutor, Job job) {
+  @Override
+public void jobRejected(AsyncExecutor asyncExecutor, Job job) {
     try {
       // execute rejected work in caller thread (potentially blocking job
       // acquisition)

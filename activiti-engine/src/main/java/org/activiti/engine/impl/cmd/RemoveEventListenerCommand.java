@@ -27,7 +27,6 @@ public class RemoveEventListenerCommand implements Command<Void> {
   protected ActivitiEventListener listener;
 
   public RemoveEventListenerCommand(ActivitiEventListener listener) {
-    super();
     this.listener = listener;
   }
 

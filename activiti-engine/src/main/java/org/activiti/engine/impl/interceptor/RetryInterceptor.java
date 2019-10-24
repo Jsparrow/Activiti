@@ -30,7 +30,8 @@ public class RetryInterceptor extends AbstractCommandInterceptor {
   protected int waitTimeInMs = 50;
   protected int waitIncreaseFactor = 5;
 
-  public <T> T execute(CommandConfig config, Command<T> command) {
+  @Override
+public <T> T execute(CommandConfig config, Command<T> command) {
     long waitTime = waitTimeInMs;
     int failedAttempts = 0;
 
@@ -60,7 +61,8 @@ public class RetryInterceptor extends AbstractCommandInterceptor {
     try {
       Thread.sleep(waitTime);
     } catch (InterruptedException e) {
-      log.debug("I am interrupted while waiting for a retry.");
+      log.error(e.getMessage(), e);
+	log.debug("I am interrupted while waiting for a retry.");
     }
   }
 

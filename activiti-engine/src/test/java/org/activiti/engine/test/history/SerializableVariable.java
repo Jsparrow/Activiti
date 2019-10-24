@@ -25,7 +25,6 @@ public class SerializableVariable implements Serializable {
   public String text;
 
   public SerializableVariable(String text) {
-    super();
     this.text = text;
   }
 
@@ -39,18 +38,23 @@ public class SerializableVariable implements Serializable {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) {
+		return true;
+	}
+    if (obj == null) {
+		return false;
+	}
+    if (getClass() != obj.getClass()) {
+		return false;
+	}
     SerializableVariable other = (SerializableVariable) obj;
     if (text == null) {
-      if (other.text != null)
-        return false;
-    } else if (!text.equals(other.text))
-      return false;
+      if (other.text != null) {
+		return false;
+	}
+    } else if (!text.equals(other.text)) {
+		return false;
+	}
     return true;
   }
 }

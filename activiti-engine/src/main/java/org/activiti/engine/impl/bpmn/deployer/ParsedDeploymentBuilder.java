@@ -43,23 +43,21 @@ public class ParsedDeploymentBuilder {
   }
 
   public ParsedDeployment build() {
-    List<ProcessDefinitionEntity> processDefinitions = new ArrayList<ProcessDefinitionEntity>();
+    List<ProcessDefinitionEntity> processDefinitions = new ArrayList<>();
     Map<ProcessDefinitionEntity, BpmnParse> processDefinitionsToBpmnParseMap 
-      = new LinkedHashMap<ProcessDefinitionEntity, BpmnParse>();
+      = new LinkedHashMap<>();
     Map<ProcessDefinitionEntity, ResourceEntity> processDefinitionsToResourceMap 
-      = new LinkedHashMap<ProcessDefinitionEntity, ResourceEntity>();
+      = new LinkedHashMap<>();
 
-    for (ResourceEntity resource : deployment.getResources().values()) {
-      if (isBpmnResource(resource.getName())) {
+    deployment.getResources().values().stream().filter(resource -> isBpmnResource(resource.getName())).forEach(resource -> {
         log.debug("Processing BPMN resource {}", resource.getName());
         BpmnParse parse = createBpmnParseFromResource(resource);
-        for (ProcessDefinitionEntity processDefinition : parse.getProcessDefinitions()) {
+        parse.getProcessDefinitions().forEach(processDefinition -> {
           processDefinitions.add(processDefinition);
           processDefinitionsToBpmnParseMap.put(processDefinition, parse);
           processDefinitionsToResourceMap.put(processDefinition, resource);
-        }
-      }
-    }
+        });
+      });
 
     return new ParsedDeployment(deployment, processDefinitions, 
         processDefinitionsToBpmnParseMap, processDefinitionsToResourceMap);

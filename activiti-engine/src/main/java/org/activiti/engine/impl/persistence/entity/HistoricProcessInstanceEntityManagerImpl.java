@@ -48,35 +48,30 @@ public class HistoricProcessInstanceEntityManagerImpl extends AbstractEntityMana
   
   @Override
   public void deleteHistoricProcessInstanceByProcessDefinitionId(String processDefinitionId) {
-    if (getHistoryManager().isHistoryEnabled()) {
-      List<String> historicProcessInstanceIds = historicProcessInstanceDataManager.findHistoricProcessInstanceIdsByProcessDefinitionId(processDefinitionId);
-      for (String historicProcessInstanceId : historicProcessInstanceIds) {
-        delete(historicProcessInstanceId);
-      }
-    }
+    if (!getHistoryManager().isHistoryEnabled()) {
+		return;
+	}
+	List<String> historicProcessInstanceIds = historicProcessInstanceDataManager.findHistoricProcessInstanceIdsByProcessDefinitionId(processDefinitionId);
+	historicProcessInstanceIds.forEach(this::delete);
   }
   
   @Override
   public void delete(String historicProcessInstanceId) {
-    if (getHistoryManager().isHistoryEnabled()) {
-      HistoricProcessInstanceEntity historicProcessInstance = findById(historicProcessInstanceId);
-
-      getHistoricDetailEntityManager().deleteHistoricDetailsByProcessInstanceId(historicProcessInstanceId);
-      getHistoricVariableInstanceEntityManager().deleteHistoricVariableInstanceByProcessInstanceId(historicProcessInstanceId);
-      getHistoricActivityInstanceEntityManager().deleteHistoricActivityInstancesByProcessInstanceId(historicProcessInstanceId);
-      getHistoricTaskInstanceEntityManager().deleteHistoricTaskInstancesByProcessInstanceId(historicProcessInstanceId);
-      getHistoricIdentityLinkEntityManager().deleteHistoricIdentityLinksByProcInstance(historicProcessInstanceId);
-      getCommentEntityManager().deleteCommentsByProcessInstanceId(historicProcessInstanceId);
-
-      delete(historicProcessInstance, false);
-
-      // Also delete any sub-processes that may be active (ACT-821)
-
-      List<HistoricProcessInstanceEntity> selectList = historicProcessInstanceDataManager.findHistoricProcessInstancesBySuperProcessInstanceId(historicProcessInstanceId);
-      for (HistoricProcessInstanceEntity child : selectList) {
-        delete(child.getId()); // NEEDS to be by id, to come again through this method!
-      }
-    }
+    // Also delete any sub-processes that may be active (ACT-821)
+	if (!getHistoryManager().isHistoryEnabled()) {
+		return;
+	}
+	HistoricProcessInstanceEntity historicProcessInstance = findById(historicProcessInstanceId);
+	getHistoricDetailEntityManager().deleteHistoricDetailsByProcessInstanceId(historicProcessInstanceId);
+	getHistoricVariableInstanceEntityManager().deleteHistoricVariableInstanceByProcessInstanceId(historicProcessInstanceId);
+	getHistoricActivityInstanceEntityManager().deleteHistoricActivityInstancesByProcessInstanceId(historicProcessInstanceId);
+	getHistoricTaskInstanceEntityManager().deleteHistoricTaskInstancesByProcessInstanceId(historicProcessInstanceId);
+	getHistoricIdentityLinkEntityManager().deleteHistoricIdentityLinksByProcInstance(historicProcessInstanceId);
+	getCommentEntityManager().deleteCommentsByProcessInstanceId(historicProcessInstanceId);
+	delete(historicProcessInstance, false);
+	List<HistoricProcessInstanceEntity> selectList = historicProcessInstanceDataManager.findHistoricProcessInstancesBySuperProcessInstanceId(historicProcessInstanceId);
+	// NEEDS to be by id, to come again through this method!
+	selectList.forEach(child -> delete(child.getId()));
   }
 
   @Override

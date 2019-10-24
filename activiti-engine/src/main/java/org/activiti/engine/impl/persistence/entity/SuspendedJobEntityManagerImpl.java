@@ -144,7 +144,8 @@ public class SuspendedJobEntityManagerImpl extends AbstractEntityManager<Suspend
         return newSuspendedJobEntity;
     }
 
-    protected SuspendedJobDataManager getDataManager() {
+    @Override
+	protected SuspendedJobDataManager getDataManager() {
         return jobDataManager;
     }
 

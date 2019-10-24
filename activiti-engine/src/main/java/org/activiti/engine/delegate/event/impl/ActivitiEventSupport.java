@@ -38,8 +38,8 @@ public class ActivitiEventSupport {
   protected Map<ActivitiEventType, List<ActivitiEventListener>> typedListeners;
 
   public ActivitiEventSupport() {
-    eventListeners = new CopyOnWriteArrayList<ActivitiEventListener>();
-    typedListeners = new HashMap<ActivitiEventType, List<ActivitiEventListener>>();
+    eventListeners = new CopyOnWriteArrayList<>();
+    typedListeners = new HashMap<>();
   }
 
   public synchronized void addEventListener(ActivitiEventListener listenerToAdd) {
@@ -69,9 +69,7 @@ public class ActivitiEventSupport {
   public void removeEventListener(ActivitiEventListener listenerToRemove) {
     eventListeners.remove(listenerToRemove);
 
-    for (List<ActivitiEventListener> listeners : typedListeners.values()) {
-      listeners.remove(listenerToRemove);
-    }
+    typedListeners.values().forEach(listeners -> listeners.remove(listenerToRemove));
   }
 
   public void dispatchEvent(ActivitiEvent event) {
@@ -85,17 +83,13 @@ public class ActivitiEventSupport {
 
     // Call global listeners
     if (!eventListeners.isEmpty()) {
-      for (ActivitiEventListener listener : eventListeners) {
-        dispatchEvent(event, listener);
-      }
+      eventListeners.forEach(listener -> dispatchEvent(event, listener));
     }
 
     // Call typed listeners, if any
     List<ActivitiEventListener> typed = typedListeners.get(event.getType());
     if (typed != null && !typed.isEmpty()) {
-      for (ActivitiEventListener listener : typed) {
-        dispatchEvent(event, listener);
-      }
+      typed.forEach(listener -> dispatchEvent(event, listener));
     }
   }
 
@@ -117,7 +111,7 @@ public class ActivitiEventSupport {
     List<ActivitiEventListener> listeners = typedListeners.get(type);
     if (listeners == null) {
       // Add an empty list of listeners for this type
-      listeners = new CopyOnWriteArrayList<ActivitiEventListener>();
+      listeners = new CopyOnWriteArrayList<>();
       typedListeners.put(type, listeners);
     }
 

@@ -27,19 +27,15 @@ public class ConditionUtil {
       conditionExpression = sequenceFlow.getConditionExpression();
     }
     
-    if (StringUtils.isNotEmpty(conditionExpression)) {
-
-      Expression expression = Context.getProcessEngineConfiguration().getExpressionManager().createExpression(conditionExpression);
-      Condition condition = new UelExpressionCondition(expression);
-      if (condition.evaluate(sequenceFlow.getId(), execution)) {
+    if (!StringUtils.isNotEmpty(conditionExpression)) {
+		return true;
+	}
+	Expression expression = Context.getProcessEngineConfiguration().getExpressionManager().createExpression(conditionExpression);
+	Condition condition = new UelExpressionCondition(expression);
+	if (condition.evaluate(sequenceFlow.getId(), execution)) {
         return true;
       }
-
-      return false;
-
-    } else {
-      return true;
-    }
+	return false;
 
   }
     

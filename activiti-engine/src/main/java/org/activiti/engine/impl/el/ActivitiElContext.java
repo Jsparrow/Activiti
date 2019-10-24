@@ -29,15 +29,18 @@ public class ActivitiElContext extends ELContext {
     this.elResolver = elResolver;
   }
 
-  public ELResolver getELResolver() {
+  @Override
+public ELResolver getELResolver() {
     return elResolver;
   }
 
-  public FunctionMapper getFunctionMapper() {
+  @Override
+public FunctionMapper getFunctionMapper() {
     return new ActivitiFunctionMapper();
   }
 
-  public VariableMapper getVariableMapper() {
+  @Override
+public VariableMapper getVariableMapper() {
     return null;
   }
 }

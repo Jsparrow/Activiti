@@ -66,64 +66,76 @@ public class HistoricActivityInstanceQueryImpl extends AbstractQuery<HistoricAct
     return commandContext.getHistoricActivityInstanceEntityManager().findHistoricActivityInstancesByQueryCriteria(this, page);
   }
 
-  public HistoricActivityInstanceQueryImpl processInstanceId(String processInstanceId) {
+  @Override
+public HistoricActivityInstanceQueryImpl processInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl executionId(String executionId) {
+  @Override
+public HistoricActivityInstanceQueryImpl executionId(String executionId) {
     this.executionId = executionId;
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl processDefinitionId(String processDefinitionId) {
+  @Override
+public HistoricActivityInstanceQueryImpl processDefinitionId(String processDefinitionId) {
     this.processDefinitionId = processDefinitionId;
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl activityId(String activityId) {
+  @Override
+public HistoricActivityInstanceQueryImpl activityId(String activityId) {
     this.activityId = activityId;
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl activityName(String activityName) {
+  @Override
+public HistoricActivityInstanceQueryImpl activityName(String activityName) {
     this.activityName = activityName;
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl activityType(String activityType) {
+  @Override
+public HistoricActivityInstanceQueryImpl activityType(String activityType) {
     this.activityType = activityType;
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl taskAssignee(String assignee) {
+  @Override
+public HistoricActivityInstanceQueryImpl taskAssignee(String assignee) {
     this.assignee = assignee;
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl finished() {
+  @Override
+public HistoricActivityInstanceQueryImpl finished() {
     this.finished = true;
     this.unfinished = false;
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl unfinished() {
+  @Override
+public HistoricActivityInstanceQueryImpl unfinished() {
     this.unfinished = true;
     this.finished = false;
     return this;
   }
   
-  public HistoricActivityInstanceQuery deleteReason(String deleteReason) {
+  @Override
+public HistoricActivityInstanceQuery deleteReason(String deleteReason) {
     this.deleteReason = deleteReason;
     return this;
   }
   
-  public HistoricActivityInstanceQuery deleteReasonLike(String deleteReasonLike) {
+  @Override
+public HistoricActivityInstanceQuery deleteReasonLike(String deleteReasonLike) {
     this.deleteReasonLike = deleteReasonLike;
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl activityTenantId(String tenantId) {
+  @Override
+public HistoricActivityInstanceQueryImpl activityTenantId(String tenantId) {
     if (tenantId == null) {
       throw new ActivitiIllegalArgumentException("activity tenant id is null");
     }
@@ -135,7 +147,8 @@ public class HistoricActivityInstanceQueryImpl extends AbstractQuery<HistoricAct
     return tenantId;
   }
 
-  public HistoricActivityInstanceQueryImpl activityTenantIdLike(String tenantIdLike) {
+  @Override
+public HistoricActivityInstanceQueryImpl activityTenantIdLike(String tenantIdLike) {
     if (tenantIdLike == null) {
       throw new ActivitiIllegalArgumentException("activity tenant id is null");
     }
@@ -147,7 +160,8 @@ public class HistoricActivityInstanceQueryImpl extends AbstractQuery<HistoricAct
     return tenantIdLike;
   }
 
-  public HistoricActivityInstanceQueryImpl activityWithoutTenantId() {
+  @Override
+public HistoricActivityInstanceQueryImpl activityWithoutTenantId() {
     this.withoutTenantId = true;
     return this;
   }
@@ -159,62 +173,74 @@ public class HistoricActivityInstanceQueryImpl extends AbstractQuery<HistoricAct
   // ordering
   // /////////////////////////////////////////////////////////////////
 
-  public HistoricActivityInstanceQueryImpl orderByHistoricActivityInstanceDuration() {
+  @Override
+public HistoricActivityInstanceQueryImpl orderByHistoricActivityInstanceDuration() {
     orderBy(HistoricActivityInstanceQueryProperty.DURATION);
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl orderByHistoricActivityInstanceEndTime() {
+  @Override
+public HistoricActivityInstanceQueryImpl orderByHistoricActivityInstanceEndTime() {
     orderBy(HistoricActivityInstanceQueryProperty.END);
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl orderByExecutionId() {
+  @Override
+public HistoricActivityInstanceQueryImpl orderByExecutionId() {
     orderBy(HistoricActivityInstanceQueryProperty.EXECUTION_ID);
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl orderByHistoricActivityInstanceId() {
+  @Override
+public HistoricActivityInstanceQueryImpl orderByHistoricActivityInstanceId() {
     orderBy(HistoricActivityInstanceQueryProperty.HISTORIC_ACTIVITY_INSTANCE_ID);
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl orderByProcessDefinitionId() {
+  @Override
+public HistoricActivityInstanceQueryImpl orderByProcessDefinitionId() {
     orderBy(HistoricActivityInstanceQueryProperty.PROCESS_DEFINITION_ID);
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl orderByProcessInstanceId() {
+  @Override
+public HistoricActivityInstanceQueryImpl orderByProcessInstanceId() {
     orderBy(HistoricActivityInstanceQueryProperty.PROCESS_INSTANCE_ID);
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl orderByHistoricActivityInstanceStartTime() {
+  @Override
+public HistoricActivityInstanceQueryImpl orderByHistoricActivityInstanceStartTime() {
     orderBy(HistoricActivityInstanceQueryProperty.START);
     return this;
   }
 
-  public HistoricActivityInstanceQuery orderByActivityId() {
+  @Override
+public HistoricActivityInstanceQuery orderByActivityId() {
     orderBy(HistoricActivityInstanceQueryProperty.ACTIVITY_ID);
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl orderByActivityName() {
+  @Override
+public HistoricActivityInstanceQueryImpl orderByActivityName() {
     orderBy(HistoricActivityInstanceQueryProperty.ACTIVITY_NAME);
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl orderByActivityType() {
+  @Override
+public HistoricActivityInstanceQueryImpl orderByActivityType() {
     orderBy(HistoricActivityInstanceQueryProperty.ACTIVITY_TYPE);
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl orderByTenantId() {
+  @Override
+public HistoricActivityInstanceQueryImpl orderByTenantId() {
     orderBy(HistoricActivityInstanceQueryProperty.TENANT_ID);
     return this;
   }
 
-  public HistoricActivityInstanceQueryImpl activityInstanceId(String activityInstanceId) {
+  @Override
+public HistoricActivityInstanceQueryImpl activityInstanceId(String activityInstanceId) {
     this.activityInstanceId = activityInstanceId;
     return this;
   }

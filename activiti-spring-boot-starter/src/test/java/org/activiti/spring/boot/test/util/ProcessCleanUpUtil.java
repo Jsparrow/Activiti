@@ -22,14 +22,7 @@ public class ProcessCleanUpUtil {
         securityUtil.logInAs("admin");
         Page<ProcessInstance> processes = processAdminRuntime.processInstances(Pageable.of(0,
                 50));
-        for (ProcessInstance processInstance : processes.getContent()) {
-            if (processInstance.getParentId() == null) {
-                processAdminRuntime.delete(ProcessPayloadBuilder
-                                                   .delete()
-                                                   .withProcessInstance(processInstance)
-                                                   .withReason("test clean up")
-                                                   .build());
-            }
-        }
+        processes.getContent().stream().filter(processInstance -> processInstance.getParentId() == null).forEach(processInstance -> processAdminRuntime.delete(
+				ProcessPayloadBuilder.delete().withProcessInstance(processInstance).withReason("test clean up").build()));
     }
 }

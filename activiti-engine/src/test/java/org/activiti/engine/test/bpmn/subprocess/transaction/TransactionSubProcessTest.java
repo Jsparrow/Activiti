@@ -308,16 +308,14 @@ public class TransactionSubProcessTest extends PluggableActivitiTestCase {
 
     // first complete the inner user-tasks
     List<Task> tasks = taskService.createTaskQuery().list();
-    for (Task task : tasks) {
+    tasks.forEach(task -> {
       taskService.setVariable(task.getId(), "confirmed", true);
       taskService.complete(task.getId());
-    }
+    });
 
     // now complete the inner receive tasks
     List<Execution> executions = runtimeService.createExecutionQuery().activityId("receive").list();
-    for (Execution execution : executions) {
-      runtimeService.trigger(execution.getId());
-    }
+    executions.forEach(execution -> runtimeService.trigger(execution.getId()));
 
     runtimeService.trigger(runtimeService.createExecutionQuery().activityId("afterSuccess").singleResult().getId());
 

@@ -41,7 +41,8 @@ public abstract class AbstractSetProcessInstanceStateCmd implements Command<Void
     this.processInstanceId = processInstanceId;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
 
     if (processInstanceId == null) {
       throw new ActivitiIllegalArgumentException("ProcessInstanceId cannot be null.");
@@ -50,10 +51,10 @@ public abstract class AbstractSetProcessInstanceStateCmd implements Command<Void
     ExecutionEntity executionEntity = commandContext.getExecutionEntityManager().findById(processInstanceId);
 
     if (executionEntity == null) {
-      throw new ActivitiObjectNotFoundException("Cannot find processInstance for id '" + processInstanceId + "'.", Execution.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("Cannot find processInstance for id '").append(processInstanceId).append("'.").toString(), Execution.class);
     }
     if (!executionEntity.isProcessInstanceType()) {
-      throw new ActivitiException("Cannot set suspension state for execution '" + processInstanceId + "': not a process instance.");
+      throw new ActivitiException(new StringBuilder().append("Cannot set suspension state for execution '").append(processInstanceId).append("': not a process instance.").toString());
     }
     
     SuspensionStateUtil.setSuspensionState(executionEntity, getNewState());
@@ -61,37 +62,29 @@ public abstract class AbstractSetProcessInstanceStateCmd implements Command<Void
 
     // All child executions are suspended
     Collection<ExecutionEntity> childExecutions = commandContext.getExecutionEntityManager().findChildExecutionsByProcessInstanceId(processInstanceId);
-    for (ExecutionEntity childExecution : childExecutions) {
-      if (!childExecution.getId().equals(processInstanceId)) {
+    childExecutions.stream().filter(childExecution -> !childExecution.getId().equals(processInstanceId)).forEach(childExecution -> {
         SuspensionStateUtil.setSuspensionState(childExecution, getNewState());
         commandContext.getExecutionEntityManager().update(childExecution, false);
-      }
-    }
+      });
 
     // All tasks are suspended
     List<TaskEntity> tasks = commandContext.getTaskEntityManager().findTasksByProcessInstanceId(processInstanceId);
-    for (TaskEntity taskEntity : tasks) {
+    tasks.forEach(taskEntity -> {
       SuspensionStateUtil.setSuspensionState(taskEntity, getNewState());
       commandContext.getTaskEntityManager().update(taskEntity, false);
-    }
+    });
     
     // All jobs are suspended
     if (getNewState() == SuspensionState.ACTIVE) {
       List<SuspendedJobEntity> suspendedJobs = commandContext.getSuspendedJobEntityManager().findJobsByProcessInstanceId(processInstanceId);
-      for (SuspendedJobEntity suspendedJob : suspendedJobs) {
-        commandContext.getJobManager().activateSuspendedJob(suspendedJob);
-      }
+      suspendedJobs.forEach(suspendedJob -> commandContext.getJobManager().activateSuspendedJob(suspendedJob));
       
     } else {
       List<TimerJobEntity> timerJobs = commandContext.getTimerJobEntityManager().findJobsByProcessInstanceId(processInstanceId);
-      for (TimerJobEntity timerJob : timerJobs) {
-        commandContext.getJobManager().moveJobToSuspendedJob(timerJob);
-      }
+      timerJobs.forEach(timerJob -> commandContext.getJobManager().moveJobToSuspendedJob(timerJob));
       
       List<JobEntity> jobs = commandContext.getJobEntityManager().findJobsByProcessInstanceId(processInstanceId);
-      for (JobEntity job : jobs) {
-        commandContext.getJobManager().moveJobToSuspendedJob(job);
-      }
+      jobs.forEach(job -> commandContext.getJobManager().moveJobToSuspendedJob(job));
     }
 
     return null;

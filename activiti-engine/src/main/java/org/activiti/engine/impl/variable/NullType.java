@@ -19,22 +19,27 @@ public class NullType implements VariableType {
 
   private static final long serialVersionUID = 1L;
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return "null";
   }
 
-  public boolean isCachable() {
+  @Override
+public boolean isCachable() {
     return true;
   }
 
-  public Object getValue(ValueFields valueFields) {
+  @Override
+public Object getValue(ValueFields valueFields) {
     return null;
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     return (value == null);
   }
 
-  public void setValue(Object value, ValueFields valueFields) {
+  @Override
+public void setValue(Object value, ValueFields valueFields) {
   }
 }

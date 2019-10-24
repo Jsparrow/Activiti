@@ -45,7 +45,8 @@ public class SignalThrowIconType extends IconType {
                                                                     SVGGraphics2D.SVG_G_TAG);
         gTag.setAttributeNS(null,
                             "transform",
-                            "translate(" + (imageX - 7) + "," + (imageY - 7) + ")");
+                            new StringBuilder().append("translate(").append(imageX - 7).append(",")
+									.append(imageY - 7).append(")").toString());
 
         Element pathTag = svgGenerator.getDOMFactory().createElementNS(null,
                                                                        SVGGraphics2D.SVG_PATH_TAG);

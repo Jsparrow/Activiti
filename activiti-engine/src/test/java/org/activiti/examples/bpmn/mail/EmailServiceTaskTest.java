@@ -53,7 +53,7 @@ public class EmailServiceTaskTest extends PluggableActivitiTestCase {
         Date now = new Date();
         String orderId = "123456";
 
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("sender",
                  from);
         vars.put("recipient",
@@ -77,7 +77,7 @@ public class EmailServiceTaskTest extends PluggableActivitiTestCase {
         WiserMessage message = messages.get(0);
         MimeMessage mimeMessage = message.getMimeMessage();
 
-        assertEquals("Your order " + orderId + " has been shipped",
+        assertEquals(new StringBuilder().append("Your order ").append(orderId).append(" has been shipped").toString(),
                      mimeMessage.getHeader("Subject",
                                            null));
         assertEquals(from,

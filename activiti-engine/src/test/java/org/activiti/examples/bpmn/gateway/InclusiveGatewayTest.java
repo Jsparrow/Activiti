@@ -21,6 +21,8 @@ import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Example of using the exclusive gateway.
@@ -30,7 +32,8 @@ import org.activiti.engine.test.Deployment;
  */
 public class InclusiveGatewayTest extends PluggableActivitiTestCase {
 
-  private static final String TASK1_NAME = "Send e-mail for more information";
+  private static final Logger logger = LoggerFactory.getLogger(InclusiveGatewayTest.class);
+private static final String TASK1_NAME = "Send e-mail for more information";
   private static final String TASK2_NAME = "Check account balance";
   private static final String TASK3_NAME = "Call customer";
 
@@ -40,14 +43,14 @@ public class InclusiveGatewayTest extends PluggableActivitiTestCase {
   @Deployment
   public void testDecisionFunctionality() {
 
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
 
     // Test with input == 1
     variables.put("input", 1);
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("inclusiveGateway", variables);
     List<Task> tasks = taskService.createTaskQuery().processInstanceId(pi.getId()).list();
     assertEquals(3, tasks.size());
-    Map<String, String> expectedMessages = new HashMap<String, String>();
+    Map<String, String> expectedMessages = new HashMap<>();
     expectedMessages.put(TASK1_NAME, TASK1_NAME);
     expectedMessages.put(TASK2_NAME, TASK2_NAME);
     expectedMessages.put(TASK3_NAME, TASK3_NAME);
@@ -61,7 +64,7 @@ public class InclusiveGatewayTest extends PluggableActivitiTestCase {
     pi = runtimeService.startProcessInstanceByKey("inclusiveGateway", variables);
     tasks = taskService.createTaskQuery().processInstanceId(pi.getId()).list();
     assertEquals(2, tasks.size());
-    expectedMessages = new HashMap<String, String>();
+    expectedMessages = new HashMap<>();
     expectedMessages.put(TASK2_NAME, TASK2_NAME);
     expectedMessages.put(TASK3_NAME, TASK3_NAME);
     for (Task task : tasks) {
@@ -74,7 +77,7 @@ public class InclusiveGatewayTest extends PluggableActivitiTestCase {
     pi = runtimeService.startProcessInstanceByKey("inclusiveGateway", variables);
     tasks = taskService.createTaskQuery().processInstanceId(pi.getId()).list();
     assertEquals(1, tasks.size());
-    expectedMessages = new HashMap<String, String>();
+    expectedMessages = new HashMap<>();
     expectedMessages.put(TASK3_NAME, TASK3_NAME);
     for (Task task : tasks) {
       expectedMessages.remove(task.getName());
@@ -87,6 +90,7 @@ public class InclusiveGatewayTest extends PluggableActivitiTestCase {
       runtimeService.startProcessInstanceByKey("inclusiveGateway", variables);
       fail();
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // Exception is expected since no outgoing sequence flow matches
     }
 

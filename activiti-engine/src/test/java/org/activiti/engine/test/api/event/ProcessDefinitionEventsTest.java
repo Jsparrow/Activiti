@@ -110,10 +110,12 @@ public class ProcessDefinitionEventsTest extends PluggableActivitiTestCase {
     for (int index = 0; index < listener.getEventsReceived().size(); index++) {
       ActivitiEvent activitiEvent = listener.getEventsReceived().get(index);
 
-      if (isEqual(before, activitiEvent))
-        beforeIndex = index;
-      if (isEqual(after, activitiEvent))
-        afterIndex = index;
+      if (isEqual(before, activitiEvent)) {
+		beforeIndex = index;
+	}
+      if (isEqual(after, activitiEvent)) {
+		afterIndex = index;
+	}
     }
     assertTrue(beforeIndex < afterIndex);
   }
@@ -122,7 +124,7 @@ public class ProcessDefinitionEventsTest extends PluggableActivitiTestCase {
    * equals is not implemented.
    */
   private boolean isEqual(ActivitiEntityEvent event1, ActivitiEvent activitiEvent) {
-    if (activitiEvent instanceof ActivitiEntityEvent && event1.getType().equals(activitiEvent.getType())) {
+    if (activitiEvent instanceof ActivitiEntityEvent && event1.getType() == activitiEvent.getType()) {
       ActivitiEntityEvent activitiEntityEvent = (ActivitiEntityEvent) activitiEvent;
       if (activitiEntityEvent.getEntity().getClass().equals(event1.getEntity().getClass())) {
         return true;
@@ -146,9 +148,10 @@ public class ProcessDefinitionEventsTest extends PluggableActivitiTestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
 
-    if (listener != null) {
-      listener.clearEventsReceived();
-      processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
-    }
+    if (listener == null) {
+		return;
+	}
+	listener.clearEventsReceived();
+	processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
   }
 }

@@ -46,11 +46,13 @@ public class ServiceTaskJsonConverter extends BaseBpmnJsonConverter implements D
     convertersToJsonMap.put(ServiceTask.class, ServiceTaskJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     return STENCIL_TASK_SERVICE;
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
     ServiceTask serviceTask = (ServiceTask) baseElement;
 
     if ("mail".equalsIgnoreCase(serviceTask.getType())) {
@@ -73,19 +75,17 @@ public class ServiceTaskJsonConverter extends BaseBpmnJsonConverter implements D
       setPropertyFieldValue(PROPERTY_MULETASK_RESULT_VARIABLE, "resultVariable", serviceTask, propertiesNode);
       
     } else if ("dmn".equalsIgnoreCase(serviceTask.getType())) {
-      for (FieldExtension fieldExtension : serviceTask.getFieldExtensions()) {
-        if (PROPERTY_DECISIONTABLE_REFERENCE_KEY.equals(fieldExtension.getFieldName()) &&
-            decisionTableKeyMap != null && decisionTableKeyMap.containsKey(fieldExtension.getStringValue())) {
-          
-          ObjectNode decisionReferenceNode = objectMapper.createObjectNode();
-          propertiesNode.set(PROPERTY_DECISIONTABLE_REFERENCE, decisionReferenceNode);
-          
-          ModelInfo modelInfo = decisionTableKeyMap.get(fieldExtension.getStringValue());
-          decisionReferenceNode.put("id", modelInfo.getId());
-          decisionReferenceNode.put("name", modelInfo.getName());
-          decisionReferenceNode.put("key", modelInfo.getKey());
-        }
-      }
+      serviceTask.getFieldExtensions().stream().filter(fieldExtension -> PROPERTY_DECISIONTABLE_REFERENCE_KEY.equals(fieldExtension.getFieldName()) &&
+	    decisionTableKeyMap != null && decisionTableKeyMap.containsKey(fieldExtension.getStringValue())).forEach(fieldExtension -> {
+        
+        ObjectNode decisionReferenceNode = objectMapper.createObjectNode();
+        propertiesNode.set(PROPERTY_DECISIONTABLE_REFERENCE, decisionReferenceNode);
+        
+        ModelInfo modelInfo = decisionTableKeyMap.get(fieldExtension.getStringValue());
+        decisionReferenceNode.put("id", modelInfo.getId());
+        decisionReferenceNode.put("name", modelInfo.getName());
+        decisionReferenceNode.put("key", modelInfo.getKey());
+      });
 
     } else {
 
@@ -105,7 +105,8 @@ public class ServiceTaskJsonConverter extends BaseBpmnJsonConverter implements D
     }
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     ServiceTask task = new ServiceTask();
     if (StringUtils.isNotEmpty(getPropertyValueAsString(PROPERTY_SERVICETASK_CLASS, elementNode))) {
       task.setImplementationType(ImplementationType.IMPLEMENTATION_TYPE_CLASS);
@@ -151,27 +152,23 @@ public class ServiceTaskJsonConverter extends BaseBpmnJsonConverter implements D
   }
 
   protected void setPropertyFieldValue(String name, ServiceTask task, ObjectNode propertiesNode) {
-    for (FieldExtension extension : task.getFieldExtensions()) {
-      if (name.substring(8).equalsIgnoreCase(extension.getFieldName())) {
+    task.getFieldExtensions().stream().filter(extension -> name.substring(8).equalsIgnoreCase(extension.getFieldName())).forEach(extension -> {
         if (StringUtils.isNotEmpty(extension.getStringValue())) {
           setPropertyValue(name, extension.getStringValue(), propertiesNode);
         } else if (StringUtils.isNotEmpty(extension.getExpression())) {
           setPropertyValue(name, extension.getExpression(), propertiesNode);
         }
-      }
-    }
+      });
   }
 
   protected void setPropertyFieldValue(String propertyName, String fieldName, ServiceTask task, ObjectNode propertiesNode) {
-    for (FieldExtension extension : task.getFieldExtensions()) {
-      if (fieldName.equalsIgnoreCase(extension.getFieldName())) {
+    task.getFieldExtensions().stream().filter(extension -> fieldName.equalsIgnoreCase(extension.getFieldName())).forEach(extension -> {
         if (StringUtils.isNotEmpty(extension.getStringValue())) {
           setPropertyValue(propertyName, extension.getStringValue(), propertiesNode);
         } else if (StringUtils.isNotEmpty(extension.getExpression())) {
           setPropertyValue(propertyName, extension.getExpression(), propertiesNode);
         }
-      }
-    }
+      });
   }
   
   @Override

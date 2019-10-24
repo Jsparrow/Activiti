@@ -33,7 +33,7 @@ public class BpmnParseHandlers {
   protected Map<Class<? extends BaseElement>, List<BpmnParseHandler>> parseHandlers;
 
   public BpmnParseHandlers() {
-    this.parseHandlers = new HashMap<Class<? extends BaseElement>, List<BpmnParseHandler>>();
+    this.parseHandlers = new HashMap<>();
   }
 
   public List<BpmnParseHandler> getHandlersFor(Class<? extends BaseElement> clazz) {
@@ -41,16 +41,14 @@ public class BpmnParseHandlers {
   }
 
   public void addHandlers(List<BpmnParseHandler> bpmnParseHandlers) {
-    for (BpmnParseHandler bpmnParseHandler : bpmnParseHandlers) {
-      addHandler(bpmnParseHandler);
-    }
+    bpmnParseHandlers.forEach(this::addHandler);
   }
 
   public void addHandler(BpmnParseHandler bpmnParseHandler) {
     for (Class<? extends BaseElement> type : bpmnParseHandler.getHandledTypes()) {
       List<BpmnParseHandler> handlers = parseHandlers.get(type);
       if (handlers == null) {
-        handlers = new ArrayList<BpmnParseHandler>();
+        handlers = new ArrayList<>();
         parseHandlers.put(type, handlers);
       }
       handlers.add(bpmnParseHandler);
@@ -73,11 +71,9 @@ public class BpmnParseHandlers {
     List<BpmnParseHandler> handlers = parseHandlers.get(element.getClass());
 
     if (handlers == null) {
-      LOGGER.warn("Could not find matching parse handler for + " + element.getId() + " this is likely a bug.");
+      LOGGER.warn(new StringBuilder().append("Could not find matching parse handler for + ").append(element.getId()).append(" this is likely a bug.").toString());
     } else {
-      for (BpmnParseHandler handler : handlers) {
-        handler.parse(bpmnParse, element);
-      }
+      handlers.forEach(handler -> handler.parse(bpmnParse, element));
     }
   }
 

@@ -42,11 +42,13 @@ public class LongJsonType extends SerializableType {
     this.javaClassFieldForJackson = javaClassFieldForJackson;
   }
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return "longJson";
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     if (value == null) {
       return true;
     }
@@ -63,7 +65,8 @@ public class LongJsonType extends SerializableType {
   }
 
 
-  public byte[] serialize(Object value, ValueFields valueFields) {
+  @Override
+public byte[] serialize(Object value, ValueFields valueFields) {
     if (value == null) {
       return null;
     }
@@ -80,7 +83,8 @@ public class LongJsonType extends SerializableType {
     }
   }
 
-  public Object deserialize(byte[] bytes, ValueFields valueFields) {
+  @Override
+public Object deserialize(byte[] bytes, ValueFields valueFields) {
     Object jsonValue = null;
     if(jsonValue==null) {
       try {

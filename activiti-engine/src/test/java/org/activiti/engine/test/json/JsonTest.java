@@ -46,7 +46,7 @@ public class JsonTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testJsonObjectAvailable() {
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
    
     ObjectNode varNode = objectMapper.createObjectNode();
     varNode.put("var", "myValue");
@@ -76,7 +76,7 @@ public class JsonTest extends PluggableActivitiTestCase {
     var3Node.put("var2", "myOtherValue");
     var3Node.put("var3", "myThirdValue");
     
-    vars = new HashMap<String, Object>();
+    vars = new HashMap<>();
     vars.put(MY_JSON_OBJ, var3Node);
     vars.put(BIG_JSON_OBJ, createBigJsonObject());
     taskService.complete(task.getId(), vars);
@@ -123,7 +123,7 @@ public class JsonTest extends PluggableActivitiTestCase {
   
   @Deployment
   public void testDirectJsonPropertyAccess() {
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
    
     ObjectNode varNode = objectMapper.createObjectNode();
     varNode.put("var", "myValue");
@@ -158,7 +158,7 @@ public class JsonTest extends PluggableActivitiTestCase {
 
   @Deployment
   public void testJsonArrayAvailable() {
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
 
     ArrayNode varArray = objectMapper.createArrayNode();
     ObjectNode varNode = objectMapper.createObjectNode();
@@ -199,7 +199,7 @@ public class JsonTest extends PluggableActivitiTestCase {
     varNode = objectMapper.createObjectNode();
     varNode.put("var", "myThirdValue");
     varArray3.add(varNode);
-    vars = new HashMap<String, Object>();
+    vars = new HashMap<>();
     vars.put("myJsonArr", varArray3);
     taskService.complete(task.getId(), vars);
     value = (ArrayNode) runtimeService.getVariable(processInstance.getId(), "myJsonArr");
@@ -212,15 +212,16 @@ public class JsonTest extends PluggableActivitiTestCase {
     assertNotNull(task);
     assertEquals("userTaskSuccess", task.getTaskDefinitionKey());
 
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      HistoricVariableInstance historicVariableInstance = historyService.createHistoricVariableInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	HistoricVariableInstance historicVariableInstance = historyService.createHistoricVariableInstanceQuery()
           .processInstanceId(processInstance.getProcessInstanceId()).singleResult();
-      value = (ArrayNode) historicVariableInstance.getValue();
-      assertNotNull(value);
-      assertEquals("myValue", value.get(0).get("var").asText());
-      assertEquals("myOtherValue", value.get(1).get("var").asText());
-      assertEquals("myThirdValue", value.get(2).get("var").asText());
-    }
+	value = (ArrayNode) historicVariableInstance.getValue();
+	assertNotNull(value);
+	assertEquals("myValue", value.get(0).get("var").asText());
+	assertEquals("myOtherValue", value.get(1).get("var").asText());
+	assertEquals("myThirdValue", value.get(2).get("var").asText());
   }
   
   protected ObjectNode createBigJsonObject() {

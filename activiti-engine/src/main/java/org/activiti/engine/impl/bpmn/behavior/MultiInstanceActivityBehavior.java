@@ -38,6 +38,7 @@ import org.activiti.engine.impl.util.CollectionUtil;
 import org.activiti.engine.impl.util.ProcessDefinitionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the multi-instance functionality as described in the BPMN 2.0 spec.
@@ -83,7 +84,8 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
     setInnerActivityBehavior(innerActivityBehavior);
   }
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     if (getLocalLoopVariable(execution, getCollectionElementIndexVariable()) == null) {
 
       int nrOfInstances = 0;
@@ -138,13 +140,9 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
     Process process = getProcessDefinition(processDefinitionId);
 
     // This could be cached or could be done at parsing time
-    List<BoundaryEvent> results = new ArrayList<BoundaryEvent>(1);
+    List<BoundaryEvent> results = new ArrayList<>(1);
     Collection<BoundaryEvent> boundaryEvents = process.findFlowElementsOfType(BoundaryEvent.class, true);
-    for (BoundaryEvent boundaryEvent : boundaryEvents) {
-      if (boundaryEvent.getAttachedToRefId() != null && boundaryEvent.getAttachedToRefId().equals(flowElement.getId())) {
-        results.add(boundaryEvent);
-      }
-    }
+    results.addAll(boundaryEvents.stream().filter(boundaryEvent -> boundaryEvent.getAttachedToRefId() != null && boundaryEvent.getAttachedToRefId().equals(flowElement.getId())).collect(Collectors.toList()));
     return results;
   }
 
@@ -153,7 +151,8 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
   }
 
   // Intercepts signals, and delegates it to the wrapped {@link ActivityBehavior}.
-  public void trigger(DelegateExecution execution, String signalName, Object signalData) {
+  @Override
+public void trigger(DelegateExecution execution, String signalName, Object signalData) {
     innerActivityBehavior.trigger(execution, signalName, signalData);
   }
 
@@ -164,11 +163,13 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
   }
 
   // required for supporting external subprocesses
-  public void completing(DelegateExecution execution, DelegateExecution subProcessInstance) throws Exception {
+  @Override
+public void completing(DelegateExecution execution, DelegateExecution subProcessInstance) throws Exception {
   }
 
   // required for supporting external subprocesses
-  public void completed(DelegateExecution execution) throws Exception {
+  @Override
+public void completed(DelegateExecution execution) throws Exception {
     leave(execution);
   }
 
@@ -218,11 +219,11 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
 
     } else if (collectionVariable != null) {
       if (obj == null) {
-        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable + " is not found");
+        throw new ActivitiIllegalArgumentException(new StringBuilder().append("Variable ").append(collectionVariable).append(" is not found").toString());
       }
 
       if (!(obj instanceof Collection)) {
-        throw new ActivitiIllegalArgumentException("Variable " + collectionVariable + "' is not a Collection");
+        throw new ActivitiIllegalArgumentException(new StringBuilder().append("Variable ").append(collectionVariable).append("' is not a Collection").toString());
       }
 
     } else {
@@ -260,24 +261,23 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
       return Integer.valueOf((String) value);
 
     } else {
-      throw new ActivitiIllegalArgumentException("Could not resolve loopCardinality expression '" + loopCardinalityExpression.getExpressionText() + "': not a number nor number String");
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("Could not resolve loopCardinality expression '").append(loopCardinalityExpression.getExpressionText()).append("': not a number nor number String").toString());
     }
   }
 
   protected boolean completionConditionSatisfied(DelegateExecution execution) {
-    if (completionConditionExpression != null) {
-      Object value = completionConditionExpression.getValue(execution);
-      if (!(value instanceof Boolean)) {
-        throw new ActivitiIllegalArgumentException("completionCondition '" + completionConditionExpression.getExpressionText() + "' does not evaluate to a boolean value");
+    if (completionConditionExpression == null) {
+		return false;
+	}
+	Object value = completionConditionExpression.getValue(execution);
+	if (!(value instanceof Boolean)) {
+        throw new ActivitiIllegalArgumentException(new StringBuilder().append("completionCondition '").append(completionConditionExpression.getExpressionText()).append("' does not evaluate to a boolean value").toString());
       }
-
-      Boolean booleanValue = (Boolean) value;
-      if (LOGGER.isDebugEnabled()) {
+	Boolean booleanValue = (Boolean) value;
+	if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("Completion condition of multi-instance satisfied: {}", booleanValue);
       }
-      return booleanValue;
-    }
-    return false;
+	return booleanValue;
   }
 
   protected void setLoopVariable(DelegateExecution execution, String variableName, Object value) {

@@ -42,10 +42,13 @@ public interface AttachmentEntity extends Attachment, Entity, HasRevision {
 
   void setUserId(String userId);
 
-  String getUserId();
+  @Override
+String getUserId();
 
-  Date getTime();
+  @Override
+Date getTime();
 
-  void setTime(Date time);
+  @Override
+void setTime(Date time);
 
 }

@@ -51,7 +51,7 @@ public class BoundaryCompensateEventActivityBehavior extends BoundaryEventActivi
     
     Process process = ProcessDefinitionUtil.getProcess(execution.getProcessDefinitionId());
     if (process == null) {
-      throw new ActivitiException("Process model (id = " + execution.getId() + ") could not be found");
+      throw new ActivitiException(new StringBuilder().append("Process model (id = ").append(execution.getId()).append(") could not be found").toString());
     }
     
     Activity compensationActivity = null;
@@ -101,11 +101,7 @@ public class BoundaryCompensateEventActivityBehavior extends BoundaryEventActivi
     if (boundaryEvent.isCancelActivity()) {
       EventSubscriptionEntityManager eventSubscriptionEntityManager = Context.getCommandContext().getEventSubscriptionEntityManager();
       List<EventSubscriptionEntity> eventSubscriptions = executionEntity.getEventSubscriptions();
-      for (EventSubscriptionEntity eventSubscription : eventSubscriptions) {
-        if (eventSubscription instanceof CompensateEventSubscriptionEntity && eventSubscription.getActivityId().equals(compensateEventDefinition.getActivityRef())) {
-          eventSubscriptionEntityManager.delete(eventSubscription);
-        }
-      }
+      eventSubscriptions.stream().filter(eventSubscription -> eventSubscription instanceof CompensateEventSubscriptionEntity && eventSubscription.getActivityId().equals(compensateEventDefinition.getActivityRef())).forEach(eventSubscriptionEntityManager::delete);
     }
 
     super.trigger(executionEntity, triggerName, triggerData);

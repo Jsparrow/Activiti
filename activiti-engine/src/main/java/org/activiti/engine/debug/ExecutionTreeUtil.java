@@ -41,30 +41,31 @@ public class ExecutionTreeUtil {
     }
     
     // Collect all child executions now we have the parent
-    List<ExecutionEntity> allExecutions = new ArrayList<ExecutionEntity>();
+    List<ExecutionEntity> allExecutions = new ArrayList<>();
     allExecutions.add(parentExecution);
     collectChildExecutions(parentExecution, allExecutions);
     return buildExecutionTree(allExecutions);
   }
   
   protected static void collectChildExecutions(ExecutionEntity rootExecutionEntity, List<ExecutionEntity> allExecutions) {
-    for (ExecutionEntity childExecutionEntity : rootExecutionEntity.getExecutions()) {
+    rootExecutionEntity.getExecutions().forEach(childExecutionEntity -> {
       allExecutions.add(childExecutionEntity);
       collectChildExecutions(childExecutionEntity, allExecutions);
-    }
+    });
     
-    if (rootExecutionEntity.getSubProcessInstance() != null) {
-      allExecutions.add(rootExecutionEntity.getSubProcessInstance());
-      collectChildExecutions(rootExecutionEntity.getSubProcessInstance(), allExecutions);
-    }
+    if (rootExecutionEntity.getSubProcessInstance() == null) {
+		return;
+	}
+	allExecutions.add(rootExecutionEntity.getSubProcessInstance());
+	collectChildExecutions(rootExecutionEntity.getSubProcessInstance(), allExecutions);
   }
 
   public static ExecutionTree buildExecutionTree(Collection<ExecutionEntity> executions) {
     ExecutionTree executionTree = new ExecutionTree();
 
     // Map the executions to their parents. Catch and store the root element (process instance execution) while were at it
-    Map<String, List<ExecutionEntity>> parentMapping = new HashMap<String, List<ExecutionEntity>>();
-    for (ExecutionEntity executionEntity : executions) {
+    Map<String, List<ExecutionEntity>> parentMapping = new HashMap<>();
+    executions.forEach(executionEntity -> {
       String parentId = executionEntity.getParentId();
       
       // Support for call activity
@@ -73,14 +74,12 @@ public class ExecutionTreeUtil {
       }
       
       if (parentId != null) {
-        if (!parentMapping.containsKey(parentId)) {
-          parentMapping.put(parentId, new ArrayList<ExecutionEntity>());
-        }
+        parentMapping.putIfAbsent(parentId, new ArrayList<>());
         parentMapping.get(parentId).add(executionEntity);
       } else if (executionEntity.getSuperExecutionId() == null){
         executionTree.setRoot(new ExecutionTreeNode(executionEntity));
       }
-    }
+    });
     
     fillExecutionTree(executionTree, parentMapping);
     return executionTree;
@@ -88,24 +87,22 @@ public class ExecutionTreeUtil {
   
   public static ExecutionTree buildExecutionTreeForProcessInstance(Collection<ExecutionEntity> executions) {
     ExecutionTree executionTree = new ExecutionTree();
-    if (executions.size() == 0) {
+    if (executions.isEmpty()) {
       return executionTree;
     }
 
     // Map the executions to their parents. Catch and store the root element (process instance execution) while were at it
-    Map<String, List<ExecutionEntity>> parentMapping = new HashMap<String, List<ExecutionEntity>>();
-    for (ExecutionEntity executionEntity : executions) {
+    Map<String, List<ExecutionEntity>> parentMapping = new HashMap<>();
+    executions.forEach(executionEntity -> {
       String parentId = executionEntity.getParentId();
       
       if (parentId != null) {
-        if (!parentMapping.containsKey(parentId)) {
-          parentMapping.put(parentId, new ArrayList<ExecutionEntity>());
-        }
+        parentMapping.putIfAbsent(parentId, new ArrayList<>());
         parentMapping.get(parentId).add(executionEntity);
       } else {
         executionTree.setRoot(new ExecutionTreeNode(executionEntity));
       }
-    }
+    });
     
     fillExecutionTree(executionTree, parentMapping);
     return executionTree;
@@ -117,7 +114,7 @@ public class ExecutionTreeUtil {
     }
 
     // Now build the tree, top-down
-    LinkedList<ExecutionTreeNode> executionsToHandle = new LinkedList<ExecutionTreeNode>();
+    LinkedList<ExecutionTreeNode> executionsToHandle = new LinkedList<>();
     executionsToHandle.add(executionTree.getRoot());
 
     while (!executionsToHandle.isEmpty()) {
@@ -125,16 +122,13 @@ public class ExecutionTreeUtil {
       String parentId = parentNode.getExecutionEntity().getId();
       if (parentMapping.containsKey(parentId)) {
         List<ExecutionEntity> childExecutions = parentMapping.get(parentId);
-        List<ExecutionTreeNode> childNodes = new ArrayList<ExecutionTreeNode>(childExecutions.size());
+        List<ExecutionTreeNode> childNodes = new ArrayList<>(childExecutions.size());
 
-        for (ExecutionEntity childExecutionEntity : childExecutions) {
-
-          ExecutionTreeNode childNode = new ExecutionTreeNode(childExecutionEntity);
-          childNode.setParent(parentNode);
-          childNodes.add(childNode);
-
-          executionsToHandle.add(childNode);
-        }
+        childExecutions.stream().map(ExecutionTreeNode::new).forEach(childNode -> {
+			childNode.setParent(parentNode);
+			childNodes.add(childNode);
+			executionsToHandle.add(childNode);
+		});
 
         parentNode.setChildren(childNodes);
 

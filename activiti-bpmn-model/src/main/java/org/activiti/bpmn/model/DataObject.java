@@ -12,7 +12,8 @@ public class DataObject extends FlowElement {
     this.itemSubjectRef = itemSubjectRef;
   }
 
-  public DataObject clone() {
+  @Override
+public DataObject clone() {
     DataObject clone = new DataObject();
     clone.setValues(this);
     return clone;

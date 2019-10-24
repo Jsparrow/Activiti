@@ -24,6 +24,8 @@ import java.io.OutputStream;
 import java.net.URL;
 
 import org.activiti.engine.ActivitiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -32,7 +34,9 @@ import org.activiti.engine.ActivitiException;
  */
 public class IoUtil {
 
-  public static byte[] readInputStream(InputStream inputStream, String inputStreamName) {
+  private static final Logger logger = LoggerFactory.getLogger(IoUtil.class);
+
+public static byte[] readInputStream(InputStream inputStream, String inputStreamName) {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     byte[] buffer = new byte[16 * 1024];
     try {
@@ -54,7 +58,7 @@ public class IoUtil {
       inputStream = new BufferedInputStream(new FileInputStream(getFile(filePath)));
       inputStream.read(buffer);
     } catch (Exception e) {
-      throw new ActivitiException("Couldn't read file " + filePath + ": " + e.getMessage());
+      throw new ActivitiException(new StringBuilder().append("Couldn't read file ").append(filePath).append(": ").append(e.getMessage()).toString());
     } finally {
       IoUtil.closeSilently(inputStream);
     }
@@ -66,7 +70,7 @@ public class IoUtil {
     try {
       return new File(url.toURI());
     } catch (Exception e) {
-      throw new ActivitiException("Couldn't get file " + filePath + ": " + e.getMessage());
+      throw new ActivitiException(new StringBuilder().append("Couldn't get file ").append(filePath).append(": ").append(e.getMessage()).toString());
     }
   }
 
@@ -92,6 +96,7 @@ public class IoUtil {
         inputStream.close();
       }
     } catch (IOException ignore) {
+		logger.error(ignore.getMessage(), ignore);
       // Exception is silently ignored
     }
   }
@@ -105,6 +110,7 @@ public class IoUtil {
         outputStream.close();
       }
     } catch (IOException ignore) {
+		logger.error(ignore.getMessage(), ignore);
       // Exception is silently ignored
     }
   }

@@ -76,7 +76,8 @@ public abstract class AbstractAutoDeploymentStrategy implements AutoDeploymentSt
             try {
                 resourceName = resource.getFile().getAbsolutePath();
             } catch (IOException e) {
-                resourceName = resource.getFilename();
+                LOGGER.error(e.getMessage(), e);
+				resourceName = resource.getFilename();
             }
         }
         return resourceName;
@@ -125,7 +126,8 @@ public abstract class AbstractAutoDeploymentStrategy implements AutoDeploymentSt
             try {
                 deploymentBuilder.setProjectManifest(projectModelService.loadProjectManifest());
             } catch (IOException e) {
-                LOGGER.warn("Manifest of application not found. Project release version will not be set for deployment.");
+                LOGGER.error(e.getMessage(), e);
+				LOGGER.warn("Manifest of application not found. Project release version will not be set for deployment.");
             }
         }
         return deploymentBuilder;

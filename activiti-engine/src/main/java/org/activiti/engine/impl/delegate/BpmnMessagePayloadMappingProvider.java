@@ -28,7 +28,6 @@ public class BpmnMessagePayloadMappingProvider implements MessagePayloadMappingP
     private final List<FieldDeclaration> fieldDeclarations;
 
     public BpmnMessagePayloadMappingProvider(List<FieldDeclaration> fieldDeclarations) {
-        super();
         this.fieldDeclarations = fieldDeclarations;
     }
 
@@ -43,7 +42,7 @@ public class BpmnMessagePayloadMappingProvider implements MessagePayloadMappingP
         
         return Optional.of(payload)
                        .filter(map -> !map.isEmpty())
-                       .map(map -> Collections.unmodifiableMap(map));
+                       .map(Collections::unmodifiableMap);
     }
     
     protected Map.Entry<String, Object> applyFieldDeclaration(DelegateExecution execution, FieldDeclaration field) {

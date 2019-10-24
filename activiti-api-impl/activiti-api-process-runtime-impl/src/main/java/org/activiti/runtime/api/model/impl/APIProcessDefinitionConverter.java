@@ -21,8 +21,7 @@ import org.activiti.api.runtime.model.impl.ProcessDefinitionImpl;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.RepositoryService;
 
-public class APIProcessDefinitionConverter extends ListConverter<org.activiti.engine.repository.ProcessDefinition, ProcessDefinition>
-        implements ModelConverter<org.activiti.engine.repository.ProcessDefinition, ProcessDefinition> {
+public class APIProcessDefinitionConverter extends ListConverter<org.activiti.engine.repository.ProcessDefinition, ProcessDefinition> {
 
     private RepositoryService repositoryService;
 
@@ -30,7 +29,8 @@ public class APIProcessDefinitionConverter extends ListConverter<org.activiti.en
         this.repositoryService = repositoryService;
     }
 
-    public ProcessDefinition from(org.activiti.engine.repository.ProcessDefinition internalProcessDefinition) {
+    @Override
+	public ProcessDefinition from(org.activiti.engine.repository.ProcessDefinition internalProcessDefinition) {
         ProcessDefinitionImpl processDefinition = new ProcessDefinitionImpl();
         processDefinition.setId(internalProcessDefinition.getId());
         processDefinition.setName(internalProcessDefinition.getName());

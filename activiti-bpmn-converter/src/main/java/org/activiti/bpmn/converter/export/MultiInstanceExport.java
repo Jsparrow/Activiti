@@ -23,9 +23,11 @@ import org.apache.commons.lang3.StringUtils;
 public class MultiInstanceExport implements BpmnXMLConstants {
 
   public static void writeMultiInstance(Activity activity, XMLStreamWriter xtw) throws Exception {
-    if (activity.getLoopCharacteristics() != null) {
-      MultiInstanceLoopCharacteristics multiInstanceObject = activity.getLoopCharacteristics();
-      if (StringUtils.isNotEmpty(multiInstanceObject.getLoopCardinality()) || StringUtils.isNotEmpty(multiInstanceObject.getInputDataItem())
+    if (activity.getLoopCharacteristics() == null) {
+		return;
+	}
+	MultiInstanceLoopCharacteristics multiInstanceObject = activity.getLoopCharacteristics();
+	if (StringUtils.isNotEmpty(multiInstanceObject.getLoopCardinality()) || StringUtils.isNotEmpty(multiInstanceObject.getInputDataItem())
           || StringUtils.isNotEmpty(multiInstanceObject.getCompletionCondition())) {
 
         xtw.writeStartElement(ELEMENT_MULTIINSTANCE);
@@ -48,6 +50,5 @@ public class MultiInstanceExport implements BpmnXMLConstants {
         }
         xtw.writeEndElement();
       }
-    }
   }
 }

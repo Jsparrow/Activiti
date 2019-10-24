@@ -38,13 +38,14 @@ public class SequentialMultiInstanceBehavior extends MultiInstanceActivityBehavi
   /**
    * Handles the sequential case of spawning the instances. Will only create one instance, since at most one instance can be active.
    */
-  protected int createInstances(DelegateExecution multiInstanceExecution) {
+  @Override
+protected int createInstances(DelegateExecution multiInstanceExecution) {
     
     int nrOfInstances = resolveNrOfInstances(multiInstanceExecution);
     if (nrOfInstances == 0) {
       return nrOfInstances;
     } else if (nrOfInstances < 0) {
-      throw new ActivitiIllegalArgumentException("Invalid number of instances: must be a non-negative integer value" + ", but was " + nrOfInstances);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("Invalid number of instances: must be a non-negative integer value").append(", but was ").append(nrOfInstances).toString());
     }
     
     // Create child execution that will execute the inner behavior
@@ -71,7 +72,8 @@ public class SequentialMultiInstanceBehavior extends MultiInstanceActivityBehavi
    * Called when the wrapped {@link ActivityBehavior} calls the {@link AbstractBpmnActivityBehavior#leave(ActivityExecution)} method. Handles the completion of one instance, and executes the logic for
    * the sequential behavior.
    */
-  public void leave(DelegateExecution childExecution) {
+  @Override
+public void leave(DelegateExecution childExecution) {
     DelegateExecution multiInstanceRootExecution = getMultiInstanceRootExecution(childExecution);
     int nrOfInstances = getLoopVariable(multiInstanceRootExecution, NUMBER_OF_INSTANCES);
     int loopCounter = getLoopVariable(childExecution, getCollectionElementIndexVariable()) + 1;

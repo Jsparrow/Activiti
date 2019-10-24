@@ -6,67 +6,66 @@ import org.activiti.engine.test.Deployment;
 
 public class ShellTaskTest extends PluggableActivitiTestCase {
 
-  enum OsType {
-    LINUX, WINDOWS, MAC, SOLARIS, UNKOWN
-  }
-
   OsType osType;
 
-  OsType getSystemOsType() {
-    String osName = System.getProperty("os.name").toLowerCase();
-    if (osName.contains("win"))
-      return OsType.WINDOWS;
-    else if (osName.contains("mac"))
-      return OsType.MAC;
-    else if ((osName.contains("nix")) || (osName.contains("nux")))
-      return OsType.LINUX;
-    else if (osName.contains("sunos"))
-      return OsType.SOLARIS;
-    else
-      return OsType.UNKOWN;
-  }
+	OsType getSystemOsType() {
+	    String osName = System.getProperty("os.name").toLowerCase();
+	    if (osName.contains("win")) {
+			return OsType.WINDOWS;
+		} else if (osName.contains("mac")) {
+			return OsType.MAC;
+		} else if ((osName.contains("nix")) || (osName.contains("nux"))) {
+			return OsType.LINUX;
+		} else if (osName.contains("sunos")) {
+			return OsType.SOLARIS;
+		} else {
+			return OsType.UNKOWN;
+		}
+	  }
 
-  protected void setUp() throws Exception {
-    osType = getSystemOsType();
-  }
+	@Override
+	protected void setUp() throws Exception {
+	    osType = getSystemOsType();
+	  }
 
-  public void testOsDetection() throws Exception {
-    assertTrue(osType != OsType.UNKOWN);
-  }
+	public void testOsDetection() throws Exception {
+	    assertTrue(osType != OsType.UNKOWN);
+	  }
 
-  @Deployment
-  public void testEchoShellWindows() {
-    if (osType == OsType.WINDOWS) {
+	@Deployment
+	  public void testEchoShellWindows() {
+	    if (osType != OsType.WINDOWS) {
+			return;
+		}
+		ProcessInstance pi = runtimeService.startProcessInstanceByKey("echoShellWindows");
+		String st = (String) runtimeService.getVariable(pi.getId(), "resultVar");
+		assertNotNull(st);
+		assertTrue(st.startsWith("EchoTest"));
+	  }
 
-      ProcessInstance pi = runtimeService.startProcessInstanceByKey("echoShellWindows");
+	@Deployment
+	  public void testEchoShellLinux() {
+	    if (osType != OsType.LINUX) {
+			return;
+		}
+		ProcessInstance pi = runtimeService.startProcessInstanceByKey("echoShellLinux");
+		String st = (String) runtimeService.getVariable(pi.getId(), "resultVar");
+		assertNotNull(st);
+		assertTrue(st.startsWith("EchoTest"));
+	  }
 
-      String st = (String) runtimeService.getVariable(pi.getId(), "resultVar");
-      assertNotNull(st);
-      assertTrue(st.startsWith("EchoTest"));
-    }
-  }
+	@Deployment
+	  public void testEchoShellMac() {
+	    if (osType != OsType.MAC) {
+			return;
+		}
+		ProcessInstance pi = runtimeService.startProcessInstanceByKey("echoShellMac");
+		String st = (String) runtimeService.getVariable(pi.getId(), "resultVar");
+		assertNotNull(st);
+		assertTrue(st.startsWith("EchoTest"));
+	  }
 
-  @Deployment
-  public void testEchoShellLinux() {
-    if (osType == OsType.LINUX) {
-
-      ProcessInstance pi = runtimeService.startProcessInstanceByKey("echoShellLinux");
-
-      String st = (String) runtimeService.getVariable(pi.getId(), "resultVar");
-      assertNotNull(st);
-      assertTrue(st.startsWith("EchoTest"));
-    }
-  }
-
-  @Deployment
-  public void testEchoShellMac() {
-    if (osType == OsType.MAC) {
-
-      ProcessInstance pi = runtimeService.startProcessInstanceByKey("echoShellMac");
-
-      String st = (String) runtimeService.getVariable(pi.getId(), "resultVar");
-      assertNotNull(st);
-      assertTrue(st.startsWith("EchoTest"));
-    }
-  }
+	enum OsType {
+	    LINUX, WINDOWS, MAC, SOLARIS, UNKOWN
+	  }
 }

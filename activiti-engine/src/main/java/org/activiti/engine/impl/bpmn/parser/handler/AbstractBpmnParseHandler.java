@@ -32,15 +32,17 @@ import org.activiti.engine.parse.BpmnParseHandler;
 
 public abstract class AbstractBpmnParseHandler<T extends BaseElement> implements BpmnParseHandler {
 
-    public Set<Class<? extends BaseElement>> getHandledTypes() {
-        Set<Class<? extends BaseElement>> types = new HashSet<Class<? extends BaseElement>>();
+    @Override
+	public Set<Class<? extends BaseElement>> getHandledTypes() {
+        Set<Class<? extends BaseElement>> types = new HashSet<>();
         types.add(getHandledType());
         return types;
     }
 
     protected abstract Class<? extends BaseElement> getHandledType();
 
-    @SuppressWarnings("unchecked")
+    @Override
+	@SuppressWarnings("unchecked")
     public void parse(BpmnParse bpmnParse,
                       BaseElement element) {
         T baseElement = (T) element;
@@ -81,12 +83,7 @@ public abstract class AbstractBpmnParseHandler<T extends BaseElement> implements
     protected void processArtifacts(BpmnParse bpmnParse,
                                     Collection<Artifact> artifacts) {
         // associations
-        for (Artifact artifact : artifacts) {
-            if (artifact instanceof Association) {
-                createAssociation(bpmnParse,
-                                  (Association) artifact);
-            }
-        }
+		artifacts.stream().filter(artifact -> artifact instanceof Association).forEach(artifact -> createAssociation(bpmnParse, (Association) artifact));
     }
 
     protected void createAssociation(BpmnParse bpmnParse,

@@ -98,38 +98,38 @@ public class JsonNodeELResolver extends ELResolver {
 	 */
 	@Override
 	public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
-		if (isResolvable(base)) {
-			JsonNode node = (JsonNode) base;
-			final Iterator<String> keys = node.fieldNames();
-			return new Iterator<FeatureDescriptor>() {
-				@Override
-				public boolean hasNext() {
-					return keys.hasNext();
-				}
-
-				@Override
-				public FeatureDescriptor next() {
-					Object key = keys.next();
-					FeatureDescriptor feature = new FeatureDescriptor();
-					feature.setDisplayName(key == null ? "null" : key.toString());
-					feature.setName(feature.getDisplayName());
-					feature.setShortDescription("");
-					feature.setExpert(true);
-					feature.setHidden(false);
-					feature.setPreferred(true);
-					feature.setValue(TYPE, key == null ? "null" : key.getClass());
-					feature.setValue(RESOLVABLE_AT_DESIGN_TIME, true);
-					return feature;
-
-				}
-
-				@Override
-				public void remove() {
-					throw new UnsupportedOperationException("cannot remove");
-				}
-			};
+		if (!isResolvable(base)) {
+			return null;
 		}
-		return null;
+		JsonNode node = (JsonNode) base;
+		final Iterator<String> keys = node.fieldNames();
+		return new Iterator<FeatureDescriptor>() {
+			@Override
+			public boolean hasNext() {
+				return keys.hasNext();
+			}
+
+			@Override
+			public FeatureDescriptor next() {
+				Object key = keys.next();
+				FeatureDescriptor feature = new FeatureDescriptor();
+				feature.setDisplayName(key == null ? "null" : key.toString());
+				feature.setName(feature.getDisplayName());
+				feature.setShortDescription("");
+				feature.setExpert(true);
+				feature.setHidden(false);
+				feature.setPreferred(true);
+				feature.setValue(TYPE, key == null ? "null" : key.getClass());
+				feature.setValue(RESOLVABLE_AT_DESIGN_TIME, true);
+				return feature;
+
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException("cannot remove");
+			}
+		};
 	}
 
 	/**
@@ -329,31 +329,32 @@ public class JsonNodeELResolver extends ELResolver {
 		if (context == null) {
 			throw new NullPointerException("context is null");
 		}
-		if (base instanceof ObjectNode) {
-			if (readOnly) {
-				throw new PropertyNotWritableException("resolver is read-only");
-			}
-			ObjectNode node = (ObjectNode) base;
-			if (value instanceof BigDecimal) {
-				node.put(property.toString(), (BigDecimal) value);
-
-			} else if (value instanceof Boolean) {
-				node.put(property.toString(), (Boolean) value);
-
-			} else if (value instanceof Long) {
-				node.put(property.toString(), (Long) value);
-
-			} else if (value instanceof Double) {
-				node.put(property.toString(), (Double) value);
-
-			} else if (value != null) {
-				node.put(property.toString(), value.toString());
-
-			} else {
-				node.putNull(property.toString());
-			}
-			context.setPropertyResolved(true);
+		if (!(base instanceof ObjectNode)) {
+			return;
 		}
+		if (readOnly) {
+			throw new PropertyNotWritableException("resolver is read-only");
+		}
+		ObjectNode node = (ObjectNode) base;
+		if (value instanceof BigDecimal) {
+			node.put(property.toString(), (BigDecimal) value);
+
+		} else if (value instanceof Boolean) {
+			node.put(property.toString(), (Boolean) value);
+
+		} else if (value instanceof Long) {
+			node.put(property.toString(), (Long) value);
+
+		} else if (value instanceof Double) {
+			node.put(property.toString(), (Double) value);
+
+		} else if (value != null) {
+			node.put(property.toString(), value.toString());
+
+		} else {
+			node.putNull(property.toString());
+		}
+		context.setPropertyResolved(true);
 	}
 
 	/**

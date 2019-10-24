@@ -44,7 +44,8 @@ public class ThrowEventJsonConverter extends BaseBpmnJsonConverter {
     convertersToJsonMap.put(ThrowEvent.class, ThrowEventJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     ThrowEvent throwEvent = (ThrowEvent) baseElement;
     List<EventDefinition> eventDefinitions = throwEvent.getEventDefinitions();
     if (eventDefinitions.size() != 1) {
@@ -60,12 +61,14 @@ public class ThrowEventJsonConverter extends BaseBpmnJsonConverter {
     }
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
     ThrowEvent throwEvent = (ThrowEvent) baseElement;
     addEventProperties(throwEvent, propertiesNode);
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     ThrowEvent throwEvent = new ThrowEvent();
     String stencilId = BpmnJsonConverterUtil.getStencilId(elementNode);
     if (STENCIL_EVENT_THROW_SIGNAL.equals(stencilId)) {

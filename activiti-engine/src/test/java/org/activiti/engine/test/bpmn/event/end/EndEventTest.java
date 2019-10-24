@@ -17,6 +17,8 @@ import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -61,7 +63,8 @@ public class EndEventTest extends PluggableActivitiTestCase {
   /** Helper class for concurrent testing */
   class TaskCompleter extends Thread {
 
-    protected String taskId;
+    private final Logger logger = LoggerFactory.getLogger(TaskCompleter.class);
+	protected String taskId;
     protected boolean succeeded;
 
     public TaskCompleter(String taskId) {
@@ -72,11 +75,13 @@ public class EndEventTest extends PluggableActivitiTestCase {
       return succeeded;
     }
 
-    public void run() {
+    @Override
+	public void run() {
       try {
         taskService.complete(taskId);
         succeeded = true;
       } catch (ActivitiOptimisticLockingException ae) {
+		logger.error(ae.getMessage(), ae);
         // Exception is expected for one of the threads
       }
     }

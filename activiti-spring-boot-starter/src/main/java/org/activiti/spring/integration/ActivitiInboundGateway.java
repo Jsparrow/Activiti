@@ -41,7 +41,7 @@ public class ActivitiInboundGateway extends MessagingGatewaySupport {
     private final ProcessVariableHeaderMapper headerMapper;
     private ProcessEngine processEngine;
 
-    private Set<String> sync = new ConcurrentSkipListSet<String>();
+    private Set<String> sync = new ConcurrentSkipListSet<>();
 
     public ActivitiInboundGateway(ProcessEngine processEngine, String... pvsOrHeadersToPreserve) {
         Collections.addAll(this.sync, pvsOrHeadersToPreserve);
@@ -58,7 +58,7 @@ public class ActivitiInboundGateway extends MessagingGatewaySupport {
 
     public void execute(IntegrationActivityBehavior receiveTaskActivityBehavior,
                         DelegateExecution execution) {
-        Map<String, Object> stringObjectMap = new HashMap<String, Object>();
+        Map<String, Object> stringObjectMap = new HashMap<>();
         stringObjectMap.put(executionId, execution.getId());
 
         stringObjectMap.put(processInstanceId, execution.getProcessInstanceId());
@@ -66,15 +66,13 @@ public class ActivitiInboundGateway extends MessagingGatewaySupport {
         stringObjectMap.putAll(headerMapper.toHeaders(execution.getVariables()));
         MessageBuilder<?> mb = MessageBuilder.withPayload(execution).copyHeaders(stringObjectMap);
         Message<?> reply = sendAndReceiveMessage(mb.build());
-        if (null != reply) {
-            Map<String, Object> vars = new HashMap<String, Object>();
-            headerMapper.fromHeaders(reply.getHeaders(), vars);
-
-            for (String k : vars.keySet()) {
-                processEngine.getRuntimeService().setVariable(execution.getId(), k, vars.get(k));
-            }
-            receiveTaskActivityBehavior.leave(execution);
-        }
+        if (null == reply) {
+			return;
+		}
+		Map<String, Object> vars = new HashMap<>();
+		headerMapper.fromHeaders(reply.getHeaders(), vars);
+		vars.keySet().forEach(k -> processEngine.getRuntimeService().setVariable(execution.getId(), k, vars.get(k)));
+		receiveTaskActivityBehavior.leave(execution);
     }
 
     public void signal(IntegrationActivityBehavior receiveTaskActivityBehavior, DelegateExecution execution, String signalName, Object data) {

@@ -35,6 +35,6 @@ public class ProcessCompletedImpl extends RuntimeEventImpl<ProcessInstance, Proc
 
     @Override
     public String toString() {
-        return "ProcessCompletedEventImpl{" + super.toString() + '}';
+        return new StringBuilder().append("ProcessCompletedEventImpl{").append(super.toString()).append('}').toString();
     }
 }

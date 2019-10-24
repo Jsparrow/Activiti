@@ -47,7 +47,8 @@ public class ResetExpiredJobsRunnable implements Runnable {
     this.asyncExecutor = asyncExecutor;
   }
 
-  public synchronized void run() {
+  @Override
+public synchronized void run() {
     log.info("{} starting to reset expired jobs");
     Thread.currentThread().setName("activiti-reset-expired-jobs");
 
@@ -58,10 +59,8 @@ public class ResetExpiredJobsRunnable implements Runnable {
         List<JobEntity> expiredJobs = asyncExecutor.getProcessEngineConfiguration().getCommandExecutor()
             .execute(new FindExpiredJobsCmd(asyncExecutor.getResetExpiredJobsPageSize()));
         
-        List<String> expiredJobIds = new ArrayList<String>(expiredJobs.size());
-        for (JobEntity expiredJob : expiredJobs) {
-          expiredJobIds.add(expiredJob.getId());
-        }
+        List<String> expiredJobIds = new ArrayList<>(expiredJobs.size());
+        expiredJobs.forEach(expiredJob -> expiredJobIds.add(expiredJob.getId()));
         
         if (expiredJobIds.size() > 0) {
           asyncExecutor.getProcessEngineConfiguration().getCommandExecutor()
@@ -87,7 +86,8 @@ public class ResetExpiredJobsRunnable implements Runnable {
         }
 
       } catch (InterruptedException e) {
-        if (log.isDebugEnabled()) {
+        log.error(e.getMessage(), e);
+		if (log.isDebugEnabled()) {
           log.debug("async reset expired jobs wait interrupted");
         }
       } finally {

@@ -13,14 +13,16 @@ public class InclusiveGatewayDefaultFlowTest extends PluggableActivitiTestCase {
 
   private String deploymentId;
 
-  protected void setUp() throws Exception {
+  @Override
+protected void setUp() throws Exception {
     super.setUp();
     deploymentId = repositoryService.createDeployment()
           .addClasspathResource("org/activiti/engine/test/bpmn/gateway/InclusiveGatewayTest.defaultFlowTest.bpmn20.xml")
           .deploy().getId();
   }
 
-  protected void tearDown() throws Exception {
+  @Override
+protected void tearDown() throws Exception {
     repositoryService.deleteDeployment(deploymentId, true);
     super.tearDown();
   }
@@ -33,7 +35,7 @@ public class InclusiveGatewayDefaultFlowTest extends PluggableActivitiTestCase {
   }
   
   public void testCompatibleConditionFlow() {
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
     variables.put("var1", "true");
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, variables);
     

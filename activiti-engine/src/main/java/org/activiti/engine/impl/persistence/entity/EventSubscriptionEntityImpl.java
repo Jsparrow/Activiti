@@ -45,8 +45,9 @@ public abstract class EventSubscriptionEntityImpl extends AbstractEntity impleme
     this.created = Context.getProcessEngineConfiguration().getClock().getCurrentTime();
   }
 
-  public Object getPersistentState() {
-    HashMap<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    HashMap<String, Object> persistentState = new HashMap<>();
     persistentState.put("executionId", executionId);
     persistentState.put("configuration", configuration);
     return persistentState;
@@ -54,90 +55,111 @@ public abstract class EventSubscriptionEntityImpl extends AbstractEntity impleme
 
   // getters & setters ////////////////////////////
 
-  public String getEventType() {
+  @Override
+public String getEventType() {
     return eventType;
   }
 
-  public void setEventType(String eventType) {
+  @Override
+public void setEventType(String eventType) {
     this.eventType = eventType;
   }
 
-  public String getEventName() {
+  @Override
+public String getEventName() {
     return eventName;
   }
 
-  public void setEventName(String eventName) {
+  @Override
+public void setEventName(String eventName) {
     this.eventName = eventName;
   }
 
-  public String getExecutionId() {
+  @Override
+public String getExecutionId() {
     return executionId;
   }
 
-  public void setExecutionId(String executionId) {
+  @Override
+public void setExecutionId(String executionId) {
     this.executionId = executionId;
   }
   
-  public ExecutionEntity getExecution() {
+  @Override
+public ExecutionEntity getExecution() {
     if (execution == null && executionId != null) {
       execution = Context.getCommandContext().getExecutionEntityManager().findById(executionId);
     }
     return execution;
   }
 
-  public void setExecution(ExecutionEntity execution) {
+  @Override
+public void setExecution(ExecutionEntity execution) {
     this.execution = execution;
-    if (execution != null) {
-      this.executionId = execution.getId();
-      this.processInstanceId = execution.getProcessInstanceId();
-    }
+    if (execution == null) {
+		return;
+	}
+	this.executionId = execution.getId();
+	this.processInstanceId = execution.getProcessInstanceId();
   }
 
-  public String getProcessInstanceId() {
+  @Override
+public String getProcessInstanceId() {
     return processInstanceId;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
+  @Override
+public void setProcessInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
   }
 
-  public String getConfiguration() {
+  @Override
+public String getConfiguration() {
     return configuration;
   }
 
-  public void setConfiguration(String configuration) {
+  @Override
+public void setConfiguration(String configuration) {
     this.configuration = configuration;
   }
 
-  public String getActivityId() {
+  @Override
+public String getActivityId() {
     return activityId;
   }
 
-  public void setActivityId(String activityId) {
+  @Override
+public void setActivityId(String activityId) {
     this.activityId = activityId;
   }
 
-  public Date getCreated() {
+  @Override
+public Date getCreated() {
     return created;
   }
 
-  public void setCreated(Date created) {
+  @Override
+public void setCreated(Date created) {
     this.created = created;
   }
 
-  public String getProcessDefinitionId() {
+  @Override
+public String getProcessDefinitionId() {
     return processDefinitionId;
   }
 
-  public void setProcessDefinitionId(String processDefinitionId) {
+  @Override
+public void setProcessDefinitionId(String processDefinitionId) {
     this.processDefinitionId = processDefinitionId;
   }
 
-  public String getTenantId() {
+  @Override
+public String getTenantId() {
     return tenantId;
   }
 
-  public void setTenantId(String tenantId) {
+  @Override
+public void setTenantId(String tenantId) {
     this.tenantId = tenantId;
   }
 
@@ -151,18 +173,23 @@ public abstract class EventSubscriptionEntityImpl extends AbstractEntity impleme
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) {
+		return true;
+	}
+    if (obj == null) {
+		return false;
+	}
+    if (getClass() != obj.getClass()) {
+		return false;
+	}
     EventSubscriptionEntityImpl other = (EventSubscriptionEntityImpl) obj;
     if (id == null) {
-      if (other.id != null)
-        return false;
-    } else if (!id.equals(other.id))
-      return false;
+      if (other.id != null) {
+		return false;
+	}
+    } else if (!id.equals(other.id)) {
+		return false;
+	}
     return true;
   }
 

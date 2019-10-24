@@ -39,11 +39,12 @@ public class CancelJobsCmd implements Command<Void>, Serializable {
   }
 
   public CancelJobsCmd(String jobId) {
-    this.jobIds = new ArrayList<String>();
+    this.jobIds = new ArrayList<>();
     jobIds.add(jobId);
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     JobEntity jobToDelete = null;
     for (String jobId : jobIds) {
       jobToDelete = commandContext.getJobEntityManager().findById(jobId);

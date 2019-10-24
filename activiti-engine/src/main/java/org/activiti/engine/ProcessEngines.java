@@ -57,21 +57,21 @@ public abstract class ProcessEngines {
   public static final String NAME_DEFAULT = "default";
 
   protected static boolean isInitialized;
-  protected static Map<String, ProcessEngine> processEngines = new HashMap<String, ProcessEngine>();
-  protected static Map<String, ProcessEngineInfo> processEngineInfosByName = new HashMap<String, ProcessEngineInfo>();
-  protected static Map<String, ProcessEngineInfo> processEngineInfosByResourceUrl = new HashMap<String, ProcessEngineInfo>();
-  protected static List<ProcessEngineInfo> processEngineInfos = new ArrayList<ProcessEngineInfo>();
+  protected static Map<String, ProcessEngine> processEngines = new HashMap<>();
+  protected static Map<String, ProcessEngineInfo> processEngineInfosByName = new HashMap<>();
+  protected static Map<String, ProcessEngineInfo> processEngineInfosByResourceUrl = new HashMap<>();
+  protected static List<ProcessEngineInfo> processEngineInfos = new ArrayList<>();
 
   /**
    * Initializes all process engines that can be found on the classpath for resources <code>activiti.cfg.xml</code> (plain Activiti style configuration) and for resources
    * <code>activiti-context.xml</code> (Spring style configuration).
    */
-  public synchronized static void init() {
+  public static synchronized void init() {
     if (!isInitialized()) {
       if (processEngines == null) {
         // Create new map to store process-engines if current map is
         // null
-        processEngines = new HashMap<String, ProcessEngine>();
+        processEngines = new HashMap<>();
       }
       ClassLoader classLoader = ReflectUtil.getClassLoader();
       Enumeration<URL> resources = null;
@@ -84,15 +84,14 @@ public abstract class ProcessEngines {
       // Remove duplicated configuration URL's using set. Some
       // classloaders may return identical URL's twice, causing duplicate
       // startups
-      Set<URL> configUrls = new HashSet<URL>();
+      Set<URL> configUrls = new HashSet<>();
       while (resources.hasMoreElements()) {
         configUrls.add(resources.nextElement());
       }
-      for (Iterator<URL> iterator = configUrls.iterator(); iterator.hasNext();) {
-        URL resource = iterator.next();
+      configUrls.forEach(resource -> {
         log.info("Initializing process engine using configuration '{}'", resource.toString());
         initProcessEngineFromResource(resource);
-      }
+      });
 
       try {
         resources = classLoader.getResources("activiti-context.xml");
@@ -123,7 +122,7 @@ public abstract class ProcessEngines {
       processEngineInfosByResourceUrl.put(resource.toString(), processEngineInfo);
 
     } catch (Exception e) {
-      throw new ActivitiException("couldn't initialize process engine from spring configuration resource " + resource.toString() + ": " + e.getMessage(), e);
+      throw new ActivitiException(new StringBuilder().append("couldn't initialize process engine from spring configuration resource ").append(resource.toString()).append(": ").append(e.getMessage()).toString(), e);
     }
   }
 
@@ -247,26 +246,24 @@ public abstract class ProcessEngines {
   /**
    * closes all process engines. This method should be called when the server shuts down.
    */
-  public synchronized static void destroy() {
-    if (isInitialized()) {
-      Map<String, ProcessEngine> engines = new HashMap<String, ProcessEngine>(processEngines);
-      processEngines = new HashMap<String, ProcessEngine>();
-
-      for (String processEngineName : engines.keySet()) {
+  public static synchronized void destroy() {
+    if (!isInitialized()) {
+		return;
+	}
+	Map<String, ProcessEngine> engines = new HashMap<>(processEngines);
+	processEngines = new HashMap<>();
+	engines.keySet().forEach(processEngineName -> {
         ProcessEngine processEngine = engines.get(processEngineName);
         try {
           processEngine.close();
         } catch (Exception e) {
           log.error("exception while closing {}", (processEngineName == null ? "the default process engine" : "process engine " + processEngineName), e);
         }
-      }
-
-      processEngineInfosByName.clear();
-      processEngineInfosByResourceUrl.clear();
-      processEngineInfos.clear();
-
-      setInitialized(false);
-    }
+      });
+	processEngineInfosByName.clear();
+	processEngineInfosByResourceUrl.clear();
+	processEngineInfos.clear();
+	setInitialized(false);
   }
 
   public static boolean isInitialized() {

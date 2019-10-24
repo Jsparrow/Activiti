@@ -22,11 +22,11 @@ public class SerializePOJOJsonTest extends ResourceActivitiTestCase {
 
     @Deployment
     public void testJsonVarInExpression() throws Exception {
-        Map<String, Object> vars = new HashMap<String, Object>();
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("assignee", "salaboy");
         map.put("category", "test");
-        Map<String, Object> mapInMap = new HashMap<String, Object>();
+        Map<String, Object> mapInMap = new HashMap<>();
         mapInMap.put("user", "salaboy");
         map.put("mapInMap", mapInMap);
         vars.put("userMap", map);
@@ -52,7 +52,7 @@ public class SerializePOJOJsonTest extends ResourceActivitiTestCase {
 
     @Deployment
     public void testCollectionJsonVarInExpression() throws Exception {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         List<String> list = Arrays.asList("salaboy", "salaboy", "salaboy");
         vars.put("userCollection", list);
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("testCollectionJsonVarInExpression", vars);
@@ -66,9 +66,9 @@ public class SerializePOJOJsonTest extends ResourceActivitiTestCase {
 
     @Deployment
     public void testCollectionInJsonVarInExpression() throws Exception {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         List<String> list = Arrays.asList("salaboy", "salaboy", "salaboy");
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("userCollection", list);
         vars.put("userMap", map);
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("testCollectionInJsonVarInExpression", vars);
@@ -76,9 +76,9 @@ public class SerializePOJOJsonTest extends ResourceActivitiTestCase {
         taskService.complete(taskId);
         taskService.createTaskQuery().processInstanceId(processInstance.getId()).list().forEach(task -> taskService.complete(task.getId()));
 
-        vars = new HashMap<String, Object>();
+        vars = new HashMap<>();
         List<SomeSerializable> beanList = Arrays.asList(new SomeSerializable("salaboy"), new SomeSerializable("salaboy"), new SomeSerializable("salaboy"));
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         map.put("userCollection", beanList);
         vars.put("userMap", map);
         processInstance = runtimeService.startProcessInstanceByKey("testCollectionInJsonVarInExpression", vars);
@@ -91,11 +91,11 @@ public class SerializePOJOJsonTest extends ResourceActivitiTestCase {
 
     @Deployment
     public void testPOJOCollectionInJsonVarInExpression() throws Exception {
-        Map<String, Object> vars = new HashMap<String, Object>();
-        Map<String, Object> map = new HashMap<String, Object>();
-        vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
+        vars = new HashMap<>();
         List<SomeSerializable> beanList = Arrays.asList(new SomeSerializable("salaboy"), new SomeSerializable("salaboy"), new SomeSerializable("salaboy"));
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         map.put("userCollection", beanList);
         vars.put("userMap", map);
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("testPOJOCollectionInJsonVarInExpression", vars);

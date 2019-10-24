@@ -39,7 +39,7 @@ public class VariableScopeTest extends PluggableActivitiTestCase {
 
     // After starting the process, the task in the subprocess should be
     // active
-    Map<String, Object> varMap = new HashMap<String, Object>();
+    Map<String, Object> varMap = new HashMap<>();
     varMap.put("test", "test");
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess", varMap);
     Task subProcessTask = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
@@ -95,7 +95,7 @@ public class VariableScopeTest extends PluggableActivitiTestCase {
 
     // After starting the process, the task in the subprocess should be
     // active
-    Map<String, Object> varMap = new HashMap<String, Object>();
+    Map<String, Object> varMap = new HashMap<>();
     varMap.put("test", "test");
     varMap.put("helloWorld", "helloWorld");
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("simpleSubProcess", varMap);
@@ -156,7 +156,7 @@ public class VariableScopeTest extends PluggableActivitiTestCase {
 
     // After starting the process, the task in the subprocess should be
     // active
-    Map<String, Object> varMap = new HashMap<String, Object>();
+    Map<String, Object> varMap = new HashMap<>();
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("nestedSubProcess", varMap);
     Task subProcessTask = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
     assertEquals("Task in subprocess1", subProcessTask.getName());
@@ -206,8 +206,8 @@ public class VariableScopeTest extends PluggableActivitiTestCase {
 
     List<Task> subProcessTasks = taskService.createTaskQuery().processInstanceId(pi.getId()).list();
 
-    for (Task subProcTask : subProcessTasks) {
-      if (subProcTask.getName().equals("Task in subprocess2")) {
+    subProcessTasks.forEach(subProcTask -> {
+      if ("Task in subprocess2".equals(subProcTask.getName())) {
         // get variables for execution id user task, should return the
         // old value
         // of variable test --> test3
@@ -219,7 +219,7 @@ public class VariableScopeTest extends PluggableActivitiTestCase {
         // value of variable test --> testY
         assertEquals("testY", runtimeService.getVariable(pi.getId(), "test"));
         assertEquals("testY", runtimeService.getVariables(pi.getId()).get("test"));
-      } else if (subProcTask.getName().equals("Task in subprocess3")) {
+      } else if ("Task in subprocess3".equals(subProcTask.getName())) {
         // get variables for execution id user task, should return the
         // old value
         // of variable test --> test4
@@ -234,12 +234,10 @@ public class VariableScopeTest extends PluggableActivitiTestCase {
       } else {
         fail("Unexpected subProcessTask: " + subProcTask);
       }
-    }
+    });
 
     // finish process
-    for (Task subProcTask : subProcessTasks) {
-      taskService.complete(subProcTask.getId());
-    }
+	subProcessTasks.forEach(subProcTask -> taskService.complete(subProcTask.getId()));
   }
 
   @Deployment
@@ -267,7 +265,8 @@ public class VariableScopeTest extends PluggableActivitiTestCase {
       this.isLocal = isLocal;
     }
 
-    public List<String> execute(CommandContext commandContext) {
+    @Override
+	public List<String> execute(CommandContext commandContext) {
       if (executionId == null) {
         throw new ActivitiIllegalArgumentException("executionId is null");
       }
@@ -275,14 +274,14 @@ public class VariableScopeTest extends PluggableActivitiTestCase {
       ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(executionId);
 
       if (execution == null) {
-        throw new ActivitiObjectNotFoundException("execution " + executionId + " doesn't exist", Execution.class);
+        throw new ActivitiObjectNotFoundException(new StringBuilder().append("execution ").append(executionId).append(" doesn't exist").toString(), Execution.class);
       }
 
       List<String> executionVariables;
       if (isLocal) {
-        executionVariables = new ArrayList<String>(execution.getVariableNamesLocal());
+        executionVariables = new ArrayList<>(execution.getVariableNamesLocal());
       } else {
-        executionVariables = new ArrayList<String>(execution.getVariableNames());
+        executionVariables = new ArrayList<>(execution.getVariableNames());
       }
 
       return executionVariables;

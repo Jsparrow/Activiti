@@ -41,37 +41,33 @@ public class ConcurrentEngineUsageTest extends PluggableActivitiTestCase {
   @Deployment
   public void testConcurrentUsage() throws Exception {
 
-    if (!processEngineConfiguration.getDatabaseType().equals("h2") && !processEngineConfiguration.getDatabaseType().equals("db2")) {
-      int numberOfThreads = 5;
-      int numberOfProcessesPerThread = 5;
-      int totalNumberOfTasks = 2 * numberOfThreads * numberOfProcessesPerThread;
-
-      ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 10, 1000, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(numberOfThreads));
-
-      for (int i = 0; i < numberOfThreads; i++) {
+    if (!(!"h2".equals(processEngineConfiguration.getDatabaseType()) && !"db2".equals(processEngineConfiguration.getDatabaseType()))) {
+		return;
+	}
+	int numberOfThreads = 5;
+	int numberOfProcessesPerThread = 5;
+	int totalNumberOfTasks = 2 * numberOfThreads * numberOfProcessesPerThread;
+	ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 10, 1000, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(numberOfThreads));
+	for (int i = 0; i < numberOfThreads; i++) {
         executor.execute(new ConcurrentProcessRunnerRunnable(numberOfProcessesPerThread, "kermit" + i));
       }
-
-      // Wait for termination or timeout and check if all tasks are
+	// Wait for termination or timeout and check if all tasks are
       // complete
       executor.shutdown();
-      boolean isEnded = executor.awaitTermination(20000, TimeUnit.MILLISECONDS);
-      if (!isEnded) {
+	boolean isEnded = executor.awaitTermination(20000, TimeUnit.MILLISECONDS);
+	if (!isEnded) {
         log.error("Executor was not shut down after timeout, not al tasks have been executed");
         executor.shutdownNow();
 
       }
-      assertEquals(0, executor.getActiveCount());
-
-      // Check there are no processes active anymore
+	assertEquals(0, executor.getActiveCount());
+	// Check there are no processes active anymore
       assertEquals(0, runtimeService.createProcessInstanceQuery().count());
-
-      if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+	if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
         // Check if all processes and tasks are complete
         assertEquals(numberOfProcessesPerThread * numberOfThreads, historyService.createHistoricProcessInstanceQuery().finished().count());
         assertEquals(totalNumberOfTasks, historyService.createHistoricTaskInstanceQuery().finished().count());
       }
-    }
   }
 
   protected void retryStartProcess(String runningUser) {
@@ -83,17 +79,19 @@ public class ConcurrentEngineUsageTest extends PluggableActivitiTestCase {
         runtimeService.startProcessInstanceByKey("concurrentProcess", Collections.singletonMap("assignee", (Object) runningUser));
         success = true;
       } catch (PersistenceException pe) {
-        retries = retries - 1;
+        log.error(pe.getMessage(), pe);
+		retries -= 1;
         log.debug("Retrying process start - " + (MAX_RETRIES - retries));
         try {
           Thread.sleep(timeout);
         } catch (InterruptedException ignore) {
+			log.error(ignore.getMessage(), ignore);
         }
-        timeout = timeout + 200;
+        timeout += 200;
       }
     }
     if (!success) {
-      log.debug("Retrying process start FAILED " + MAX_RETRIES + " times");
+      log.debug(new StringBuilder().append("Retrying process start FAILED ").append(MAX_RETRIES).append(" times").toString());
     }
   }
 
@@ -106,18 +104,20 @@ public class ConcurrentEngineUsageTest extends PluggableActivitiTestCase {
         taskService.complete(taskId);
         success = true;
       } catch (PersistenceException pe) {
-        retries = retries - 1;
+        log.error(pe.getMessage(), pe);
+		retries -= 1;
         log.debug("Retrying task completion - " + (MAX_RETRIES - retries));
         try {
           Thread.sleep(timeout);
         } catch (InterruptedException ignore) {
+			log.error(ignore.getMessage(), ignore);
         }
-        timeout = timeout + 200;
+        timeout += 200;
       }
     }
 
     if (!success) {
-      log.debug("Retrying task completion FAILED " + MAX_RETRIES + " times");
+      log.debug(new StringBuilder().append("Retrying task completion FAILED ").append(MAX_RETRIES).append(" times").toString());
     }
   }
 
@@ -148,7 +148,7 @@ public class ConcurrentEngineUsageTest extends PluggableActivitiTestCase {
             // all started
             tasksAvailable = taskService.createTaskQuery().taskAssignee(drivingUser).count() > 0;
           }
-          numberOfProcesses = numberOfProcesses - 1;
+          numberOfProcesses -= 1;
         } else {
           // Finish a task
           List<Task> taskToComplete = taskService.createTaskQuery().taskAssignee(drivingUser).listPage(0, 1);

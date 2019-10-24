@@ -33,7 +33,15 @@ public class CurrentActivityTransactionDependentExecutionListener implements Tra
     currentActivities.add(new CurrentActivity(processInstanceId, executionId, currentFlowElement.getId(), currentFlowElement.getName(), executionVariables, customPropertiesMap));
   }
 
-  public static class CurrentActivity {
+  public static List<CurrentActivity> getCurrentActivities() {
+    return currentActivities;
+  }
+
+public static void clear() {
+    currentActivities.clear();
+  }
+
+public static class CurrentActivity {
     private final String processInstanceId;
     private final String executionId;
     private final String activityId;
@@ -73,13 +81,5 @@ public class CurrentActivityTransactionDependentExecutionListener implements Tra
     public Map<String, Object> getCustomPropertiesMap() {
       return customPropertiesMap;
     }
-  }
-
-  public static List<CurrentActivity> getCurrentActivities() {
-    return currentActivities;
-  }
-
-  public static void clear() {
-    currentActivities.clear();
   }
 }

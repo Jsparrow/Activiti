@@ -29,8 +29,10 @@ public interface PropertyEntity extends Entity, HasRevision {
 
   void setValue(String value);
 
-  String getId();
+  @Override
+String getId();
 
-  Object getPersistentState();
+  @Override
+Object getPersistentState();
 
 }

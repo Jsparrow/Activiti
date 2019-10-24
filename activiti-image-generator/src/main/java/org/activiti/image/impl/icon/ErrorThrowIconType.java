@@ -23,7 +23,8 @@ public class ErrorThrowIconType extends ErrorIconType {
                                                                     SVGGraphics2D.SVG_G_TAG);
         gTag.setAttributeNS(null,
                             "transform",
-                            "translate(" + (imageX - 4) + "," + (imageY - 4) + ")");
+                            new StringBuilder().append("translate(").append(imageX - 4).append(",")
+									.append(imageY - 4).append(")").toString());
 
         Element pathTag = svgGenerator.getDOMFactory().createElementNS(null,
                                                                        SVGGraphics2D.SVG_PATH_TAG);

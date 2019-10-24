@@ -82,7 +82,8 @@ public class JobEntityManagerImpl extends AbstractEntityManager<JobEntity> imple
         return true;
     }
 
-    public List<JobEntity> findJobsToExecute(Page page) {
+    @Override
+	public List<JobEntity> findJobsToExecute(Page page) {
         return jobDataManager.findJobsToExecute(page);
     }
 
@@ -170,12 +171,13 @@ public class JobEntityManagerImpl extends AbstractEntityManager<JobEntity> imple
      * Subclasses may override to provide custom implementations.
      */
     protected void removeExecutionLink(JobEntity jobEntity) {
-        if (jobEntity.getExecutionId() != null) {
-            ExecutionEntity execution = getExecutionEntityManager().findById(jobEntity.getExecutionId());
-            if (execution != null) {
-                execution.getJobs().remove(jobEntity);
-            }
-        }
+        if (jobEntity.getExecutionId() == null) {
+			return;
+		}
+		ExecutionEntity execution = getExecutionEntityManager().findById(jobEntity.getExecutionId());
+		if (execution != null) {
+		    execution.getJobs().remove(jobEntity);
+		}
     }
 
     /**

@@ -30,11 +30,12 @@ public class UrlStreamSource implements StreamSource {
     this.url = url;
   }
 
-  public InputStream getInputStream() {
+  @Override
+public InputStream getInputStream() {
     try {
       return new BufferedInputStream(url.openStream());
     } catch (IOException e) {
-      throw new ActivitiIllegalArgumentException("couldn't open url '" + url + "'", e);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("couldn't open url '").append(url).append("'").toString(), e);
     }
   }
 }

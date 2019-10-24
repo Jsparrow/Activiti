@@ -24,6 +24,8 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
 import org.activiti.engine.test.EnableVerboseExecutionTreeLogging;
 import org.activiti.engine.test.bpmn.event.compensate.helper.SetVariablesDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -31,7 +33,10 @@ import org.activiti.engine.test.bpmn.event.compensate.helper.SetVariablesDelegat
 @EnableVerboseExecutionTreeLogging
 public class CompensateEventTest extends PluggableActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(CompensateEventTest.class);
+
+
+@Deployment
   public void testCompensateSubprocess() {
 
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("compensateProcess");
@@ -157,6 +162,7 @@ public class CompensateEventTest extends PluggableActivitiTestCase {
       repositoryService.createDeployment().addClasspathResource("org/activiti/engine/test/bpmn/event/compensate/CompensateEventTest.testMultipleCompensationCatchEventsFails.bpmn20.xml").deploy();
       fail("exception expected");
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
@@ -177,14 +183,15 @@ public class CompensateEventTest extends PluggableActivitiTestCase {
     assertProcessEnded(processInstance.getId());
     assertEquals(0, runtimeService.createProcessInstanceQuery().count());
 
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      final HistoricActivityInstanceQuery query = historyService.createHistoricActivityInstanceQuery().activityId("compensationScriptTask");
-      assertEquals(1, query.count());
-      final HistoricActivityInstance compensationScriptTask = query.singleResult();
-      assertNotNull(compensationScriptTask);
-      assertNotNull(compensationScriptTask.getEndTime());
-      assertNotNull(compensationScriptTask.getDurationInMillis());
-    }
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	final HistoricActivityInstanceQuery query = historyService.createHistoricActivityInstanceQuery().activityId("compensationScriptTask");
+	assertEquals(1, query.count());
+	final HistoricActivityInstance compensationScriptTask = query.singleResult();
+	assertNotNull(compensationScriptTask);
+	assertNotNull(compensationScriptTask.getEndTime());
+	assertNotNull(compensationScriptTask.getDurationInMillis());
   }
   
   @Deployment

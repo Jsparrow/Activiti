@@ -55,7 +55,8 @@ public class BoundaryEventJsonConverter extends BaseBpmnJsonConverter {
     convertersToJsonMap.put(BoundaryEvent.class, BoundaryEventJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     BoundaryEvent boundaryEvent = (BoundaryEvent) baseElement;
     List<EventDefinition> eventDefinitions = boundaryEvent.getEventDefinitions();
     if (eventDefinitions.size() != 1) {
@@ -79,7 +80,8 @@ public class BoundaryEventJsonConverter extends BaseBpmnJsonConverter {
     }
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
     BoundaryEvent boundaryEvent = (BoundaryEvent) baseElement;
     ArrayNode dockersArrayNode = objectMapper.createArrayNode();
     ObjectNode dockNode = objectMapper.createObjectNode();
@@ -95,7 +97,8 @@ public class BoundaryEventJsonConverter extends BaseBpmnJsonConverter {
     addEventProperties(boundaryEvent, propertiesNode);
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     BoundaryEvent boundaryEvent = new BoundaryEvent();
     String stencilId = BpmnJsonConverterUtil.getStencilId(elementNode);
     if (STENCIL_EVENT_BOUNDARY_TIMER.equals(stencilId)) {

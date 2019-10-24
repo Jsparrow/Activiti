@@ -33,6 +33,8 @@ import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -40,7 +42,9 @@ import org.activiti.engine.test.Deployment;
  */
 public class RepositoryServiceTest extends PluggableActivitiTestCase {
 
-  @Deployment(resources = { "org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml" })
+  private static final Logger logger = LoggerFactory.getLogger(RepositoryServiceTest.class);
+
+@Deployment(resources = { "org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml" })
   public void testStartProcessInstanceById() {
     List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery().list();
     assertEquals(1, processDefinitions.size());
@@ -78,6 +82,7 @@ public class RepositoryServiceTest extends PluggableActivitiTestCase {
       repositoryService.deleteDeployment(processDefinition.getDeploymentId());
       fail("Exception expected");
     } catch (RuntimeException ae) {
+		logger.error(ae.getMessage(), ae);
       // Exception expected when deleting deployment with running process
     }
   }
@@ -315,7 +320,7 @@ public class RepositoryServiceTest extends PluggableActivitiTestCase {
       byte[] bytes = baos.toByteArray();
       assertTrue(bytes.length > 0);
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(), e);
       fail();
     }
   }
@@ -383,9 +388,7 @@ public class RepositoryServiceTest extends PluggableActivitiTestCase {
     assertEquals(6, repositoryService.createProcessDefinitionQuery().count());
 
     // Delete
-    for (org.activiti.engine.repository.Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+	repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
   }
 
 }

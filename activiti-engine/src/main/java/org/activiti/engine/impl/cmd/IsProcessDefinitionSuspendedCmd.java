@@ -31,7 +31,8 @@ public class IsProcessDefinitionSuspendedCmd implements Command<Boolean>, Serial
     this.processDefinitionId = processDefinitionId;
   }
 
-  public Boolean execute(CommandContext commandContext) {
+  @Override
+public Boolean execute(CommandContext commandContext) {
     return ProcessDefinitionUtil.isProcessDefinitionSuspended(processDefinitionId);
   }
 }

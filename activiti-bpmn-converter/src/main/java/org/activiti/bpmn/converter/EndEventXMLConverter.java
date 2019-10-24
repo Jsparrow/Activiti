@@ -26,7 +26,8 @@ import org.activiti.bpmn.model.FlowNode;
  */
 public class EndEventXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return EndEvent.class;
   }
 

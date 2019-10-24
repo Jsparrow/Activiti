@@ -27,7 +27,8 @@ public class CycleBusinessCalendar extends BusinessCalendarImpl {
     super(clockReader);
   }
 
-  public Date resolveDuedate(String duedateDescription, int maxIterations) {
+  @Override
+public Date resolveDuedate(String duedateDescription, int maxIterations) {
     try {
       if (duedateDescription != null && duedateDescription.startsWith("R")) {
         return new DurationHelper(duedateDescription, maxIterations, clockReader).getDateAfter();
@@ -42,7 +43,8 @@ public class CycleBusinessCalendar extends BusinessCalendarImpl {
 
   }
 
-  public Boolean validateDuedate(String duedateDescription, int maxIterations, Date endDate, Date newTimer) {
+  @Override
+public Boolean validateDuedate(String duedateDescription, int maxIterations, Date endDate, Date newTimer) {
     if (endDate != null) {
       return super.validateDuedate(duedateDescription, maxIterations, endDate, newTimer);
     }

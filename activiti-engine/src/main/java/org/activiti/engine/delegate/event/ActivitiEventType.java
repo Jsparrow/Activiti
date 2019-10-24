@@ -282,7 +282,7 @@ public enum ActivitiEventType {
    *           when one of the given string is not a valid type name
    */
   public static ActivitiEventType[] getTypesFromString(String string) {
-    List<ActivitiEventType> result = new ArrayList<ActivitiEventType>();
+    List<ActivitiEventType> result = new ArrayList<>();
     if (string != null && !string.isEmpty()) {
       String[] split = StringUtils.split(string, ",");
       for (String typeName : split) {

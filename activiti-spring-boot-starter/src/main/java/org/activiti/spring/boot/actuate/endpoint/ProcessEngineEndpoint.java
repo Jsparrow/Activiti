@@ -46,7 +46,7 @@ public class ProcessEngineEndpoint {
     @ReadOperation
     public Map<String, Object> invoke() {
 
-        Map<String, Object> metrics = new HashMap<String, Object>();
+        Map<String, Object> metrics = new HashMap<>();
 
         // Process definitions
         metrics.put("processDefinitionCount",
@@ -54,28 +54,24 @@ public class ProcessEngineEndpoint {
 
         // List of all process definitions
         List<ProcessDefinition> processDefinitions = processEngine.getRepositoryService().createProcessDefinitionQuery().orderByProcessDefinitionKey().asc().list();
-        List<String> processDefinitionKeys = new ArrayList<String>();
-        for (ProcessDefinition processDefinition : processDefinitions) {
-            processDefinitionKeys.add(processDefinition.getKey() + " (v" + processDefinition.getVersion() + ")");
-        }
+        List<String> processDefinitionKeys = new ArrayList<>();
+        processDefinitions.forEach(processDefinition -> processDefinitionKeys.add(new StringBuilder().append(processDefinition.getKey()).append(" (v").append(processDefinition.getVersion()).append(")").toString()));
         metrics.put("deployedProcessDefinitions",
                     processDefinitionKeys);
 
         // Process instances
-        Map<String, Object> processInstanceCountMap = new HashMap<String, Object>();
+        Map<String, Object> processInstanceCountMap = new HashMap<>();
         metrics.put("runningProcessInstanceCount",
                     processInstanceCountMap);
-        for (ProcessDefinition processDefinition : processDefinitions) {
-            processInstanceCountMap.put(processDefinition.getKey() + " (v" + processDefinition.getVersion() + ")",
-                                        processEngine.getRuntimeService().createProcessInstanceQuery().processDefinitionId(processDefinition.getId()).count());
-        }
-        Map<String, Object> completedProcessInstanceCountMap = new HashMap<String, Object>();
+        processDefinitions.forEach(processDefinition -> processInstanceCountMap.put(new StringBuilder().append(processDefinition.getKey()).append(" (v").append(processDefinition.getVersion()).append(")").toString(),
+				processEngine.getRuntimeService().createProcessInstanceQuery()
+						.processDefinitionId(processDefinition.getId()).count()));
+        Map<String, Object> completedProcessInstanceCountMap = new HashMap<>();
         metrics.put("completedProcessInstanceCount",
                     completedProcessInstanceCountMap);
-        for (ProcessDefinition processDefinition : processDefinitions) {
-            completedProcessInstanceCountMap.put(processDefinition.getKey() + " (v" + processDefinition.getVersion() + ")",
-                                                 processEngine.getHistoryService().createHistoricProcessInstanceQuery().finished().processDefinitionId(processDefinition.getId()).count());
-        }
+        processDefinitions.forEach(processDefinition -> completedProcessInstanceCountMap.put(new StringBuilder().append(processDefinition.getKey()).append(" (v").append(processDefinition.getVersion()).append(")").toString(),
+				processEngine.getHistoryService().createHistoricProcessInstanceQuery().finished()
+						.processDefinitionId(processDefinition.getId()).count()));
 
         // Open tasks
         metrics.put("openTaskCount",

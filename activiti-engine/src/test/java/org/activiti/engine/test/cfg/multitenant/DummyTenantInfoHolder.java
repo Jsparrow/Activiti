@@ -25,13 +25,14 @@ import org.activiti.engine.impl.identity.Authentication;
  */
 public class DummyTenantInfoHolder implements TenantInfoHolder {
   
-  protected Map<String, List<String>> tenantToUserMapping = new HashMap<String, List<String>>();
-  protected Map<String, String> userToTenantMapping = new HashMap<String, String>();
+  protected Map<String, List<String>> tenantToUserMapping = new HashMap<>();
+  protected Map<String, String> userToTenantMapping = new HashMap<>();
   
-  protected ThreadLocal<String> currentUserId = new ThreadLocal<String>();
-  protected ThreadLocal<String> currentTenantId = new ThreadLocal<String>();
+  protected ThreadLocal<String> currentUserId = new ThreadLocal<>();
+  protected ThreadLocal<String> currentTenantId = new ThreadLocal<>();
   
-  public Collection<String> getAllTenants() {
+  @Override
+public Collection<String> getAllTenants() {
     return tenantToUserMapping.keySet();
   }
   
@@ -50,20 +51,23 @@ public class DummyTenantInfoHolder implements TenantInfoHolder {
     currentTenantId.set(null);
   }
   
-  public void setCurrentTenantId(String tenantid) {
+  @Override
+public void setCurrentTenantId(String tenantid) {
     currentTenantId.set(tenantid);
   }
   
-  public String getCurrentTenantId() {
+  @Override
+public String getCurrentTenantId() {
     return currentTenantId.get();
   }
   
- public void clearCurrentTenantId() {
+ @Override
+public void clearCurrentTenantId() {
    currentTenantId.set(null);
 }
   
   public void addTenant(String tenantId) {
-    tenantToUserMapping.put(tenantId, new ArrayList<String>());
+    tenantToUserMapping.put(tenantId, new ArrayList<>());
     updateUserMap();
   }
   
@@ -74,12 +78,10 @@ public class DummyTenantInfoHolder implements TenantInfoHolder {
   
   protected void updateUserMap() {
     userToTenantMapping.clear();
-    for (String tenantId : tenantToUserMapping.keySet()) {
+    tenantToUserMapping.keySet().forEach(tenantId -> {
       List<String> userIds = tenantToUserMapping.get(tenantId);
-      for (String tenantUserId : userIds) {
-        userToTenantMapping.put(tenantUserId, tenantId);
-      }
-    }
+      userIds.forEach(tenantUserId -> userToTenantMapping.put(tenantUserId, tenantId));
+    });
   }
 
 }

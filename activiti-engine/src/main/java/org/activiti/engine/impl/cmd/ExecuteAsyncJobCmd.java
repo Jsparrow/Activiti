@@ -39,7 +39,8 @@ public class ExecuteAsyncJobCmd implements Command<Object>, Serializable {
     this.jobId = jobId;
   }
 
-  public Object execute(CommandContext commandContext) {
+  @Override
+public Object execute(CommandContext commandContext) {
 
     if (jobId == null) {
       throw new ActivitiIllegalArgumentException("jobId is null");

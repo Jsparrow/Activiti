@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 public class DefinitionsRootExport implements BpmnXMLConstants {
 
   /** default namespaces for definitions */
-  protected static final Set<String> defaultNamespaces = new HashSet<String>(Arrays.asList(XSI_PREFIX, XSD_PREFIX, ACTIVITI_EXTENSIONS_PREFIX, BPMNDI_PREFIX, OMGDC_PREFIX, OMGDI_PREFIX));
+  protected static final Set<String> defaultNamespaces = new HashSet<>(Arrays.asList(XSI_PREFIX, XSD_PREFIX, ACTIVITI_EXTENSIONS_PREFIX, BPMNDI_PREFIX, OMGDC_PREFIX, OMGDI_PREFIX));
 
   protected static final List<ExtensionAttribute> defaultAttributes = Arrays.asList(new ExtensionAttribute(TYPE_LANGUAGE_ATTRIBUTE), new ExtensionAttribute(EXPRESSION_LANGUAGE_ATTRIBUTE),
       new ExtensionAttribute(TARGET_NAMESPACE_ATTRIBUTE));
@@ -48,8 +48,9 @@ public class DefinitionsRootExport implements BpmnXMLConstants {
     xtw.writeNamespace(OMGDC_PREFIX, OMGDC_NAMESPACE);
     xtw.writeNamespace(OMGDI_PREFIX, OMGDI_NAMESPACE);
     for (String prefix : model.getNamespaces().keySet()) {
-      if (!defaultNamespaces.contains(prefix) && StringUtils.isNotEmpty(prefix))
-        xtw.writeNamespace(prefix, model.getNamespaces().get(prefix));
+      if (!defaultNamespaces.contains(prefix) && StringUtils.isNotEmpty(prefix)) {
+		xtw.writeNamespace(prefix, model.getNamespaces().get(prefix));
+	}
     }
     xtw.writeAttribute(TYPE_LANGUAGE_ATTRIBUTE, SCHEMA_NAMESPACE);
     xtw.writeAttribute(EXPRESSION_LANGUAGE_ATTRIBUTE, XPATH_NAMESPACE);

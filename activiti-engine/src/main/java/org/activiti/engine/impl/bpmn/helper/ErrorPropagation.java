@@ -57,28 +57,25 @@ public class ErrorPropagation {
 
         ExecutionEntity parentExecution = processInstanceExecution.getSuperExecution();
 
-        Set<String> toDeleteProcessInstanceIds = new HashSet<String>();
+        Set<String> toDeleteProcessInstanceIds = new HashSet<>();
         toDeleteProcessInstanceIds.add(execution.getProcessInstanceId());
 
-        while (parentExecution != null && eventMap.size() == 0) {
+        while (parentExecution != null && eventMap.isEmpty()) {
           eventMap = findCatchingEventsForProcess(parentExecution.getProcessDefinitionId(), errorRef);
           if (eventMap.size() > 0) {
 
-            for (String processInstanceId : toDeleteProcessInstanceIds) {
-              ExecutionEntity processInstanceEntity = executionEntityManager.findById(processInstanceId);
-
-              // Delete
-              executionEntityManager.deleteProcessInstanceExecutionEntity(processInstanceEntity.getId(),
-                  execution.getCurrentFlowElement() != null ? execution.getCurrentFlowElement().getId() : null,
-                  "ERROR_EVENT " + errorRef,
-                  false, false);
-
-              // Event
-              if (Context.getProcessEngineConfiguration() != null && Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
-                Context.getProcessEngineConfiguration().getEventDispatcher()
-                    .dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.PROCESS_COMPLETED_WITH_ERROR_END_EVENT, processInstanceEntity));
-              }
-            }
+            toDeleteProcessInstanceIds.stream().map(executionEntityManager::findById).forEach(processInstanceEntity -> {
+				// Delete
+				  executionEntityManager.deleteProcessInstanceExecutionEntity(processInstanceEntity.getId(),
+				      execution.getCurrentFlowElement() != null ? execution.getCurrentFlowElement().getId() : null,
+				      "ERROR_EVENT " + errorRef,
+				      false, false);
+				// Event
+				  if (Context.getProcessEngineConfiguration() != null && Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
+				    Context.getProcessEngineConfiguration().getEventDispatcher()
+				        .dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.PROCESS_COMPLETED_WITH_ERROR_END_EVENT, processInstanceEntity));
+				  }
+			});
             executeCatch(eventMap, parentExecution, errorRef);
 
           } else {
@@ -98,8 +95,8 @@ public class ErrorPropagation {
 
     }
 
-    if (eventMap.size() == 0) {
-      throw new BpmnError(errorRef, "No catching boundary event found for error with errorCode '" + errorRef + "', neither in same process nor in parent process");
+    if (eventMap.isEmpty()) {
+      throw new BpmnError(errorRef, new StringBuilder().append("No catching boundary event found for error with errorCode '").append(errorRef).append("', neither in same process nor in parent process").toString());
     }
   }
 
@@ -132,11 +129,10 @@ public class ErrorPropagation {
 
         for (String refId : eventMap.keySet()) {
           List<Event> events = eventMap.get(refId);
-          if (CollectionUtil.isNotEmpty(events) && events.get(0) instanceof StartEvent) {
-            if (currentContainer.getFlowElement(refId) != null) {
-              matchingEvent = events.get(0);
-            }
-          }
+          boolean condition = CollectionUtil.isNotEmpty(events) && events.get(0) instanceof StartEvent && currentContainer.getFlowElement(refId) != null;
+		if (condition) {
+		  matchingEvent = events.get(0);
+		}
         }
 
         if (matchingEvent == null) {
@@ -160,7 +156,7 @@ public class ErrorPropagation {
     if (matchingEvent != null && parentExecution != null) {
       executeEventHandler(matchingEvent, parentExecution, currentExecution, errorId);
     } else {
-      throw new ActivitiException("No matching parent execution for error code " + errorId + " found");
+      throw new ActivitiException(new StringBuilder().append("No matching parent execution for error code ").append(errorId).append(" found").toString());
     }
   }
 
@@ -205,34 +201,30 @@ public class ErrorPropagation {
   }
 
   protected static Map<String, List<Event>> findCatchingEventsForProcess(String processDefinitionId, String errorRef) {
-    Map<String, List<Event>> eventMap = new HashMap<String, List<Event>>();
+    Map<String, List<Event>> eventMap = new HashMap<>();
     Process process = ProcessDefinitionUtil.getProcess(processDefinitionId);
     BpmnModel bpmnModel = ProcessDefinitionUtil.getBpmnModel(processDefinitionId);
 
     String compareErrorCode = retrieveErrorCode(bpmnModel, errorRef);
 
     List<EventSubProcess> subProcesses = process.findFlowElementsOfType(EventSubProcess.class, true);
-    for (EventSubProcess eventSubProcess : subProcesses) {
-      for (FlowElement flowElement : eventSubProcess.getFlowElements()) {
-        if (flowElement instanceof StartEvent) {
-          StartEvent startEvent = (StartEvent) flowElement;
-          if (CollectionUtil.isNotEmpty(startEvent.getEventDefinitions()) && startEvent.getEventDefinitions().get(0) instanceof ErrorEventDefinition) {
-            ErrorEventDefinition errorEventDef = (ErrorEventDefinition) startEvent.getEventDefinitions().get(0);
-            String eventErrorCode = retrieveErrorCode(bpmnModel, errorEventDef.getErrorRef());
-
-            if (eventErrorCode == null || compareErrorCode == null || eventErrorCode.equals(compareErrorCode)) {
-              List<Event> startEvents = new ArrayList<Event>();
-              startEvents.add(startEvent);
-              eventMap.put(eventSubProcess.getId(), startEvents);
-            }
-          }
-        }
-      }
-    }
+    subProcesses.forEach(eventSubProcess -> eventSubProcess.getFlowElements().stream().filter(flowElement -> flowElement instanceof StartEvent)
+			.forEach(flowElement -> {
+				StartEvent startEvent = (StartEvent) flowElement;
+				if (CollectionUtil.isNotEmpty(startEvent.getEventDefinitions())
+						&& startEvent.getEventDefinitions().get(0) instanceof ErrorEventDefinition) {
+					ErrorEventDefinition errorEventDef = (ErrorEventDefinition) startEvent.getEventDefinitions().get(0);
+					String eventErrorCode = retrieveErrorCode(bpmnModel, errorEventDef.getErrorRef());
+					if (eventErrorCode == null || compareErrorCode == null || eventErrorCode.equals(compareErrorCode)) {
+						List<Event> startEvents = new ArrayList<>();
+						startEvents.add(startEvent);
+						eventMap.put(eventSubProcess.getId(), startEvents);
+					}
+				}
+			}));
 
     List<BoundaryEvent> boundaryEvents = process.findFlowElementsOfType(BoundaryEvent.class, true);
-    for (BoundaryEvent boundaryEvent : boundaryEvents) {
-      if (boundaryEvent.getAttachedToRefId() != null && CollectionUtil.isNotEmpty(boundaryEvent.getEventDefinitions()) && boundaryEvent.getEventDefinitions().get(0) instanceof ErrorEventDefinition) {
+    boundaryEvents.stream().filter(boundaryEvent -> boundaryEvent.getAttachedToRefId() != null && CollectionUtil.isNotEmpty(boundaryEvent.getEventDefinitions()) && boundaryEvent.getEventDefinitions().get(0) instanceof ErrorEventDefinition).forEach(boundaryEvent -> {
 
         ErrorEventDefinition errorEventDef = (ErrorEventDefinition) boundaryEvent.getEventDefinitions().get(0);
         String eventErrorCode = retrieveErrorCode(bpmnModel, errorEventDef.getErrorRef());
@@ -240,15 +232,14 @@ public class ErrorPropagation {
         if (eventErrorCode == null || compareErrorCode == null || eventErrorCode.equals(compareErrorCode)) {
           List<Event> elementBoundaryEvents = null;
           if (!eventMap.containsKey(boundaryEvent.getAttachedToRefId())) {
-            elementBoundaryEvents = new ArrayList<Event>();
+            elementBoundaryEvents = new ArrayList<>();
             eventMap.put(boundaryEvent.getAttachedToRefId(), elementBoundaryEvents);
           } else {
             elementBoundaryEvents = eventMap.get(boundaryEvent.getAttachedToRefId());
           }
           elementBoundaryEvents.add(boundaryEvent);
         }
-      }
-    }
+      });
     return eventMap;
   }
 

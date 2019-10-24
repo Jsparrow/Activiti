@@ -26,13 +26,16 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class CompensateEventDefinitionParser extends BaseChildElementParser {
 
-  public String getElementName() {
+  @Override
+public String getElementName() {
     return ELEMENT_EVENT_COMPENSATEDEFINITION;
   }
 
-  public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
-    if (!(parentElement instanceof Event))
-      return;
+  @Override
+public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
+    if (!(parentElement instanceof Event)) {
+		return;
+	}
 
     CompensateEventDefinition eventDefinition = new CompensateEventDefinition();
     BpmnXMLUtil.addXMLLocation(eventDefinition, xtr);

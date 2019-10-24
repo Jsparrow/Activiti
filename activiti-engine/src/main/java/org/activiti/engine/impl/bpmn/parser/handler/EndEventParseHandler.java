@@ -35,7 +35,8 @@ public class EndEventParseHandler extends AbstractActivityBpmnParseHandler<EndEv
 
   private static final Logger logger = LoggerFactory.getLogger(EndEventParseHandler.class);
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return EndEvent.class;
   }
 
@@ -50,7 +51,7 @@ public class EndEventParseHandler extends AbstractActivityBpmnParseHandler<EndEv
         ErrorEventDefinition errorDefinition = (ErrorEventDefinition) eventDefinition;
         if (bpmnParse.getBpmnModel().containsErrorRef(errorDefinition.getErrorRef())) {
 
-          for(Error error : bpmnParse.getBpmnModel().getErrors().values()) {
+          bpmnParse.getBpmnModel().getErrors().values().forEach(error -> {
             String errorCode = null;
             if(error.getId().equals(errorDefinition.getErrorRef())){
               errorCode = error.getErrorCode();
@@ -58,7 +59,7 @@ public class EndEventParseHandler extends AbstractActivityBpmnParseHandler<EndEv
             if (StringUtils.isEmpty(errorCode)) {
               logger.warn("errorCode is required for an error event " + endEvent.getId());
             }
-          }
+          });
         }
         endEvent.setBehavior(bpmnParse.getActivityBehaviorFactory().createErrorEndEventActivityBehavior(endEvent, errorDefinition));
       } else if (eventDefinition instanceof TerminateEventDefinition) {

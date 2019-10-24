@@ -36,8 +36,9 @@ public class HistoricIdentityLinkEntityImpl extends AbstractEntityNoRevision imp
 
   }
 
-  public Object getPersistentState() {
-    Map<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    Map<String, Object> persistentState = new HashMap<>();
     persistentState.put("id", this.id);
     persistentState.put("type", this.type);
 
@@ -60,57 +61,69 @@ public class HistoricIdentityLinkEntityImpl extends AbstractEntityNoRevision imp
     return persistentState;
   }
 
-  public boolean isUser() {
+  @Override
+public boolean isUser() {
     return userId != null;
   }
 
-  public boolean isGroup() {
+  @Override
+public boolean isGroup() {
     return groupId != null;
   }
 
-  public String getType() {
+  @Override
+public String getType() {
     return type;
   }
 
-  public void setType(String type) {
+  @Override
+public void setType(String type) {
     this.type = type;
   }
 
-  public String getUserId() {
+  @Override
+public String getUserId() {
     return userId;
   }
 
-  public void setUserId(String userId) {
+  @Override
+public void setUserId(String userId) {
     if (this.groupId != null && userId != null) {
       throw new ActivitiException("Cannot assign a userId to a task assignment that already has a groupId");
     }
     this.userId = userId;
   }
 
-  public String getGroupId() {
+  @Override
+public String getGroupId() {
     return groupId;
   }
 
-  public void setGroupId(String groupId) {
+  @Override
+public void setGroupId(String groupId) {
     if (this.userId != null && groupId != null) {
       throw new ActivitiException("Cannot assign a groupId to a task assignment that already has a userId");
     }
     this.groupId = groupId;
   }
 
-  public String getTaskId() {
+  @Override
+public String getTaskId() {
     return taskId;
   }
 
-  public void setTaskId(String taskId) {
+  @Override
+public void setTaskId(String taskId) {
     this.taskId = taskId;
   }
 
-  public String getProcessInstanceId() {
+  @Override
+public String getProcessInstanceId() {
     return processInstanceId;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
+  @Override
+public void setProcessInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
   }
 }

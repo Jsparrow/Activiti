@@ -68,7 +68,7 @@ public class FailedJobListener implements CommandContextCloseListener {
     FailedJobCommandFactory failedJobCommandFactory = commandContext.getFailedJobCommandFactory();
     Command<Object> cmd = failedJobCommandFactory.getCommand(job.getId(), commandContext.getException());
 
-    log.trace("Using FailedJobCommandFactory '" + failedJobCommandFactory.getClass() + "' and command of type '" + cmd.getClass() + "'");
+    log.trace(new StringBuilder().append("Using FailedJobCommandFactory '").append(failedJobCommandFactory.getClass()).append("' and command of type '").append(cmd.getClass()).append("'").toString());
     commandExecutor.execute(commandConfig, cmd);
   }
 

@@ -48,7 +48,8 @@ public class ResourceParentFolderAutoDeploymentStrategyTest extends AbstractAuto
   private final String parentFilename1 = "parentFilename1";
   private final String parentFilename2 = "parentFilename2";
 
-  @Before
+  @Override
+@Before
   public void before() throws Exception {
     super.before();
     deploymentStrategy = new ResourceParentFolderAutoDeploymentStrategy(projectModelServiceMock);
@@ -78,8 +79,8 @@ public class ResourceParentFolderAutoDeploymentStrategyTest extends AbstractAuto
 
     verify(repositoryServiceMock, times(2)).createDeployment();
     verify(deploymentBuilderMock, times(2)).enableDuplicateFiltering();
-    verify(deploymentBuilderMock, times(1)).name(deploymentNameHint + "." + parentFilename1);
-    verify(deploymentBuilderMock, times(1)).name(deploymentNameHint + "." + parentFilename2);
+    verify(deploymentBuilderMock, times(1)).name(new StringBuilder().append(deploymentNameHint).append(".").append(parentFilename1).toString());
+    verify(deploymentBuilderMock, times(1)).name(new StringBuilder().append(deploymentNameHint).append(".").append(parentFilename2).toString());
     verify(deploymentBuilderMock, times(1)).addInputStream(eq(resourceName1), isA(Resource.class));
     verify(deploymentBuilderMock, times(1)).addInputStream(eq(resourceName2), isA(Resource.class));
     verify(deploymentBuilderMock, times(2)).deploy();
@@ -96,7 +97,7 @@ public class ResourceParentFolderAutoDeploymentStrategyTest extends AbstractAuto
 
     verify(repositoryServiceMock, times(1)).createDeployment();
     verify(deploymentBuilderMock, times(1)).enableDuplicateFiltering();
-    verify(deploymentBuilderMock, times(1)).name(deploymentNameHint + "." + parentFilename1);
+    verify(deploymentBuilderMock, times(1)).name(new StringBuilder().append(deploymentNameHint).append(".").append(parentFilename1).toString());
     verify(deploymentBuilderMock, times(1)).addInputStream(eq(resourceName1), isA(Resource.class));
     verify(deploymentBuilderMock, times(1)).addInputStream(eq(resourceName2), isA(Resource.class));
     verify(deploymentBuilderMock, times(1)).deploy();
@@ -116,7 +117,7 @@ public class ResourceParentFolderAutoDeploymentStrategyTest extends AbstractAuto
 
     verify(repositoryServiceMock).createDeployment();
     verify(deploymentBuilderMock).enableDuplicateFiltering();
-    verify(deploymentBuilderMock).name(deploymentNameHint + "." + parentFilename1);
+    verify(deploymentBuilderMock).name(new StringBuilder().append(deploymentNameHint).append(".").append(parentFilename1).toString());
     verify(deploymentBuilderMock).addInputStream(eq(resourceName1), isA(Resource.class));
     verify(deploymentBuilderMock).addInputStream(eq(resourceName2), isA(Resource.class));
     verify(deploymentBuilderMock).addInputStream(eq(resourceName3), isA(Resource.class));
@@ -137,8 +138,8 @@ public class ResourceParentFolderAutoDeploymentStrategyTest extends AbstractAuto
 
     verify(repositoryServiceMock, times(2)).createDeployment();
     verify(deploymentBuilderMock, times(2)).enableDuplicateFiltering();
-    verify(deploymentBuilderMock, times(1)).name(deploymentNameHint + "." + parentFilename1);
-    verify(deploymentBuilderMock, times(1)).name(deploymentNameHint + "." + parentFilename2);
+    verify(deploymentBuilderMock, times(1)).name(new StringBuilder().append(deploymentNameHint).append(".").append(parentFilename1).toString());
+    verify(deploymentBuilderMock, times(1)).name(new StringBuilder().append(deploymentNameHint).append(".").append(parentFilename2).toString());
     verify(deploymentBuilderMock, times(1)).addInputStream(eq(resourceName1), isA(Resource.class));
     verify(deploymentBuilderMock, times(1)).addInputStream(eq(resourceName2), isA(Resource.class));
     verify(deploymentBuilderMock, times(1)).addInputStream(eq(resourceName3), isA(Resource.class));
@@ -158,9 +159,9 @@ public class ResourceParentFolderAutoDeploymentStrategyTest extends AbstractAuto
 
     verify(repositoryServiceMock, times(3)).createDeployment();
     verify(deploymentBuilderMock, times(3)).enableDuplicateFiltering();
-    verify(deploymentBuilderMock, times(1)).name(deploymentNameHint + "." + resourceName1);
-    verify(deploymentBuilderMock, times(1)).name(deploymentNameHint + "." + resourceName2);
-    verify(deploymentBuilderMock, times(1)).name(deploymentNameHint + "." + resourceName3);
+    verify(deploymentBuilderMock, times(1)).name(new StringBuilder().append(deploymentNameHint).append(".").append(resourceName1).toString());
+    verify(deploymentBuilderMock, times(1)).name(new StringBuilder().append(deploymentNameHint).append(".").append(resourceName2).toString());
+    verify(deploymentBuilderMock, times(1)).name(new StringBuilder().append(deploymentNameHint).append(".").append(resourceName3).toString());
     verify(deploymentBuilderMock, times(1)).addInputStream(eq(resourceName1), isA(Resource.class));
     verify(deploymentBuilderMock, times(1)).addInputStream(eq(resourceName2), isA(Resource.class));
     verify(deploymentBuilderMock, times(1)).addInputStream(eq(resourceName3), isA(Resource.class));
@@ -191,7 +192,7 @@ public class ResourceParentFolderAutoDeploymentStrategyTest extends AbstractAuto
 
     verify(repositoryServiceMock).createDeployment();
     verify(deploymentBuilderMock).enableDuplicateFiltering();
-    verify(deploymentBuilderMock).name(deploymentNameHint + "." + resourceName3);
+    verify(deploymentBuilderMock).name(new StringBuilder().append(deploymentNameHint).append(".").append(resourceName3).toString());
     verify(deploymentBuilderMock).addInputStream(eq( resourceName3),
                                                  any(Resource.class));
     verify(deploymentBuilderMock).deploy();

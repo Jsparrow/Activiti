@@ -32,13 +32,16 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class MultiTenantProcessEngineTest {
   
-  private DummyTenantInfoHolder tenantInfoHolder;
+  private static final Logger logger = LoggerFactory.getLogger(MultiTenantProcessEngineTest.class);
+private DummyTenantInfoHolder tenantInfoHolder;
   private MultiSchemaMultiTenantProcessEngineConfiguration config;
   private ProcessEngine processEngine;
   
@@ -145,7 +148,7 @@ public class MultiTenantProcessEngineTest {
   private void startProcessInstances(String userId) {
     
     System.out.println();
-    System.out.println("Starting process instance for user " + userId);
+    logger.info("Starting process instance for user " + userId);
     
     tenantInfoHolder.setCurrentUserId(userId);
     
@@ -153,16 +156,16 @@ public class MultiTenantProcessEngineTest {
           .addClasspathResource("org/activiti/engine/test/cfg/multitenant/oneTaskProcess.bpmn20.xml")
           .addClasspathResource("org/activiti/engine/test/cfg/multitenant/jobTest.bpmn20.xml")
           .deploy();
-    System.out.println("Process deployed! Deployment id is " + deployment.getId());
+    logger.info("Process deployed! Deployment id is " + deployment.getId());
     
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("data", "Hello from " + userId);
     
     ProcessInstance processInstance = processEngine.getRuntimeService().startProcessInstanceByKey("oneTaskProcess", vars);
     List<Task> tasks = processEngine.getTaskService().createTaskQuery().processInstanceId(processInstance.getId()).list();
-    System.out.println("Got " + tasks.size() + " tasks");
+    logger.info(new StringBuilder().append("Got ").append(tasks.size()).append(" tasks").toString());
     
-    System.out.println("Got " + processEngine.getHistoryService().createHistoricProcessInstanceQuery().count() + " process instances in the system");
+    logger.info(new StringBuilder().append("Got ").append(processEngine.getHistoryService().createHistoricProcessInstanceQuery().count()).append(" process instances in the system").toString());
     
     // Start a process instance with a Job
     processEngine.getRuntimeService().startProcessInstanceByKey("jobTest");
@@ -174,9 +177,7 @@ public class MultiTenantProcessEngineTest {
   private void completeTasks(String userId) {
     tenantInfoHolder.setCurrentUserId(userId);
     
-   for (Task task : processEngine.getTaskService().createTaskQuery().list()) {
-     processEngine.getTaskService().complete(task.getId());
-   }
+   processEngine.getTaskService().createTaskQuery().list().forEach(task -> processEngine.getTaskService().complete(task.getId()));
     
     tenantInfoHolder.clearCurrentUserId();
     tenantInfoHolder.clearCurrentTenantId();

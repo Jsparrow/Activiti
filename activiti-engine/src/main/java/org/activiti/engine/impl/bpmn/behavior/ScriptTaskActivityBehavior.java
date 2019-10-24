@@ -57,7 +57,8 @@ public class ScriptTaskActivityBehavior extends TaskActivityBehavior {
     this.storeScriptVariables = storeScriptVariables;
   }
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
 
     ScriptingEngines scriptingEngines = Context.getProcessEngineConfiguration().getScriptingEngines();
     
@@ -81,7 +82,7 @@ public class ScriptTaskActivityBehavior extends TaskActivityBehavior {
 
     } catch (ActivitiException e) {
 
-      LOGGER.warn("Exception while executing " + execution.getCurrentFlowElement().getId() + " : " + e.getMessage());
+      LOGGER.warn(new StringBuilder().append("Exception while executing ").append(execution.getCurrentFlowElement().getId()).append(" : ").append(e.getMessage()).toString());
 
       noErrors = false;
       Throwable rootCause = ExceptionUtils.getRootCause(e);

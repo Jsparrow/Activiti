@@ -57,30 +57,36 @@ public class ShellActivityBehavior extends AbstractBpmnActivityBehavior {
     String redirectErrorStr = getStringFromField(redirectError, execution);
     String cleanEnvStr = getStringFromField(cleanEnv, execution);
 
-    waitFlag = waitStr == null || waitStr.equals("true");
+    waitFlag = waitStr == null || "true".equals(waitStr);
     redirectErrorFlag = "true".equals(redirectErrorStr);
     cleanEnvBoolean = "true".equals(cleanEnvStr);
     directoryStr = getStringFromField(directory, execution);
 
   }
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
 
         readFields(execution);
 
-        List<String> argList = new ArrayList<String>();
+        List<String> argList = new ArrayList<>();
         argList.add(commandStr);
 
-        if (arg1Str != null)
-            argList.add(arg1Str);
-        if (arg2Str != null)
-            argList.add(arg2Str);
-        if (arg3Str != null)
-            argList.add(arg3Str);
-        if (arg4Str != null)
-            argList.add(arg4Str);
-        if (arg5Str != null)
-            argList.add(arg5Str);
+        if (arg1Str != null) {
+			argList.add(arg1Str);
+		}
+        if (arg2Str != null) {
+			argList.add(arg2Str);
+		}
+        if (arg3Str != null) {
+			argList.add(arg3Str);
+		}
+        if (arg4Str != null) {
+			argList.add(arg4Str);
+		}
+        if (arg5Str != null) {
+			argList.add(arg5Str);
+		}
 
         ShellExecutorContext executorContext = new ShellExecutorContext(
                 waitFlag,

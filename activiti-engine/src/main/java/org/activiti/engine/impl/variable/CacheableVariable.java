@@ -24,5 +24,5 @@ import org.activiti.engine.api.internal.Internal;
 @Internal
 public interface CacheableVariable {
 
-  public void setForceCacheable(boolean forceCachedValue);
+  void setForceCacheable(boolean forceCachedValue);
 }

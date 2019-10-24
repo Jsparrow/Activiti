@@ -67,23 +67,19 @@ public class CallActivityAdvancedTest extends PluggableActivitiTestCase {
     assertProcessEnded(processInstance.getId());
 
     // Validate subprocess history
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      // Subprocess should have initial activity set
+	if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	// Subprocess should have initial activity set
       HistoricProcessInstance historicProcess = historyService.createHistoricProcessInstanceQuery().processInstanceId(taskInSubProcess.getProcessInstanceId()).singleResult();
-      assertNotNull(historicProcess);
-      assertEquals("theStart", historicProcess.getStartActivityId());
-
-      List<HistoricActivityInstance> historicInstances = historyService.createHistoricActivityInstanceQuery().processInstanceId(taskInSubProcess.getProcessInstanceId()).list();
-
-      // Should contain a start-event, the task and an end-event
+	assertNotNull(historicProcess);
+	assertEquals("theStart", historicProcess.getStartActivityId());
+	List<HistoricActivityInstance> historicInstances = historyService.createHistoricActivityInstanceQuery().processInstanceId(taskInSubProcess.getProcessInstanceId()).list();
+	// Should contain a start-event, the task and an end-event
       assertEquals(3L, historicInstances.size());
-      Set<String> expectedActivities = new HashSet<String>(Arrays.asList(new String[] { "theStart", "task", "theEnd" }));
-
-      for (HistoricActivityInstance act : historicInstances) {
-        expectedActivities.remove(act.getActivityId());
-      }
-      assertTrue("Not all expected activities were found in the history", expectedActivities.isEmpty());
-    }
+	Set<String> expectedActivities = new HashSet<>(Arrays.asList(new String[] { "theStart", "task", "theEnd" }));
+	historicInstances.forEach(act -> expectedActivities.remove(act.getActivityId()));
+	assertTrue("Not all expected activities were found in the history", expectedActivities.isEmpty());
   }
 
   @Deployment(resources = { "org/activiti/engine/test/bpmn/callactivity/CallActivity.testCallSimpleSubProcessWithExpressions.bpmn20.xml",
@@ -248,13 +244,14 @@ public class CallActivityAdvancedTest extends PluggableActivitiTestCase {
     taskService.complete(escalatedTask.getId());
     assertEquals(0, runtimeService.createExecutionQuery().list().size());
 
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      assertTrue(historyService.createHistoricProcessInstanceQuery().processInstanceId(pi2.getId()).singleResult()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	assertTrue(historyService.createHistoricProcessInstanceQuery().processInstanceId(pi2.getId()).singleResult()
           .getDeleteReason().startsWith(DeleteReason.BOUNDARY_EVENT_INTERRUPTING));
-      assertHistoricTasksDeleteReason(pi2, DeleteReason.BOUNDARY_EVENT_INTERRUPTING, "Task in subprocess");
-      assertHistoricActivitiesDeleteReason(pi1, DeleteReason.BOUNDARY_EVENT_INTERRUPTING, "callSubProcess");
-      assertHistoricActivitiesDeleteReason(pi2, DeleteReason.BOUNDARY_EVENT_INTERRUPTING, "task");
-    }
+	assertHistoricTasksDeleteReason(pi2, DeleteReason.BOUNDARY_EVENT_INTERRUPTING, "Task in subprocess");
+	assertHistoricActivitiesDeleteReason(pi1, DeleteReason.BOUNDARY_EVENT_INTERRUPTING, "callSubProcess");
+	assertHistoricActivitiesDeleteReason(pi2, DeleteReason.BOUNDARY_EVENT_INTERRUPTING, "task");
   }
 
   /**

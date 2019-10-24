@@ -32,7 +32,7 @@ public class SignalValidator extends ValidatorImpl {
     Collection<Signal> signals = bpmnModel.getSignals();
     if (signals != null && !signals.isEmpty()) {
 
-      for (Signal signal : signals) {
+      signals.forEach(signal -> {
         if (StringUtils.isEmpty(signal.getId())) {
           addError(errors, Problems.SIGNAL_MISSING_ID, signal, "Signal must have an id");
         }
@@ -48,18 +48,17 @@ public class SignalValidator extends ValidatorImpl {
         if (signal.getScope() != null && !signal.getScope().equals(Signal.SCOPE_GLOBAL) && !signal.getScope().equals(Signal.SCOPE_PROCESS_INSTANCE)) {
           addError(errors, Problems.SIGNAL_INVALID_SCOPE, signal, "Invalid value for 'scope'. Only values 'global' and 'processInstance' are supported");
         }
-      }
+      });
 
     }
   }
 
   protected boolean duplicateName(Collection<Signal> signals, String id, String name) {
     for (Signal signal : signals) {
-      if (id != null && signal.getId() != null) {
-        if (name.equals(signal.getName()) && !id.equals(signal.getId())) {
-          return true;
-        }
-      }
+      boolean condition = id != null && signal.getId() != null && name.equals(signal.getName()) && !id.equals(signal.getId());
+	if (condition) {
+	  return true;
+	}
     }
     return false;
   }

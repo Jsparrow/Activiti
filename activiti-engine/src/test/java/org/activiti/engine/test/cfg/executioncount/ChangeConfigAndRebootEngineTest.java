@@ -107,27 +107,22 @@ public class ChangeConfigAndRebootEngineTest extends ResourceActivitiTestCase {
   }
 
   protected void assertConfigProperty(boolean expectedValue) {
-    PropertyEntity propertyEntity = managementService.executeCommand(new Command<PropertyEntity>() {
-      @Override
-      public PropertyEntity execute(CommandContext commandContext) {
-        return commandContext.getPropertyEntityManager().findById(
-            ValidateExecutionRelatedEntityCountCfgCmd.PROPERTY_EXECUTION_RELATED_ENTITY_COUNT);
-      }
-    });
+    PropertyEntity propertyEntity = managementService.executeCommand((CommandContext commandContext) -> commandContext.getPropertyEntityManager()
+			.findById(ValidateExecutionRelatedEntityCountCfgCmd.PROPERTY_EXECUTION_RELATED_ENTITY_COUNT));
     assertEquals(expectedValue, Boolean.parseBoolean(propertyEntity.getValue()));
   }
   
   protected void assertExecutions(ProcessInstance processInstance, boolean expectedCountIsEnabledFlag) {
     List<Execution> executions = runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).list();
     assertEquals(2, executions.size());
-    for (Execution execution : executions) {
+    executions.forEach(execution -> {
       CountingExecutionEntity countingExecutionEntity = (CountingExecutionEntity) execution;
       assertEquals(expectedCountIsEnabledFlag, countingExecutionEntity.isCountEnabled());
       
       if (expectedCountIsEnabledFlag && execution.getParentId() != null) {
         assertEquals(1, countingExecutionEntity.getTaskCount());
       }
-    }
+    });
   }
   
   protected void finishProcessInstance(ProcessInstance processInstance) {

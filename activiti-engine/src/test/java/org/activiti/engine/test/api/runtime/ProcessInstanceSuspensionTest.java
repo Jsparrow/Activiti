@@ -26,11 +26,15 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
 
-  @Deployment(resources = { "org/activiti/engine/test/api/runtime/oneTaskProcess.bpmn20.xml" })
+  private static final Logger logger = LoggerFactory.getLogger(ProcessInstanceSuspensionTest.class);
+
+@Deployment(resources = { "org/activiti/engine/test/api/runtime/oneTaskProcess.bpmn20.xml" })
   public void testProcessInstanceActiveByDefault() {
 
     ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().singleResult();
@@ -73,6 +77,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       runtimeService.activateProcessInstanceById(processInstance.getId());
       fail("Expected activiti exception");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // expected
     }
 
@@ -92,6 +97,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       runtimeService.suspendProcessInstanceById(processInstance.getId());
       fail("Expected activiti exception");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // expected
     }
 
@@ -129,16 +135,12 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
 
     // Assert that the task is now also suspended
     List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
-    for (Task task : tasks) {
-      assertTrue(task.isSuspended());
-    }
+    tasks.forEach(task -> assertTrue(task.isSuspended()));
 
     // Activate process instance again
     runtimeService.activateProcessInstanceById(processInstance.getId());
     tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
-    for (Task task : tasks) {
-      assertFalse(task.isSuspended());
-    }
+    tasks.forEach(task -> assertFalse(task.isSuspended()));
   }
 
   @Deployment(resources = { "org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml" })
@@ -176,22 +178,16 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
     runtimeService.suspendProcessInstanceById(processInstance.getId());
 
     List<Execution> executions = runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).list();
-    for (Execution execution : executions) {
-      assertTrue(execution.isSuspended());
-    }
+    executions.forEach(execution -> assertTrue(execution.isSuspended()));
 
     // Activate again
     runtimeService.activateProcessInstanceById(processInstance.getId());
     executions = runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).list();
-    for (Execution execution : executions) {
-      assertFalse(execution.isSuspended());
-    }
+    executions.forEach(execution -> assertFalse(execution.isSuspended()));
 
     // Finish process
     while (taskService.createTaskQuery().count() > 0) {
-      for (Task task : taskService.createTaskQuery().list()) {
-        taskService.complete(task.getId());
-      }
+      taskService.createTaskQuery().list().forEach(task -> taskService.complete(task.getId()));
     }
     assertEquals(0, runtimeService.createProcessInstanceQuery().count());
   }
@@ -213,7 +209,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
     }
 
     try {
-      runtimeService.messageEventReceived("someMessage", processInstance.getId(), new HashMap<String, Object>());
+      runtimeService.messageEventReceived("someMessage", processInstance.getId(), new HashMap<>());
       fail();
     } catch (ActivitiException e) {
       // This is expected
@@ -293,7 +289,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
     }
 
     try {
-      runtimeService.trigger(processInstance.getId(), new HashMap<String, Object>());
+      runtimeService.trigger(processInstance.getId(), new HashMap<>());
       fail();
     } catch (ActivitiException e) {
       // This is expected
@@ -309,7 +305,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
     }
 
     try {
-      runtimeService.signalEventReceived("someSignal", processInstance.getId(), new HashMap<String, Object>());
+      runtimeService.signalEventReceived("someSignal", processInstance.getId(), new HashMap<>());
       fail();
     } catch (ActivitiException e) {
       // This is expected
@@ -334,7 +330,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
     runtimeService.signalEventReceived(signal);
     assertEquals(1, runtimeService.createProcessInstanceQuery().count());
 
-    runtimeService.signalEventReceived(signal, new HashMap<String, Object>());
+    runtimeService.signalEventReceived(signal, new HashMap<>());
     assertEquals(1, runtimeService.createProcessInstanceQuery().count());
 
     // Activate and try again
@@ -363,7 +359,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
     runtimeService.signalEventReceived(signal);
     assertEquals(2, runtimeService.createProcessInstanceQuery().count());
 
-    runtimeService.signalEventReceived(signal, new HashMap<String, Object>());
+    runtimeService.signalEventReceived(signal, new HashMap<>());
     assertEquals(2, runtimeService.createProcessInstanceQuery().count());
 
     // Activate and try again
@@ -393,6 +389,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.complete(task.getId());
       fail("It is not allowed to complete a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -401,6 +398,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.claim(task.getId(), "jos");
       fail("It is not allowed to claim a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -409,6 +407,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.setVariable(task.getId(), "someVar", "someValue");
       fail("It is not allowed to set a variable on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -417,28 +416,31 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.setVariableLocal(task.getId(), "someVar", "someValue");
       fail("It is not allowed to set a variable on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
     // Setting variables on the task should fail
     try {
-      HashMap<String, String> variables = new HashMap<String, String>();
+      HashMap<String, String> variables = new HashMap<>();
       variables.put("varOne", "one");
       variables.put("varTwo", "two");
       taskService.setVariables(task.getId(), variables);
       fail("It is not allowed to set variables on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
     // Setting variables on the task should fail
     try {
-      HashMap<String, String> variables = new HashMap<String, String>();
+      HashMap<String, String> variables = new HashMap<>();
       variables.put("varOne", "one");
       variables.put("varTwo", "two");
       taskService.setVariablesLocal(task.getId(), variables);
       fail("It is not allowed to set variables on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -447,6 +449,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.removeVariable(task.getId(), "someVar");
       fail("It is not allowed to remove a variable on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -455,6 +458,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.removeVariableLocal(task.getId(), "someVar");
       fail("It is not allowed to remove a variable on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -463,6 +467,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.removeVariables(task.getId(), Arrays.asList("one", "two"));
       fail("It is not allowed to remove variables on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -471,6 +476,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.removeVariablesLocal(task.getId(), Arrays.asList("one", "two"));
       fail("It is not allowed to remove variables on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -479,6 +485,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.addCandidateGroup(task.getId(), "blahGroup");
       fail("It is not allowed to add a candidate group on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -487,6 +494,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.addCandidateUser(task.getId(), "blahUser");
       fail("It is not allowed to add a candidate user on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -495,6 +503,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.addGroupIdentityLink(task.getId(), "blahGroup", IdentityLinkType.CANDIDATE);
       fail("It is not allowed to add a candidate user on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -503,6 +512,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.addUserIdentityLink(task.getId(), "blahUser", IdentityLinkType.OWNER);
       fail("It is not allowed to add an identityLink on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -511,6 +521,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.addComment(task.getId(), processInstance.getId(), "test comment");
       fail("It is not allowed to add a comment on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -519,6 +530,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.createAttachment("text", task.getId(), processInstance.getId(), "testName", "testDescription", "http://test.com");
       fail("It is not allowed to add an attachment on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -527,6 +539,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.setAssignee(task.getId(), "mispiggy");
       fail("It is not allowed to set an assignee on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -535,6 +548,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.setOwner(task.getId(), "kermit");
       fail("It is not allowed to set an owner on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
 
@@ -543,6 +557,7 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
       taskService.setPriority(task.getId(), 99);
       fail("It is not allowed to set a priority on a task of a suspended process instance");
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
       // This is good
     }
   }

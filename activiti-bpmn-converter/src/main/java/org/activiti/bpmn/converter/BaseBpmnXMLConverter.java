@@ -91,13 +91,13 @@ public abstract class BaseBpmnXMLConverter implements BpmnXMLConstants {
       }
     }
 
-    if (parsedElement instanceof FlowElement) {
-
-      FlowElement currentFlowElement = (FlowElement) parsedElement;
-      currentFlowElement.setId(elementId);
-      currentFlowElement.setName(elementName);
-      
-      if (currentFlowElement instanceof FlowNode) {
+    if (!(parsedElement instanceof FlowElement)) {
+		return;
+	}
+	FlowElement currentFlowElement = (FlowElement) parsedElement;
+	currentFlowElement.setId(elementId);
+	currentFlowElement.setName(elementName);
+	if (currentFlowElement instanceof FlowNode) {
         FlowNode flowNode = (FlowNode) currentFlowElement;
         flowNode.setAsynchronous(async);
         flowNode.setNotExclusive(notExclusive);
@@ -118,8 +118,7 @@ public abstract class BaseBpmnXMLConverter implements BpmnXMLConstants {
           }
         }
       }
-      
-      if (currentFlowElement instanceof DataObject) {
+	if (currentFlowElement instanceof DataObject) {
         if (!activeSubProcessList.isEmpty()) {
           SubProcess subProcess = activeSubProcessList.get(activeSubProcessList.size() - 1);
           subProcess.getDataObjects().add((ValuedDataObject) parsedElement);
@@ -127,8 +126,7 @@ public abstract class BaseBpmnXMLConverter implements BpmnXMLConstants {
           activeProcess.getDataObjects().add((ValuedDataObject) parsedElement);
         }
       }
-
-      if (!activeSubProcessList.isEmpty()) {
+	if (!activeSubProcessList.isEmpty()) {
         
         SubProcess subProcess = activeSubProcessList.get(activeSubProcessList.size() - 1);
         subProcess.addFlowElement(currentFlowElement);
@@ -136,7 +134,6 @@ public abstract class BaseBpmnXMLConverter implements BpmnXMLConstants {
       } else {
         activeProcess.addFlowElement(currentFlowElement);
       }
-    }
   }
 
   public void convertToXML(XMLStreamWriter xtw, BaseElement baseElement, BpmnModel model) throws Exception {
@@ -238,7 +235,7 @@ public abstract class BaseBpmnXMLConverter implements BpmnXMLConstants {
 
   protected void parseChildElements(String elementName, BaseElement parentElement, Map<String, BaseChildElementParser> additionalParsers, BpmnModel model, XMLStreamReader xtr) throws Exception {
 
-    Map<String, BaseChildElementParser> childParsers = new HashMap<String, BaseChildElementParser>();
+    Map<String, BaseChildElementParser> childParsers = new HashMap<>();
     if (additionalParsers != null) {
       childParsers.putAll(additionalParsers);
     }

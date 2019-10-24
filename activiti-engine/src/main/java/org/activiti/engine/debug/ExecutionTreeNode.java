@@ -81,39 +81,34 @@ public class ExecutionTreeNode implements Iterable<ExecutionTreeNode> {
     }
     strb.append(System.lineSeparator());
     if (children != null) {
-      for (ExecutionTreeNode childNode : children) {
-        childNode.internalToString(strb, "", true);
-      }
+      children.forEach(childNode -> childNode.internalToString(strb, "", true));
     }
     return strb.toString();
   }
 
   protected void internalToString(StringBuilder strb, String prefix, boolean isTail) {
-    strb.append(prefix + (isTail ? "└── " : "├── ") + getExecutionEntity().getId() + " : " 
-        + getCurrentFlowElementId()
-        + ", parent id " + getExecutionEntity().getParentId() 
-        + (getExecutionEntity().isActive() ? " (active)" : " (not active)")
-        + (getExecutionEntity().isScope() ? " (scope)" : "")
-        + (getExecutionEntity().isMultiInstanceRoot() ? " (multi instance root)" : "")
-        + (getExecutionEntity().isEnded() ? " (ended)" : "")
-        + System.lineSeparator());
-    if (children != null) {
-      for (int i = 0; i < children.size() - 1; i++) {
+    strb.append(new StringBuilder().append(prefix).append(isTail ? "└── " : "├── ").append(getExecutionEntity().getId()).append(" : ")
+			.append(getCurrentFlowElementId()).append(", parent id ").append(getExecutionEntity().getParentId()).append(getExecutionEntity().isActive() ? " (active)" : " (not active)")
+			.append(getExecutionEntity().isScope() ? " (scope)" : "").append(getExecutionEntity().isMultiInstanceRoot() ? " (multi instance root)" : "").append(getExecutionEntity().isEnded() ? " (ended)" : "")
+			.append(System.lineSeparator()).toString());
+    if (children == null) {
+		return;
+	}
+	for (int i = 0; i < children.size() - 1; i++) {
         children.get(i).internalToString(strb, prefix + (isTail ? "    " : "│   "), false);
       }
-      if (children.size() > 0) {
+	if (children.size() > 0) {
         children.get(children.size() - 1).internalToString(strb, prefix + (isTail ? "    " : "│   "), true);
       }
-    }
   }
   
   protected String getCurrentFlowElementId() {
     FlowElement flowElement = getExecutionEntity().getCurrentFlowElement();
     if (flowElement instanceof SequenceFlow) {
       SequenceFlow sequenceFlow = (SequenceFlow) flowElement;
-      return sequenceFlow.getSourceRef() + " -> " + sequenceFlow.getTargetRef();
+      return new StringBuilder().append(sequenceFlow.getSourceRef()).append(" -> ").append(sequenceFlow.getTargetRef()).toString();
     } else if (flowElement != null) {
-      return flowElement.getId() + " (" + flowElement.getClass().getSimpleName();
+      return new StringBuilder().append(flowElement.getId()).append(" (").append(flowElement.getClass().getSimpleName()).toString();
     } else {
       return "";
     }

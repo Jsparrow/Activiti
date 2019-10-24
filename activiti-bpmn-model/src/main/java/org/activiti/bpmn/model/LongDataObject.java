@@ -2,11 +2,13 @@ package org.activiti.bpmn.model;
 
 public class LongDataObject extends ValuedDataObject {
 
-  public void setValue(Object value) {
+  @Override
+public void setValue(Object value) {
     this.value = Long.valueOf(value.toString());
   }
 
-  public LongDataObject clone() {
+  @Override
+public LongDataObject clone() {
     LongDataObject clone = new LongDataObject();
     clone.setValues(this);
     return clone;

@@ -68,7 +68,8 @@ public class StartProcessInstanceCmd<T> implements Command<ProcessInstance>, Ser
     this.transientVariables = processInstanceBuilder.getTransientVariables();
   }
 
-  public ProcessInstance execute(CommandContext commandContext) {
+  @Override
+public ProcessInstance execute(CommandContext commandContext) {
     DeploymentManager deploymentCache = commandContext.getProcessEngineConfiguration().getDeploymentManager();
 
     // Find the process definition
@@ -77,21 +78,21 @@ public class StartProcessInstanceCmd<T> implements Command<ProcessInstance>, Ser
 
       processDefinition = deploymentCache.findDeployedProcessDefinitionById(processDefinitionId);
       if (processDefinition == null) {
-        throw new ActivitiObjectNotFoundException("No process definition found for id = '" + processDefinitionId + "'", ProcessDefinition.class);
+        throw new ActivitiObjectNotFoundException(new StringBuilder().append("No process definition found for id = '").append(processDefinitionId).append("'").toString(), ProcessDefinition.class);
       }
 
     } else if (processDefinitionKey != null && (tenantId == null || ProcessEngineConfiguration.NO_TENANT_ID.equals(tenantId))) {
 
       processDefinition = deploymentCache.findDeployedLatestProcessDefinitionByKey(processDefinitionKey);
       if (processDefinition == null) {
-        throw new ActivitiObjectNotFoundException("No process definition found for key '" + processDefinitionKey + "'", ProcessDefinition.class);
+        throw new ActivitiObjectNotFoundException(new StringBuilder().append("No process definition found for key '").append(processDefinitionKey).append("'").toString(), ProcessDefinition.class);
       }
 
     } else if (processDefinitionKey != null && tenantId != null && !ProcessEngineConfiguration.NO_TENANT_ID.equals(tenantId)) {
 
       processDefinition = deploymentCache.findDeployedLatestProcessDefinitionByKeyAndTenantId(processDefinitionKey, tenantId);
       if (processDefinition == null) {
-        throw new ActivitiObjectNotFoundException("No process definition found for key '" + processDefinitionKey + "' for tenant identifier " + tenantId, ProcessDefinition.class);
+        throw new ActivitiObjectNotFoundException(new StringBuilder().append("No process definition found for key '").append(processDefinitionKey).append("' for tenant identifier ").append(tenantId).toString(), ProcessDefinition.class);
       }
 
     } else {
@@ -110,12 +111,10 @@ public class StartProcessInstanceCmd<T> implements Command<ProcessInstance>, Ser
   }
   
   protected Map<String, Object> processDataObjects(Collection<ValuedDataObject> dataObjects) {
-    Map<String, Object> variablesMap = new HashMap<String, Object>();
+    Map<String, Object> variablesMap = new HashMap<>();
     // convert data objects to process variables
     if (dataObjects != null) {
-      for (ValuedDataObject dataObject : dataObjects) {
-        variablesMap.put(dataObject.getName(), dataObject.getValue());
-      }
+      dataObjects.forEach(dataObject -> variablesMap.put(dataObject.getName(), dataObject.getValue()));
     }
     return variablesMap;
   }

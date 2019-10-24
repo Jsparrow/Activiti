@@ -19,8 +19,8 @@ public class BusinessRuleTask extends Task {
 
   protected String resultVariableName;
   protected boolean exclude;
-  protected List<String> ruleNames = new ArrayList<String>();
-  protected List<String> inputVariables = new ArrayList<String>();
+  protected List<String> ruleNames = new ArrayList<>();
+  protected List<String> inputVariables = new ArrayList<>();
   protected String className;
 
   public boolean isExclude() {
@@ -63,7 +63,8 @@ public class BusinessRuleTask extends Task {
     this.className = className;
   }
 
-  public BusinessRuleTask clone() {
+  @Override
+public BusinessRuleTask clone() {
     BusinessRuleTask clone = new BusinessRuleTask();
     clone.setValues(this);
     return clone;
@@ -74,7 +75,7 @@ public class BusinessRuleTask extends Task {
     setResultVariableName(otherElement.getResultVariableName());
     setExclude(otherElement.isExclude());
     setClassName(otherElement.getClassName());
-    ruleNames = new ArrayList<String>(otherElement.getRuleNames());
-    inputVariables = new ArrayList<String>(otherElement.getInputVariables());
+    ruleNames = new ArrayList<>(otherElement.getRuleNames());
+    inputVariables = new ArrayList<>(otherElement.getInputVariables());
   }
 }

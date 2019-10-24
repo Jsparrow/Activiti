@@ -37,7 +37,8 @@ public class CommandContextInterceptor extends AbstractCommandInterceptor {
     this.processEngineConfiguration = processEngineConfiguration;
   }
 
-  public <T> T execute(CommandConfig config, Command<T> command) {
+  @Override
+public <T> T execute(CommandConfig config, Command<T> command) {
     CommandContext context = Context.getCommandContext();
 
     boolean contextReused = false;

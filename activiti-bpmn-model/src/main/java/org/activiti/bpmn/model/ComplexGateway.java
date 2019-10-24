@@ -14,7 +14,8 @@ package org.activiti.bpmn.model;
 
 public class ComplexGateway extends Gateway {
 
-  public ComplexGateway clone() {
+  @Override
+public ComplexGateway clone() {
     ComplexGateway clone = new ComplexGateway();
     clone.setValues(this);
     return clone;

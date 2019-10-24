@@ -65,23 +65,22 @@ public class HistoricDetailEntityManagerImpl extends AbstractEntityManager<Histo
   public void delete(HistoricDetailEntity entity, boolean fireDeleteEvent) {
     super.delete(entity, fireDeleteEvent);
     
-    if (entity instanceof HistoricDetailVariableInstanceUpdateEntity) {
-      HistoricDetailVariableInstanceUpdateEntity historicDetailVariableInstanceUpdateEntity = ((HistoricDetailVariableInstanceUpdateEntity) entity);
-      if (historicDetailVariableInstanceUpdateEntity.getByteArrayRef() != null) {
+    if (!(entity instanceof HistoricDetailVariableInstanceUpdateEntity)) {
+		return;
+	}
+	HistoricDetailVariableInstanceUpdateEntity historicDetailVariableInstanceUpdateEntity = ((HistoricDetailVariableInstanceUpdateEntity) entity);
+	if (historicDetailVariableInstanceUpdateEntity.getByteArrayRef() != null) {
         historicDetailVariableInstanceUpdateEntity.getByteArrayRef().delete();
       }
-    }
   }
 
   @Override
   public void deleteHistoricDetailsByProcessInstanceId(String historicProcessInstanceId) {
-    if (getHistoryManager().isHistoryLevelAtLeast(HistoryLevel.AUDIT)) {
-      List<HistoricDetailEntity> historicDetails = historicDetailDataManager.findHistoricDetailsByProcessInstanceId(historicProcessInstanceId);
-
-      for (HistoricDetailEntity historicDetail : historicDetails) {
-        delete(historicDetail);
-      }
-    }
+    if (!getHistoryManager().isHistoryLevelAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	List<HistoricDetailEntity> historicDetails = historicDetailDataManager.findHistoricDetailsByProcessInstanceId(historicProcessInstanceId);
+	historicDetails.forEach(historicDetail -> delete(historicDetail));
   }
 
   @Override
@@ -96,12 +95,11 @@ public class HistoricDetailEntityManagerImpl extends AbstractEntityManager<Histo
 
   @Override
   public void deleteHistoricDetailsByTaskId(String taskId) {
-    if (getHistoryManager().isHistoryLevelAtLeast(HistoryLevel.FULL)) {
-      List<HistoricDetailEntity> details = historicDetailDataManager.findHistoricDetailsByTaskId(taskId);
-      for (HistoricDetail detail : details) {
-        delete((HistoricDetailEntity) detail);
-      }
-    }
+    if (!getHistoryManager().isHistoryLevelAtLeast(HistoryLevel.FULL)) {
+		return;
+	}
+	List<HistoricDetailEntity> details = historicDetailDataManager.findHistoricDetailsByTaskId(taskId);
+	details.forEach(detail -> delete((HistoricDetailEntity) detail));
   }
 
   @Override

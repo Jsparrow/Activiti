@@ -69,12 +69,7 @@ public class BoundaryMessageEventActivityBehavior extends BoundaryEventActivityB
     if (boundaryEvent.isCancelActivity()) {
       EventSubscriptionEntityManager eventSubscriptionEntityManager = Context.getCommandContext().getEventSubscriptionEntityManager();
       List<EventSubscriptionEntity> eventSubscriptions = executionEntity.getEventSubscriptions();
-      for (EventSubscriptionEntity eventSubscription : eventSubscriptions) {
-        if (eventSubscription instanceof MessageEventSubscriptionEntity && eventSubscription.getEventName().equals(messageName)) {
-
-          eventSubscriptionEntityManager.delete(eventSubscription);
-        }
-      }
+      eventSubscriptions.stream().filter(eventSubscription -> eventSubscription instanceof MessageEventSubscriptionEntity && eventSubscription.getEventName().equals(messageName)).forEach(eventSubscriptionEntityManager::delete);
     }
 
     super.trigger(executionEntity, triggerName, triggerData);

@@ -24,6 +24,8 @@ import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntityImpl;
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.task.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -31,7 +33,8 @@ import org.activiti.engine.task.Task;
  */
 public abstract class ActivitiEventDispatcherTest extends PluggableActivitiTestCase {
 
-  protected ActivitiEventDispatcher dispatcher;
+  private static final Logger logger = LoggerFactory.getLogger(ActivitiEventDispatcherTest.class);
+protected ActivitiEventDispatcher dispatcher;
 
   @Override
   protected void setUp() throws Exception {
@@ -204,7 +207,8 @@ public abstract class ActivitiEventDispatcherTest extends PluggableActivitiTestC
       dispatcher.dispatchEvent(event);
       assertEquals(1, secondListener.getEventsReceived().size());
     } catch (Throwable t) {
-      fail("No exception expected");
+      logger.error(t.getMessage(), t);
+	fail("No exception expected");
     }
 
     // Remove listeners

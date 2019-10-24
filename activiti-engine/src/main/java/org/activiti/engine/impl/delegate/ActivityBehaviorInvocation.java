@@ -31,11 +31,13 @@ public class ActivityBehaviorInvocation extends DelegateInvocation {
     this.execution = execution;
   }
 
-  protected void invoke() {
+  @Override
+protected void invoke() {
     behaviorInstance.execute(execution);
   }
 
-  public Object getTarget() {
+  @Override
+public Object getTarget() {
     return behaviorInstance;
   }
 

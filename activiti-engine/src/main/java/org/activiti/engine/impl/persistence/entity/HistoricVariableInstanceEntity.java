@@ -42,7 +42,8 @@ public interface HistoricVariableInstanceEntity extends ValueFields, HistoricVar
 
   void setLastUpdatedTime(Date lastUpdatedTime);
 
-  String getExecutionId();
+  @Override
+String getExecutionId();
 
   void setExecutionId(String executionId);
 

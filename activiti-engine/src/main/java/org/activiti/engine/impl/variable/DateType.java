@@ -19,22 +19,26 @@ import java.util.Date;
  */
 public class DateType implements VariableType {
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return "date";
   }
 
-  public boolean isCachable() {
+  @Override
+public boolean isCachable() {
     return true;
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     if (value == null) {
       return true;
     }
     return Date.class.isAssignableFrom(value.getClass());
   }
 
-  public Object getValue(ValueFields valueFields) {
+  @Override
+public Object getValue(ValueFields valueFields) {
     Long longValue = valueFields.getLongValue();
     if (longValue != null) {
       return new Date(longValue);
@@ -42,7 +46,8 @@ public class DateType implements VariableType {
     return null;
   }
 
-  public void setValue(Object value, ValueFields valueFields) {
+  @Override
+public void setValue(Object value, ValueFields valueFields) {
     if (value != null) {
       valueFields.setLongValue(((Date) value).getTime());
     } else {

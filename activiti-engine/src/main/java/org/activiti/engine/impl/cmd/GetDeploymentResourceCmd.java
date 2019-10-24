@@ -37,7 +37,8 @@ public class GetDeploymentResourceCmd implements Command<InputStream>, Serializa
     this.resourceName = resourceName;
   }
 
-  public InputStream execute(CommandContext commandContext) {
+  @Override
+public InputStream execute(CommandContext commandContext) {
     if (deploymentId == null) {
       throw new ActivitiIllegalArgumentException("deploymentId is null");
     }
@@ -50,7 +51,7 @@ public class GetDeploymentResourceCmd implements Command<InputStream>, Serializa
       if (commandContext.getDeploymentEntityManager().findById(deploymentId) == null) {
         throw new ActivitiObjectNotFoundException("deployment does not exist: " + deploymentId, Deployment.class);
       } else {
-        throw new ActivitiObjectNotFoundException("no resource found with name '" + resourceName + "' in deployment '" + deploymentId + "'", InputStream.class);
+        throw new ActivitiObjectNotFoundException(new StringBuilder().append("no resource found with name '").append(resourceName).append("' in deployment '").append(deploymentId).append("'").toString(), InputStream.class);
       }
     }
     return new ByteArrayInputStream(resource.getBytes());

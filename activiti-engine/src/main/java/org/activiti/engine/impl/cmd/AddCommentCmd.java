@@ -49,7 +49,8 @@ public class AddCommentCmd implements Command<Comment> {
     this.message = message;
   }
 
-  public Comment execute(CommandContext commandContext) {
+  @Override
+public Comment execute(CommandContext commandContext) {
 
     TaskEntity task = null;
     // Validate task
@@ -70,7 +71,7 @@ public class AddCommentCmd implements Command<Comment> {
       execution = commandContext.getExecutionEntityManager().findById(processInstanceId);
 
       if (execution == null) {
-        throw new ActivitiObjectNotFoundException("execution " + processInstanceId + " doesn't exist", Execution.class);
+        throw new ActivitiObjectNotFoundException(new StringBuilder().append("execution ").append(processInstanceId).append(" doesn't exist").toString(), Execution.class);
       }
 
       if (execution.isSuspended()) {

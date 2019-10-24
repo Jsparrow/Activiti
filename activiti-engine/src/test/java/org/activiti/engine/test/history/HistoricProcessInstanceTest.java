@@ -32,6 +32,8 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceBuilder;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -39,7 +41,9 @@ import org.activiti.engine.test.Deployment;
  */
 public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
 
-  @Deployment(resources = { "org/activiti/engine/test/history/oneTaskProcess.bpmn20.xml" })
+  private static final Logger logger = LoggerFactory.getLogger(HistoricProcessInstanceTest.class);
+
+@Deployment(resources = { "org/activiti/engine/test/history/oneTaskProcess.bpmn20.xml" })
   public void testHistoricDataCreatedForProcessExecution() {
 
     Calendar calendar = new GregorianCalendar();
@@ -85,7 +89,7 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
     assertEquals(processInstance.getProcessDefinitionId(), historicProcessInstance.getProcessDefinitionId());
     assertEquals(noon, historicProcessInstance.getStartTime());
     assertEquals(twentyFiveSecsAfterNoon, historicProcessInstance.getEndTime());
-    assertEquals(new Long(25 * 1000), historicProcessInstance.getDurationInMillis());
+    assertEquals(Long.valueOf(25 * 1000), historicProcessInstance.getDurationInMillis());
 
     assertEquals(0, historyService.createHistoricProcessInstanceQuery().unfinished().count());
     assertEquals(1, historyService.createHistoricProcessInstanceQuery().finished().count());
@@ -163,7 +167,7 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
     assertEquals(0, historyService.createHistoricProcessInstanceQuery().processDefinitionKeyIn(Arrays.asList("undefined1", "undefined2")).count());
     assertEquals(1, historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey("businessKey123").count());
 
-    List<String> excludeIds = new ArrayList<String>();
+    List<String> excludeIds = new ArrayList<>();
     excludeIds.add("unexistingProcessDefinition");
 
     assertEquals(1, historyService.createHistoricProcessInstanceQuery().processDefinitionKeyNotIn(excludeIds).count());
@@ -255,7 +259,7 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
     assertEquals(1, historyService.createHistoricProcessInstanceQuery().or().processDefinitionKey("oneTaskProcess").processDefinitionId("undefined").endOr().count());
     assertEquals(1, historyService.createHistoricProcessInstanceQuery().or().processInstanceBusinessKey("businessKey123").processDefinitionId("undefined").endOr().count());
 
-    List<String> excludeIds = new ArrayList<String>();
+    List<String> excludeIds = new ArrayList<>();
     excludeIds.add("unexistingProcessDefinition");
 
     assertEquals(1, historyService.createHistoricProcessInstanceQuery().or().processDefinitionKeyNotIn(excludeIds).processDefinitionId("undefined").endOr().count());
@@ -311,14 +315,10 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
     ProcessInstance processInstance2 = runtimeService.startProcessInstanceByKey("oneTaskProcess");
 
     // First complete process instance 2
-    for (Task task : taskService.createTaskQuery().processInstanceId(processInstance2.getId()).list()) {
-      taskService.complete(task.getId());
-    }
+	taskService.createTaskQuery().processInstanceId(processInstance2.getId()).list().forEach(task -> taskService.complete(task.getId()));
 
     // Then process instance 1
-    for (Task task : taskService.createTaskQuery().processInstanceId(processInstance1.getId()).list()) {
-      taskService.complete(task.getId());
-    }
+	taskService.createTaskQuery().processInstanceId(processInstance1.getId()).list().forEach(task -> taskService.complete(task.getId()));
 
     assertEquals(2, historyService.createHistoricProcessInstanceQuery().orderByProcessInstanceId().asc().list().size());
     assertEquals(2, historyService.createHistoricProcessInstanceQuery().orderByProcessInstanceStartTime().asc().list().size());
@@ -350,7 +350,7 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
 
     // Verify orderByProcessInstanceEndTime
     List<HistoricProcessInstance> historicProcessInstances = historyService.createHistoricProcessInstanceQuery().orderByProcessInstanceEndTime().desc().list();
-    List<String> processInstanceIds = new ArrayList<String>(2);
+    List<String> processInstanceIds = new ArrayList<>(2);
     processInstanceIds.add(historicProcessInstances.get(0).getId());
     processInstanceIds.add(historicProcessInstances.get(1).getId());
     assertTrue(processInstanceIds.contains(processInstance1.getId()));
@@ -358,7 +358,7 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
 
     // Verify again, with variables included (bug reported on that)
     historicProcessInstances = historyService.createHistoricProcessInstanceQuery().orderByProcessInstanceEndTime().desc().includeProcessVariables().list();
-    processInstanceIds = new ArrayList<String>(2);
+    processInstanceIds = new ArrayList<>(2);
     processInstanceIds.add(historicProcessInstances.get(0).getId());
     processInstanceIds.add(historicProcessInstances.get(1).getId());
     assertTrue(processInstanceIds.contains(processInstance1.getId()));
@@ -370,6 +370,7 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
       historyService.createHistoricProcessInstanceQuery().asc();
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
 
     }
 
@@ -377,6 +378,7 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
       historyService.createHistoricProcessInstanceQuery().desc();
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
 
     }
 
@@ -384,6 +386,7 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
       historyService.createHistoricProcessInstanceQuery().orderByProcessInstanceId().list();
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
 
     }
   }
@@ -391,40 +394,37 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
   @Deployment(resources = { "org/activiti/engine/test/history/oneTaskProcess.bpmn20.xml" })
   // ACT-1098
   public void testDeleteReason() {
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      final String deleteReason = "some delete reason";
-      ProcessInstance pi = runtimeService.startProcessInstanceByKey("oneTaskProcess");
-      runtimeService.deleteProcessInstance(pi.getId(), deleteReason);
-      HistoricProcessInstance hpi = historyService.createHistoricProcessInstanceQuery().processInstanceId(pi.getId()).singleResult();
-      assertEquals(deleteReason, hpi.getDeleteReason());
-    }
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	final String deleteReason = "some delete reason";
+	ProcessInstance pi = runtimeService.startProcessInstanceByKey("oneTaskProcess");
+	runtimeService.deleteProcessInstance(pi.getId(), deleteReason);
+	HistoricProcessInstance hpi = historyService.createHistoricProcessInstanceQuery().processInstanceId(pi.getId()).singleResult();
+	assertEquals(deleteReason, hpi.getDeleteReason());
   }
 
   @Deployment(resources = { "org/activiti/engine/test/history/oneTaskProcess.bpmn20.xml" })
   public void testHistoricIdentityLinksOnProcessInstance() {
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      ProcessInstance pi = runtimeService.startProcessInstanceByKey("oneTaskProcess");
-      runtimeService.addUserIdentityLink(pi.getId(), "kermit", "myType");
-
-      // Check historic links
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	ProcessInstance pi = runtimeService.startProcessInstanceByKey("oneTaskProcess");
+	runtimeService.addUserIdentityLink(pi.getId(), "kermit", "myType");
+	// Check historic links
       List<HistoricIdentityLink> historicLinks = historyService.getHistoricIdentityLinksForProcessInstance(pi.getId());
-      assertEquals(1, historicLinks.size());
-
-      assertEquals("myType", historicLinks.get(0).getType());
-      assertEquals("kermit", historicLinks.get(0).getUserId());
-      assertNull(historicLinks.get(0).getGroupId());
-      assertEquals(pi.getId(), historicLinks.get(0).getProcessInstanceId());
-
-      // When process is ended, link should remain
+	assertEquals(1, historicLinks.size());
+	assertEquals("myType", historicLinks.get(0).getType());
+	assertEquals("kermit", historicLinks.get(0).getUserId());
+	assertNull(historicLinks.get(0).getGroupId());
+	assertEquals(pi.getId(), historicLinks.get(0).getProcessInstanceId());
+	// When process is ended, link should remain
       taskService.complete(taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult().getId());
-      assertNull(runtimeService.createProcessInstanceQuery().processInstanceId(pi.getId()).singleResult());
-
-      assertEquals(1, historyService.getHistoricIdentityLinksForProcessInstance(pi.getId()).size());
-
-      // When process is deleted, identitylinks shouldn't exist anymore
+	assertNull(runtimeService.createProcessInstanceQuery().processInstanceId(pi.getId()).singleResult());
+	assertEquals(1, historyService.getHistoricIdentityLinksForProcessInstance(pi.getId()).size());
+	// When process is deleted, identitylinks shouldn't exist anymore
       historyService.deleteHistoricProcessInstance(pi.getId());
-      assertEquals(0, historyService.getHistoricIdentityLinksForProcessInstance(pi.getId()).size());
-    }
+	assertEquals(0, historyService.getHistoricIdentityLinksForProcessInstance(pi.getId()).size());
   }
 
   /**
@@ -433,18 +433,16 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
   @Deployment(resources = { "org/activiti/engine/test/history/HistoricProcessInstanceTest.testDeleteHistoricProcessInstanceWithCallActivity.bpmn20.xml",
       "org/activiti/engine/test/history/HistoricProcessInstanceTest.testDeleteHistoricProcessInstanceWithCallActivity-subprocess.bpmn20.xml" })
   public void testDeleteHistoricProcessInstanceWithCallActivity() {
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      ProcessInstance pi = runtimeService.startProcessInstanceByKey("callSimpleSubProcess");
-
-      runtimeService.deleteProcessInstance(pi.getId(), "testing");
-
-      // The parent and child process should be present in history
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	ProcessInstance pi = runtimeService.startProcessInstanceByKey("callSimpleSubProcess");
+	runtimeService.deleteProcessInstance(pi.getId(), "testing");
+	// The parent and child process should be present in history
       assertEquals(2L, historyService.createHistoricProcessInstanceQuery().count());
-
-      // Deleting the parent process should cascade the child-process
+	// Deleting the parent process should cascade the child-process
       historyService.deleteHistoricProcessInstance(pi.getId());
-      assertEquals(0L, historyService.createHistoricProcessInstanceQuery().count());
-    }
+	assertEquals(0L, historyService.createHistoricProcessInstanceQuery().count());
   }
 
   @Deployment(resources = { "org/activiti/engine/test/history/oneTaskProcess.bpmn20.xml" })
@@ -470,7 +468,7 @@ public class HistoricProcessInstanceTest extends PluggableActivitiTestCase {
 
     String deploymentId = repositoryService.createDeployment().addClasspathResource("org/activiti/engine/test/history/oneTaskProcess.bpmn20.xml").tenantId(tenantId).deploy().getId();
 
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     vars.put("name", "Kermit");
     vars.put("age", 60);
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKeyAndTenantId("oneTaskProcess", vars, tenantId);

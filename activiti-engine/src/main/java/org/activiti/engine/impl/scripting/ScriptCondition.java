@@ -30,7 +30,8 @@ public class ScriptCondition implements Condition {
     this.language = language;
   }
 
-  public boolean evaluate(String sequenceFlowId, DelegateExecution execution) {
+  @Override
+public boolean evaluate(String sequenceFlowId, DelegateExecution execution) {
     ScriptingEngines scriptingEngines = Context.getProcessEngineConfiguration().getScriptingEngines();
 
     Object result = scriptingEngines.evaluate(expression, language, execution);
@@ -38,7 +39,7 @@ public class ScriptCondition implements Condition {
       throw new ActivitiException("condition script returns null: " + expression);
     }
     if (!(result instanceof Boolean)) {
-      throw new ActivitiException("condition script returns non-Boolean: " + result + " (" + result.getClass().getName() + ")");
+      throw new ActivitiException(new StringBuilder().append("condition script returns non-Boolean: ").append(result).append(" (").append(result.getClass().getName()).append(")").toString());
     }
     return (Boolean) result;
   }

@@ -29,7 +29,8 @@ public class DeleteDeadLetterJobCmd implements Command<Object>, Serializable {
     this.timerJobId = timerJobId;
   }
 
-  public Object execute(CommandContext commandContext) {
+  @Override
+public Object execute(CommandContext commandContext) {
     DeadLetterJobEntity jobToDelete = getJobToDelete(commandContext);
     
     sendCancelEvent(jobToDelete);
@@ -54,7 +55,7 @@ public class DeleteDeadLetterJobCmd implements Command<Object>, Serializable {
 
     DeadLetterJobEntity job = commandContext.getDeadLetterJobEntityManager().findById(timerJobId);
     if (job == null) {
-      throw new ActivitiObjectNotFoundException("No dead letter job found with id '" + timerJobId + "'", Job.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("No dead letter job found with id '").append(timerJobId).append("'").toString(), Job.class);
     }
 
     return job;

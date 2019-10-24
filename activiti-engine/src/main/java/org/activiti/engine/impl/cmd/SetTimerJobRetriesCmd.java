@@ -36,16 +36,17 @@ public class SetTimerJobRetriesCmd implements Command<Void>, Serializable {
 
   public SetTimerJobRetriesCmd(String jobId, int retries) {
     if (jobId == null || jobId.length() < 1) {
-      throw new ActivitiIllegalArgumentException("The job id is mandatory, but '" + jobId + "' has been provided.");
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("The job id is mandatory, but '").append(jobId).append("' has been provided.").toString());
     }
     if (retries < 0) {
-      throw new ActivitiIllegalArgumentException("The number of job retries must be a non-negative Integer, but '" + retries + "' has been provided.");
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("The number of job retries must be a non-negative Integer, but '").append(retries).append("' has been provided.").toString());
     }
     this.jobId = jobId;
     this.retries = retries;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     TimerJobEntity job = commandContext.getTimerJobEntityManager().findById(jobId);
     if (job != null) {
       
@@ -55,7 +56,7 @@ public class SetTimerJobRetriesCmd implements Command<Void>, Serializable {
         commandContext.getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_UPDATED, job));
       }
     } else {
-      throw new ActivitiObjectNotFoundException("No timer job found with id '" + jobId + "'.", Job.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("No timer job found with id '").append(jobId).append("'.").toString(), Job.class);
     }
     return null;
   }

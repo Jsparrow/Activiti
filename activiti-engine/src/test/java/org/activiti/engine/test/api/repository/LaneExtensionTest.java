@@ -13,24 +13,25 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.test.Deployment;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by P3700487 on 2/19/2015.
  */
 public class LaneExtensionTest extends PluggableActivitiTestCase {
 
-  @Test
+  private static final Logger logger = LoggerFactory.getLogger(LaneExtensionTest.class);
+
+@Test
   @Deployment
   public void testLaneExtensionElement() {
     ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey("swimlane-extension").singleResult();
     BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinition.getId());
     byte[] xml = new BpmnXMLConverter().convertToXML(bpmnModel);
-    System.out.println(new String(xml));
+    logger.info(new String(xml));
     Process bpmnProcess = bpmnModel.getMainProcess();
-    for (Lane l : bpmnProcess.getLanes()) {
-      Map<String, List<ExtensionElement>> extensions = l.getExtensionElements();
-      Assert.assertTrue(extensions.size() > 0);
-    }
+    bpmnProcess.getLanes().stream().map(Lane::getExtensionElements).forEach(extensions -> Assert.assertTrue(extensions.size() > 0));
   }
 
 }

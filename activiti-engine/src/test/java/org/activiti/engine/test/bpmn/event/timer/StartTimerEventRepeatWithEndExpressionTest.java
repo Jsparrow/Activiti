@@ -141,7 +141,7 @@ public class StartTimerEventRepeatWithEndExpressionTest extends PluggableActivit
     int timerFiredCount = 0;
     List<ActivitiEvent> eventsReceived = listener.getEventsReceived();
     for (ActivitiEvent eventReceived : eventsReceived) {
-      if (ActivitiEventType.TIMER_FIRED.equals(eventReceived.getType())) {
+      if (ActivitiEventType.TIMER_FIRED == eventReceived.getType()) {
         timerFiredCount++;
       }
     }
@@ -149,7 +149,7 @@ public class StartTimerEventRepeatWithEndExpressionTest extends PluggableActivit
     // count "entity created" events
     int eventCreatedCount = 0;
     for (ActivitiEvent eventReceived : eventsReceived) {
-      if (ActivitiEventType.ENTITY_CREATED.equals(eventReceived.getType())) {
+      if (ActivitiEventType.ENTITY_CREATED == eventReceived.getType()) {
         eventCreatedCount++;
       }
     }
@@ -157,7 +157,7 @@ public class StartTimerEventRepeatWithEndExpressionTest extends PluggableActivit
     // count "entity deleted" events
     int eventDeletedCount = 0;
     for (ActivitiEvent eventReceived : eventsReceived) {
-      if (ActivitiEventType.ENTITY_DELETED.equals(eventReceived.getType())) {
+      if (ActivitiEventType.ENTITY_DELETED == eventReceived.getType()) {
         eventDeletedCount++;
       }
     }

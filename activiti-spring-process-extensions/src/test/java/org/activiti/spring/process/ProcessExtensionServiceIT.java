@@ -32,7 +32,7 @@ public class ProcessExtensionServiceIT {
                 .extracting(ProcessExtensionModel::getId)
                 .contains("initialVarsProcess");
 
-        ProcessExtensionModel initialVarsProcessModel = models.values().stream().filter(model -> model.getId().equals("initialVarsProcess")).findFirst().orElse(null);
+        ProcessExtensionModel initialVarsProcessModel = models.values().stream().filter(model -> "initialVarsProcess".equals(model.getId())).findFirst().orElse(null);
         assertThat(initialVarsProcessModel).isNotNull();
         assertThat(initialVarsProcessModel.getExtensions().getProperties()).containsKey("d440ff7b-0ac8-4a97-b163-51a6ec49faa1");
     }

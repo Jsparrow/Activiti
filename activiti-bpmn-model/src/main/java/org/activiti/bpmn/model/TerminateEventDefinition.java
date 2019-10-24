@@ -33,7 +33,8 @@ public class TerminateEventDefinition extends EventDefinition {
 	 */
 	protected boolean terminateMultiInstance;
 
-  public TerminateEventDefinition clone() {
+  @Override
+public TerminateEventDefinition clone() {
     TerminateEventDefinition clone = new TerminateEventDefinition();
     clone.setValues(this);
     return clone;

@@ -21,11 +21,13 @@ import org.activiti.bpmn.model.UserTask;
  */
 public class TaskListenerParser extends ActivitiListenerParser {
 
-  public String getElementName() {
+  @Override
+public String getElementName() {
     return ELEMENT_TASK_LISTENER;
   }
 
-  public void addListenerToParent(ActivitiListener listener, BaseElement parentElement) {
+  @Override
+public void addListenerToParent(ActivitiListener listener, BaseElement parentElement) {
     if (parentElement instanceof UserTask) {
       ((UserTask) parentElement).getTaskListeners().add(listener);
     }

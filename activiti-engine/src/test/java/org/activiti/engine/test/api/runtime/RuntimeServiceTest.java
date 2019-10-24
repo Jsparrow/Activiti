@@ -42,12 +42,16 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
 
 import static org.assertj.core.api.Assertions.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
-    @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
+    private static final Logger logger = LoggerFactory.getLogger(RuntimeServiceTest.class);
+
+	@Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testStartProcessInstanceWithVariables() {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("basicType",
                  new DummySerializable());
         runtimeService.startProcessInstanceByKey("oneTaskProcess",
@@ -58,7 +62,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testStartProcessInstanceWithLongStringVariable() {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         StringBuilder longString = new StringBuilder();
         for (int i = 0; i < 4001; i++) {
             longString.append("c");
@@ -78,6 +82,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
             runtimeService.startProcessInstanceByKey(null);
             fail("ActivitiException expected");
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
             // Expected exception
         }
     }
@@ -99,6 +104,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
             runtimeService.startProcessInstanceById(null);
             fail("ActivitiException expected");
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
             // Expected exception
         }
     }
@@ -273,22 +279,19 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
                      runtimeService.createProcessInstanceQuery().processDefinitionKey("oneTaskProcess").count());
 
         // test that the delete reason of the process instance shows up as
-        // delete reason of the task in history
-        // ACT-848
-        if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-
-            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstance.getId()).singleResult();
-
-            assertEquals(deleteReason,
-                         historicTaskInstance.getDeleteReason());
-
-            HistoricProcessInstance historicInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstance.getId()).singleResult();
-
-            assertNotNull(historicInstance);
-            assertEquals(deleteReason,
-                         historicInstance.getDeleteReason());
-            assertNotNull(historicInstance.getEndTime());
-        }
+		// delete reason of the task in history
+		// ACT-848
+		if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+			return;
+		}
+		HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstance.getId()).singleResult();
+		assertEquals(deleteReason,
+		             historicTaskInstance.getDeleteReason());
+		HistoricProcessInstance historicInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstance.getId()).singleResult();
+		assertNotNull(historicInstance);
+		assertEquals(deleteReason,
+		             historicInstance.getDeleteReason());
+		assertNotNull(historicInstance.getEndTime());
     }
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
@@ -303,13 +306,13 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
         assertEquals(0,
                      runtimeService.createProcessInstanceQuery().processDefinitionKey("oneTaskProcess").count());
 
-        if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-            HistoricProcessInstance historicInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstance.getId()).singleResult();
-
-            assertNotNull(historicInstance);
-            assertEquals(DeleteReason.PROCESS_INSTANCE_DELETED,
-                         historicInstance.getDeleteReason());
-        }
+        if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+			return;
+		}
+		HistoricProcessInstance historicInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstance.getId()).singleResult();
+		assertNotNull(historicInstance);
+		assertEquals(DeleteReason.PROCESS_INSTANCE_DELETED,
+		             historicInstance.getDeleteReason());
     }
 
     public void testDeleteProcessInstanceUnexistingId() {
@@ -385,10 +388,10 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
         Task parallelUserTask = null;
         for (Task task : tasks) {
-            if (!task.getName().equals("ParallelUserTask") && !task.getName().equals("MainUserTask")) {
-                fail("Expected: <ParallelUserTask> or <MainUserTask> but was <" + task.getName() + ">.");
+            if (!"ParallelUserTask".equals(task.getName()) && !"MainUserTask".equals(task.getName())) {
+                fail(new StringBuilder().append("Expected: <ParallelUserTask> or <MainUserTask> but was <").append(task.getName()).append(">.").toString());
             }
-            if (task.getName().equals("ParallelUserTask")) {
+            if ("ParallelUserTask".equals(task.getName())) {
                 parallelUserTask = task;
             }
         }
@@ -409,10 +412,10 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
         Task beforeErrorUserTask = null;
         for (Task task : tasks) {
-            if (!task.getName().equals("BeforeError") && !task.getName().equals("MainUserTask")) {
-                fail("Expected: <BeforeError> or <MainUserTask> but was <" + task.getName() + ">.");
+            if (!"BeforeError".equals(task.getName()) && !"MainUserTask".equals(task.getName())) {
+                fail(new StringBuilder().append("Expected: <BeforeError> or <MainUserTask> but was <").append(task.getName()).append(">.").toString());
             }
-            if (task.getName().equals("BeforeError")) {
+            if ("BeforeError".equals(task.getName())) {
                 beforeErrorUserTask = task;
             }
         }
@@ -430,10 +433,10 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
         Task afterErrorUserTask = null;
         for (Task task : tasks) {
-            if (!task.getName().equals("AfterError") && !task.getName().equals("MainUserTask")) {
-                fail("Expected: <AfterError> or <MainUserTask> but was <" + task.getName() + ">.");
+            if (!"AfterError".equals(task.getName()) && !"MainUserTask".equals(task.getName())) {
+                fail(new StringBuilder().append("Expected: <AfterError> or <MainUserTask> but was <").append(task.getName()).append(">.").toString());
             }
-            if (task.getName().equals("AfterError")) {
+            if ("AfterError".equals(task.getName())) {
                 afterErrorUserTask = task;
             }
         }
@@ -483,7 +486,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
     public void testSignalWithProcessVariables() {
 
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("testSignalWithProcessVariables");
-        Map<String, Object> processVariables = new HashMap<String, Object>();
+        Map<String, Object> processVariables = new HashMap<>();
         processVariables.put("variable",
                              "value");
 
@@ -591,7 +594,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testSetVariables() {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("variable1",
                  "value1");
         vars.put("variable2",
@@ -637,32 +640,30 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     private void checkHistoricVariableUpdateEntity(String variableName,
                                                    String processInstanceId) {
-        if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.FULL)) {
-            boolean deletedVariableUpdateFound = false;
+        if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.FULL)) {
+			return;
+		}
+		boolean deletedVariableUpdateFound = false;
+		List<HistoricDetail> resultSet = historyService.createHistoricDetailQuery().processInstanceId(processInstanceId).list();
+		for (HistoricDetail currentHistoricDetail : resultSet) {
+		    assertTrue(currentHistoricDetail instanceof HistoricDetailVariableInstanceUpdateEntity);
+		    HistoricDetailVariableInstanceUpdateEntity historicVariableUpdate = (HistoricDetailVariableInstanceUpdateEntity) currentHistoricDetail;
 
-            List<HistoricDetail> resultSet = historyService.createHistoricDetailQuery().processInstanceId(processInstanceId).list();
-            for (HistoricDetail currentHistoricDetail : resultSet) {
-                assertTrue(currentHistoricDetail instanceof HistoricDetailVariableInstanceUpdateEntity);
-                HistoricDetailVariableInstanceUpdateEntity historicVariableUpdate = (HistoricDetailVariableInstanceUpdateEntity) currentHistoricDetail;
-
-                if (historicVariableUpdate.getName().equals(variableName)) {
-                    if (historicVariableUpdate.getValue() == null) {
-                        if (deletedVariableUpdateFound) {
-                            fail("Mismatch: A HistoricVariableUpdateEntity with a null value already found");
-                        } else {
-                            deletedVariableUpdateFound = true;
-                        }
-                    }
-                }
-            }
-
-            assertTrue(deletedVariableUpdateFound);
-        }
+		    boolean condition = historicVariableUpdate.getName().equals(variableName) && historicVariableUpdate.getValue() == null;
+			if (condition) {
+			    if (deletedVariableUpdateFound) {
+			        fail("Mismatch: A HistoricVariableUpdateEntity with a null value already found");
+			    } else {
+			        deletedVariableUpdateFound = true;
+			    }
+			}
+		}
+		assertTrue(deletedVariableUpdateFound);
     }
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testRemoveVariable() {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("variable1",
                  "value1");
         vars.put("variable2",
@@ -689,7 +690,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneSubProcess.bpmn20.xml"})
     public void testRemoveVariableInParentScope() {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("variable1",
                  "value1");
         vars.put("variable2",
@@ -725,7 +726,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testRemoveVariableLocal() {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("variable1",
                  "value1");
         vars.put("variable2",
@@ -750,7 +751,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneSubProcess.bpmn20.xml"})
     public void testRemoveVariableLocalWithParentScope() {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("variable1",
                  "value1");
         vars.put("variable2",
@@ -806,7 +807,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testRemoveVariables() {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("variable1",
                  "value1");
         vars.put("variable2",
@@ -845,7 +846,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneSubProcess.bpmn20.xml"})
     public void testRemoveVariablesWithParentScope() {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("variable1",
                  "value1");
         vars.put("variable2",
@@ -907,7 +908,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneSubProcess.bpmn20.xml"})
     public void testRemoveVariablesLocalWithParentScope() {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("variable1",
                  "value1");
         vars.put("variable2",
@@ -917,7 +918,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
                                                                                    vars);
 
         Task currentTask = taskService.createTaskQuery().singleResult();
-        Map<String, Object> varsToDelete = new HashMap<String, Object>();
+        Map<String, Object> varsToDelete = new HashMap<>();
         varsToDelete.put("variable3",
                          "value3");
         varsToDelete.put("variable4",
@@ -1108,6 +1109,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
                                                execution.getId());
             fail("exception expected");
         } catch (ActivitiException e) {
+			logger.error(e.getMessage(), e);
             // this is good
         }
     }
@@ -1154,7 +1156,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
                                                   null);
             fail("Exception expected");
         } catch (ActivitiException ae) {
-            assertEquals("process instance " + processInstance.getId() + " is suspended, cannot set name",
+            assertEquals(new StringBuilder().append("process instance ").append(processInstance.getId()).append(" is suspended, cannot set name").toString(),
                          ae.getMessage());
         }
 
@@ -1188,7 +1190,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testGetVariableExistingVariableNameWithCast() {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("var1",
                    true);
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess",
@@ -1201,7 +1203,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testGetVariableExistingVariableNameWithInvalidCast() {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("var1",
                    true);
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess",
@@ -1212,6 +1214,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
                                        String.class);
             failBecauseExceptionWasNotThrown(ClassCastException.class);
         } catch (ClassCastException e) {
+			logger.error(e.getMessage(), e);
             // do nothing
         }
     }
@@ -1227,7 +1230,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testGetVariableLocalExistingVariableNameWithCast() {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("var1",
                    true);
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess",
@@ -1240,7 +1243,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testGetVariableLocalExistingVariableNameWithInvalidCast() {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("var1",
                    true);
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess",
@@ -1252,6 +1255,7 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
                                             String.class);
             failBecauseExceptionWasNotThrown(ClassCastException.class);
         } catch (ClassCastException e) {
+			logger.error(e.getMessage(), e);
             // do nothing
         }
     }
@@ -1259,53 +1263,49 @@ public class RuntimeServiceTest extends PluggableActivitiTestCase {
     // Test for https://activiti.atlassian.net/browse/ACT-2186
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testHistoricVariableRemovedWhenRuntimeVariableIsRemoved() {
-        if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-            Map<String, Object> vars = new HashMap<String, Object>();
-            vars.put("var1",
-                     "Hello");
-            vars.put("var2",
-                     "World");
-            vars.put("var3",
-                     "!");
-            ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess",
-                                                                                       vars);
-
-            // Verify runtime
-            assertEquals(3,
-                         runtimeService.getVariables(processInstance.getId()).size());
-            assertEquals(3,
-                         runtimeService.getVariables(processInstance.getId(),
-                                                     Arrays.asList("var1",
-                                                                   "var2",
-                                                                   "var3")).size());
-            assertNotNull(runtimeService.getVariable(processInstance.getId(),
-                                                     "var2"));
-
-            // Verify history
-            assertEquals(3,
-                         historyService.createHistoricVariableInstanceQuery().list().size());
-            assertNotNull(historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstance.getId()).variableName("var2").singleResult());
-
-            // Remove one variable
-            runtimeService.removeVariable(processInstance.getId(),
-                                          "var2");
-
-            // Verify runtime
-            assertEquals(2,
-                         runtimeService.getVariables(processInstance.getId()).size());
-            assertEquals(2,
-                         runtimeService.getVariables(processInstance.getId(),
-                                                     Arrays.asList("var1",
-                                                                   "var2",
-                                                                   "var3")).size());
-            assertNull(runtimeService.getVariable(processInstance.getId(),
-                                                  "var2"));
-
-            // Verify history
-            assertEquals(2,
-                         historyService.createHistoricVariableInstanceQuery().list().size());
-            assertNull(historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstance.getId()).variableName("var2").singleResult());
-        }
+        if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+			return;
+		}
+		Map<String, Object> vars = new HashMap<>();
+		vars.put("var1",
+		         "Hello");
+		vars.put("var2",
+		         "World");
+		vars.put("var3",
+		         "!");
+		ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess",
+		                                                                           vars);
+		// Verify runtime
+		assertEquals(3,
+		             runtimeService.getVariables(processInstance.getId()).size());
+		assertEquals(3,
+		             runtimeService.getVariables(processInstance.getId(),
+		                                         Arrays.asList("var1",
+		                                                       "var2",
+		                                                       "var3")).size());
+		assertNotNull(runtimeService.getVariable(processInstance.getId(),
+		                                         "var2"));
+		// Verify history
+		assertEquals(3,
+		             historyService.createHistoricVariableInstanceQuery().list().size());
+		assertNotNull(historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstance.getId()).variableName("var2").singleResult());
+		// Remove one variable
+		runtimeService.removeVariable(processInstance.getId(),
+		                              "var2");
+		// Verify runtime
+		assertEquals(2,
+		             runtimeService.getVariables(processInstance.getId()).size());
+		assertEquals(2,
+		             runtimeService.getVariables(processInstance.getId(),
+		                                         Arrays.asList("var1",
+		                                                       "var2",
+		                                                       "var3")).size());
+		assertNull(runtimeService.getVariable(processInstance.getId(),
+		                                      "var2"));
+		// Verify history
+		assertEquals(2,
+		             historyService.createHistoricVariableInstanceQuery().list().size());
+		assertNull(historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstance.getId()).variableName("var2").singleResult());
     }
 
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})

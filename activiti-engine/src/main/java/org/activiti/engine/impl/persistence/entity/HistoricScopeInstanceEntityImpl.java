@@ -33,61 +33,75 @@ public abstract class HistoricScopeInstanceEntityImpl extends AbstractEntityNoRe
   protected Long durationInMillis;
   protected String deleteReason;
 
-  public void markEnded(String deleteReason) {
-    if (this.endTime == null) {
-      this.deleteReason = deleteReason;
-      this.endTime = Context.getProcessEngineConfiguration().getClock().getCurrentTime();
-      this.durationInMillis = endTime.getTime() - startTime.getTime();
-    }
+  @Override
+public void markEnded(String deleteReason) {
+    if (this.endTime != null) {
+		return;
+	}
+	this.deleteReason = deleteReason;
+	this.endTime = Context.getProcessEngineConfiguration().getClock().getCurrentTime();
+	this.durationInMillis = endTime.getTime() - startTime.getTime();
   }
 
   // getters and setters ////////////////////////////////////////////////////////
 
-  public String getProcessInstanceId() {
+  @Override
+public String getProcessInstanceId() {
     return processInstanceId;
   }
 
-  public String getProcessDefinitionId() {
+  @Override
+public String getProcessDefinitionId() {
     return processDefinitionId;
   }
 
-  public Date getStartTime() {
+  @Override
+public Date getStartTime() {
     return startTime;
   }
 
-  public Date getEndTime() {
+  @Override
+public Date getEndTime() {
     return endTime;
   }
 
-  public Long getDurationInMillis() {
+  @Override
+public Long getDurationInMillis() {
     return durationInMillis;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
+  @Override
+public void setProcessInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
   }
 
-  public void setProcessDefinitionId(String processDefinitionId) {
+  @Override
+public void setProcessDefinitionId(String processDefinitionId) {
     this.processDefinitionId = processDefinitionId;
   }
 
-  public void setStartTime(Date startTime) {
+  @Override
+public void setStartTime(Date startTime) {
     this.startTime = startTime;
   }
 
-  public void setEndTime(Date endTime) {
+  @Override
+public void setEndTime(Date endTime) {
     this.endTime = endTime;
   }
 
-  public void setDurationInMillis(Long durationInMillis) {
+  @Override
+public void setDurationInMillis(Long durationInMillis) {
     this.durationInMillis = durationInMillis;
   }
 
-  public String getDeleteReason() {
+  @Override
+public String getDeleteReason() {
     return deleteReason;
   }
 
-  public void setDeleteReason(String deleteReason) {
+  @Override
+public void setDeleteReason(String deleteReason) {
     this.deleteReason = deleteReason;
   }
 }

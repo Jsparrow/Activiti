@@ -38,7 +38,9 @@ import org.slf4j.LoggerFactory;
  */
 public class AsyncExecutorTest {
 
-  @Test
+  private static final Logger logger1 = LoggerFactory.getLogger(AsyncExecutorTest.class);
+
+@Test
   public void testRegularAsyncExecution() {
 
     ProcessEngine processEngine = null;
@@ -58,6 +60,7 @@ public class AsyncExecutorTest {
         waitForAllJobsBeingExecuted(processEngine, 500L);
         Assert.fail();
       } catch (ActivitiException e) {
+		logger1.error(e.getMessage(), e);
         // Expected
       }
       Assert.assertEquals(1, processEngine.getTaskService().createTaskQuery().taskName("The Task").count());
@@ -300,12 +303,11 @@ public class AsyncExecutorTest {
   }
 
   private void cleanup(ProcessEngine processEngine) {
-      if(processEngine != null) {
-          for (org.activiti.engine.repository.Deployment deployment : processEngine.getRepositoryService().createDeploymentQuery().list()) {
-              processEngine.getRepositoryService().deleteDeployment(deployment.getId(), true);
-          }
-          processEngine.close();
-      }
+      if (processEngine == null) {
+		return;
+	}
+	processEngine.getRepositoryService().createDeploymentQuery().list().forEach(deployment -> processEngine.getRepositoryService().deleteDeployment(deployment.getId(), true));
+	processEngine.close();
   }
 
   private String deploy(ProcessEngine processEngine, String resource) {
@@ -339,7 +341,7 @@ public class AsyncExecutorTest {
       logger.info("About to execute job " + job.getId());
       counter.incrementAndGet();
       boolean success = super.executeAsyncJob(job);
-      logger.info("Handed off job " + job.getId() + " to async executor (retries=" + job.getRetries() + ")");
+      logger.info(new StringBuilder().append("Handed off job ").append(job.getId()).append(" to async executor (retries=").append(job.getRetries()).append(")").toString());
       return success;
     }
 

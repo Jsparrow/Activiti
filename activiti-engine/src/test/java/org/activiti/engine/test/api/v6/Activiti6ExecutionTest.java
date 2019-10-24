@@ -63,24 +63,22 @@ public class Activiti6ExecutionTest extends PluggableActivitiTestCase {
 
     taskService.complete(task.getId());
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
           .processInstanceId(processInstance.getId())
           .list();
-      assertEquals(3, historicActivities.size());
-      
-      List<String> activityIds = new ArrayList<String>();
-      activityIds.add("theStart");
-      activityIds.add("theTask");
-      activityIds.add("theEnd");
-      
-      for (HistoricActivityInstance historicActivityInstance : historicActivities) {
+	assertEquals(3, historicActivities.size());
+	List<String> activityIds = new ArrayList<>();
+	activityIds.add("theStart");
+	activityIds.add("theTask");
+	activityIds.add("theEnd");
+	for (HistoricActivityInstance historicActivityInstance : historicActivities) {
         activityIds.remove(historicActivityInstance.getActivityId());
         assertEquals(childExecution.getId(), historicActivityInstance.getExecutionId());
       }
-      
-      assertEquals(0, activityIds.size());
-    }
+	assertEquals(0, activityIds.size());
   }
   
   @Test
@@ -145,23 +143,23 @@ public class Activiti6ExecutionTest extends PluggableActivitiTestCase {
     
     assertProcessEnded(processInstance.getId());
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
           .processInstanceId(processInstance.getId())
           .list();
-      assertEquals(8, historicActivities.size());
-      
-      List<String> activityIds = new ArrayList<String>();
-      activityIds.add("theStart");
-      activityIds.add("theTask1");
-      activityIds.add("subProcess");
-      activityIds.add("subStart");
-      activityIds.add("subTask");
-      activityIds.add("subEnd");
-      activityIds.add("theTask2");
-      activityIds.add("theEnd");
-      
-      for (HistoricActivityInstance historicActivityInstance : historicActivities) {
+	assertEquals(8, historicActivities.size());
+	List<String> activityIds = new ArrayList<>();
+	activityIds.add("theStart");
+	activityIds.add("theTask1");
+	activityIds.add("subProcess");
+	activityIds.add("subStart");
+	activityIds.add("subTask");
+	activityIds.add("subEnd");
+	activityIds.add("theTask2");
+	activityIds.add("theEnd");
+	for (HistoricActivityInstance historicActivityInstance : historicActivities) {
         String activityId = historicActivityInstance.getActivityId();
         activityIds.remove(activityId);
         
@@ -185,9 +183,7 @@ public class Activiti6ExecutionTest extends PluggableActivitiTestCase {
           assertEquals(subProcessExecution.getId(), historicActivityInstance.getExecutionId());
         }
       }
-      
-      assertEquals(0, activityIds.size());
-    }
+	assertEquals(0, activityIds.size());
   }
   
   @Test
@@ -252,23 +248,23 @@ public class Activiti6ExecutionTest extends PluggableActivitiTestCase {
     
     assertProcessEnded(processInstance.getId());
     
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	List<HistoricActivityInstance> historicActivities = historyService.createHistoricActivityInstanceQuery()
           .processInstanceId(processInstance.getId())
           .list();
-      assertEquals(8, historicActivities.size());
-      
-      List<String> activityIds = new ArrayList<String>();
-      activityIds.add("theStart");
-      activityIds.add("theTask1");
-      activityIds.add("subProcess");
-      activityIds.add("subStart");
-      activityIds.add("subTask");
-      activityIds.add("subEnd");
-      activityIds.add("theTask2");
-      activityIds.add("theEnd");
-      
-      for (HistoricActivityInstance historicActivityInstance : historicActivities) {
+	assertEquals(8, historicActivities.size());
+	List<String> activityIds = new ArrayList<>();
+	activityIds.add("theStart");
+	activityIds.add("theTask1");
+	activityIds.add("subProcess");
+	activityIds.add("subStart");
+	activityIds.add("subTask");
+	activityIds.add("subEnd");
+	activityIds.add("theTask2");
+	activityIds.add("theEnd");
+	for (HistoricActivityInstance historicActivityInstance : historicActivities) {
         String activityId = historicActivityInstance.getActivityId();
         activityIds.remove(activityId);
         
@@ -292,9 +288,7 @@ public class Activiti6ExecutionTest extends PluggableActivitiTestCase {
           assertEquals(subProcessExecution.getId(), historicActivityInstance.getExecutionId());
         }
       }
-      
-      assertEquals(0, activityIds.size());
-    }
+	assertEquals(0, activityIds.size());
   }
   
   @Test
@@ -338,7 +332,7 @@ public class Activiti6ExecutionTest extends PluggableActivitiTestCase {
     private List<ActivitiEvent> eventsReceived;
 
     public SubProcessEventListener() {
-      eventsReceived = new ArrayList<ActivitiEvent>();
+      eventsReceived = new ArrayList<>();
     }
 
     public List<ActivitiEvent> getEventsReceived() {

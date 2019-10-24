@@ -45,14 +45,15 @@ public class ProcessDefinitionEntityImpl extends AbstractEntity implements Proce
   protected boolean hasStartFormKey;
   protected int suspensionState = SuspensionState.ACTIVE.getStateCode();
   protected boolean isIdentityLinksInitialized;
-  protected List<IdentityLinkEntity> definitionIdentityLinkEntities = new ArrayList<IdentityLinkEntity>();
+  protected List<IdentityLinkEntity> definitionIdentityLinkEntities = new ArrayList<>();
   protected IOSpecification ioSpecification;
 
     // Backwards compatibility
   protected String engineVersion;
   
-  public Object getPersistentState() {
-    Map<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    Map<String, Object> persistentState = new HashMap<>();
     persistentState.put("suspensionState", this.suspensionState);
     persistentState.put("category", this.category);
     return persistentState;
@@ -61,7 +62,8 @@ public class ProcessDefinitionEntityImpl extends AbstractEntity implements Proce
   // getters and setters
   // //////////////////////////////////////////////////////
 
-  public List<IdentityLinkEntity> getIdentityLinks() {
+  @Override
+public List<IdentityLinkEntity> getIdentityLinks() {
     if (!isIdentityLinksInitialized) {
       definitionIdentityLinkEntities = Context.getCommandContext().getIdentityLinkEntityManager().findIdentityLinksByProcessDefinitionId(id);
       isIdentityLinksInitialized = true;
@@ -70,67 +72,83 @@ public class ProcessDefinitionEntityImpl extends AbstractEntity implements Proce
     return definitionIdentityLinkEntities;
   }
 
-  public String getKey() {
+  @Override
+public String getKey() {
     return key;
   }
 
-  public void setKey(String key) {
+  @Override
+public void setKey(String key) {
     this.key = key;
   }
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
 
-  public void setDescription(String description) {
+  @Override
+public void setDescription(String description) {
     this.description = description;
   }
 
-  public String getDescription() {
+  @Override
+public String getDescription() {
     return description;
   }
 
-  public String getDeploymentId() {
+  @Override
+public String getDeploymentId() {
     return deploymentId;
   }
 
-  public void setDeploymentId(String deploymentId) {
+  @Override
+public void setDeploymentId(String deploymentId) {
     this.deploymentId = deploymentId;
   }
 
-  public int getVersion() {
+  @Override
+public int getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  @Override
+public void setVersion(int version) {
     this.version = version;
   }
 
-  public String getResourceName() {
+  @Override
+public String getResourceName() {
     return resourceName;
   }
 
-  public void setResourceName(String resourceName) {
+  @Override
+public void setResourceName(String resourceName) {
     this.resourceName = resourceName;
   }
 
-  public String getTenantId() {
+  @Override
+public String getTenantId() {
     return tenantId;
   }
 
-  public void setTenantId(String tenantId) {
+  @Override
+public void setTenantId(String tenantId) {
     this.tenantId = tenantId;
   }
 
-  public Integer getHistoryLevel() {
+  @Override
+public Integer getHistoryLevel() {
     return historyLevel;
   }
 
-  public void setHistoryLevel(Integer historyLevel) {
+  @Override
+public void setHistoryLevel(Integer historyLevel) {
     this.historyLevel = historyLevel;
   }
 
@@ -142,67 +160,83 @@ public class ProcessDefinitionEntityImpl extends AbstractEntity implements Proce
     this.variables = variables;
   }
 
-  public String getCategory() {
+  @Override
+public String getCategory() {
     return category;
   }
 
-  public void setCategory(String category) {
+  @Override
+public void setCategory(String category) {
     this.category = category;
   }
 
-  public String getDiagramResourceName() {
+  @Override
+public String getDiagramResourceName() {
     return diagramResourceName;
   }
 
-  public void setDiagramResourceName(String diagramResourceName) {
+  @Override
+public void setDiagramResourceName(String diagramResourceName) {
     this.diagramResourceName = diagramResourceName;
   }
 
-  public boolean hasStartFormKey() {
+  @Override
+public boolean hasStartFormKey() {
     return hasStartFormKey;
   }
 
-  public boolean getHasStartFormKey() {
+  @Override
+public boolean getHasStartFormKey() {
     return hasStartFormKey;
   }
 
-  public void setStartFormKey(boolean hasStartFormKey) {
+  @Override
+public void setStartFormKey(boolean hasStartFormKey) {
     this.hasStartFormKey = hasStartFormKey;
   }
 
-  public void setHasStartFormKey(boolean hasStartFormKey) {
+  @Override
+public void setHasStartFormKey(boolean hasStartFormKey) {
     this.hasStartFormKey = hasStartFormKey;
   }
 
-  public boolean isGraphicalNotationDefined() {
+  @Override
+public boolean isGraphicalNotationDefined() {
     return isGraphicalNotationDefined;
   }
 
-  public boolean hasGraphicalNotation() {
+  @Override
+public boolean hasGraphicalNotation() {
     return isGraphicalNotationDefined;
   }
 
-  public void setGraphicalNotationDefined(boolean isGraphicalNotationDefined) {
+  @Override
+public void setGraphicalNotationDefined(boolean isGraphicalNotationDefined) {
     this.isGraphicalNotationDefined = isGraphicalNotationDefined;
   }
 
-  public int getSuspensionState() {
+  @Override
+public int getSuspensionState() {
     return suspensionState;
   }
 
-  public void setSuspensionState(int suspensionState) {
+  @Override
+public void setSuspensionState(int suspensionState) {
     this.suspensionState = suspensionState;
   }
 
-  public boolean isSuspended() {
+  @Override
+public boolean isSuspended() {
     return suspensionState == SuspensionState.SUSPENDED.getStateCode();
   }
 
-  public String getEngineVersion() {
+  @Override
+public String getEngineVersion() {
     return engineVersion;
   }
 
-  public void setEngineVersion(String engineVersion) {
+  @Override
+public void setEngineVersion(String engineVersion) {
     this.engineVersion = engineVersion;
   }
   
@@ -214,8 +248,9 @@ public class ProcessDefinitionEntityImpl extends AbstractEntity implements Proce
     this.ioSpecification = ioSpecification;
   }
   
-  public String toString() {
-    return "ProcessDefinitionEntity[" + id + "]";
+  @Override
+public String toString() {
+    return new StringBuilder().append("ProcessDefinitionEntity[").append(id).append("]").toString();
   }
 
 }

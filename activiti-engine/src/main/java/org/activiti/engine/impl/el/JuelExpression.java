@@ -42,7 +42,8 @@ public class JuelExpression implements Expression {
     this.expressionText = expressionText;
   }
 
-  public Object getValue(VariableScope variableScope) {
+  @Override
+public Object getValue(VariableScope variableScope) {
     ELContext elContext = Context.getProcessEngineConfiguration().getExpressionManager().getElContext(variableScope);
     try {
       ExpressionGetInvocation invocation = new ExpressionGetInvocation(valueExpression, elContext);
@@ -52,14 +53,13 @@ public class JuelExpression implements Expression {
       throw new ActivitiException("Unknown property used in expression: " + expressionText, pnfe);
     } catch (MethodNotFoundException mnfe) {
       throw new ActivitiException("Unknown method used in expression: " + expressionText, mnfe);
-    } catch (ELException ele) {
-      throw new ActivitiException("Error while evaluating expression: " + expressionText, ele);
     } catch (Exception e) {
       throw new ActivitiException("Error while evaluating expression: " + expressionText, e);
     }
   }
 
-  public void setValue(Object value, VariableScope variableScope) {
+  @Override
+public void setValue(Object value, VariableScope variableScope) {
     ELContext elContext = Context.getProcessEngineConfiguration().getExpressionManager().getElContext(variableScope);
     try {
       ExpressionSetInvocation invocation = new ExpressionSetInvocation(valueExpression, elContext, value);
@@ -77,7 +77,8 @@ public class JuelExpression implements Expression {
     return super.toString();
   }
 
-  public String getExpressionText() {
+  @Override
+public String getExpressionText() {
     return expressionText;
   }
 }

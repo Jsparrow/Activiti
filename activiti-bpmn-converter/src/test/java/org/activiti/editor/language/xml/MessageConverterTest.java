@@ -43,7 +43,8 @@ public class MessageConverterTest extends AbstractConverterTest {
 
   }
   
-  protected String getResource() {
+  @Override
+protected String getResource() {
         return "message.bpmn";
   }
 }

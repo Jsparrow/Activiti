@@ -38,7 +38,8 @@ public class MoveTimerToExecutableJobCmd implements Command<JobEntity>, Serializ
     this.jobId = jobId;
   }
 
-  public JobEntity execute(CommandContext commandContext) {
+  @Override
+public JobEntity execute(CommandContext commandContext) {
 
     if (jobId == null) {
       throw new ActivitiIllegalArgumentException("jobId and job is null");

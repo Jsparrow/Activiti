@@ -40,7 +40,7 @@ public class Bpmn20NamespaceContext implements NamespaceContext {
   /**
    * This is a protected filed so you can extend that context with your own namespaces if necessary
    */
-  protected Map<String, String> namespaceUris = new HashMap<String, String>();
+  protected Map<String, String> namespaceUris = new HashMap<>();
 
   public Bpmn20NamespaceContext() {
     namespaceUris.put(BPMN, "http://www.omg.org/spec/BPMN/20100524/MODEL");
@@ -49,35 +49,29 @@ public class Bpmn20NamespaceContext implements NamespaceContext {
     namespaceUris.put(OMGDI, "http://www.omg.org/spec/DD/20100524/DC");
   }
 
-  public String getNamespaceURI(String prefix) {
+  @Override
+public String getNamespaceURI(String prefix) {
     return namespaceUris.get(prefix);
   }
 
-  public String getPrefix(String namespaceURI) {
+  @Override
+public String getPrefix(String namespaceURI) {
     return getKeyByValue(namespaceUris, namespaceURI);
   }
 
-  public Iterator<String> getPrefixes(String namespaceURI) {
+  @Override
+public Iterator<String> getPrefixes(String namespaceURI) {
     return getKeysByValue(namespaceUris, namespaceURI).iterator();
   }
 
   private static <T, E> Set<T> getKeysByValue(Map<T, E> map, E value) {
-    Set<T> keys = new HashSet<T>();
-    for (Entry<T, E> entry : map.entrySet()) {
-      if (value.equals(entry.getValue())) {
-        keys.add(entry.getKey());
-      }
-    }
+    Set<T> keys = new HashSet<>();
+    map.entrySet().stream().filter(entry -> value.equals(entry.getValue())).forEach(entry -> keys.add(entry.getKey()));
     return keys;
   }
 
   private static <T, E> T getKeyByValue(Map<T, E> map, E value) {
-    for (Entry<T, E> entry : map.entrySet()) {
-      if (value.equals(entry.getValue())) {
-        return entry.getKey();
-      }
-    }
-    return null;
+    return map.entrySet().stream().filter(entry -> value.equals(entry.getValue())).findFirst().map(Map.Entry::getKey).orElse(null);
   }
 
 }

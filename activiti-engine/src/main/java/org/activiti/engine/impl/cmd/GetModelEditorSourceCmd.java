@@ -30,7 +30,8 @@ public class GetModelEditorSourceCmd implements Command<byte[]>, Serializable {
     this.modelId = modelId;
   }
 
-  public byte[] execute(CommandContext commandContext) {
+  @Override
+public byte[] execute(CommandContext commandContext) {
     if (modelId == null) {
       throw new ActivitiIllegalArgumentException("modelId is null");
     }

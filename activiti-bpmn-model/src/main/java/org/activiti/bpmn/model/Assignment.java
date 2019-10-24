@@ -21,7 +21,8 @@ public class Assignment extends BaseElement {
     this.to = to;
   }
 
-  public Assignment clone() {
+  @Override
+public Assignment clone() {
     Assignment clone = new Assignment();
     clone.setValues(this);
     return clone;

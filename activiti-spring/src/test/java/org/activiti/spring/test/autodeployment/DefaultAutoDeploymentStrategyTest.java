@@ -35,7 +35,8 @@ public class DefaultAutoDeploymentStrategyTest extends AbstractAutoDeploymentStr
 
     private DefaultAutoDeploymentStrategy deploymentStrategy;
 
-    @Before
+    @Override
+	@Before
     public void before() throws Exception {
         super.before();
         deploymentStrategy = new DefaultAutoDeploymentStrategy(projectModelServiceMock);

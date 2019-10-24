@@ -31,13 +31,14 @@ public class FlowNodeInSubProcessConverterTest extends AbstractConverterTest {
     assertNotNull(gateway);
     List<SequenceFlow> sequenceFlows = gateway.getOutgoingFlows();
     assertTrue(sequenceFlows.size() == 2);
-    assertTrue(sequenceFlows.get(0).getId().equals("sid-9C669980-C274-4A48-BF7F-B9C5CA577DD2") || sequenceFlows.get(0).getId().equals("sid-A299B987-396F-46CA-8D63-85991FBFCE6E"));
-    assertTrue(sequenceFlows.get(1).getId().equals("sid-9C669980-C274-4A48-BF7F-B9C5CA577DD2") || sequenceFlows.get(1).getId().equals("sid-A299B987-396F-46CA-8D63-85991FBFCE6E"));
-    assertTrue(sequenceFlows.get(0).getSourceRef().equals("sid-A0E0B174-36DF-4C4F-A952-311CC3C031FC"));
-    assertTrue(sequenceFlows.get(1).getSourceRef().equals("sid-A0E0B174-36DF-4C4F-A952-311CC3C031FC"));
+    assertTrue("sid-9C669980-C274-4A48-BF7F-B9C5CA577DD2".equals(sequenceFlows.get(0).getId()) || "sid-A299B987-396F-46CA-8D63-85991FBFCE6E".equals(sequenceFlows.get(0).getId()));
+    assertTrue("sid-9C669980-C274-4A48-BF7F-B9C5CA577DD2".equals(sequenceFlows.get(1).getId()) || "sid-A299B987-396F-46CA-8D63-85991FBFCE6E".equals(sequenceFlows.get(1).getId()));
+    assertTrue("sid-A0E0B174-36DF-4C4F-A952-311CC3C031FC".equals(sequenceFlows.get(0).getSourceRef()));
+    assertTrue("sid-A0E0B174-36DF-4C4F-A952-311CC3C031FC".equals(sequenceFlows.get(1).getSourceRef()));
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "test.flownodeinsubprocessmodel.json";
   }
 

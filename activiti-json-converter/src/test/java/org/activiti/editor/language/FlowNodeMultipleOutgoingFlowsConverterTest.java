@@ -30,33 +30,34 @@ public class FlowNodeMultipleOutgoingFlowsConverterTest extends AbstractConverte
     ParallelGateway gateway = (ParallelGateway) flowElement;
     List<SequenceFlow> sequenceFlows = gateway.getOutgoingFlows();
     assertTrue(sequenceFlows.size() == 3);
-    assertTrue(sequenceFlows.get(0).getId().equals("sid-B9EE4ECE-BF72-4C25-B768-8295906E5CF8") || sequenceFlows.get(0).getId().equals("sid-D2491B73-0382-4EC2-AAAC-C8FD129E4CBE")
-        || sequenceFlows.get(0).getId().equals("sid-7036D56C-E8EF-493B-ADEC-57EED4C6CE1F"));
-    assertTrue(sequenceFlows.get(1).getId().equals("sid-B9EE4ECE-BF72-4C25-B768-8295906E5CF8") || sequenceFlows.get(1).getId().equals("sid-D2491B73-0382-4EC2-AAAC-C8FD129E4CBE")
-        || sequenceFlows.get(1).getId().equals("sid-7036D56C-E8EF-493B-ADEC-57EED4C6CE1F"));
-    assertTrue(sequenceFlows.get(2).getId().equals("sid-B9EE4ECE-BF72-4C25-B768-8295906E5CF8") || sequenceFlows.get(2).getId().equals("sid-D2491B73-0382-4EC2-AAAC-C8FD129E4CBE")
-        || sequenceFlows.get(2).getId().equals("sid-7036D56C-E8EF-493B-ADEC-57EED4C6CE1F"));
-    assertTrue(sequenceFlows.get(0).getSourceRef().equals("parallel1"));
-    assertTrue(sequenceFlows.get(1).getSourceRef().equals("parallel1"));
-    assertTrue(sequenceFlows.get(2).getSourceRef().equals("parallel1"));
+    assertTrue("sid-B9EE4ECE-BF72-4C25-B768-8295906E5CF8".equals(sequenceFlows.get(0).getId()) || "sid-D2491B73-0382-4EC2-AAAC-C8FD129E4CBE".equals(sequenceFlows.get(0).getId())
+        || "sid-7036D56C-E8EF-493B-ADEC-57EED4C6CE1F".equals(sequenceFlows.get(0).getId()));
+    assertTrue("sid-B9EE4ECE-BF72-4C25-B768-8295906E5CF8".equals(sequenceFlows.get(1).getId()) || "sid-D2491B73-0382-4EC2-AAAC-C8FD129E4CBE".equals(sequenceFlows.get(1).getId())
+        || "sid-7036D56C-E8EF-493B-ADEC-57EED4C6CE1F".equals(sequenceFlows.get(1).getId()));
+    assertTrue("sid-B9EE4ECE-BF72-4C25-B768-8295906E5CF8".equals(sequenceFlows.get(2).getId()) || "sid-D2491B73-0382-4EC2-AAAC-C8FD129E4CBE".equals(sequenceFlows.get(2).getId())
+        || "sid-7036D56C-E8EF-493B-ADEC-57EED4C6CE1F".equals(sequenceFlows.get(2).getId()));
+    assertTrue("parallel1".equals(sequenceFlows.get(0).getSourceRef()));
+    assertTrue("parallel1".equals(sequenceFlows.get(1).getSourceRef()));
+    assertTrue("parallel1".equals(sequenceFlows.get(2).getSourceRef()));
     flowElement = model.getMainProcess().getFlowElement("parallel2", true);
     assertNotNull(flowElement);
     assertTrue(flowElement instanceof ParallelGateway);
     gateway = (ParallelGateway) flowElement;
     sequenceFlows = gateway.getIncomingFlows();
     assertTrue(sequenceFlows.size() == 3);
-    assertTrue(sequenceFlows.get(0).getId().equals("sid-4C19E041-42FA-485D-9D09-D47CCD9DB270") || sequenceFlows.get(0).getId().equals("sid-05A991A6-0296-4867-ACBA-EF9EEC68FB8A")
-        || sequenceFlows.get(0).getId().equals("sid-C546AC84-379D-4094-9DC3-548593F2EA0D"));
-    assertTrue(sequenceFlows.get(1).getId().equals("sid-4C19E041-42FA-485D-9D09-D47CCD9DB270") || sequenceFlows.get(1).getId().equals("sid-05A991A6-0296-4867-ACBA-EF9EEC68FB8A")
-        || sequenceFlows.get(1).getId().equals("sid-C546AC84-379D-4094-9DC3-548593F2EA0D"));
-    assertTrue(sequenceFlows.get(2).getId().equals("sid-4C19E041-42FA-485D-9D09-D47CCD9DB270") || sequenceFlows.get(2).getId().equals("sid-05A991A6-0296-4867-ACBA-EF9EEC68FB8A")
-        || sequenceFlows.get(2).getId().equals("sid-C546AC84-379D-4094-9DC3-548593F2EA0D"));
-    assertTrue(sequenceFlows.get(0).getTargetRef().equals("parallel2"));
-    assertTrue(sequenceFlows.get(1).getTargetRef().equals("parallel2"));
-    assertTrue(sequenceFlows.get(2).getTargetRef().equals("parallel2"));
+    assertTrue("sid-4C19E041-42FA-485D-9D09-D47CCD9DB270".equals(sequenceFlows.get(0).getId()) || "sid-05A991A6-0296-4867-ACBA-EF9EEC68FB8A".equals(sequenceFlows.get(0).getId())
+        || "sid-C546AC84-379D-4094-9DC3-548593F2EA0D".equals(sequenceFlows.get(0).getId()));
+    assertTrue("sid-4C19E041-42FA-485D-9D09-D47CCD9DB270".equals(sequenceFlows.get(1).getId()) || "sid-05A991A6-0296-4867-ACBA-EF9EEC68FB8A".equals(sequenceFlows.get(1).getId())
+        || "sid-C546AC84-379D-4094-9DC3-548593F2EA0D".equals(sequenceFlows.get(1).getId()));
+    assertTrue("sid-4C19E041-42FA-485D-9D09-D47CCD9DB270".equals(sequenceFlows.get(2).getId()) || "sid-05A991A6-0296-4867-ACBA-EF9EEC68FB8A".equals(sequenceFlows.get(2).getId())
+        || "sid-C546AC84-379D-4094-9DC3-548593F2EA0D".equals(sequenceFlows.get(2).getId()));
+    assertTrue("parallel2".equals(sequenceFlows.get(0).getTargetRef()));
+    assertTrue("parallel2".equals(sequenceFlows.get(1).getTargetRef()));
+    assertTrue("parallel2".equals(sequenceFlows.get(2).getTargetRef()));
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "test.flownodemultipleoutgoingflowsmodel.json";
   }
 

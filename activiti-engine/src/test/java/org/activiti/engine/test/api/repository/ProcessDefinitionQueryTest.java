@@ -27,13 +27,16 @@ import org.junit.rules.ExpectedException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class ProcessDefinitionQueryTest extends PluggableActivitiTestCase {
 
-  private String deploymentOneId;
+  private static final Logger logger = LoggerFactory.getLogger(ProcessDefinitionQueryTest.class);
+private String deploymentOneId;
   private String deploymentTwoId;
 
   @Override
@@ -90,6 +93,7 @@ public class ProcessDefinitionQueryTest extends PluggableActivitiTestCase {
       repositoryService.createProcessDefinitionQuery().deploymentId(null);
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
@@ -109,6 +113,7 @@ public class ProcessDefinitionQueryTest extends PluggableActivitiTestCase {
       repositoryService.createProcessDefinitionQuery().processDefinitionName(null);
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
@@ -133,11 +138,11 @@ public class ProcessDefinitionQueryTest extends PluggableActivitiTestCase {
   }
 
   public void testQueryByKeys() {
-    Set<String> one = new HashSet<String>();
+    Set<String> one = new HashSet<>();
     one.add("one");
-    Set<String> two = new HashSet<String>();
+    Set<String> two = new HashSet<>();
     two.add("two");
-    Set<String> oneAndTwo = new HashSet<String>();
+    Set<String> oneAndTwo = new HashSet<>();
     oneAndTwo.addAll(one);
     oneAndTwo.addAll(two);
 
@@ -161,6 +166,7 @@ public class ProcessDefinitionQueryTest extends PluggableActivitiTestCase {
       repositoryService.createProcessDefinitionQuery().processDefinitionKey(null);
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
@@ -177,6 +183,7 @@ public class ProcessDefinitionQueryTest extends PluggableActivitiTestCase {
       repositoryService.createProcessDefinitionQuery().processDefinitionKeyLike(null);
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
@@ -209,12 +216,14 @@ public class ProcessDefinitionQueryTest extends PluggableActivitiTestCase {
       repositoryService.createProcessDefinitionQuery().processDefinitionVersion(-1).list();
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
 
     try {
       repositoryService.createProcessDefinitionQuery().processDefinitionVersion(null).list();
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
@@ -301,6 +310,7 @@ public class ProcessDefinitionQueryTest extends PluggableActivitiTestCase {
       query.singleResult();
       fail();
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
@@ -336,16 +346,12 @@ public class ProcessDefinitionQueryTest extends PluggableActivitiTestCase {
   
   public void testQueryByProcessDefinitionIds() {
   	List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery().list();
-  	Set<String> ids = new HashSet<String>();
-  	for (ProcessDefinition processDefinition : processDefinitions) {
-  		ids.add(processDefinition.getId());
-  	}
+  	Set<String> ids = new HashSet<>();
+  	processDefinitions.forEach(processDefinition -> ids.add(processDefinition.getId()));
   	
   	List<ProcessDefinition> queryResults = repositoryService.createProcessDefinitionQuery().processDefinitionIds(ids).list();
   	assertEquals(queryResults.size(), ids.size());
-  	for (ProcessDefinition processDefinition : queryResults) {
-  		assertTrue(ids.contains(processDefinition.getId()));
-  	}
+  	queryResults.forEach(processDefinition -> assertTrue(ids.contains(processDefinition.getId())));
   }
 
   public void testQueryWithNullArgs(){
@@ -354,7 +360,8 @@ public class ProcessDefinitionQueryTest extends PluggableActivitiTestCase {
       repositoryService.createProcessDefinitionQuery().processDefinitionKeys(null);
       fail("Expected exception not thrown");
     }catch (ActivitiIllegalArgumentException ex){
-      return;
+      logger.error(ex.getMessage(), ex);
+	return;
     }
 
   }

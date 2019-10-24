@@ -71,45 +71,47 @@ public class ModelEntityManagerImpl extends AbstractEntityManager<ModelEntity> i
   @Override
   public void insertEditorSourceForModel(String modelId, byte[] modelSource) {
     ModelEntity model = findById(modelId);
-    if (model != null) {
-      ByteArrayRef ref = new ByteArrayRef(model.getEditorSourceValueId());
-      ref.setValue("source", modelSource);
-
-      if (model.getEditorSourceValueId() == null) {
+    if (model == null) {
+		return;
+	}
+	ByteArrayRef ref = new ByteArrayRef(model.getEditorSourceValueId());
+	ref.setValue("source", modelSource);
+	if (model.getEditorSourceValueId() == null) {
         model.setEditorSourceValueId(ref.getId());
         updateModel(model);
       }
-    }
   }
 
   @Override
   public void deleteEditorSource(ModelEntity model) {
-    if (model.getEditorSourceValueId() != null) {
-      ByteArrayRef ref = new ByteArrayRef(model.getEditorSourceValueId());
-      ref.delete();
-    }
+    if (model.getEditorSourceValueId() == null) {
+		return;
+	}
+	ByteArrayRef ref = new ByteArrayRef(model.getEditorSourceValueId());
+	ref.delete();
   }
 
   @Override
   public void deleteEditorSourceExtra(ModelEntity model) {
-    if (model.getEditorSourceExtraValueId() != null) {
-      ByteArrayRef ref = new ByteArrayRef(model.getEditorSourceExtraValueId());
-      ref.delete();
-    }
+    if (model.getEditorSourceExtraValueId() == null) {
+		return;
+	}
+	ByteArrayRef ref = new ByteArrayRef(model.getEditorSourceExtraValueId());
+	ref.delete();
   }
 
   @Override
   public void insertEditorSourceExtraForModel(String modelId, byte[] modelSource) {
     ModelEntity model = findById(modelId);
-    if (model != null) {
-      ByteArrayRef ref = new ByteArrayRef(model.getEditorSourceExtraValueId());
-      ref.setValue("source-extra", modelSource);
-
-      if (model.getEditorSourceExtraValueId() == null) {
+    if (model == null) {
+		return;
+	}
+	ByteArrayRef ref = new ByteArrayRef(model.getEditorSourceExtraValueId());
+	ref.setValue("source-extra", modelSource);
+	if (model.getEditorSourceExtraValueId() == null) {
         model.setEditorSourceExtraValueId(ref.getId());
         updateModel(model);
       }
-    }
   }
 
   @Override

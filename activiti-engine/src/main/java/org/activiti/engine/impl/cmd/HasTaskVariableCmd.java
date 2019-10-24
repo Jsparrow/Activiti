@@ -38,7 +38,8 @@ public class HasTaskVariableCmd implements Command<Boolean>, Serializable {
     this.isLocal = isLocal;
   }
 
-  public Boolean execute(CommandContext commandContext) {
+  @Override
+public Boolean execute(CommandContext commandContext) {
     if (taskId == null) {
       throw new ActivitiIllegalArgumentException("taskId is null");
     }
@@ -49,7 +50,7 @@ public class HasTaskVariableCmd implements Command<Boolean>, Serializable {
     TaskEntity task = commandContext.getTaskEntityManager().findById(taskId);
 
     if (task == null) {
-      throw new ActivitiObjectNotFoundException("task " + taskId + " doesn't exist", Task.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("task ").append(taskId).append(" doesn't exist").toString(), Task.class);
     }
     boolean hasVariable = false;
 

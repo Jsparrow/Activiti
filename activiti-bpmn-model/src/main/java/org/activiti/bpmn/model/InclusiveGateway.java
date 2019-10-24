@@ -14,7 +14,8 @@ package org.activiti.bpmn.model;
 
 public class InclusiveGateway extends Gateway {
 
-  public InclusiveGateway clone() {
+  @Override
+public InclusiveGateway clone() {
     InclusiveGateway clone = new InclusiveGateway();
     clone.setValues(this);
     return clone;

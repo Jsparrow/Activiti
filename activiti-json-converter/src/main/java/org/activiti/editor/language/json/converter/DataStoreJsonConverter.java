@@ -39,15 +39,18 @@ public class DataStoreJsonConverter extends BaseBpmnJsonConverter {
     convertersToJsonMap.put(DataStoreReference.class, DataStoreJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     return STENCIL_DATA_STORE;
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
 
   }
 
-  protected BaseElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected BaseElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     DataStoreReference dataStore = new DataStoreReference();
     return dataStore;
   }

@@ -72,7 +72,7 @@ public class TimerUtil {
     }
 
     if (expression == null) {
-      throw new ActivitiException("Timer needs configuration (either timeDate, timeCycle or timeDuration is needed) (" + timerEventDefinition.getId() + ")");
+      throw new ActivitiException(new StringBuilder().append("Timer needs configuration (either timeDate, timeCycle or timeDuration is needed) (").append(timerEventDefinition.getId()).append(")").toString());
     }
 
     BusinessCalendar businessCalendar = processEngineConfiguration.getBusinessCalendarManager().getBusinessCalendar(businessCalendarRef);
@@ -92,8 +92,7 @@ public class TimerUtil {
       duedate = ((DateTime) dueDateValue).toDate();
       
     } else if (dueDateValue != null) {
-      throw new ActivitiException("Timer '" + executionEntity.getActivityId()
-          + "' was not configured with a valid duration/time, either hand in a java.util.Date or a String in format 'yyyy-MM-dd'T'hh:mm:ss'");
+      throw new ActivitiException(new StringBuilder().append("Timer '").append(executionEntity.getActivityId()).append("' was not configured with a valid duration/time, either hand in a java.util.Date or a String in format 'yyyy-MM-dd'T'hh:mm:ss'").toString());
     }
     
     if (duedate == null && dueDateString != null) {
@@ -154,11 +153,11 @@ public class TimerUtil {
   }
 
   public static String prepareRepeat(String dueDate) {
-    if (dueDate.startsWith("R") && dueDate.split("/").length == 2) {
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-      return dueDate.replace("/", "/" + sdf.format(Context.getProcessEngineConfiguration().getClock().getCurrentTime()) + "/");
-    }
-    return dueDate;
+    if (!(dueDate.startsWith("R") && dueDate.split("/").length == 2)) {
+		return dueDate;
+	}
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	return dueDate.replace("/", new StringBuilder().append("/").append(sdf.format(Context.getProcessEngineConfiguration().getClock().getCurrentTime())).append("/").toString());
   }
 
 }

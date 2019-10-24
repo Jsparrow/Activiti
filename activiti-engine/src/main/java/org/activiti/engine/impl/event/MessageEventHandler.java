@@ -23,7 +23,7 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
  */
 public class MessageEventHandler extends AbstractEventHandler {
 
-    public final static String EVENT_HANDLER_TYPE = "message";
+    public static final String EVENT_HANDLER_TYPE = "message";
 
     private final EventSubscriptionPayloadMappingProvider messageEventVariableMappingProvider;
 
@@ -31,7 +31,8 @@ public class MessageEventHandler extends AbstractEventHandler {
         this.messageEventVariableMappingProvider = messageEventVariableMappingProvider;
     }
 
-    public String getEventHandlerType() {
+    @Override
+	public String getEventHandlerType() {
         return EVENT_HANDLER_TYPE;
     }
 

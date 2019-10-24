@@ -44,19 +44,21 @@ public class StandaloneMybatisTransactionContext implements TransactionContext {
     this.commandContext = commandContext;
   }
 
-  public void addTransactionListener(TransactionState transactionState, TransactionListener transactionListener) {
+  @Override
+public void addTransactionListener(TransactionState transactionState, TransactionListener transactionListener) {
     if (stateTransactionListeners == null) {
-      stateTransactionListeners = new HashMap<TransactionState, List<TransactionListener>>();
+      stateTransactionListeners = new HashMap<>();
     }
     List<TransactionListener> transactionListeners = stateTransactionListeners.get(transactionState);
     if (transactionListeners == null) {
-      transactionListeners = new ArrayList<TransactionListener>();
+      transactionListeners = new ArrayList<>();
       stateTransactionListeners.put(transactionState, transactionListeners);
     }
     transactionListeners.add(transactionListener);
   }
 
- public void commit() {
+ @Override
+public void commit() {
     
     log.debug("firing event committing...");
     fireTransactionEvent(TransactionState.COMMITTING, false);
@@ -91,12 +93,10 @@ public class StandaloneMybatisTransactionContext implements TransactionContext {
     if (executeInNewContext) {
       CommandExecutor commandExecutor = commandContext.getProcessEngineConfiguration().getCommandExecutor(); 
       CommandConfig commandConfig = new CommandConfig(false, TransactionPropagation.REQUIRES_NEW); 
-      commandExecutor.execute(commandConfig, new Command<Void>() {
-        public Void execute(CommandContext commandContext) {
-          executeTransactionListeners(transactionListeners, commandContext);
-          return null;
-        }
-      });
+      commandExecutor.execute(commandConfig, (CommandContext commandContext) -> {
+	  executeTransactionListeners(transactionListeners, commandContext);
+	  return null;
+	});
     } else {
       executeTransactionListeners(transactionListeners, commandContext);
     }
@@ -104,16 +104,15 @@ public class StandaloneMybatisTransactionContext implements TransactionContext {
   }
   
   protected void executeTransactionListeners(List<TransactionListener> transactionListeners, CommandContext commandContext) {
-    for (TransactionListener transactionListener : transactionListeners) {
-      transactionListener.execute(commandContext);
-    }
+    transactionListeners.forEach(transactionListener -> transactionListener.execute(commandContext));
   }
 
   protected DbSqlSession getDbSqlSession() {
     return commandContext.getDbSqlSession();
   }
 
-  public void rollback() {
+  @Override
+public void rollback() {
     try {
       try {
         log.debug("firing event rolling back...");

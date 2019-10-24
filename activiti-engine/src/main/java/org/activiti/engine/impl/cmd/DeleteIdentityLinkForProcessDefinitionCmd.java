@@ -52,7 +52,8 @@ public class DeleteIdentityLinkForProcessDefinitionCmd implements Command<Object
     }
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     ProcessDefinitionEntity processDefinition = commandContext.getProcessDefinitionEntityManager().findById(processDefinitionId);
 
     if (processDefinition == null) {

@@ -31,7 +31,8 @@ public class SubProcessConverterTest extends AbstractConverterTest {
     deployProcess(parsedModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "subprocessmodel.bpmn";
   }
 

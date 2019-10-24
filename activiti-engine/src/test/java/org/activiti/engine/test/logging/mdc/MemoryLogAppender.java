@@ -18,7 +18,8 @@ public class MemoryLogAppender<E> extends OutputStreamAppender<E> {
         super.start();
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return stringWriter.toString();
     }
 

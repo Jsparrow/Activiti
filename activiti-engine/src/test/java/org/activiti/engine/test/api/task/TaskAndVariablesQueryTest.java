@@ -29,25 +29,25 @@ import org.activiti.engine.test.Deployment;
  */
 public class TaskAndVariablesQueryTest extends PluggableActivitiTestCase {
 
-    private List<String> taskIds;
-    private List<String> multipleTaskIds;
-
     private static final String KERMIT = "kermit";
-    private static final List<String> KERMITSGROUPS = Arrays.asList("management",
+	private static final List<String> KERMITSGROUPS = Arrays.asList("management",
                                                                     "accountancy");
+	private static final String GONZO = "gonzo";
+	private List<String> taskIds;
+	private List<String> multipleTaskIds;
 
-    private static final String GONZO = "gonzo";
-
-    public void setUp() throws Exception {
+	@Override
+	public void setUp() throws Exception {
         taskIds = generateTestTasks();
     }
 
-    public void tearDown() throws Exception {
+	@Override
+	public void tearDown() throws Exception {
         taskService.deleteTasks(taskIds,
                                 true);
     }
 
-    @Deployment
+	@Deployment
     public void testQuery() {
         Task task = taskService.createTaskQuery().includeTaskLocalVariables().taskAssignee(GONZO).singleResult();
         Map<String, Object> variableMap = task.getTaskLocalVariables();
@@ -75,7 +75,7 @@ public class TaskAndVariablesQueryTest extends PluggableActivitiTestCase {
         assertEquals(0,
                      task.getTaskLocalVariables().size());
 
-        Map<String, Object> startMap = new HashMap<String, Object>();
+        Map<String, Object> startMap = new HashMap<>();
         startMap.put("processVar",
                      true);
         startMap.put("binaryVariable",
@@ -174,7 +174,7 @@ public class TaskAndVariablesQueryTest extends PluggableActivitiTestCase {
                      new String((byte[]) task.getProcessVariables().get("binaryVariable")));
     }
 
-    public void testQueryWithPagingAndVariables() {
+	public void testQueryWithPagingAndVariables() {
         List<Task> tasks = taskService.createTaskQuery().includeProcessVariables().includeTaskLocalVariables().orderByTaskPriority().desc().listPage(0,
                                                                                                                                                      1);
         assertEquals(1,
@@ -226,31 +226,31 @@ public class TaskAndVariablesQueryTest extends PluggableActivitiTestCase {
                      tasks.size());
     }
 
-    // Unit test for https://activiti.atlassian.net/browse/ACT-4152
+	// Unit test for https://activiti.atlassian.net/browse/ACT-4152
     public void testQueryWithIncludeTaskVariableAndTaskCategory() {
         List<Task> tasks = taskService.createTaskQuery().taskAssignee(GONZO).list();
-        for (Task task : tasks) {
+        tasks.forEach(task -> {
             assertNotNull(task.getCategory());
             assertEquals("testCategory",
                          task.getCategory());
-        }
+        });
 
         tasks = taskService.createTaskQuery().taskAssignee(GONZO).includeTaskLocalVariables().list();
-        for (Task task : tasks) {
+        tasks.forEach(task -> {
             assertNotNull(task.getCategory());
             assertEquals("testCategory",
                          task.getCategory());
-        }
+        });
 
         tasks = taskService.createTaskQuery().taskAssignee(GONZO).includeProcessVariables().list();
-        for (Task task : tasks) {
+        tasks.forEach(task -> {
             assertNotNull(task.getCategory());
             assertEquals("testCategory",
                          task.getCategory());
-        }
+        });
     }
 
-    public void testQueryWithLimitAndVariables() throws Exception {
+	public void testQueryWithLimitAndVariables() throws Exception {
 
         int taskVariablesLimit = 2000;
         int expectedNumberOfTasks = 103;
@@ -289,9 +289,9 @@ public class TaskAndVariablesQueryTest extends PluggableActivitiTestCase {
         }
     }
 
-    @Deployment
+	@Deployment
     public void testOrQuery() {
-        Map<String, Object> startMap = new HashMap<String, Object>();
+        Map<String, Object> startMap = new HashMap<>();
         startMap.put("anotherProcessVar",
                      123);
         runtimeService.startProcessInstanceByKey("oneTaskProcess",
@@ -337,9 +337,9 @@ public class TaskAndVariablesQueryTest extends PluggableActivitiTestCase {
                      task.getProcessVariables().get("anotherProcessVar"));
     }
 
-    @Deployment
+	@Deployment
     public void testOrQueryMultipleVariableValues() {
-        Map<String, Object> startMap = new HashMap<String, Object>();
+        Map<String, Object> startMap = new HashMap<>();
         startMap.put("aProcessVar",
                      1);
         startMap.put("anotherProcessVar",
@@ -369,11 +369,11 @@ public class TaskAndVariablesQueryTest extends PluggableActivitiTestCase {
                      task.getProcessVariables().get("anotherProcessVar"));
     }
 
-    /**
+	/**
      * Generates some test tasks. - 2 tasks where kermit is a candidate and 1 task where gonzo is assignee
      */
     private List<String> generateTestTasks() throws Exception {
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
         // 2 tasks for kermit
@@ -419,11 +419,11 @@ public class TaskAndVariablesQueryTest extends PluggableActivitiTestCase {
         return ids;
     }
 
-    /**
+	/**
      * Generates 100 test tasks.
      */
     private List<String> generateMultipleTestTasks() throws Exception {
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
         processEngineConfiguration.getClock().setCurrentTime(sdf.parse("01/01/2001 01:01:01.000"));

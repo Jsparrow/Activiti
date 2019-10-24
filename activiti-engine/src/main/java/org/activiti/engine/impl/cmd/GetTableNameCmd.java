@@ -16,7 +16,8 @@ public class GetTableNameCmd implements Command<String>, Serializable {
     this.entityClass = entityClass;
   }
 
-  public String execute(CommandContext commandContext) {
+  @Override
+public String execute(CommandContext commandContext) {
     if (entityClass == null) {
       throw new ActivitiIllegalArgumentException("entityClass is null");
     }

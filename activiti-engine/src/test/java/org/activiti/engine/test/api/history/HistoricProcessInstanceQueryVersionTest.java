@@ -18,15 +18,16 @@ public class HistoricProcessInstanceQueryVersionTest extends PluggableActivitiTe
   private org.activiti.engine.repository.Deployment newDeployment;
   private List<String> processInstanceIds;
   
-  protected void setUp() throws Exception {
+  @Override
+protected void setUp() throws Exception {
     super.setUp();
     oldDeployment = repositoryService.createDeployment()
       .addClasspathResource(DEPLOYMENT_FILE_PATH)
       .deploy();
     
-    processInstanceIds = new ArrayList<String>();
+    processInstanceIds = new ArrayList<>();
     
-    Map<String, Object> startMap = new HashMap<String, Object>();
+    Map<String, Object> startMap = new HashMap<>();
     startMap.put("test", 123);
     processInstanceIds.add(runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, startMap).getId());
     
@@ -39,7 +40,8 @@ public class HistoricProcessInstanceQueryVersionTest extends PluggableActivitiTe
     processInstanceIds.add(runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, startMap).getId());
   }
   
-  protected void tearDown() throws Exception {
+  @Override
+protected void tearDown() throws Exception {
     repositoryService.deleteDeployment(oldDeployment.getId(), true);
     repositoryService.deleteDeployment(newDeployment.getId(), true);
   }
@@ -55,23 +57,22 @@ public class HistoricProcessInstanceQueryVersionTest extends PluggableActivitiTe
     assertEquals(0, historyService.createHistoricProcessInstanceQuery().processDefinitionVersion(3).list().size());
     
     // Variables Case
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-        HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
-                .variableValueEquals("test", 123).processDefinitionVersion(1).singleResult();
-        assertEquals(1, processInstance.getProcessDefinitionVersion().intValue());
-        Map<String, Object> variableMap = processInstance.getProcessVariables();
-        assertEquals(123, variableMap.get("test"));
-
-        processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
-                .variableValueEquals("anothertest", 456).processDefinitionVersion(1).singleResult();
-        assertNull(processInstance);
-        
-        processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
-                .variableValueEquals("anothertest", 456).processDefinitionVersion(2).singleResult();
-        assertEquals(2, processInstance.getProcessDefinitionVersion().intValue());
-        variableMap = processInstance.getProcessVariables();
-        assertEquals(456, variableMap.get("anothertest"));
-    }
+	if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
+	        .variableValueEquals("test", 123).processDefinitionVersion(1).singleResult();
+	assertEquals(1, processInstance.getProcessDefinitionVersion().intValue());
+	Map<String, Object> variableMap = processInstance.getProcessVariables();
+	assertEquals(123, variableMap.get("test"));
+	processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
+	        .variableValueEquals("anothertest", 456).processDefinitionVersion(1).singleResult();
+	assertNull(processInstance);
+	processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
+	        .variableValueEquals("anothertest", 456).processDefinitionVersion(2).singleResult();
+	assertEquals(2, processInstance.getProcessDefinitionVersion().intValue());
+	variableMap = processInstance.getProcessVariables();
+	assertEquals(456, variableMap.get("anothertest"));
   }
 
   public void testHistoricProcessInstanceQueryByProcessDefinitionVersionAndKey() {
@@ -94,22 +95,21 @@ public class HistoricProcessInstanceQueryVersionTest extends PluggableActivitiTe
     assertEquals(0, historyService.createHistoricProcessInstanceQuery().or().processDefinitionVersion(3).processDefinitionId("undefined").endOr().list().size());
     
     // Variables Case
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-        HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
-                .or().variableValueEquals("test", "invalid").processDefinitionVersion(1).endOr().singleResult();
-        assertEquals(1, processInstance.getProcessDefinitionVersion().intValue());
-        Map<String, Object> variableMap = processInstance.getProcessVariables();
-        assertEquals(123, variableMap.get("test"));
-        
-        processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
-                .or().variableValueEquals("anothertest", "invalid").processDefinitionVersion(2).endOr().singleResult();
-        assertEquals(2, processInstance.getProcessDefinitionVersion().intValue());
-        variableMap = processInstance.getProcessVariables();
-        assertEquals(456, variableMap.get("anothertest"));
-        
-        processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
-                .variableValueEquals("anothertest", "invalid").processDefinitionVersion(3).singleResult();
-        assertNull(processInstance);
-    }
+	if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
+	        .or().variableValueEquals("test", "invalid").processDefinitionVersion(1).endOr().singleResult();
+	assertEquals(1, processInstance.getProcessDefinitionVersion().intValue());
+	Map<String, Object> variableMap = processInstance.getProcessVariables();
+	assertEquals(123, variableMap.get("test"));
+	processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
+	        .or().variableValueEquals("anothertest", "invalid").processDefinitionVersion(2).endOr().singleResult();
+	assertEquals(2, processInstance.getProcessDefinitionVersion().intValue());
+	variableMap = processInstance.getProcessVariables();
+	assertEquals(456, variableMap.get("anothertest"));
+	processInstance = historyService.createHistoricProcessInstanceQuery().includeProcessVariables()
+	        .variableValueEquals("anothertest", "invalid").processDefinitionVersion(3).singleResult();
+	assertNull(processInstance);
   }
 }

@@ -51,11 +51,13 @@ public class EventSubProcessJsonConverter extends BaseBpmnJsonConverter implemen
     convertersToJsonMap.put(EventSubProcess.class, EventSubProcessJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     return STENCIL_EVENT_SUB_PROCESS;
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
     SubProcess subProcess = (SubProcess) baseElement;
     propertiesNode.put("activitytype", "Event-Sub-Process");
     propertiesNode.put("subprocesstype", "Embedded");
@@ -66,7 +68,8 @@ public class EventSubProcessJsonConverter extends BaseBpmnJsonConverter implemen
     flowElementNode.set("childShapes", subProcessShapesArrayNode);
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     EventSubProcess subProcess = new EventSubProcess();
     JsonNode childShapesArray = elementNode.get(EDITOR_CHILD_SHAPES);
     processor.processJsonElements(childShapesArray, modelNode, subProcess, shapeMap, formMap, decisionTableMap, model);

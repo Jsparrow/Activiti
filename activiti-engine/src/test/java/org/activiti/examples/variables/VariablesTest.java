@@ -34,15 +34,19 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VariablesTest extends PluggableActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(VariablesTest.class);
+
+@Deployment
   public void testBasicVariableOperations() {
     processEngineConfiguration.getVariableTypes().addType(CustomVariableType.instance);
 
     Date now = new Date();
-    List<String> serializable = new ArrayList<String>();
+    List<String> serializable = new ArrayList<>();
     serializable.add("one");
     serializable.add("two");
     serializable.add("three");
@@ -73,7 +77,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
     long4001StringBuilder.append("a");
 
     // Start process instance with different types of variables
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
     variables.put("longVar", 928374L);
     variables.put("shortVar", (short) 123);
     variables.put("integerVar", 1234);
@@ -160,7 +164,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
     assertEquals(new CustomType(bytes1), variables.get("customVar2"));
     assertEquals(13, variables.size());
 
-    Collection<String> varFilter = new ArrayList<String>(2);
+    Collection<String> varFilter = new ArrayList<>(2);
     varFilter.add("stringVar");
     varFilter.add("integerVar");
 
@@ -183,7 +187,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
   @Deployment
   public void testLocalizeVariables() {
     // Start process instance with different types of variables
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
     variables.put("stringVar", "coca-cola");
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("localizeVariables", variables);
 
@@ -192,7 +196,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
     assertEquals("stringVar", variableInstances.get("stringVar").getName());
     assertEquals("coca-cola", variableInstances.get("stringVar").getValue());
 
-    List<String> variableNames = new ArrayList<String>();
+    List<String> variableNames = new ArrayList<>();
     variableNames.add("stringVar");
 
     // getVariablesInstances via names
@@ -229,7 +233,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
     assertEquals("intVar", variableInstances.get("intVar").getName());
     assertEquals(null, variableInstances.get("intVar").getValue());
     
-    variableNames = new ArrayList<String>();
+    variableNames = new ArrayList<>();
     variableNames.add("stringVar");
 
     // getVariablesInstances via names
@@ -262,7 +266,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
   @Deployment
   public void testLocalizeDataObjects() {
     // Start process instance with different types of variables
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
     variables.put("stringVar", "coca-cola");
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("localizeVariables", variables);
     Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
@@ -330,7 +334,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
     assertEquals("stringVarId", dataObjects.get("stringVar").getDataObjectDefinitionKey());
     assertEquals("string", dataObjects.get("stringVar").getType());
     
-    List<String> variableNames = new ArrayList<String>();
+    List<String> variableNames = new ArrayList<>();
     variableNames.add("stringVar");
 
     // getDataObjects via names
@@ -929,7 +933,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
     assertEquals("intVarId", dataObjects.get("intVar").getDataObjectDefinitionKey());
     assertEquals("int", dataObjects.get("intVar").getType());
     
-    variableNames = new ArrayList<String>();
+    variableNames = new ArrayList<>();
     variableNames.add("stringVar");
     
     // getDataObjects via names
@@ -1047,14 +1051,14 @@ public class VariablesTest extends PluggableActivitiTestCase {
   public void testChangeVariableType() {
 
     Date now = new Date();
-    List<String> serializable = new ArrayList<String>();
+    List<String> serializable = new ArrayList<>();
     serializable.add("one");
     serializable.add("two");
     serializable.add("three");
     byte[] bytes = "somebytes".getBytes();
 
     // Start process instance with different types of variables
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
     variables.put("longVar", 928374L);
     variables.put("shortVar", (short) 123);
     variables.put("integerVar", 1234);
@@ -1078,31 +1082,27 @@ public class VariablesTest extends PluggableActivitiTestCase {
 
     // check if the id of the variable is the same or not
 
-    if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      String oldSerializableVarId = getVariableInstanceId(processInstance.getId(), "serializableVar");
-      String oldLongVar = getVariableInstanceId(processInstance.getId(), "longVar");
-
-      // Change type of serializableVar from serializable to Short
-      Map<String, Object> newVariables = new HashMap<String, Object>();
-      newVariables.put("serializableVar", (short) 222);
-      runtimeService.setVariables(processInstance.getId(), newVariables);
-      variables = runtimeService.getVariables(processInstance.getId());
-      assertEquals((short) 222, variables.get("serializableVar"));
-
-      String newSerializableVarId = getVariableInstanceId(processInstance.getId(), "serializableVar");
-
-      assertEquals(oldSerializableVarId, newSerializableVarId);
-
-      // Change type of a  longVar from Long to Short
-      newVariables = new HashMap<String, Object>();
-      newVariables.put("longVar", (short) 123);
-      runtimeService.setVariables(processInstance.getId(), newVariables);
-      variables = runtimeService.getVariables(processInstance.getId());
-      assertEquals((short) 123, variables.get("longVar"));
-
-      String newLongVar = getVariableInstanceId(processInstance.getId(), "longVar");
-      assertEquals(oldLongVar, newLongVar);
-    }
+    if (!processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
+		return;
+	}
+	String oldSerializableVarId = getVariableInstanceId(processInstance.getId(), "serializableVar");
+	String oldLongVar = getVariableInstanceId(processInstance.getId(), "longVar");
+	// Change type of serializableVar from serializable to Short
+      Map<String, Object> newVariables = new HashMap<>();
+	newVariables.put("serializableVar", (short) 222);
+	runtimeService.setVariables(processInstance.getId(), newVariables);
+	variables = runtimeService.getVariables(processInstance.getId());
+	assertEquals((short) 222, variables.get("serializableVar"));
+	String newSerializableVarId = getVariableInstanceId(processInstance.getId(), "serializableVar");
+	assertEquals(oldSerializableVarId, newSerializableVarId);
+	// Change type of a  longVar from Long to Short
+      newVariables = new HashMap<>();
+	newVariables.put("longVar", (short) 123);
+	runtimeService.setVariables(processInstance.getId(), newVariables);
+	variables = runtimeService.getVariables(processInstance.getId());
+	assertEquals((short) 123, variables.get("longVar"));
+	String newLongVar = getVariableInstanceId(processInstance.getId(), "longVar");
+	assertEquals(oldLongVar, newLongVar);
   }
 
   // test case for ACT-1428
@@ -1111,7 +1111,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("taskAssigneeProcess");
     Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
 
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
     variables.put("testProperty", "434");
 
     taskService.complete(task.getId(), variables);
@@ -1125,7 +1125,7 @@ public class VariablesTest extends PluggableActivitiTestCase {
     // If no variable is given, no variable should be set and script test should throw exception
     processInstance = runtimeService.startProcessInstanceByKey("taskAssigneeProcess");
     task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
-    variables = new HashMap<String, Object>();
+    variables = new HashMap<>();
     try {
       taskService.complete(task.getId(), variables);
       fail("Should throw exception as testProperty is not defined and used in Script task");
@@ -1138,13 +1138,14 @@ public class VariablesTest extends PluggableActivitiTestCase {
     // No we put null property, This should be put into the variable. We do not expect exceptions
     processInstance = runtimeService.startProcessInstanceByKey("taskAssigneeProcess");
     task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
-    variables = new HashMap<String, Object>();
+    variables = new HashMap<>();
     variables.put("testProperty", null);
 
     try {
       taskService.complete(task.getId(), variables);
     } catch (Exception e) {
-      fail("Should not throw exception as the testProperty is defined, although null");
+      logger.error(e.getMessage(), e);
+	fail("Should not throw exception as the testProperty is defined, although null");
     }
     resultVar = (String) runtimeService.getVariable(processInstance.getId(), "testProperty");
 
@@ -1207,14 +1208,17 @@ class CustomType {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
+    if (this == obj) {
+		return true;
+	}
+    if (obj == null) {
+		return false;
+	}
 
     CustomType other = (CustomType) obj;
-    if (!Arrays.equals(value, other.value))
-      return false;
+    if (!Arrays.equals(value, other.value)) {
+		return false;
+	}
     return true;
   }
 

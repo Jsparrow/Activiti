@@ -35,21 +35,13 @@ public class AssociationValidator extends ValidatorImpl {
     // Global associations
     Collection<Artifact> artifacts = bpmnModel.getGlobalArtifacts();
     if (artifacts != null) {
-      for (Artifact artifact : artifacts) {
-        if (artifact instanceof Association) {
-          validate(null, (Association) artifact, errors);
-        }
-      }
+      artifacts.stream().filter(artifact -> artifact instanceof Association).forEach(artifact -> validate(null, (Association) artifact, errors));
     }
 
     // Process associations
     for (Process process : bpmnModel.getProcesses()) {
       artifacts = process.getArtifacts();
-      for (Artifact artifact : artifacts) {
-        if (artifact instanceof Association) {
-          validate(process, (Association) artifact, errors);
-        }
-      }
+      artifacts.stream().filter(artifact -> artifact instanceof Association).forEach(artifact -> validate(process, (Association) artifact, errors));
     }
 
   }

@@ -51,13 +51,13 @@ public class SubTaskTest extends PluggableActivitiTestCase {
     assertTrue(historyService.createHistoricTaskInstanceQuery().taskParentTaskId(subTaskId).list().isEmpty());
 
     List<Task> subTasks = taskService.getSubTasks(gonzoTaskId);
-    Set<String> subTaskNames = new HashSet<String>();
+    Set<String> subTaskNames = new HashSet<>();
     for (Task subTask : subTasks) {
       subTaskNames.add(subTask.getName());
     }
 
     if (processEngineConfiguration.getHistoryLevel().isAtLeast(HistoryLevel.AUDIT)) {
-      Set<String> expectedSubTaskNames = new HashSet<String>();
+      Set<String> expectedSubTaskNames = new HashSet<>();
       expectedSubTaskNames.add("subtask one");
       expectedSubTaskNames.add("subtask two");
 
@@ -65,7 +65,7 @@ public class SubTaskTest extends PluggableActivitiTestCase {
 
       List<HistoricTaskInstance> historicSubTasks = historyService.createHistoricTaskInstanceQuery().taskParentTaskId(gonzoTaskId).list();
 
-      subTaskNames = new HashSet<String>();
+      subTaskNames = new HashSet<>();
       for (HistoricTaskInstance historicSubTask : historicSubTasks) {
         subTaskNames.add(historicSubTask.getName());
       }

@@ -41,7 +41,7 @@ public abstract class VariableEventHandler extends AbstractDatabaseEventLoggerEv
   public static final String TYPE_JSON = "json";
 
   protected Map<String, Object> createData(ActivitiVariableEvent variableEvent) {
-    Map<String, Object> data = new HashMap<String, Object>();
+    Map<String, Object> data = new HashMap<>();
     putInMapIfNotNull(data, Fields.NAME, variableEvent.getVariableName());
     putInMapIfNotNull(data, Fields.PROCESS_DEFINITION_ID, variableEvent.getProcessDefinitionId());
     putInMapIfNotNull(data, Fields.PROCESS_INSTANCE_ID, variableEvent.getProcessInstanceId());
@@ -133,7 +133,8 @@ public abstract class VariableEventHandler extends AbstractDatabaseEventLoggerEv
         putInMapIfNotNull(data, Fields.VARIABLE_TYPE, TYPE_JSON);
         putInMapIfNotNull(data, Fields.VALUE, value);
       } catch (JsonProcessingException e) {
-        // Nothing to do about it
+        logger.error(e.getMessage(), e);
+		// Nothing to do about it
         logger.debug("Could not serialize variable value " + variableEvent.getVariableValue());
       }
 

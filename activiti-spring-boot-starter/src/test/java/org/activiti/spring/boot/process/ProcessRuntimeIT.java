@@ -563,7 +563,8 @@ public class    ProcessRuntimeIT {
         securityUtil.logInAs("user");
 
         Page<ProcessInstance> processInstancePage;
-        ProcessInstance parentProcess,subProcess;
+        ProcessInstance parentProcess;
+		ProcessInstance subProcess;
       
         //given
         // start a process with a business key to check filters

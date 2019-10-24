@@ -35,15 +35,9 @@ public class ProcessWithCompensationConverterTest {
 
     BpmnXMLConverter bpmnXMLConverter = new BpmnXMLConverter();
 
-    BpmnModel bpmnModel1 = bpmnXMLConverter.convertToBpmnModel(new InputStreamProvider() {
+    BpmnModel bpmnModel1 = bpmnXMLConverter.convertToBpmnModel(() -> inputStream, false, false);
 
-      @Override
-      public InputStream getInputStream() {
-        return inputStream;
-      }
-    }, false, false);
-
-    if (bpmnModel1.getLocationMap().size() == 0) {
+    if (bpmnModel1.getLocationMap().isEmpty()) {
       BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel1);
       bpmnLayout.execute();
     }
@@ -51,13 +45,7 @@ public class ProcessWithCompensationConverterTest {
     byte[] xmlByte = bpmnXMLConverter.convertToXML(bpmnModel1);
     final InputStream byteArrayInputStream = new ByteArrayInputStream(xmlByte);
 
-    BpmnModel bpmnModel2 = bpmnXMLConverter.convertToBpmnModel(new InputStreamProvider() {
-
-      @Override
-      public InputStream getInputStream() {
-        return byteArrayInputStream;
-      }
-    }, false, false);
+    BpmnModel bpmnModel2 = bpmnXMLConverter.convertToBpmnModel(() -> byteArrayInputStream, false, false);
 
     assertEquals(10, bpmnModel1.getLocationMap().size());
     assertEquals(10, bpmnModel2.getLocationMap().size());

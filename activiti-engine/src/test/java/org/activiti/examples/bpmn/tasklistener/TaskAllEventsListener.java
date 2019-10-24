@@ -22,12 +22,13 @@ public class TaskAllEventsListener implements TaskListener {
 
   private static final long serialVersionUID = 1L;
 
-  public void notify(DelegateTask delegateTask) {
+  @Override
+public void notify(DelegateTask delegateTask) {
     String events = (String) delegateTask.getVariable("events");
     if (events == null) {
       events = delegateTask.getEventName();
     } else {
-      events = events + " - " + delegateTask.getEventName();
+      events = new StringBuilder().append(events).append(" - ").append(delegateTask.getEventName()).toString();
     }
     delegateTask.setVariable("events", events);
   }

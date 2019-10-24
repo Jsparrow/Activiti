@@ -71,7 +71,8 @@ public class HistoricProcessInstanceEntityImpl extends HistoricScopeInstanceEnti
     }
   }
 
-  public Object getPersistentState() {
+  @Override
+public Object getPersistentState() {
     Map<String, Object> persistentState = (Map<String, Object>) new HashMap<String, Object>();
     persistentState.put("endTime", endTime);
     persistentState.put("businessKey", businessKey);
@@ -90,55 +91,68 @@ public class HistoricProcessInstanceEntityImpl extends HistoricScopeInstanceEnti
 
   // getters and setters ////////////////////////////////////////////////////////
 
-  public String getEndActivityId() {
+  @Override
+public String getEndActivityId() {
     return endActivityId;
   }
 
-  public void setEndActivityId(String endActivityId) {
+  @Override
+public void setEndActivityId(String endActivityId) {
     this.endActivityId = endActivityId;
   }
 
-  public String getBusinessKey() {
+  @Override
+public String getBusinessKey() {
     return businessKey;
   }
 
-  public void setBusinessKey(String businessKey) {
+  @Override
+public void setBusinessKey(String businessKey) {
     this.businessKey = businessKey;
   }
 
-  public String getStartUserId() {
+  @Override
+public String getStartUserId() {
     return startUserId;
   }
 
-  public void setStartUserId(String startUserId) {
+  @Override
+public void setStartUserId(String startUserId) {
     this.startUserId = startUserId;
   }
 
-  public String getStartActivityId() {
+  @Override
+public String getStartActivityId() {
     return startActivityId;
   }
 
-  public void setStartActivityId(String startUserId) {
+  @Override
+public void setStartActivityId(String startUserId) {
     this.startActivityId = startUserId;
   }
 
-  public String getSuperProcessInstanceId() {
+  @Override
+public String getSuperProcessInstanceId() {
     return superProcessInstanceId;
   }
 
-  public void setSuperProcessInstanceId(String superProcessInstanceId) {
+  @Override
+public void setSuperProcessInstanceId(String superProcessInstanceId) {
     this.superProcessInstanceId = superProcessInstanceId;
   }
 
-  public String getTenantId() {
+  @Override
+public String getTenantId() {
     return tenantId;
   }
 
-  public void setTenantId(String tenantId) {
+  @Override
+public void setTenantId(String tenantId) {
     this.tenantId = tenantId;
   }
 
-  public String getName() {
+  @Override
+public String getName() {
     if (localizedName != null && localizedName.length() > 0) {
       return localizedName;
     } else {
@@ -146,7 +160,8 @@ public class HistoricProcessInstanceEntityImpl extends HistoricScopeInstanceEnti
     }
   }
 
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
 
@@ -154,11 +169,13 @@ public class HistoricProcessInstanceEntityImpl extends HistoricScopeInstanceEnti
     return localizedName;
   }
   
-  public void setLocalizedName(String localizedName) {
+  @Override
+public void setLocalizedName(String localizedName) {
     this.localizedName = localizedName;
   }
   
-  public String getDescription() {
+  @Override
+public String getDescription() {
     if (localizedDescription != null && localizedDescription.length() > 0) {
       return localizedDescription;
     } else {
@@ -166,7 +183,8 @@ public class HistoricProcessInstanceEntityImpl extends HistoricScopeInstanceEnti
     }
   }
   
-  public void setDescription(String description) {
+  @Override
+public void setDescription(String description) {
     this.description = description;
   }
   
@@ -174,62 +192,70 @@ public class HistoricProcessInstanceEntityImpl extends HistoricScopeInstanceEnti
     return localizedDescription;
   }
   
-  public void setLocalizedDescription(String localizedDescription) {
+  @Override
+public void setLocalizedDescription(String localizedDescription) {
     this.localizedDescription = localizedDescription;
   }
   
-  public String getProcessDefinitionKey() {
+  @Override
+public String getProcessDefinitionKey() {
     return processDefinitionKey;
   }
 
-  public void setProcessDefinitionKey(String processDefinitionKey) {
+  @Override
+public void setProcessDefinitionKey(String processDefinitionKey) {
     this.processDefinitionKey = processDefinitionKey;
   }
 
-  public String getProcessDefinitionName() {
+  @Override
+public String getProcessDefinitionName() {
     return processDefinitionName;
   }
 
-  public void setProcessDefinitionName(String processDefinitionName) {
+  @Override
+public void setProcessDefinitionName(String processDefinitionName) {
     this.processDefinitionName = processDefinitionName;
   }
 
-  public Integer getProcessDefinitionVersion() {
+  @Override
+public Integer getProcessDefinitionVersion() {
     return processDefinitionVersion;
   }
 
-  public void setProcessDefinitionVersion(Integer processDefinitionVersion) {
+  @Override
+public void setProcessDefinitionVersion(Integer processDefinitionVersion) {
     this.processDefinitionVersion = processDefinitionVersion;
   }
 
-  public String getDeploymentId() {
+  @Override
+public String getDeploymentId() {
     return deploymentId;
   }
 
-  public void setDeploymentId(String deploymentId) {
+  @Override
+public void setDeploymentId(String deploymentId) {
     this.deploymentId = deploymentId;
   }
 
-  public Map<String, Object> getProcessVariables() {
-    Map<String, Object> variables = new HashMap<String, Object>();
+  @Override
+public Map<String, Object> getProcessVariables() {
+    Map<String, Object> variables = new HashMap<>();
     if (queryVariables != null) {
-      for (HistoricVariableInstanceEntity variableInstance : queryVariables) {
-        if (variableInstance.getId() != null && variableInstance.getTaskId() == null) {
-          variables.put(variableInstance.getName(), variableInstance.getValue());
-        }
-      }
+      queryVariables.stream().filter(variableInstance -> variableInstance.getId() != null && variableInstance.getTaskId() == null).forEach(variableInstance -> variables.put(variableInstance.getName(), variableInstance.getValue()));
     }
     return variables;
   }
 
-  public List<HistoricVariableInstanceEntity> getQueryVariables() {
+  @Override
+public List<HistoricVariableInstanceEntity> getQueryVariables() {
     if (queryVariables == null && Context.getCommandContext() != null) {
       queryVariables = new HistoricVariableInitializingList();
     }
     return queryVariables;
   }
 
-  public void setQueryVariables(List<HistoricVariableInstanceEntity> queryVariables) {
+  @Override
+public void setQueryVariables(List<HistoricVariableInstanceEntity> queryVariables) {
     this.queryVariables = queryVariables;
   }
 
@@ -237,6 +263,6 @@ public class HistoricProcessInstanceEntityImpl extends HistoricScopeInstanceEnti
 
   @Override
   public String toString() {
-    return "HistoricProcessInstanceEntity[superProcessInstanceId=" + superProcessInstanceId + "]";
+    return new StringBuilder().append("HistoricProcessInstanceEntity[superProcessInstanceId=").append(superProcessInstanceId).append("]").toString();
   }
 }

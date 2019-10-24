@@ -23,30 +23,35 @@ public class StringType implements VariableType {
     this.maxLength = maxLength;
   }
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return "string";
   }
 
-  public boolean isCachable() {
+  @Override
+public boolean isCachable() {
     return true;
   }
 
-  public Object getValue(ValueFields valueFields) {
+  @Override
+public Object getValue(ValueFields valueFields) {
     return valueFields.getTextValue();
   }
 
-  public void setValue(Object value, ValueFields valueFields) {
+  @Override
+public void setValue(Object value, ValueFields valueFields) {
     valueFields.setTextValue((String) value);
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     if (value == null) {
       return true;
     }
-    if (String.class.isAssignableFrom(value.getClass())) {
-      String stringValue = (String) value;
-      return stringValue.length() <= maxLength;
-    }
-    return false;
+    if (!String.class.isAssignableFrom(value.getClass())) {
+		return false;
+	}
+	String stringValue = (String) value;
+	return stringValue.length() <= maxLength;
   }
 }

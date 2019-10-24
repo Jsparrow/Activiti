@@ -21,7 +21,7 @@ public class SkipExpressionUserTaskTest extends PluggableActivitiTestCase {
         assertEquals(0,
                      taskService.createTaskQuery().list().size());
 
-        Map<String, Object> variables2 = new HashMap<String, Object>();
+        Map<String, Object> variables2 = new HashMap<>();
         variables2.put("_ACTIVITI_SKIP_EXPRESSION_ENABLED",
                        true);
         variables2.put("skip",
@@ -35,7 +35,7 @@ public class SkipExpressionUserTaskTest extends PluggableActivitiTestCase {
         assertEquals(0,
                      taskService.createTaskQuery().list().size());
 
-        Map<String, Object> variables3 = new HashMap<String, Object>();
+        Map<String, Object> variables3 = new HashMap<>();
         variables3.put("_ACTIVITI_SKIP_EXPRESSION_ENABLED",
                        true);
         variables3.put("skip",
@@ -49,7 +49,7 @@ public class SkipExpressionUserTaskTest extends PluggableActivitiTestCase {
 
     @Deployment
     public void testWithCandidateGroups() {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("_ACTIVITI_SKIP_EXPRESSION_ENABLED",
                  true);
         vars.put("skip",
@@ -62,7 +62,7 @@ public class SkipExpressionUserTaskTest extends PluggableActivitiTestCase {
 
     @Deployment
     public void testSkipMultipleTasks() {
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("_ACTIVITI_SKIP_EXPRESSION_ENABLED",
                       true);
         variables.put("skip1",

@@ -38,9 +38,7 @@ public class XmlNamespaceProcessScopeTest {
   @After
   public void after() {
     RepositoryService repositoryService = this.processEngine.getRepositoryService();
-    for (Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+    repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
   }
 
   @Test

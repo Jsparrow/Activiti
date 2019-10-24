@@ -21,7 +21,8 @@ public class NotExecutableConverterTest extends AbstractConverterTest {
     deployProcess(parsedModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "notexecutablemodel.bpmn";
   }
 

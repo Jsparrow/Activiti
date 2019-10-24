@@ -25,7 +25,8 @@ import org.activiti.bpmn.model.IntermediateCatchEvent;
  */
 public class CatchEventXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return IntermediateCatchEvent.class;
   }
 

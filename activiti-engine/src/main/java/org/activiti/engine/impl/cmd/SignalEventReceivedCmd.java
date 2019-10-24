@@ -42,7 +42,7 @@ public class SignalEventReceivedCmd implements Command<Void> {
     this.eventName = eventName;
     this.executionId = executionId;
     if (processVariables != null) {
-      this.payload = new HashMap<String, Object>(processVariables);
+      this.payload = new HashMap<>(processVariables);
       
     } else {
       this.payload = null;
@@ -59,7 +59,8 @@ public class SignalEventReceivedCmd implements Command<Void> {
     this.tenantId = tenantId;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     
     List<SignalEventSubscriptionEntity> signalEvents = null;
 
@@ -71,27 +72,23 @@ public class SignalEventReceivedCmd implements Command<Void> {
       ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(executionId);
 
       if (execution == null) {
-        throw new ActivitiObjectNotFoundException("Cannot find execution with id '" + executionId + "'", Execution.class);
+        throw new ActivitiObjectNotFoundException(new StringBuilder().append("Cannot find execution with id '").append(executionId).append("'").toString(), Execution.class);
       }
 
       if (execution.isSuspended()) {
-        throw new ActivitiException("Cannot throw signal event '" + eventName + "' because execution '" + executionId + "' is suspended");
+        throw new ActivitiException(new StringBuilder().append("Cannot throw signal event '").append(eventName).append("' because execution '").append(executionId).append("' is suspended").toString());
       }
       
       signalEvents = eventSubscriptionEntityManager.findSignalEventSubscriptionsByNameAndExecution(eventName, executionId);
 
       if (signalEvents.isEmpty()) {
-        throw new ActivitiException("Execution '" + executionId + "' has not subscribed to a signal event with name '" + eventName + "'.");
+        throw new ActivitiException(new StringBuilder().append("Execution '").append(executionId).append("' has not subscribed to a signal event with name '").append(eventName).append("'.").toString());
       }
     }
 
-    for (SignalEventSubscriptionEntity signalEventSubscriptionEntity : signalEvents) {
-      // We only throw the event to globally scoped signals.
-      // Process instance scoped signals must be thrown within the process itself
-      if (signalEventSubscriptionEntity.isGlobalScoped()) {
-        eventSubscriptionEntityManager.eventReceived(signalEventSubscriptionEntity, payload, async);
-      }
-    }
+    // We only throw the event to globally scoped signals.
+	// Process instance scoped signals must be thrown within the process itself
+	signalEvents.stream().filter(SignalEventSubscriptionEntity::isGlobalScoped).forEach(signalEventSubscriptionEntity -> eventSubscriptionEntityManager.eventReceived(signalEventSubscriptionEntity, payload, async));
 
     return null;
   }

@@ -30,13 +30,16 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class MessageEventDefinitionParser extends BaseChildElementParser {
 
-  public String getElementName() {
+  @Override
+public String getElementName() {
     return ELEMENT_EVENT_MESSAGEDEFINITION;
   }
 
-  public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
-    if (!(parentElement instanceof Event))
-      return;
+  @Override
+public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
+    if (!(parentElement instanceof Event)) {
+		return;
+	}
 
     MessageEventDefinition eventDefinition = new MessageEventDefinition();
     BpmnXMLUtil.addXMLLocation(eventDefinition, xtr);
@@ -60,11 +63,11 @@ public class MessageEventDefinitionParser extends BaseChildElementParser {
 
         if (resolvedNamespace == null) {
           // if it's an invalid prefix will consider this is not a namespace prefix so will be used as part of the stringReference
-          messageRef = prefix + ":" + messageRef;
+          messageRef = new StringBuilder().append(prefix).append(":").append(messageRef).toString();
         } else if (!resolvedNamespace.equalsIgnoreCase(model.getTargetNamespace())) {
           // if it's a valid namespace prefix but it's not the targetNamespace then we'll use it as a valid namespace
           // (even out editor does not support defining namespaces it is still a valid xml file)
-          messageRef = resolvedNamespace + ":" + messageRef;
+          messageRef = new StringBuilder().append(resolvedNamespace).append(":").append(messageRef).toString();
         }
         eventDefinition.setMessageRef(messageRef);
       } else {

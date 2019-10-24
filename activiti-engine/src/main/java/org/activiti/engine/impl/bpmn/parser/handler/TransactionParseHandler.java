@@ -22,11 +22,13 @@ import org.activiti.engine.impl.bpmn.parser.BpmnParse;
  */
 public class TransactionParseHandler extends AbstractActivityBpmnParseHandler<Transaction> {
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return Transaction.class;
   }
 
-  protected void executeParse(BpmnParse bpmnParse, Transaction transaction) {
+  @Override
+protected void executeParse(BpmnParse bpmnParse, Transaction transaction) {
 
     transaction.setBehavior(bpmnParse.getActivityBehaviorFactory().createTransactionActivityBehavior(transaction));
 

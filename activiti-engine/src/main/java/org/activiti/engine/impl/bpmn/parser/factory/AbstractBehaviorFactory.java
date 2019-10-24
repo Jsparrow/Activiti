@@ -36,9 +36,9 @@ public abstract class AbstractBehaviorFactory {
   private MessageExecutionContextFactory messageExecutionContextFactory = new DefaultMessageExecutionContextFactory();
 
   public List<FieldDeclaration> createFieldDeclarations(List<FieldExtension> fieldList) {
-    List<FieldDeclaration> fieldDeclarations = new ArrayList<FieldDeclaration>();
+    List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
 
-    for (FieldExtension fieldExtension : fieldList) {
+    fieldList.forEach(fieldExtension -> {
       FieldDeclaration fieldDeclaration = null;
       if (StringUtils.isNotEmpty(fieldExtension.getExpression())) {
         fieldDeclaration = new FieldDeclaration(fieldExtension.getFieldName(), Expression.class.getName(), expressionManager.createExpression(fieldExtension.getExpression()));
@@ -47,7 +47,7 @@ public abstract class AbstractBehaviorFactory {
       }
 
       fieldDeclarations.add(fieldDeclaration);
-    }
+    });
     return fieldDeclarations;
   }
 

@@ -7,15 +7,19 @@ import java.util.Map;
 
 import org.activiti.engine.impl.interceptor.CommandContext;
 import org.activiti.engine.impl.persistence.entity.EventLogEntryEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class EngineClosedEventHandler extends AbstractDatabaseEventLoggerEventHandler {
 
-  @Override
+  private static final Logger logger = LoggerFactory.getLogger(EngineClosedEventHandler.class);
+
+@Override
   public EventLogEntryEntity generateEventLogEntry(CommandContext commandContext) {
-    Map<String, Object> data = new HashMap<String, Object>();
+    Map<String, Object> data = new HashMap<>();
     try {
       data.put("ip", InetAddress.getLocalHost().getHostAddress()); // Note
                                                                    // that
@@ -39,6 +43,7 @@ public class EngineClosedEventHandler extends AbstractDatabaseEventLoggerEventHa
                                                                    // than
                                                                    // nothing.
     } catch (UnknownHostException e) {
+		logger.error(e.getMessage(), e);
       // Best effort
     }
     return createEventLogEntry(data);

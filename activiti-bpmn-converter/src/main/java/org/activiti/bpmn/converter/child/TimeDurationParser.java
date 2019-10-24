@@ -23,13 +23,16 @@ import org.activiti.bpmn.model.TimerEventDefinition;
  */
 public class TimeDurationParser extends BaseChildElementParser {
 
-  public String getElementName() {
+  @Override
+public String getElementName() {
     return ATTRIBUTE_TIMER_DURATION;
   }
 
-  public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
-    if (!(parentElement instanceof TimerEventDefinition))
-      return;
+  @Override
+public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
+    if (!(parentElement instanceof TimerEventDefinition)) {
+		return;
+	}
 
     TimerEventDefinition eventDefinition = (TimerEventDefinition) parentElement;
     eventDefinition.setTimeDuration(xtr.getElementText());

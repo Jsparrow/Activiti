@@ -38,7 +38,8 @@ public class InputStreamSource implements StreamSource {
     this.inputStream = new BufferedInputStream(inputStream);
   }
 
-  public InputStream getInputStream() {
+  @Override
+public InputStream getInputStream() {
     if (bytes == null) {
       try {
         bytes = getBytesFromInputStream(inputStream);
@@ -49,7 +50,8 @@ public class InputStreamSource implements StreamSource {
     return new BufferedInputStream(new ByteArrayInputStream(bytes));
   }
 
-  public String toString() {
+  @Override
+public String toString() {
     return "InputStream";
   }
 

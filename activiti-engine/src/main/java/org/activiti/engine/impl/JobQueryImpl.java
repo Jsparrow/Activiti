@@ -29,7 +29,7 @@ import org.activiti.engine.runtime.JobQuery;
 
 
  */
-public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQuery, Serializable {
+public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQuery {
 
   private static final long serialVersionUID = 1L;
   protected String id;
@@ -64,7 +64,8 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     super(commandExecutor);
   }
 
-  public JobQuery jobId(String jobId) {
+  @Override
+public JobQuery jobId(String jobId) {
     if (jobId == null) {
       throw new ActivitiIllegalArgumentException("Provided job id is null");
     }
@@ -72,7 +73,8 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     return this;
   }
 
-  public JobQueryImpl processInstanceId(String processInstanceId) {
+  @Override
+public JobQueryImpl processInstanceId(String processInstanceId) {
     if (processInstanceId == null) {
       throw new ActivitiIllegalArgumentException("Provided process instance id is null");
     }
@@ -80,7 +82,8 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     return this;
   }
 
-  public JobQueryImpl processDefinitionId(String processDefinitionId) {
+  @Override
+public JobQueryImpl processDefinitionId(String processDefinitionId) {
     if (processDefinitionId == null) {
       throw new ActivitiIllegalArgumentException("Provided process definition id is null");
     }
@@ -88,7 +91,8 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     return this;
   }
 
-  public JobQueryImpl executionId(String executionId) {
+  @Override
+public JobQueryImpl executionId(String executionId) {
     if (executionId == null) {
       throw new ActivitiIllegalArgumentException("Provided execution id is null");
     }
@@ -106,7 +110,8 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     return this;
   }
 
-  public JobQuery timers() {
+  @Override
+public JobQuery timers() {
     if (onlyMessages) {
       throw new ActivitiIllegalArgumentException("Cannot combine onlyTimers() with onlyMessages() in the same query");
     }
@@ -114,7 +119,8 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     return this;
   }
 
-  public JobQuery messages() {
+  @Override
+public JobQuery messages() {
     if (onlyTimers) {
       throw new ActivitiIllegalArgumentException("Cannot combine onlyTimers() with onlyMessages() in the same query");
     }
@@ -122,7 +128,8 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     return this;
   }
 
-  public JobQuery duedateHigherThan(Date date) {
+  @Override
+public JobQuery duedateHigherThan(Date date) {
     if (date == null) {
       throw new ActivitiIllegalArgumentException("Provided date is null");
     }
@@ -130,7 +137,8 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     return this;
   }
 
-  public JobQuery duedateLowerThan(Date date) {
+  @Override
+public JobQuery duedateLowerThan(Date date) {
     if (date == null) {
       throw new ActivitiIllegalArgumentException("Provided date is null");
     }
@@ -167,12 +175,14 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     return this;
   }
 
-  public JobQuery withException() {
+  @Override
+public JobQuery withException() {
     this.withException = true;
     return this;
   }
 
-  public JobQuery exceptionMessage(String exceptionMessage) {
+  @Override
+public JobQuery exceptionMessage(String exceptionMessage) {
     if (exceptionMessage == null) {
       throw new ActivitiIllegalArgumentException("Provided exception message is null");
     }
@@ -180,7 +190,8 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     return this;
   }
 
-  public JobQuery jobTenantId(String tenantId) {
+  @Override
+public JobQuery jobTenantId(String tenantId) {
     if (tenantId == null) {
       throw new ActivitiIllegalArgumentException("job is null");
     }
@@ -188,7 +199,8 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     return this;
   }
 
-  public JobQuery jobTenantIdLike(String tenantIdLike) {
+  @Override
+public JobQuery jobTenantIdLike(String tenantIdLike) {
     if (tenantIdLike == null) {
       throw new ActivitiIllegalArgumentException("job is null");
     }
@@ -196,55 +208,66 @@ public class JobQueryImpl extends AbstractQuery<JobQuery, Job> implements JobQue
     return this;
   }
 
-  public JobQuery jobWithoutTenantId() {
+  @Override
+public JobQuery jobWithoutTenantId() {
     this.withoutTenantId = true;
     return this;
   }
   
-  public JobQuery locked() {
+  @Override
+public JobQuery locked() {
     this.onlyLocked = true;
     return this;
   }
   
-  public JobQuery unlocked() {
+  @Override
+public JobQuery unlocked() {
     this.onlyUnlocked = true;
     return this;
   }
 
   // sorting //////////////////////////////////////////
 
-  public JobQuery orderByJobDuedate() {
+  @Override
+public JobQuery orderByJobDuedate() {
     return orderBy(JobQueryProperty.DUEDATE);
   }
 
-  public JobQuery orderByExecutionId() {
+  @Override
+public JobQuery orderByExecutionId() {
     return orderBy(JobQueryProperty.EXECUTION_ID);
   }
 
-  public JobQuery orderByJobId() {
+  @Override
+public JobQuery orderByJobId() {
     return orderBy(JobQueryProperty.JOB_ID);
   }
 
-  public JobQuery orderByProcessInstanceId() {
+  @Override
+public JobQuery orderByProcessInstanceId() {
     return orderBy(JobQueryProperty.PROCESS_INSTANCE_ID);
   }
 
-  public JobQuery orderByJobRetries() {
+  @Override
+public JobQuery orderByJobRetries() {
     return orderBy(JobQueryProperty.RETRIES);
   }
 
-  public JobQuery orderByTenantId() {
+  @Override
+public JobQuery orderByTenantId() {
     return orderBy(JobQueryProperty.TENANT_ID);
   }
 
   // results //////////////////////////////////////////
 
-  public long executeCount(CommandContext commandContext) {
+  @Override
+public long executeCount(CommandContext commandContext) {
     checkQueryOk();
     return commandContext.getJobEntityManager().findJobCountByQueryCriteria(this);
   }
 
-  public List<Job> executeList(CommandContext commandContext, Page page) {
+  @Override
+public List<Job> executeList(CommandContext commandContext, Page page) {
     checkQueryOk();
     return commandContext.getJobEntityManager().findJobsByQueryCriteria(this, page);
   }

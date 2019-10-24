@@ -24,7 +24,6 @@ public class TestBaseEntityEventListener extends BaseEntityEventListener {
   private boolean customReceived;
 
   public TestBaseEntityEventListener() {
-    super();
   }
 
   public TestBaseEntityEventListener(Class<?> entityClass) {

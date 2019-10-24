@@ -34,12 +34,12 @@ public class MyTransactionalOperationTransactionDependentExecutionListener exten
     
     super.notify(processInstanceId, executionId, currentFlowElement, executionVariables, customPropertiesMap);
     
-    if (Context.getProcessEngineConfiguration().getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
-      HistoryService historyService = Context.getProcessEngineConfiguration().getHistoryService();
-  
-      // delete first historic instance
+    if (!Context.getProcessEngineConfiguration().getHistoryLevel().isAtLeast(HistoryLevel.ACTIVITY)) {
+		return;
+	}
+	HistoryService historyService = Context.getProcessEngineConfiguration().getHistoryService();
+	// delete first historic instance
       List<HistoricProcessInstance> historicProcessInstances = historyService.createHistoricProcessInstanceQuery().list();
-      historyService.deleteHistoricProcessInstance(historicProcessInstances.get(0).getId());
-    }
+	historyService.deleteHistoricProcessInstance(historicProcessInstances.get(0).getId());
   }
 }

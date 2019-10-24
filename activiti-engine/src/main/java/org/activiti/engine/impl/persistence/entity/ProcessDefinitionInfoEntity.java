@@ -21,9 +21,11 @@ import org.activiti.engine.impl.db.HasRevision;
 @Internal
 public interface ProcessDefinitionInfoEntity extends Entity, HasRevision {
 
-  String getId();
+  @Override
+String getId();
 
-  void setId(String id);
+  @Override
+void setId(String id);
   
   String getProcessDefinitionId();
 

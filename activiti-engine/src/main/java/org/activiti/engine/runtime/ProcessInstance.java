@@ -58,7 +58,8 @@ public interface ProcessInstance extends Execution {
   /**
    * returns true if the process instance is suspended
    */
-  boolean isSuspended();
+  @Override
+boolean isSuspended();
 
   /**
    * Returns the process variables if requested in the process instance query
@@ -68,17 +69,20 @@ public interface ProcessInstance extends Execution {
   /**
    * The tenant identifier of this process instance
    */
-  String getTenantId();
+  @Override
+String getTenantId();
 
   /**
    * Returns the name of this process instance.
    */
-  String getName();
+  @Override
+String getName();
 
   /**
    * Returns the description of this process instance.
    */
-  String getDescription();
+  @Override
+String getDescription();
   
   /**
    * Returns the localized name of this process instance.

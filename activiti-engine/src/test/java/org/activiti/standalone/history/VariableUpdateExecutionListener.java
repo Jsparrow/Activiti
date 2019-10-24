@@ -24,7 +24,8 @@ public class VariableUpdateExecutionListener implements ExecutionListener {
 
   private Expression varName;
 
-  public void notify(DelegateExecution execution) {
+  @Override
+public void notify(DelegateExecution execution) {
     String variableName = (String) varName.getValue(execution);
     execution.setVariable(variableName, "Event: " + execution.getEventName());
   }

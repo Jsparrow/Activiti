@@ -21,13 +21,18 @@ import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.test.history.SerializableVariable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class VariableSetter implements JavaDelegate {
 
-  public void execute(DelegateExecution execution) {
+  private static final Logger logger = LoggerFactory.getLogger(VariableSetter.class);
+
+@Override
+public void execute(DelegateExecution execution) {
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss SSS");
     // We set the time to check of the updated time is picked up in the
@@ -36,7 +41,7 @@ public class VariableSetter implements JavaDelegate {
     try {
       updatedDate = sdf.parse("01/01/2001 01:23:46 000");
     } catch (ParseException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(), e);
     }
     Context.getProcessEngineConfiguration().getClock().setCurrentTime(updatedDate);
 
@@ -51,7 +56,7 @@ public class VariableSetter implements JavaDelegate {
       theDate = sdf.parse("01/01/2001 01:23:45 678");
     } catch (ParseException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      logger.error(e.getMessage(), e);
     }
     execution.setVariable("fVariable", theDate);
 

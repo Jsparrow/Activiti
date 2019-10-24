@@ -36,7 +36,8 @@ public abstract class TaskIconType extends IconType {
         return null;
     }
 
-    public void drawIcon(final int imageX,
+    @Override
+	public void drawIcon(final int imageX,
                          final int imageY,
                          final int iconPadding,
                          final ProcessDiagramSVGGraphics2D svgGenerator) {
@@ -44,7 +45,8 @@ public abstract class TaskIconType extends IconType {
                                                                     SVGGraphics2D.SVG_G_TAG);
         gTag.setAttributeNS(null,
                             "transform",
-                            "translate(" + (imageX + iconPadding) + "," + (imageY + iconPadding) + ")");
+                            new StringBuilder().append("translate(").append(imageX + iconPadding).append(",")
+									.append(imageY + iconPadding).append(")").toString());
 
         Element pathTag = svgGenerator.getDOMFactory().createElementNS(null,
                                                                        SVGGraphics2D.SVG_PATH_TAG);

@@ -42,14 +42,15 @@ public class ManagedAsyncJobExecutor extends DefaultAsyncJobExecutor {
     this.threadFactory = threadFactory;
   }
 
-  protected void initAsyncJobExecutionThreadPool() {
+  @Override
+protected void initAsyncJobExecutionThreadPool() {
     if (threadFactory == null) {
       log.warn("A managed thread factory was not found, falling back to self-managed threads");
       super.initAsyncJobExecutionThreadPool();
     } else {
       if (threadPoolQueue == null) {
         log.info("Creating thread pool queue of size {}", queueSize);
-        threadPoolQueue = new ArrayBlockingQueue<Runnable>(queueSize);
+        threadPoolQueue = new ArrayBlockingQueue<>(queueSize);
       }
 
       if (executorService == null) {

@@ -14,7 +14,8 @@ package org.activiti.bpmn.model;
 
 public class ThrowEvent extends Event {
 
-  public ThrowEvent clone() {
+  @Override
+public ThrowEvent clone() {
     ThrowEvent clone = new ThrowEvent();
     clone.setValues(this);
     return clone;

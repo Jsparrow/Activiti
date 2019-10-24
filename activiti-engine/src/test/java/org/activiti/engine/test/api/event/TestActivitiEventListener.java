@@ -23,7 +23,7 @@ public class TestActivitiEventListener implements ActivitiEventListener {
   private List<ActivitiEvent> eventsReceived;
 
   public TestActivitiEventListener() {
-    eventsReceived = new ArrayList<ActivitiEvent>();
+    eventsReceived = new ArrayList<>();
   }
 
   public List<ActivitiEvent> getEventsReceived() {

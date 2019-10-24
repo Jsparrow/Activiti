@@ -13,7 +13,7 @@ public class ExtensionElement extends BaseElement {
   protected String namespacePrefix;
   protected String namespace;
   protected String elementText;
-  protected Map<String, List<ExtensionElement>> childElements = new LinkedHashMap<String, List<ExtensionElement>>();
+  protected Map<String, List<ExtensionElement>> childElements = new LinkedHashMap<>();
 
   public String getElementText() {
     return elementText;
@@ -52,21 +52,23 @@ public class ExtensionElement extends BaseElement {
   }
 
   public void addChildElement(ExtensionElement childElement) {
-    if (childElement != null && StringUtils.isNotEmpty(childElement.getName())) {
-      List<ExtensionElement> elementList = null;
-      if (!this.childElements.containsKey(childElement.getName())) {
-        elementList = new ArrayList<ExtensionElement>();
+    if (!(childElement != null && StringUtils.isNotEmpty(childElement.getName()))) {
+		return;
+	}
+	List<ExtensionElement> elementList = null;
+	if (!this.childElements.containsKey(childElement.getName())) {
+        elementList = new ArrayList<>();
         this.childElements.put(childElement.getName(), elementList);
       }
-      this.childElements.get(childElement.getName()).add(childElement);
-    }
+	this.childElements.get(childElement.getName()).add(childElement);
   }
 
   public void setChildElements(Map<String, List<ExtensionElement>> childElements) {
     this.childElements = childElements;
   }
 
-  public ExtensionElement clone() {
+  @Override
+public ExtensionElement clone() {
     ExtensionElement clone = new ExtensionElement();
     clone.setValues(this);
     return clone;
@@ -79,18 +81,16 @@ public class ExtensionElement extends BaseElement {
     setElementText(otherElement.getElementText());
     setAttributes(otherElement.getAttributes());
 
-    childElements = new LinkedHashMap<String, List<ExtensionElement>>();
+    childElements = new LinkedHashMap<>();
     if (otherElement.getChildElements() != null && !otherElement.getChildElements().isEmpty()) {
-      for (String key : otherElement.getChildElements().keySet()) {
+      otherElement.getChildElements().keySet().forEach(key -> {
         List<ExtensionElement> otherElementList = otherElement.getChildElements().get(key);
         if (otherElementList != null && !otherElementList.isEmpty()) {
-          List<ExtensionElement> elementList = new ArrayList<ExtensionElement>();
-          for (ExtensionElement extensionElement : otherElementList) {
-            elementList.add(extensionElement.clone());
-          }
+          List<ExtensionElement> elementList = new ArrayList<>();
+          otherElementList.forEach(extensionElement -> elementList.add(extensionElement.clone()));
           childElements.put(key, elementList);
         }
-      }
+      });
     }
   }
 }

@@ -39,20 +39,18 @@ public class DebugInfoExecutionTree {
     protected String activityId;
     protected String activityName;
     protected DebugInfoExecutionTreeNode parentNode;
-    protected List<DebugInfoExecutionTreeNode> childNodes = new ArrayList<DebugInfoExecutionTreeNode>();
+    protected List<DebugInfoExecutionTreeNode> childNodes = new ArrayList<>();
 
     /* See http://stackoverflow.com/questions/4965335/how-to-print-binary-tree-diagram */
     public void print(Logger logger) {
       logger.info("");
       logger.info(id);
-      for (DebugInfoExecutionTreeNode childNode : childNodes) {
-        childNode.print(logger, "", true);
-      }
+      childNodes.forEach(childNode -> childNode.print(logger, "", true));
       logger.info("");
     }
 
     protected void print(Logger logger, String prefix, boolean isTail) {
-      logger.info(prefix + (isTail ? "└── " : "├── ") + getCurrentFlowElementInfo());
+      logger.info(new StringBuilder().append(prefix).append(isTail ? "└── " : "├── ").append(getCurrentFlowElementInfo()).toString());
       for (int i = 0; i < childNodes.size() - 1; i++) {
         childNodes.get(i).print(logger, prefix + (isTail ? "    " : "│   "), false);
       }

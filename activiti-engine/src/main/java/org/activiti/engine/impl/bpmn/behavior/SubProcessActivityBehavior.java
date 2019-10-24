@@ -36,7 +36,8 @@ public class SubProcessActivityBehavior extends AbstractBpmnActivityBehavior {
 
   private static final long serialVersionUID = 1L;
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     SubProcess subProcess = getSubProcessFromExecution(execution);
 
     FlowElement startElement = null;
@@ -79,18 +80,16 @@ public class SubProcessActivityBehavior extends AbstractBpmnActivityBehavior {
     if (flowElement instanceof SubProcess) {
       subProcess = (SubProcess) flowElement;
     } else {
-      throw new ActivitiException("Programmatic error: sub process behaviour can only be applied" + " to a SubProcess instance, but got an instance of " + flowElement);
+      throw new ActivitiException(new StringBuilder().append("Programmatic error: sub process behaviour can only be applied").append(" to a SubProcess instance, but got an instance of ").append(flowElement).toString());
     }
     return subProcess;
   }
 
   protected Map<String, Object> processDataObjects(Collection<ValuedDataObject> dataObjects) {
-    Map<String, Object> variablesMap = new HashMap<String, Object>();
+    Map<String, Object> variablesMap = new HashMap<>();
     // convert data objects to process variables
     if (dataObjects != null) {
-      for (ValuedDataObject dataObject : dataObjects) {
-        variablesMap.put(dataObject.getName(), dataObject.getValue());
-      }
+      dataObjects.forEach(dataObject -> variablesMap.put(dataObject.getName(), dataObject.getValue()));
     }
     return variablesMap;
   }

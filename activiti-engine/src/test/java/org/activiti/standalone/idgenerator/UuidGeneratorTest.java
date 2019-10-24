@@ -20,13 +20,17 @@ import java.util.concurrent.TimeUnit;
 import org.activiti.engine.impl.test.ResourceActivitiTestCase;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class UuidGeneratorTest extends ResourceActivitiTestCase {
 
-  public UuidGeneratorTest() throws Exception {
+  private static final Logger logger = LoggerFactory.getLogger(UuidGeneratorTest.class);
+
+public UuidGeneratorTest() throws Exception {
     super("org/activiti/standalone/idgenerator/uuidgenerator.test.activiti.cfg.xml");
   }
 
@@ -37,29 +41,23 @@ public class UuidGeneratorTest extends ResourceActivitiTestCase {
 
     // Start processes
     for (int i = 0; i < 50; i++) {
-      executorService.execute(new Runnable() {
-        public void run() {
-          try {
-            runtimeService.startProcessInstanceByKey("simpleProcess");
-          } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-          }
-        }
-      });
+      executorService.execute(() -> {
+	  try {
+	    runtimeService.startProcessInstanceByKey("simpleProcess");
+	  } catch (Exception e) {
+	    logger.error(e.getMessage(), e);
+	    fail();
+	  }
+	});
     }
 
     // Complete tasks
-    executorService.execute(new Runnable() {
-
-      public void run() {
+    executorService.execute(() -> {
         boolean tasksFound = true;
         while (tasksFound) {
 
           List<Task> tasks = taskService.createTaskQuery().list();
-          for (Task task : tasks) {
-            taskService.complete(task.getId());
-          }
+          tasks.forEach(task -> taskService.complete(task.getId()));
 
           tasksFound = taskService.createTaskQuery().count() > 0;
 
@@ -67,19 +65,18 @@ public class UuidGeneratorTest extends ResourceActivitiTestCase {
             try {
               Thread.sleep(1500L); // just to be sure
             } catch (InterruptedException e) {
-              e.printStackTrace();
+              logger.error(e.getMessage(), e);
             }
             tasksFound = taskService.createTaskQuery().count() > 0;
           }
         }
-      }
-    });
+      });
 
     try {
       executorService.shutdown();
       executorService.awaitTermination(1, TimeUnit.MINUTES);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(), e);
       fail();
     }
 

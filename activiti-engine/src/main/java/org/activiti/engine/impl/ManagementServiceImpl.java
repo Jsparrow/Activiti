@@ -60,19 +60,23 @@ import org.activiti.engine.runtime.TimerJobQuery;
  */
 public class ManagementServiceImpl extends ServiceImpl implements ManagementService {
 
-  public Map<String, Long> getTableCount() {
+  @Override
+public Map<String, Long> getTableCount() {
     return commandExecutor.execute(new GetTableCountCmd());
   }
 
-  public String getTableName(Class<?> activitiEntityClass) {
+  @Override
+public String getTableName(Class<?> activitiEntityClass) {
     return commandExecutor.execute(new GetTableNameCmd(activitiEntityClass));
   }
 
-  public TableMetaData getTableMetaData(String tableName) {
+  @Override
+public TableMetaData getTableMetaData(String tableName) {
     return commandExecutor.execute(new GetTableMetaDataCmd(tableName));
   }
 
-  public void executeJob(String jobId) {
+  @Override
+public void executeJob(String jobId) {
     if (jobId == null) {
       throw new ActivitiIllegalArgumentException("JobId is null");
     }
@@ -84,16 +88,18 @@ public class ManagementServiceImpl extends ServiceImpl implements ManagementServ
       if (e instanceof ActivitiException) {
         throw e;
       } else {
-        throw new ActivitiException("Job " + jobId + " failed", e);
+        throw new ActivitiException(new StringBuilder().append("Job ").append(jobId).append(" failed").toString(), e);
       }
     }
   }
   
-  public Job moveTimerToExecutableJob(String jobId) {
+  @Override
+public Job moveTimerToExecutableJob(String jobId) {
     return commandExecutor.execute(new MoveTimerToExecutableJobCmd(jobId));
   }
   
-  public Job moveJobToDeadLetterJob(String jobId) {
+  @Override
+public Job moveJobToDeadLetterJob(String jobId) {
     return commandExecutor.execute(new MoveJobToDeadLetterJobCmd(jobId));
   }
   
@@ -102,86 +108,102 @@ public class ManagementServiceImpl extends ServiceImpl implements ManagementServ
     return commandExecutor.execute(new MoveDeadLetterJobToExecutableJobCmd(jobId, retries));
   }
 
-  public void deleteJob(String jobId) {
+  @Override
+public void deleteJob(String jobId) {
     commandExecutor.execute(new DeleteJobCmd(jobId));
   }
   
-  public void deleteTimerJob(String jobId) {
+  @Override
+public void deleteTimerJob(String jobId) {
     commandExecutor.execute(new DeleteTimerJobCmd(jobId));
   }
   
-  public void deleteDeadLetterJob(String jobId) {
+  @Override
+public void deleteDeadLetterJob(String jobId) {
     commandExecutor.execute(new DeleteDeadLetterJobCmd(jobId));
   }
 
-  public void setJobRetries(String jobId, int retries) {
+  @Override
+public void setJobRetries(String jobId, int retries) {
     commandExecutor.execute(new SetJobRetriesCmd(jobId, retries));
   }
   
-  public void setTimerJobRetries(String jobId, int retries) {
+  @Override
+public void setTimerJobRetries(String jobId, int retries) {
     commandExecutor.execute(new SetTimerJobRetriesCmd(jobId, retries));
   }
 
-  public TablePageQuery createTablePageQuery() {
+  @Override
+public TablePageQuery createTablePageQuery() {
     return new TablePageQueryImpl(commandExecutor);
   }
 
-  public JobQuery createJobQuery() {
+  @Override
+public JobQuery createJobQuery() {
     return new JobQueryImpl(commandExecutor);
   }
   
-  public TimerJobQuery createTimerJobQuery() {
+  @Override
+public TimerJobQuery createTimerJobQuery() {
     return new TimerJobQueryImpl(commandExecutor);
   }
   
-  public SuspendedJobQuery createSuspendedJobQuery() {
+  @Override
+public SuspendedJobQuery createSuspendedJobQuery() {
     return new SuspendedJobQueryImpl(commandExecutor);
   }
   
-  public DeadLetterJobQuery createDeadLetterJobQuery() {
+  @Override
+public DeadLetterJobQuery createDeadLetterJobQuery() {
     return new DeadLetterJobQueryImpl(commandExecutor);
   }
 
-  public String getJobExceptionStacktrace(String jobId) {
+  @Override
+public String getJobExceptionStacktrace(String jobId) {
     return commandExecutor.execute(new GetJobExceptionStacktraceCmd(jobId, JobType.ASYNC));
   }
   
-  public String getTimerJobExceptionStacktrace(String jobId) {
+  @Override
+public String getTimerJobExceptionStacktrace(String jobId) {
     return commandExecutor.execute(new GetJobExceptionStacktraceCmd(jobId, JobType.TIMER));
   }
   
-  public String getSuspendedJobExceptionStacktrace(String jobId) {
+  @Override
+public String getSuspendedJobExceptionStacktrace(String jobId) {
     return commandExecutor.execute(new GetJobExceptionStacktraceCmd(jobId, JobType.SUSPENDED));
   }
   
-  public String getDeadLetterJobExceptionStacktrace(String jobId) {
+  @Override
+public String getDeadLetterJobExceptionStacktrace(String jobId) {
     return commandExecutor.execute(new GetJobExceptionStacktraceCmd(jobId, JobType.DEADLETTER));
   }
 
-  public Map<String, String> getProperties() {
+  @Override
+public Map<String, String> getProperties() {
     return commandExecutor.execute(new GetPropertiesCmd());
   }
 
-  public String databaseSchemaUpgrade(final Connection connection, final String catalog, final String schema) {
+  @Override
+public String databaseSchemaUpgrade(final Connection connection, final String catalog, final String schema) {
     CommandConfig config = commandExecutor.getDefaultConfig().transactionNotSupported();
-    return commandExecutor.execute(config, new Command<String>() {
-      public String execute(CommandContext commandContext) {
+    return commandExecutor.execute(config, (CommandContext commandContext) -> {
         DbSqlSessionFactory dbSqlSessionFactory = (DbSqlSessionFactory) commandContext.getSessionFactories().get(DbSqlSession.class);
         DbSqlSession dbSqlSession = new DbSqlSession(dbSqlSessionFactory, commandContext.getEntityCache(), connection, catalog, schema);
         commandContext.getSessions().put(DbSqlSession.class, dbSqlSession);
         return dbSqlSession.dbSchemaUpdate();
-      }
-    });
+      });
   }
 
-  public <T> T executeCommand(Command<T> command) {
+  @Override
+public <T> T executeCommand(Command<T> command) {
     if (command == null) {
       throw new ActivitiIllegalArgumentException("The command is null");
     }
     return commandExecutor.execute(command);
   }
 
-  public <T> T executeCommand(CommandConfig config, Command<T> command) {
+  @Override
+public <T> T executeCommand(CommandConfig config, Command<T> command) {
     if (config == null) {
       throw new ActivitiIllegalArgumentException("The config is null");
     }

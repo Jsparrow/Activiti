@@ -23,18 +23,20 @@ public class LongStringType extends SerializableType {
     this.minLength = minLength;
   }
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return "longString";
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     if (value == null) {
       return false;
     }
-    if (String.class.isAssignableFrom(value.getClass())) {
-      String stringValue = (String) value;
-      return stringValue.length() >= minLength;
-    }
-    return false;
+    if (!String.class.isAssignableFrom(value.getClass())) {
+		return false;
+	}
+	String stringValue = (String) value;
+	return stringValue.length() >= minLength;
   }
 }

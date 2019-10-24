@@ -41,7 +41,7 @@ public class TaskQueryProperty implements QueryProperty {
 
   private static final long serialVersionUID = 1L;
 
-  private static final Map<String, TaskQueryProperty> properties = new HashMap<String, TaskQueryProperty>();
+  private static final Map<String, TaskQueryProperty> properties = new HashMap<>();
 
   public static final TaskQueryProperty TASK_ID = new TaskQueryProperty("RES.ID_");
   public static final TaskQueryProperty NAME = new TaskQueryProperty("RES.NAME_");
@@ -64,7 +64,8 @@ public class TaskQueryProperty implements QueryProperty {
     properties.put(name, this);
   }
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
 

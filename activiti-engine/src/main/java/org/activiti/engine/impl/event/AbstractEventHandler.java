@@ -29,12 +29,13 @@ import java.util.Map;
  */
 public abstract class AbstractEventHandler implements EventHandler {
 
-  public void handleEvent(EventSubscriptionEntity eventSubscription, Object payload, CommandContext commandContext) {
+  @Override
+public void handleEvent(EventSubscriptionEntity eventSubscription, Object payload, CommandContext commandContext) {
     ExecutionEntity execution = eventSubscription.getExecution();
     FlowNode currentFlowElement = (FlowNode) execution.getCurrentFlowElement();
 
     if (currentFlowElement == null) {
-      throw new ActivitiException("Error while sending signal for event subscription '" + eventSubscription.getId() + "': " + "no activity associated with event subscription");
+      throw new ActivitiException(new StringBuilder().append("Error while sending signal for event subscription '").append(eventSubscription.getId()).append("': ").append("no activity associated with event subscription").toString());
     }
 
     if (payload instanceof Map) {
@@ -50,7 +51,7 @@ public abstract class AbstractEventHandler implements EventHandler {
       } catch (RuntimeException e) {
         throw e;
       } catch (Exception e) {
-        throw new ActivitiException("exception while sending signal for event subscription '" + eventSubscription + "':" + e.getMessage(), e);
+        throw new ActivitiException(new StringBuilder().append("exception while sending signal for event subscription '").append(eventSubscription).append("':").append(e.getMessage()).toString(), e);
       }
     }
 
@@ -58,19 +59,18 @@ public abstract class AbstractEventHandler implements EventHandler {
   }
 
   protected void dispatchActivitiesCanceledIfNeeded(EventSubscriptionEntity eventSubscription, ExecutionEntity execution, FlowElement currentFlowElement, CommandContext commandContext) {
-    if (currentFlowElement instanceof BoundaryEvent) {
-      BoundaryEvent boundaryEvent = (BoundaryEvent) currentFlowElement;
-      if (boundaryEvent.isCancelActivity()) {
+    if (!(currentFlowElement instanceof BoundaryEvent)) {
+		return;
+	}
+	BoundaryEvent boundaryEvent = (BoundaryEvent) currentFlowElement;
+	if (boundaryEvent.isCancelActivity()) {
         dispatchExecutionCancelled(eventSubscription, execution, commandContext);
       }
-    }
   }
 
   protected void dispatchExecutionCancelled(EventSubscriptionEntity eventSubscription, ExecutionEntity execution, CommandContext commandContext) {
     // subprocesses
-    for (ExecutionEntity subExecution : execution.getExecutions()) {
-      dispatchExecutionCancelled(eventSubscription, subExecution, commandContext);
-    }
+	execution.getExecutions().forEach(subExecution -> dispatchExecutionCancelled(eventSubscription, subExecution, commandContext));
 
     // call activities
     ExecutionEntity subProcessInstance = commandContext.getExecutionEntityManager().findSubProcessInstanceBySuperExecutionId(execution.getId());
@@ -80,12 +80,13 @@ public abstract class AbstractEventHandler implements EventHandler {
 
     // activity with message/signal boundary events
     FlowElement flowElement = execution.getCurrentFlowElement();
-    if (flowElement instanceof BoundaryEvent) {
-      BoundaryEvent boundaryEvent = (BoundaryEvent) flowElement;
-      if (boundaryEvent.getAttachedToRef() != null) {
+    if (!(flowElement instanceof BoundaryEvent)) {
+		return;
+	}
+	BoundaryEvent boundaryEvent = (BoundaryEvent) flowElement;
+	if (boundaryEvent.getAttachedToRef() != null) {
         dispatchActivityCancelled(eventSubscription, execution, boundaryEvent.getAttachedToRef(), commandContext);
       }
-    }
   }
 
   protected void dispatchActivityCancelled(EventSubscriptionEntity eventSubscription, ExecutionEntity boundaryEventExecution, FlowNode flowNode, CommandContext commandContext) {
@@ -96,38 +97,35 @@ public abstract class AbstractEventHandler implements EventHandler {
             boundaryEventExecution.getProcessInstanceId(), boundaryEventExecution.getProcessDefinitionId(),
             parseActivityType(flowNode), eventSubscription));
 
-    if (flowNode instanceof SubProcess) {
-      // The parent of the boundary event execution will be the one on which the boundary event is set
+    if (!(flowNode instanceof SubProcess)) {
+		return;
+	}
+	// The parent of the boundary event execution will be the one on which the boundary event is set
       ExecutionEntity parentExecutionEntity = commandContext.getExecutionEntityManager().findById(boundaryEventExecution.getParentId());
-      if (parentExecutionEntity != null) {
+	if (parentExecutionEntity != null) {
         dispatchActivityCancelledForChildExecution(eventSubscription, parentExecutionEntity, boundaryEventExecution, commandContext);
       }
-    }
   }
 
   protected void dispatchActivityCancelledForChildExecution(EventSubscriptionEntity eventSubscription,
       ExecutionEntity parentExecutionEntity, ExecutionEntity boundaryEventExecution, CommandContext commandContext) {
 
     List<ExecutionEntity> executionEntities = commandContext.getExecutionEntityManager().findChildExecutionsByParentExecutionId(parentExecutionEntity.getId());
-    for (ExecutionEntity childExecution : executionEntities) {
-
-      if (!boundaryEventExecution.getId().equals(childExecution.getId())
+    executionEntities.stream().filter(childExecution -> !boundaryEventExecution.getId().equals(childExecution.getId())
           && childExecution.getCurrentFlowElement() != null
-          && childExecution.getCurrentFlowElement() instanceof FlowNode) {
+          && childExecution.getCurrentFlowElement() instanceof FlowNode).forEach(childExecution -> {
 
-        FlowNode flowNode = (FlowNode) childExecution.getCurrentFlowElement();
-        commandContext.getEventDispatcher().dispatchEvent(
-            ActivitiEventBuilder.createActivityCancelledEvent(flowNode.getId(), flowNode.getName(), childExecution.getId(),
-                childExecution.getProcessInstanceId(), childExecution.getProcessDefinitionId(),
-                parseActivityType(flowNode), eventSubscription));
+	FlowNode flowNode = (FlowNode) childExecution.getCurrentFlowElement();
+	commandContext.getEventDispatcher().dispatchEvent(
+	    ActivitiEventBuilder.createActivityCancelledEvent(flowNode.getId(), flowNode.getName(), childExecution.getId(),
+	        childExecution.getProcessInstanceId(), childExecution.getProcessDefinitionId(),
+	        parseActivityType(flowNode), eventSubscription));
 
-        if (childExecution.isScope()) {
-          dispatchActivityCancelledForChildExecution(eventSubscription, childExecution, boundaryEventExecution, commandContext);
-        }
+	if (childExecution.isScope()) {
+	  dispatchActivityCancelledForChildExecution(eventSubscription, childExecution, boundaryEventExecution, commandContext);
+	}
 
-      }
-
-    }
+     });
 
   }
 

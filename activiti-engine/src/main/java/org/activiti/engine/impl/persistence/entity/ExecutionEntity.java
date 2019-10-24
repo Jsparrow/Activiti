@@ -43,7 +43,8 @@ public interface ExecutionEntity extends DelegateExecution, Execution, ProcessIn
 
   void setProcessInstance(ExecutionEntity processInstance);
   
-  ExecutionEntity getParent();
+  @Override
+ExecutionEntity getParent();
 
   void setParent(ExecutionEntity parent);
 
@@ -57,13 +58,14 @@ public interface ExecutionEntity extends DelegateExecution, Execution, ProcessIn
 
   void setRootProcessInstanceId(String rootProcessInstanceId);
   
-  public void setParentProcessInstanceId(String parentProcessInstanceId);
+  void setParentProcessInstanceId(String parentProcessInstanceId);
   
   ExecutionEntity getRootProcessInstance();
   
   void setRootProcessInstance(ExecutionEntity rootProcessInstance);
   
-  List<? extends ExecutionEntity> getExecutions();
+  @Override
+List<? extends ExecutionEntity> getExecutions();
   
   void addChildExecution(ExecutionEntity executionEntity);
   
@@ -83,7 +85,8 @@ public interface ExecutionEntity extends DelegateExecution, Execution, ProcessIn
 
   void setEnded(boolean isEnded);
 
-  void setEventName(String eventName);
+  @Override
+void setEventName(String eventName);
 
   String getDeleteReason();
 
@@ -97,9 +100,11 @@ public interface ExecutionEntity extends DelegateExecution, Execution, ProcessIn
 
   void setEventScope(boolean isEventScope);
   
-  boolean isMultiInstanceRoot();
+  @Override
+boolean isMultiInstanceRoot();
   
-  void setMultiInstanceRoot(boolean isMultiInstanceRoot);
+  @Override
+void setMultiInstanceRoot(boolean isMultiInstanceRoot);
 
   void setName(String name);
   
@@ -115,17 +120,21 @@ public interface ExecutionEntity extends DelegateExecution, Execution, ProcessIn
 
   void setLockTime(Date lockTime);
 
-  boolean isDeleted();
+  @Override
+boolean isDeleted();
 
-  void setDeleted(boolean isDeleted);
+  @Override
+void setDeleted(boolean isDeleted);
   
   void forceUpdate();
 
-  String getStartUserId();
+  @Override
+String getStartUserId();
 
   void setStartUserId(String startUserId);
 
-  Date getStartTime();
+  @Override
+Date getStartTime();
 
   void setStartTime(Date startTime);
   

@@ -22,7 +22,7 @@ public class AsyncPropertyValidator extends ProcessLevelValidator {
     }
 
     protected void validateFlowElementsInContainer(FlowElementsContainer container, List<ValidationError> errors, Process process) {
-        for (FlowElement flowElement : container.getFlowElements()) {
+        container.getFlowElements().forEach(flowElement -> {
             if (flowElement instanceof FlowElementsContainer) {
                 FlowElementsContainer subProcess = (FlowElementsContainer) flowElement;
                 validateFlowElementsInContainer(subProcess, errors, process);
@@ -41,6 +41,6 @@ public class AsyncPropertyValidator extends ProcessLevelValidator {
                     }
                 });
             }
-        }
+        });
     }
 }

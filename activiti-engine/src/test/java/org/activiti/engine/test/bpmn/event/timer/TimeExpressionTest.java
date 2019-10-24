@@ -20,7 +20,7 @@ public class TimeExpressionTest extends PluggableActivitiTestCase {
 
   private Date testExpression(String timeExpression) {
     // Set the clock fixed
-    HashMap<String, Object> variables1 = new HashMap<String, Object>();
+    HashMap<String, Object> variables1 = new HashMap<>();
     variables1.put("dueDate", timeExpression);
 
     // After process start, there should be timer created

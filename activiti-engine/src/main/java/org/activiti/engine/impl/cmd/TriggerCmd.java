@@ -41,7 +41,8 @@ public class TriggerCmd extends NeedsActiveExecutionCmd<Object> {
     this.transientVariables = transientVariables;
   }
 
-  protected Object execute(CommandContext commandContext, ExecutionEntity execution) {
+  @Override
+protected Object execute(CommandContext commandContext, ExecutionEntity execution) {
     if (processVariables != null) {
       execution.setVariables(processVariables);
     }

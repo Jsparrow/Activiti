@@ -23,13 +23,15 @@ import org.junit.Assert;
 
 public class TweetHandler implements JobHandler {
 
-  List<String> messages = new ArrayList<String>();
+  List<String> messages = new ArrayList<>();
 
-  public String getType() {
+  @Override
+public String getType() {
     return "tweet";
   }
 
-  public void execute(JobEntity job, String configuration, ExecutionEntity execution, CommandContext commandContext) {
+  @Override
+public void execute(JobEntity job, String configuration, ExecutionEntity execution, CommandContext commandContext) {
     messages.add(configuration);
     Assert.assertNotNull(commandContext);
   }

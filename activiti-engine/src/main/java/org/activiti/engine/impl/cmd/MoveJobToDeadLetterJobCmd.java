@@ -38,7 +38,8 @@ public class MoveJobToDeadLetterJobCmd implements Command<DeadLetterJobEntity>, 
     this.jobId = jobId;
   }
 
-  public DeadLetterJobEntity execute(CommandContext commandContext) {
+  @Override
+public DeadLetterJobEntity execute(CommandContext commandContext) {
 
     if (jobId == null) {
       throw new ActivitiIllegalArgumentException("jobId and job is null");

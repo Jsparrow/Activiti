@@ -107,49 +107,28 @@ public class ProcessInstanceSuspensionTest extends PluggableActivitiTestCase {
 
     // Check if timer is eligible to be executed, when process in not yet suspended
     CommandExecutor commandExecutor = processEngineConfiguration.getCommandExecutor();
-    List<TimerJobEntity> jobs = commandExecutor.execute(new Command<List<TimerJobEntity>>() {
-
-      @Override
-      public List<TimerJobEntity> execute(CommandContext commandContext) {
-        return processEngineConfiguration.getTimerJobEntityManager().findTimerJobsToExecute(new Page(0, 1));
-      }
-      
-    });
+    List<TimerJobEntity> jobs = commandExecutor.execute((CommandContext commandContext) -> processEngineConfiguration.getTimerJobEntityManager().findTimerJobsToExecute(new Page(0, 1)));
     assertEquals(1, jobs.size());
 
     // Suspend process instance
     runtimeService.suspendProcessInstanceById(procInst.getId());
 
     // Check if the timer is NOT acquired, even though the duedate is reached
-    jobs = commandExecutor.execute(new Command<List<TimerJobEntity>>() {
-
-      @Override
-      public List<TimerJobEntity> execute(CommandContext commandContext) {
-        return processEngineConfiguration.getTimerJobEntityManager().findTimerJobsToExecute(new Page(0, 1));
-      }
-    });
+    jobs = commandExecutor.execute((CommandContext commandContext) -> processEngineConfiguration.getTimerJobEntityManager().findTimerJobsToExecute(new Page(0, 1)));
     
     assertEquals(0, jobs.size());
   }
 
   protected void makeSureJobDue(final Job job) {
-    processEngineConfiguration.getCommandExecutor().execute(new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    processEngineConfiguration.getCommandExecutor().execute((CommandContext commandContext) -> {
         Date currentTime = processEngineConfiguration.getClock().getCurrentTime();
         commandContext.getTimerJobEntityManager().findById(job.getId()).setDuedate(new Date(currentTime.getTime() - 10000));
         return null;
-      }
-
-    });
+      });
   }
 
   protected List<TimerJobEntity> executeAcquireJobsCommand() {
-    return processEngineConfiguration.getCommandExecutor().execute(new Command<List<TimerJobEntity>>() {
-      public List<TimerJobEntity> execute(CommandContext commandContext) {
-        return commandContext.getTimerJobEntityManager().findTimerJobsToExecute(new Page(0, 1));
-      }
-      
-    });
+    return processEngineConfiguration.getCommandExecutor().execute((CommandContext commandContext) -> commandContext.getTimerJobEntityManager().findTimerJobsToExecute(new Page(0, 1)));
   }
 
 }

@@ -29,19 +29,21 @@ public class ServiceTaskJavaDelegateActivityBehavior extends TaskActivityBehavio
   
   protected JavaDelegate javaDelegate;
 
-  protected ServiceTaskJavaDelegateActivityBehavior() {
-  }
-
   public ServiceTaskJavaDelegateActivityBehavior(JavaDelegate javaDelegate) {
     this.javaDelegate = javaDelegate;
   }
 
-  public void execute(DelegateExecution execution) {
+protected ServiceTaskJavaDelegateActivityBehavior() {
+  }
+
+@Override
+public void execute(DelegateExecution execution) {
     Context.getProcessEngineConfiguration().getDelegateInterceptor().handleInvocation(new JavaDelegateInvocation(javaDelegate, execution));
     leave(execution);
   }
 
-  public void notify(DelegateExecution execution) {
+@Override
+public void notify(DelegateExecution execution) {
     execute(execution);
   }
 }

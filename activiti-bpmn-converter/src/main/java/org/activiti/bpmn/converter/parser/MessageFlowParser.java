@@ -30,31 +30,27 @@ public class MessageFlowParser implements BpmnXMLConstants {
 
   public void parse(XMLStreamReader xtr, BpmnModel model) throws Exception {
     String id = xtr.getAttributeValue(null, ATTRIBUTE_ID);
-    if (StringUtils.isNotEmpty(id)) {
-      MessageFlow messageFlow = new MessageFlow();
-      messageFlow.setId(id);
-
-      String name = xtr.getAttributeValue(null, ATTRIBUTE_NAME);
-      if (StringUtils.isNotEmpty(name)) {
+    if (!StringUtils.isNotEmpty(id)) {
+		return;
+	}
+	MessageFlow messageFlow = new MessageFlow();
+	messageFlow.setId(id);
+	String name = xtr.getAttributeValue(null, ATTRIBUTE_NAME);
+	if (StringUtils.isNotEmpty(name)) {
         messageFlow.setName(name);
       }
-
-      String sourceRef = xtr.getAttributeValue(null, ATTRIBUTE_FLOW_SOURCE_REF);
-      if (StringUtils.isNotEmpty(sourceRef)) {
+	String sourceRef = xtr.getAttributeValue(null, ATTRIBUTE_FLOW_SOURCE_REF);
+	if (StringUtils.isNotEmpty(sourceRef)) {
         messageFlow.setSourceRef(sourceRef);
       }
-
-      String targetRef = xtr.getAttributeValue(null, ATTRIBUTE_FLOW_TARGET_REF);
-      if (StringUtils.isNotEmpty(targetRef)) {
+	String targetRef = xtr.getAttributeValue(null, ATTRIBUTE_FLOW_TARGET_REF);
+	if (StringUtils.isNotEmpty(targetRef)) {
         messageFlow.setTargetRef(targetRef);
       }
-
-      String messageRef = xtr.getAttributeValue(null, ATTRIBUTE_MESSAGE_REF);
-      if (StringUtils.isNotEmpty(messageRef)) {
+	String messageRef = xtr.getAttributeValue(null, ATTRIBUTE_MESSAGE_REF);
+	if (StringUtils.isNotEmpty(messageRef)) {
         messageFlow.setMessageRef(messageRef);
       }
-
-      model.addMessageFlow(messageFlow);
-    }
+	model.addMessageFlow(messageFlow);
   }
 }

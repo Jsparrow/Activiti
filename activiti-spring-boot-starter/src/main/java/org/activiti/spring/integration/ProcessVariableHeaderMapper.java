@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 public class ProcessVariableHeaderMapper implements HeaderMapper<Map<String, Object>> {
 
-    private final Set<String> keysToPreserve = new ConcurrentSkipListSet<String>();
+    private final Set<String> keysToPreserve = new ConcurrentSkipListSet<>();
 
     public ProcessVariableHeaderMapper(Set<String> sync) {
         this.keysToPreserve.addAll(sync);
@@ -42,7 +42,7 @@ public class ProcessVariableHeaderMapper implements HeaderMapper<Map<String, Obj
         Map<String, Object> matches = sync(
                 this.keysToPreserve,
                 source,
-                new HashMap<String, Object>());
+                new HashMap<>());
         return matches;
     }
 
@@ -50,9 +50,7 @@ public class ProcessVariableHeaderMapper implements HeaderMapper<Map<String, Obj
             Set<String> keys,
             Map<String, Object> in,
             Map<String, Object> out) {
-        for (String k : keys)
-            if (in.containsKey(k))
-                out.put(k, in.get(k));
+        keys.stream().filter(in::containsKey).forEach(k -> out.put(k, in.get(k)));
         return out;
     }
 }

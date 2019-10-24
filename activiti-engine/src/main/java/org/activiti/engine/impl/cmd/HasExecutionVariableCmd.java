@@ -37,7 +37,8 @@ public class HasExecutionVariableCmd implements Command<Boolean>, Serializable {
     this.isLocal = isLocal;
   }
 
-  public Boolean execute(CommandContext commandContext) {
+  @Override
+public Boolean execute(CommandContext commandContext) {
     if (executionId == null) {
       throw new ActivitiIllegalArgumentException("executionId is null");
     }
@@ -48,7 +49,7 @@ public class HasExecutionVariableCmd implements Command<Boolean>, Serializable {
     ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(executionId);
 
     if (execution == null) {
-      throw new ActivitiObjectNotFoundException("execution " + executionId + " doesn't exist", Execution.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("execution ").append(executionId).append(" doesn't exist").toString(), Execution.class);
     }
 
     boolean hasVariable = false;

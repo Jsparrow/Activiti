@@ -18,13 +18,17 @@ import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class FailedJobRetryCmdTest extends PluggableActivitiTestCase {
 
-  @Deployment(resources = { "org/activiti/engine/test/cmd/FailedJobRetryCmdTest.testFailedServiceTask.bpmn20.xml" })
+  private static final Logger logger = LoggerFactory.getLogger(FailedJobRetryCmdTest.class);
+
+@Deployment(resources = { "org/activiti/engine/test/cmd/FailedJobRetryCmdTest.testFailedServiceTask.bpmn20.xml" })
   public void testFailedServiceTask() {
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("failedServiceTask");
     assertNotNull(pi);
@@ -93,6 +97,7 @@ public class FailedJobRetryCmdTest extends PluggableActivitiTestCase {
     try {
       managementService.executeJob(job.getId());
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
     }
 
     // update job

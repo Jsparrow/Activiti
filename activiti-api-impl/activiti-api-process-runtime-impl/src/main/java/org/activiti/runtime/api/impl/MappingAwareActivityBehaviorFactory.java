@@ -36,7 +36,6 @@ public class MappingAwareActivityBehaviorFactory extends DefaultActivityBehavior
 
     public MappingAwareActivityBehaviorFactory(VariablesMappingProvider variablesMappingProvider,
                                                ProcessVariablesInitiator processVariablesInitiator) {
-        super();
         this.variablesMappingProvider = variablesMappingProvider;
         this.processVariablesInitiator = processVariablesInitiator;
         

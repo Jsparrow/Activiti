@@ -29,16 +29,15 @@ public class MessageValidator extends ValidatorImpl {
   @Override
   public void validate(BpmnModel bpmnModel, List<ValidationError> errors) {
     if (bpmnModel.getMessages() != null && !bpmnModel.getMessages().isEmpty()) {
-      for (Message message : bpmnModel.getMessages()) {
+      bpmnModel.getMessages().forEach(message -> {
 
-        // Item ref
-        if (StringUtils.isNotEmpty(message.getItemRef())) {
-          if (!bpmnModel.getItemDefinitions().containsKey(message.getItemRef())) {
+        boolean condition = StringUtils.isNotEmpty(message.getItemRef()) && !bpmnModel.getItemDefinitions().containsKey(message.getItemRef());
+		// Item ref
+        if (condition) {
             addError(errors, Problems.MESSAGE_INVALID_ITEM_REF, null, message, "Item reference is invalid: not found");
           }
-        }
 
-      }
+      });
     }
   }
 

@@ -30,13 +30,17 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class MessageStartEventTest extends PluggableActivitiTestCase {
 
-  public void testDeploymentCreatesSubscriptions() {
+  private static final Logger logger = LoggerFactory.getLogger(MessageStartEventTest.class);
+
+public void testDeploymentCreatesSubscriptions() {
     String deploymentId = repositoryService.createDeployment().addClasspathResource("org/activiti/engine/test/bpmn/event/message/MessageStartEventTest.testSingleMessageStartEvent.bpmn20.xml")
         .deploy().getId();
 
@@ -67,7 +71,7 @@ public class MessageStartEventTest extends PluggableActivitiTestCase {
       repositoryService.createDeployment().addClasspathResource("org/activiti/engine/test/bpmn/event/message/testSameMessageNameInSameProcessFails.bpmn20.xml").deploy();
       fail("exception expected: Cannot have more than one message event subscription with name 'newInvoiceMessage' for scope");
     } catch (ActivitiException e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(), e);
     }
   }
 
@@ -89,17 +93,13 @@ public class MessageStartEventTest extends PluggableActivitiTestCase {
 
     assertEquals(1, newEventSubscriptions.size());
     assertEquals(2, newProcessDefinitions.size());
-    for (ProcessDefinition processDefinition : newProcessDefinitions) {
+    newProcessDefinitions.forEach(processDefinition -> {
       if (processDefinition.getVersion() == 1) {
-        for (EventSubscriptionEntity subscription : newEventSubscriptions) {
-          assertFalse(subscription.getConfiguration().equals(processDefinition.getId()));
-        }
+        newEventSubscriptions.forEach(subscription -> assertFalse(subscription.getConfiguration().equals(processDefinition.getId())));
       } else {
-        for (EventSubscriptionEntity subscription : newEventSubscriptions) {
-          assertTrue(subscription.getConfiguration().equals(processDefinition.getId()));
-        }
+        newEventSubscriptions.forEach(subscription -> assertTrue(subscription.getConfiguration().equals(processDefinition.getId())));
       }
-    }
+    });
     assertFalse(eventSubscriptions.equals(newEventSubscriptions));
 
     repositoryService.deleteDeployment(deploymentId);

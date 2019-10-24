@@ -49,7 +49,7 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
     String processInstanceId = runtimeService.startProcessInstanceByKey("oneTaskProcess").getId();
     String taskId = taskService.createTaskQuery().singleResult().getId();
 
-    Map<String, Object> expectedVariables = new HashMap<String, Object>();
+    Map<String, Object> expectedVariables = new HashMap<>();
     assertEquals(expectedVariables, runtimeService.getVariables(processInstanceId));
     assertEquals(expectedVariables, taskService.getVariables(taskId));
     assertEquals(expectedVariables, runtimeService.getVariablesLocal(processInstanceId));
@@ -57,7 +57,7 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
 
     runtimeService.setVariable(processInstanceId, "instrument", "trumpet");
 
-    expectedVariables = new HashMap<String, Object>();
+    expectedVariables = new HashMap<>();
     assertEquals(expectedVariables, taskService.getVariablesLocal(taskId));
     expectedVariables.put("instrument", "trumpet");
     assertEquals(expectedVariables, runtimeService.getVariables(processInstanceId));
@@ -68,7 +68,7 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
     assertTrue(taskService.hasVariable(taskId, "player"));
     assertFalse(taskService.hasVariableLocal(taskId, "budget"));
 
-    expectedVariables = new HashMap<String, Object>();
+    expectedVariables = new HashMap<>();
     assertEquals(expectedVariables, taskService.getVariablesLocal(taskId));
     expectedVariables.put("player", "gonzo");
     expectedVariables.put("instrument", "trumpet");
@@ -80,14 +80,14 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
     assertTrue(taskService.hasVariableLocal(taskId, "budget"));
     assertTrue(taskService.hasVariable(taskId, "budget"));
 
-    expectedVariables = new HashMap<String, Object>();
+    expectedVariables = new HashMap<>();
     expectedVariables.put("budget", "unlimited");
     assertEquals(expectedVariables, taskService.getVariablesLocal(taskId));
     expectedVariables.put("player", "gonzo");
     expectedVariables.put("instrument", "trumpet");
     assertEquals(expectedVariables, taskService.getVariables(taskId));
 
-    expectedVariables = new HashMap<String, Object>();
+    expectedVariables = new HashMap<>();
     expectedVariables.put("player", "gonzo");
     expectedVariables.put("instrument", "trumpet");
     assertEquals(expectedVariables, runtimeService.getVariables(processInstanceId));
@@ -100,7 +100,7 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
     taskService.saveTask(task);
 
     // Set variable
-    Map<String, Object> vars = new HashMap<String, Object>();
+    Map<String, Object> vars = new HashMap<>();
     MyVariable myVariable = new MyVariable("Hello world");
     vars.put("theVar", myVariable);
     taskService.setVariables(task.getId(), vars);
@@ -121,7 +121,7 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
     List<Task> taskList2 = taskService.createTaskQuery().processInstanceId(processInstance2.getId()).list();
 
     // Task local variables
-    for(Task task : taskList1){
+	taskList1.forEach(task -> {
       if ("usertask1".equals(task.getTaskDefinitionKey())){
         taskService.setVariableLocal(task.getId(), "taskVar1", "sayHello1");
       } else {
@@ -129,9 +129,9 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
       }
       // Execution variables
       taskService.setVariable(task.getId(), "executionVar1", "helloWorld1");
-    }
+    });
     // Task local variables
-    for (Task task : taskList2){
+	taskList2.forEach(task -> {
       if ("usertask1".equals(task.getTaskDefinitionKey())){
         taskService.setVariableLocal(task.getId(), "taskVar3", "sayHello3");
       } else {
@@ -139,10 +139,10 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
       }
       // Execution variables
       taskService.setVariable(task.getId(), "executionVar2", "helloWorld2");
-    }
+    });
 
     // only 1 process
-    Set<String> taskIds = new HashSet<String>();
+    Set<String> taskIds = new HashSet<>();
     taskIds.add(taskList1.get(0).getId());
     taskIds.add(taskList1.get(1).getId());
     List<VariableInstance> variables = taskService.getVariableInstancesLocalByTaskIds(taskIds);
@@ -151,7 +151,7 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
     checkVariable(taskList1.get(1).getId(), "taskVar2" , "sayHello2", variables);
     
     // 2 process
-    taskIds = new HashSet<String>();
+    taskIds = new HashSet<>();
     taskIds.add(taskList1.get(0).getId());
     taskIds.add(taskList1.get(1).getId());
     taskIds.add(taskList2.get(0).getId());
@@ -164,7 +164,7 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
     checkVariable(taskList2.get(1).getId(), "taskVar4" , "sayHello4", variables);
     
     // mixture 2 process
-    taskIds = new HashSet<String>();
+    taskIds = new HashSet<>();
     taskIds.add(taskList1.get(0).getId());
     taskIds.add(taskList2.get(1).getId());
     variables = taskService.getVariableInstancesLocalByTaskIds(taskIds);
@@ -232,7 +232,7 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
     taskService.setVariableLocal(taskId, "taskVar1", serializableTypeVar);
 
     // only 1 process
-    Set<String> taskIds = new HashSet<String>();
+    Set<String> taskIds = new HashSet<>();
     taskIds.add(taskId);
     List<VariableInstance> variables = taskService.getVariableInstancesLocalByTaskIds(taskIds);
     assertEquals(serializableTypeVar, variables.get(0).getValue());
@@ -242,25 +242,23 @@ public class TaskVariablesTest extends PluggableActivitiTestCase {
     "org/activiti/engine/test/api/runtime/variableScope.bpmn20.xml"
   })
   public void testGetVariablesLocalByTaskIdsForScope(){
-    Map<String, Object> processVars = new HashMap<String, Object>();
+    Map<String, Object> processVars = new HashMap<>();
     processVars.put("processVar", "processVar");
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("variableScopeProcess", processVars);
     
-    Set<String> executionIds = new HashSet<String>();
+    Set<String> executionIds = new HashSet<>();
     List<Execution> executions = runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).list();
-    for (Execution execution : executions){
-      if (!processInstance.getId().equals(execution.getId())){
+    executions.stream().filter(execution -> !processInstance.getId().equals(execution.getId())).forEach(execution -> {
         executionIds.add(execution.getId());
         runtimeService.setVariableLocal(execution.getId(), "executionVar", "executionVar");
-      }
-    }
+      });
     
     List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
-    Set<String> taskIds = new HashSet<String>();
-    for (Task task : tasks){
+    Set<String> taskIds = new HashSet<>();
+    tasks.forEach(task -> {
         taskService.setVariableLocal(task.getId(), "taskVar", "taskVar");
         taskIds.add(task.getId());
-    }
+    });
     
     List<VariableInstance> variableInstances = taskService.getVariableInstancesLocalByTaskIds(taskIds);
     assertEquals(variableInstances.size(), 2);

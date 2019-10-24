@@ -41,24 +41,28 @@ public class HistoricDetailVariableInstanceUpdateEntityImpl extends HistoricDeta
     this.detailType = "VariableUpdate";
   }
   
-  public Object getPersistentState() {
+  @Override
+public Object getPersistentState() {
     // HistoricDetailVariableInstanceUpdateEntity is immutable, so always
     // the same object is returned
     return HistoricDetailVariableInstanceUpdateEntityImpl.class;
   }
 
-  public Object getValue() {
+  @Override
+public Object getValue() {
     if (!variableType.isCachable() || cachedValue == null) {
       cachedValue = variableType.getValue(this);
     }
     return cachedValue;
   }
 
-  public String getVariableTypeName() {
+  @Override
+public String getVariableTypeName() {
     return (variableType != null ? variableType.getTypeName() : null);
   }
 
-  public int getRevisionNext() {
+  @Override
+public int getRevisionNext() {
     return revision + 1;
   }
 
@@ -72,11 +76,13 @@ public class HistoricDetailVariableInstanceUpdateEntityImpl extends HistoricDeta
     return null;
   }
 
-  public ByteArrayRef getByteArrayRef() {
+  @Override
+public ByteArrayRef getByteArrayRef() {
     return byteArrayRef;
   }
 
-  public void setBytes(byte[] bytes) {
+  @Override
+public void setBytes(byte[] bytes) {
     String byteArrayName = "hist.detail.var-" + name;
     if (byteArrayRef == null) {
       byteArrayRef = new ByteArrayRef();
@@ -86,71 +92,88 @@ public class HistoricDetailVariableInstanceUpdateEntityImpl extends HistoricDeta
 
   // getters and setters ////////////////////////////////////////////////////////
 
-  public int getRevision() {
+  @Override
+public int getRevision() {
     return revision;
   }
 
-  public void setRevision(int revision) {
+  @Override
+public void setRevision(int revision) {
     this.revision = revision;
   }
 
-  public String getVariableName() {
+  @Override
+public String getVariableName() {
     return name;
   }
   
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
 
-  public VariableType getVariableType() {
+  @Override
+public VariableType getVariableType() {
     return variableType;
   }
 
-  public void setVariableType(VariableType variableType) {
+  @Override
+public void setVariableType(VariableType variableType) {
     this.variableType = variableType;
   }
 
-  public Long getLongValue() {
+  @Override
+public Long getLongValue() {
     return longValue;
   }
 
-  public void setLongValue(Long longValue) {
+  @Override
+public void setLongValue(Long longValue) {
     this.longValue = longValue;
   }
 
-  public Double getDoubleValue() {
+  @Override
+public Double getDoubleValue() {
     return doubleValue;
   }
 
-  public void setDoubleValue(Double doubleValue) {
+  @Override
+public void setDoubleValue(Double doubleValue) {
     this.doubleValue = doubleValue;
   }
 
-  public String getTextValue() {
+  @Override
+public String getTextValue() {
     return textValue;
   }
 
-  public void setTextValue(String textValue) {
+  @Override
+public void setTextValue(String textValue) {
     this.textValue = textValue;
   }
 
-  public String getTextValue2() {
+  @Override
+public String getTextValue2() {
     return textValue2;
   }
 
-  public void setTextValue2(String textValue2) {
+  @Override
+public void setTextValue2(String textValue2) {
     this.textValue2 = textValue2;
   }
 
-  public Object getCachedValue() {
+  @Override
+public Object getCachedValue() {
     return cachedValue;
   }
 
-  public void setCachedValue(Object cachedValue) {
+  @Override
+public void setCachedValue(Object cachedValue) {
     this.cachedValue = cachedValue;
   }
 

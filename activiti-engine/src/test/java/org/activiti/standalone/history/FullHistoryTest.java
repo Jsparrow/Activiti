@@ -42,16 +42,20 @@ import org.activiti.engine.test.Deployment;
 import org.activiti.engine.test.api.runtime.DummySerializable;
 import org.activiti.engine.test.history.SerializableVariable;
 import org.activiti.standalone.jpa.FieldAccessJPAEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FullHistoryTest extends ResourceActivitiTestCase {
 
-    public FullHistoryTest() {
+    private static final Logger logger = LoggerFactory.getLogger(FullHistoryTest.class);
+
+	public FullHistoryTest() {
         super("org/activiti/standalone/history/fullhistory.activiti.cfg.xml");
     }
 
     @Deployment
     public void testVariableUpdates() {
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("number",
                       "one");
         variables.put("character",
@@ -295,7 +299,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/history/oneTaskProcess.bpmn20.xml"})
     public void testHistoricVariableInstanceQueryTaskVariables() {
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("variable",
                       "setFromProcess");
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess",
@@ -351,7 +355,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
 
     @Deployment(resources = "org/activiti/standalone/history/FullHistoryTest.testVariableUpdates.bpmn20.xml")
     public void testHistoricVariableInstanceQuery() {
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("process",
                       "one");
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("receiveTask",
@@ -364,7 +368,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
                      historyService.createHistoricVariableInstanceQuery().variableValueEquals("process",
                                                                                               "one").count());
 
-        Map<String, Object> variables2 = new HashMap<String, Object>();
+        Map<String, Object> variables2 = new HashMap<>();
         variables2.put("process",
                        "two");
         ProcessInstance processInstance2 = runtimeService.startProcessInstanceByKey("receiveTask",
@@ -387,7 +391,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
         assertEquals("one",
                      historicProcessVariable.getValue());
 
-        Map<String, Object> variables3 = new HashMap<String, Object>();
+        Map<String, Object> variables3 = new HashMap<>();
         variables3.put("long",
                        1000l);
         variables3.put("double",
@@ -412,7 +416,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
     public void testHistoricVariableUpdatesAllTypes() throws Exception {
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss SSS");
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("aVariable",
                       "initial value");
 
@@ -614,7 +618,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/history/oneTaskProcess.bpmn20.xml"})
     public void testHistoricVariableQuery() throws Exception {
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("stringVar",
                       "activiti rocks!");
         variables.put("longVar",
@@ -659,7 +663,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/history/oneTaskProcess.bpmn20.xml"})
     public void testHistoricVariableQueryExcludeTaskRelatedDetails() throws Exception {
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("stringVar",
                       "activiti rocks!");
         variables.put("longVar",
@@ -690,7 +694,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
 
     @Deployment(resources = {"org/activiti/engine/test/history/oneTaskProcess.bpmn20.xml"})
     public void testHistoricVariableQuerySorting() throws Exception {
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("stringVar",
                       "activiti rocks!");
         variables.put("longVar",
@@ -749,6 +753,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
             historyService.createHistoricDetailQuery().asc().list();
             fail();
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
 
         }
 
@@ -756,6 +761,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
             historyService.createHistoricDetailQuery().desc().list();
             fail();
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
 
         }
 
@@ -763,6 +769,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
             historyService.createHistoricDetailQuery().orderByProcessInstanceId().list();
             fail();
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
 
         }
 
@@ -770,6 +777,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
             historyService.createHistoricDetailQuery().orderByTime().list();
             fail();
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
 
         }
 
@@ -777,6 +785,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
             historyService.createHistoricDetailQuery().orderByVariableName().list();
             fail();
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
 
         }
 
@@ -784,6 +793,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
             historyService.createHistoricDetailQuery().orderByVariableRevision().list();
             fail();
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
 
         }
 
@@ -791,6 +801,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
             historyService.createHistoricDetailQuery().orderByVariableType().list();
             fail();
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
 
         }
     }
@@ -846,7 +857,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
     @Deployment
     public void testDeleteHistoricProcessInstance() {
         // Start process-instance with some variables set
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("processVar",
                  123L);
         vars.put("anotherProcessVar",
@@ -927,7 +938,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
         Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
 
         // Set some variables on the task
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("longVar",
                       12345L);
         variables.put("shortVar",
@@ -1048,7 +1059,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
     @Deployment
     public void testHistoricTaskInstanceQueryProcessVariableValueEquals() throws Exception {
         // Set some variables on the process instance
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("longVar",
                       12345L);
         variables.put("shortVar",
@@ -1181,7 +1192,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
     @Deployment
     public void testHistoricProcessInstanceVariableValueEquals() throws Exception {
         // Set some variables on the process instance
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("longVar",
                       12345L);
         variables.put("shortVar",
@@ -1302,7 +1313,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
     @Deployment(resources = {"org/activiti/standalone/history/FullHistoryTest.testHistoricProcessInstanceVariableValueEquals.bpmn20.xml"})
     public void testHistoricProcessInstanceVariableValueNotEquals() throws Exception {
         // Set some variables on the process instance
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("longVar",
                       12345L);
         variables.put("shortVar",
@@ -1444,7 +1455,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
     @Deployment(resources = {"org/activiti/standalone/history/FullHistoryTest.testHistoricProcessInstanceVariableValueEquals.bpmn20.xml"})
     public void testHistoricProcessInstanceVariableValueLessThanAndGreaterThan() throws Exception {
         // Set some variables on the process instance
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("longVar",
                       12345L);
 
@@ -1493,7 +1504,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
         ProcessInstance pi = runtimeService.startProcessInstanceByKey("ProcessWithSubProcess");
 
         Task task = taskService.createTaskQuery().processInstanceId(pi.getId()).singleResult();
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("test",
                       "1");
         taskService.complete(task.getId(),
@@ -1515,7 +1526,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
         assertEquals(2,
                      updates.size());
 
-        Map<String, HistoricVariableUpdate> updatesMap = new HashMap<String, HistoricVariableUpdate>();
+        Map<String, HistoricVariableUpdate> updatesMap = new HashMap<>();
         HistoricVariableUpdate update = (HistoricVariableUpdate) updates.get(0);
         updatesMap.put((String) update.getValue(),
                        update);
@@ -1648,7 +1659,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
     // Test for https://activiti.atlassian.net/browse/ACT-2186
     @Deployment(resources = {"org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
     public void testHistoricVariableRemovedWhenRuntimeVariableIsRemoved() throws InterruptedException {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("var1",
                  "Hello");
         vars.put("var2",
@@ -1678,9 +1689,7 @@ public class FullHistoryTest extends ResourceActivitiTestCase {
         List<HistoricDetail> details = historyService.createHistoricDetailQuery().processInstanceId(processInstance.getId()).variableUpdates().orderByTime().asc().list();
         assertEquals(3,
                      details.size()); // 3 vars
-        for (HistoricDetail historicDetail : details) {
-            assertNotNull(((HistoricVariableUpdate) historicDetail).getValue());
-        }
+        details.forEach(historicDetail -> assertNotNull(((HistoricVariableUpdate) historicDetail).getValue()));
 
         // Remove one variable
         Thread.sleep(800);

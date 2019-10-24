@@ -30,7 +30,7 @@ public class TestActivitiEntityEventTaskListener extends TestActivitiEntityEvent
 
 	public TestActivitiEntityEventTaskListener(Class<?> entityClass) {
 		super(entityClass);
-		tasks = new ArrayList<Task>();
+		tasks = new ArrayList<>();
 	}
 
 	@Override

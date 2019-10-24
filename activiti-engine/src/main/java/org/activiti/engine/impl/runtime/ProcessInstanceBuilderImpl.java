@@ -40,77 +40,84 @@ public class ProcessInstanceBuilderImpl implements ProcessInstanceBuilder {
     this.runtimeService = runtimeService;
   }
 
-  public ProcessInstanceBuilder processDefinitionId(String processDefinitionId) {
+  @Override
+public ProcessInstanceBuilder processDefinitionId(String processDefinitionId) {
     this.processDefinitionId = processDefinitionId;
     return this;
   }
 
-  public ProcessInstanceBuilder processDefinitionKey(String processDefinitionKey) {
+  @Override
+public ProcessInstanceBuilder processDefinitionKey(String processDefinitionKey) {
     this.processDefinitionKey = processDefinitionKey;
     return this;
   }
   
-  public ProcessInstanceBuilder messageName(String messageName) {
+  @Override
+public ProcessInstanceBuilder messageName(String messageName) {
     this.messageName = messageName;
     return this;
   }
 
-  public ProcessInstanceBuilder name(String processInstanceName) {
+  @Override
+public ProcessInstanceBuilder name(String processInstanceName) {
     this.processInstanceName = processInstanceName;
     return this;
   }
 
-  public ProcessInstanceBuilder businessKey(String businessKey) {
+  @Override
+public ProcessInstanceBuilder businessKey(String businessKey) {
     this.businessKey = businessKey;
     return this;
   }
 
-  public ProcessInstanceBuilder tenantId(String tenantId) {
+  @Override
+public ProcessInstanceBuilder tenantId(String tenantId) {
     this.tenantId = tenantId;
     return this;
   }
   
-  public ProcessInstanceBuilder variables(Map<String, Object> variables) {
+  @Override
+public ProcessInstanceBuilder variables(Map<String, Object> variables) {
     if (this.variables == null) {
-      this.variables = new HashMap<String, Object>();
+      this.variables = new HashMap<>();
     }
     if (variables != null) {
-      for (String variableName : variables.keySet()) {
-        this.variables.put(variableName, variables.get(variableName));
-      }
+      variables.keySet().forEach(variableName -> this.variables.put(variableName, variables.get(variableName)));
     }
     return this;
   }
 
-  public ProcessInstanceBuilder variable(String variableName, Object value) {
+  @Override
+public ProcessInstanceBuilder variable(String variableName, Object value) {
     if (this.variables == null) {
-      this.variables = new HashMap<String, Object>();
+      this.variables = new HashMap<>();
     }
     this.variables.put(variableName, value);
     return this;
   }
   
-  public ProcessInstanceBuilder transientVariables(Map<String, Object> transientVariables) {
+  @Override
+public ProcessInstanceBuilder transientVariables(Map<String, Object> transientVariables) {
     if (this.transientVariables == null) {
-      this.transientVariables = new HashMap<String, Object>();
+      this.transientVariables = new HashMap<>();
     }
     if (transientVariables != null) {
-      for (String variableName : transientVariables.keySet()) {
-        this.transientVariables.put(variableName, transientVariables.get(variableName));
-      }
+      transientVariables.keySet().forEach(variableName -> this.transientVariables.put(variableName, transientVariables.get(variableName)));
     }
     return this;
   }
   
-  public ProcessInstanceBuilder transientVariable(String variableName, Object value) {
+  @Override
+public ProcessInstanceBuilder transientVariable(String variableName, Object value) {
     if (this.transientVariables == null) {
-      this.transientVariables = new HashMap<String, Object>();
+      this.transientVariables = new HashMap<>();
     }
     this.transientVariables.put(variableName, value);
     return this;
   }
 
-  public ProcessInstance start() {
+  @Override
+public ProcessInstance start() {
     return runtimeService.startProcessInstance(this);
   }
 

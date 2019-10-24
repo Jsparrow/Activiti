@@ -60,11 +60,13 @@ public class MessageFlow extends BaseElement {
     this.messageRef = messageRef;
   }
 
-  public String toString() {
-    return sourceRef + " --> " + targetRef;
+  @Override
+public String toString() {
+    return new StringBuilder().append(sourceRef).append(" --> ").append(targetRef).toString();
   }
 
-  public MessageFlow clone() {
+  @Override
+public MessageFlow clone() {
     MessageFlow clone = new MessageFlow();
     clone.setValues(this);
     return clone;

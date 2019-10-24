@@ -66,10 +66,10 @@ public class DeploymentEntityManagerImpl extends AbstractEntityManager<Deploymen
   public void insert(DeploymentEntity deployment) {
     insert(deployment, false);
 
-    for (ResourceEntity resource : deployment.getResources().values()) {
+    deployment.getResources().values().forEach(resource -> {
       resource.setDeploymentId(deployment.getId());
       getResourceEntityManager().insert(resource);
-    }
+    });
   }
 
   @Override
@@ -82,7 +82,7 @@ public class DeploymentEntityManagerImpl extends AbstractEntityManager<Deploymen
       deleteProcessInstancesForProcessDefinitions(processDefinitions);
     }
 
-    for (ProcessDefinition processDefinition : processDefinitions) {
+    processDefinitions.forEach(processDefinition -> {
       deleteProcessDefinitionIdentityLinks(processDefinition);
       deleteEventSubscriptions(processDefinition);
       deleteProcessDefinitionInfo(processDefinition.getId());
@@ -94,7 +94,7 @@ public class DeploymentEntityManagerImpl extends AbstractEntityManager<Deploymen
       // we fall back to the previous timer/signal/message start event
       
       restorePreviousStartEventsIfNeeded(processDefinition);
-    }
+    });
 
     deleteProcessDefinitionForDeployment(deploymentId);
     getResourceEntityManager().deleteResourcesByDeploymentId(deploymentId);
@@ -105,11 +105,10 @@ public class DeploymentEntityManagerImpl extends AbstractEntityManager<Deploymen
     // Remove the deployment link from any model.
     // The model will still exists, as a model is a source for a deployment model and has a different lifecycle
     List<Model> models = new ModelQueryImpl().deploymentId(deploymentId).list();
-    for (Model model : models) {
-      ModelEntity modelEntity = (ModelEntity) model;
-      modelEntity.setDeploymentId(null);
-      getModelEntityManager().updateModel(modelEntity);
-    }
+    models.stream().map(model -> (ModelEntity) model).forEach(modelEntity -> {
+		modelEntity.setDeploymentId(null);
+		getModelEntityManager().updateModel(modelEntity);
+	});
   }
 
   protected void deleteProcessDefinitionIdentityLinks(ProcessDefinition processDefinition) {
@@ -130,22 +129,21 @@ public class DeploymentEntityManagerImpl extends AbstractEntityManager<Deploymen
   }
 
   protected void deleteProcessInstancesForProcessDefinitions(List<ProcessDefinition> processDefinitions) {
-    for (ProcessDefinition processDefinition : processDefinitions) {
-      getExecutionEntityManager().deleteProcessInstancesByProcessDefinition(processDefinition.getId(), "deleted deployment", true);
-    }
+    processDefinitions.forEach(processDefinition -> getExecutionEntityManager().deleteProcessInstancesByProcessDefinition(processDefinition.getId(),
+			"deleted deployment", true));
   }
 
   protected void removeRelatedJobs(ProcessDefinition processDefinition) {
     List<JobEntity> timerJobs = getJobEntityManager()
             .findJobsByProcessDefinitionId(processDefinition.getId());
     if (timerJobs != null && timerJobs.size() > 0) {
-      for (JobEntity timerJob : timerJobs) {
+      timerJobs.forEach(timerJob -> {
         if (getEventDispatcher().isEnabled()) {
           getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.JOB_CANCELED, timerJob, null, null, processDefinition.getId()));
         }
 
         getJobEntityManager().delete(timerJob);
-      }
+      });
     }
   }
 
@@ -153,13 +151,13 @@ public class DeploymentEntityManagerImpl extends AbstractEntityManager<Deploymen
     List<JobEntity> timerJobs = getJobEntityManager()
         .findJobsByTypeAndProcessDefinitionId(TimerSuspendProcessDefinitionHandler.TYPE, processDefinition.getId());
     if (timerJobs != null && timerJobs.size() > 0) {
-      for (JobEntity timerJob : timerJobs) {
+      timerJobs.forEach(timerJob -> {
         if (getEventDispatcher().isEnabled()) {
           getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.JOB_CANCELED, timerJob, null, null, processDefinition.getId()));
         }
 
         getJobEntityManager().delete(timerJob);
-      }
+      });
     }
   }
 
@@ -167,23 +165,24 @@ public class DeploymentEntityManagerImpl extends AbstractEntityManager<Deploymen
     List<TimerJobEntity> timerStartJobs = getTimerJobEntityManager()
         .findJobsByTypeAndProcessDefinitionId(TimerStartEventJobHandler.TYPE, processDefinition.getId());
     if (timerStartJobs != null && timerStartJobs.size() > 0) {
-      for (TimerJobEntity timerStartJob : timerStartJobs) {
+      timerStartJobs.forEach(timerStartJob -> {
         if (getEventDispatcher().isEnabled()) {
           getEventDispatcher().dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.JOB_CANCELED, timerStartJob, null, null, processDefinition.getId()));
         }
 
         getTimerJobEntityManager().delete(timerStartJob);
-      }
+      });
     }
   }
   
   protected void restorePreviousStartEventsIfNeeded(ProcessDefinition processDefinition) {
     ProcessDefinitionEntity latestProcessDefinition = findLatestProcessDefinition(processDefinition);
-    if (processDefinition.getId().equals(latestProcessDefinition.getId())) { 
-      
-      // Try to find a previous version (it could be some versions are missing due to deletions)
+    if (!processDefinition.getId().equals(latestProcessDefinition.getId())) {
+		return;
+	}
+	// Try to find a previous version (it could be some versions are missing due to deletions)
       ProcessDefinition previousProcessDefinition = findNewLatestProcessDefinitionAfterRemovalOf(processDefinition);
-      if (previousProcessDefinition != null) {
+	if (previousProcessDefinition != null) {
 
         BpmnModel bpmnModel = ProcessDefinitionUtil.getBpmnModel(previousProcessDefinition.getId());
         org.activiti.bpmn.model.Process previousProcess = ProcessDefinitionUtil.getProcess(previousProcessDefinition.getId());
@@ -192,9 +191,7 @@ public class DeploymentEntityManagerImpl extends AbstractEntityManager<Deploymen
           List<StartEvent> startEvents = previousProcess.findFlowElementsOfType(StartEvent.class);
           
           if (CollectionUtil.isNotEmpty(startEvents)) {
-            for (StartEvent startEvent : startEvents) {
-              
-              if (CollectionUtil.isNotEmpty(startEvent.getEventDefinitions())) {
+            startEvents.stream().filter(startEvent -> CollectionUtil.isNotEmpty(startEvent.getEventDefinitions())).forEach(startEvent -> {
                 EventDefinition eventDefinition = startEvent.getEventDefinitions().get(0);
                 if (eventDefinition instanceof TimerEventDefinition) {
                   restoreTimerStartEvent(previousProcessDefinition, startEvent, eventDefinition);
@@ -204,15 +201,12 @@ public class DeploymentEntityManagerImpl extends AbstractEntityManager<Deploymen
                   restoreMessageStartEvent(previousProcessDefinition, bpmnModel, startEvent, eventDefinition);
                 }
                 
-              }
-              
-            }
+              });
           }
 
         }
 
       }
-    }
   }
 
   protected void restoreTimerStartEvent(ProcessDefinition previousProcessDefinition, StartEvent startEvent, EventDefinition eventDefinition) {
@@ -220,18 +214,16 @@ public class DeploymentEntityManagerImpl extends AbstractEntityManager<Deploymen
     TimerJobEntity timer = TimerUtil.createTimerEntityForTimerEventDefinition((TimerEventDefinition) eventDefinition, false, null, TimerStartEventJobHandler.TYPE,
         TimerEventHandler.createConfiguration(startEvent.getId(), timerEventDefinition.getEndDate(), timerEventDefinition.getCalendarName()));
     
-    if (timer != null) {
-      TimerJobEntity timerJob = getJobManager().createTimerJob((TimerEventDefinition) eventDefinition, false, null, TimerStartEventJobHandler.TYPE,
+    if (timer == null) {
+		return;
+	}
+	TimerJobEntity timerJob = getJobManager().createTimerJob((TimerEventDefinition) eventDefinition, false, null, TimerStartEventJobHandler.TYPE,
           TimerEventHandler.createConfiguration(startEvent.getId(), timerEventDefinition.getEndDate(), timerEventDefinition.getCalendarName()));
-      
-      timerJob.setProcessDefinitionId(previousProcessDefinition.getId());
-      
-      if (previousProcessDefinition.getTenantId() != null) {
+	timerJob.setProcessDefinitionId(previousProcessDefinition.getId());
+	if (previousProcessDefinition.getTenantId() != null) {
         timerJob.setTenantId(previousProcessDefinition.getTenantId());
       }
-      
-      getJobManager().scheduleTimerJob(timerJob);
-    }
+	getJobManager().scheduleTimerJob(timerJob);
   }
 
   protected void restoreSignalStartEvent(ProcessDefinition previousProcessDefinition, BpmnModel bpmnModel, StartEvent startEvent, EventDefinition eventDefinition) {

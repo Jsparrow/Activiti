@@ -26,13 +26,17 @@ import org.activiti.engine.runtime.TimerJobQuery;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class BoundaryTimerNonInterruptingEventTest extends PluggableActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(BoundaryTimerNonInterruptingEventTest.class);
+
+@Deployment
   public void testMultipleTimersOnUserTask() {
     // Set the clock fixed
     Date startTime = new Date();
@@ -151,9 +155,7 @@ public class BoundaryTimerNonInterruptingEventTest extends PluggableActivitiTest
     assertEquals(2, taskService.createTaskQuery().count());
 
     // Complete other tasks
-    for (Task t : taskService.createTaskQuery().list()) {
-      taskService.complete(t.getId());
-    }
+	taskService.createTaskQuery().list().forEach(t -> taskService.complete(t.getId()));
     assertProcessEnded(procId);
   }
 
@@ -208,7 +210,8 @@ public class BoundaryTimerNonInterruptingEventTest extends PluggableActivitiTest
     try {
       waitForJobExecutorToProcessAllJobs(2000, 100);
     } catch (Exception ex) {
-      fail("No more jobs since the user completed the task");
+      logger.error(ex.getMessage(), ex);
+	fail("No more jobs since the user completed the task");
     }
   }
 
@@ -246,7 +249,7 @@ public class BoundaryTimerNonInterruptingEventTest extends PluggableActivitiTest
    */
   public void testReceiveTaskWithBoundaryTimer() {
     // Set the clock fixed
-    HashMap<String, Object> variables = new HashMap<String, Object>();
+    HashMap<String, Object> variables = new HashMap<>();
     variables.put("timeCycle", "R/PT1H");
 
     // After process start, there should be a timer created

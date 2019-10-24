@@ -114,7 +114,7 @@ public class ProcessRuntimeImpl implements ProcessRuntime {
             processDefinition = repositoryService.getProcessDefinition(processDefinitionId);
         }
         if (!securityPoliciesManager.canRead(processDefinition.getKey())) {
-            throw new ActivitiObjectNotFoundException("Unable to find process definition for the given id:'" + processDefinitionId + "'");
+            throw new ActivitiObjectNotFoundException(new StringBuilder().append("Unable to find process definition for the given id:'").append(processDefinitionId).append("'").toString());
         }
         return processDefinitionConverter.from(processDefinition);
     }
@@ -153,10 +153,10 @@ public class ProcessRuntimeImpl implements ProcessRuntime {
                 .processInstanceId(processInstanceId)
                 .singleResult();
         if (internalProcessInstance == null) {
-            throw new NotFoundException("Unable to find process instance for the given id:'" + processInstanceId + "'");
+            throw new NotFoundException(new StringBuilder().append("Unable to find process instance for the given id:'").append(processInstanceId).append("'").toString());
         }
         if (!securityPoliciesManager.canRead(internalProcessInstance.getProcessDefinitionKey())) {
-            throw new ActivitiObjectNotFoundException("You cannot read the process instance with Id:'" + processInstanceId + "' due to security policies violation");
+            throw new ActivitiObjectNotFoundException(new StringBuilder().append("You cannot read the process instance with Id:'").append(processInstanceId).append("' due to security policies violation").toString());
         }
         return processInstanceConverter.from(internalProcessInstance);
     }
@@ -223,7 +223,7 @@ public class ProcessRuntimeImpl implements ProcessRuntime {
             throw new IllegalStateException("At least Process Definition Id or Key needs to be provided to start a process");
         }
         if (!securityPoliciesManager.canWrite(processDefinition.getKey())) {
-            throw new ActivitiForbiddenException("Operation not permitted for " + processDefinition.getKey() + " due security policy violation");
+            throw new ActivitiForbiddenException(new StringBuilder().append("Operation not permitted for ").append(processDefinition.getKey()).append(" due security policy violation").toString());
         }
         return processInstanceConverter.from(runtimeService
                 .createProcessInstanceBuilder()
@@ -239,7 +239,7 @@ public class ProcessRuntimeImpl implements ProcessRuntime {
     public ProcessInstance suspend(SuspendProcessPayload suspendProcessPayload) {
         ProcessInstance processInstance = processInstance(suspendProcessPayload.getProcessInstanceId());
         if (!securityPoliciesManager.canWrite(processInstance.getProcessDefinitionKey())) {
-            throw new ActivitiForbiddenException("Operation not permitted for " + processInstance.getProcessDefinitionKey() + " due security policy violation");
+            throw new ActivitiForbiddenException(new StringBuilder().append("Operation not permitted for ").append(processInstance.getProcessDefinitionKey()).append(" due security policy violation").toString());
         }
         runtimeService.suspendProcessInstanceById(suspendProcessPayload.getProcessInstanceId());
         return processInstanceConverter.from(runtimeService.createProcessInstanceQuery().processInstanceId(suspendProcessPayload.getProcessInstanceId()).singleResult());
@@ -249,7 +249,7 @@ public class ProcessRuntimeImpl implements ProcessRuntime {
     public ProcessInstance resume(ResumeProcessPayload resumeProcessPayload) {
         ProcessInstance processInstance = processInstance(resumeProcessPayload.getProcessInstanceId());
         if (!securityPoliciesManager.canWrite(processInstance.getProcessDefinitionKey())) {
-            throw new ActivitiForbiddenException("Operation not permitted for " + processInstance.getProcessDefinitionKey() + " due security policy violation");
+            throw new ActivitiForbiddenException(new StringBuilder().append("Operation not permitted for ").append(processInstance.getProcessDefinitionKey()).append(" due security policy violation").toString());
         }
         runtimeService.activateProcessInstanceById(resumeProcessPayload.getProcessInstanceId());
         return processInstanceConverter.from(runtimeService.createProcessInstanceQuery()
@@ -260,7 +260,7 @@ public class ProcessRuntimeImpl implements ProcessRuntime {
     public ProcessInstance delete(DeleteProcessPayload deleteProcessPayload) {
         ProcessInstanceImpl processInstance = (ProcessInstanceImpl) processInstance(deleteProcessPayload.getProcessInstanceId());
         if (!securityPoliciesManager.canWrite(processInstance.getProcessDefinitionKey())) {
-            throw new ActivitiForbiddenException("Operation not permitted for " + processInstance.getProcessDefinitionKey() + " due security policy violation");
+            throw new ActivitiForbiddenException(new StringBuilder().append("Operation not permitted for ").append(processInstance.getProcessDefinitionKey()).append(" due security policy violation").toString());
         }
         runtimeService.deleteProcessInstance(deleteProcessPayload.getProcessInstanceId(),
                 deleteProcessPayload.getReason());
@@ -283,7 +283,7 @@ public class ProcessRuntimeImpl implements ProcessRuntime {
     public void removeVariables(RemoveProcessVariablesPayload removeProcessVariablesPayload) {
         ProcessInstanceImpl processInstance = (ProcessInstanceImpl) processInstance(removeProcessVariablesPayload.getProcessInstanceId());
         if (!securityPoliciesManager.canWrite(processInstance.getProcessDefinitionKey())) {
-            throw new ActivitiForbiddenException("Operation not permitted for " + processInstance.getProcessDefinitionKey() + " due security policy violation");
+            throw new ActivitiForbiddenException(new StringBuilder().append("Operation not permitted for ").append(processInstance.getProcessDefinitionKey()).append(" due security policy violation").toString());
         }
         runtimeService.removeVariables(removeProcessVariablesPayload.getProcessInstanceId(),
                 removeProcessVariablesPayload.getVariableNames());
@@ -294,7 +294,7 @@ public class ProcessRuntimeImpl implements ProcessRuntime {
     public void setVariables(SetProcessVariablesPayload setProcessVariablesPayload) {
         ProcessInstanceImpl processInstance = (ProcessInstanceImpl) processInstance(setProcessVariablesPayload.getProcessInstanceId());
         if (!securityPoliciesManager.canWrite(processInstance.getProcessDefinitionKey())) {
-            throw new ActivitiForbiddenException("Operation not permitted for " + processInstance.getProcessDefinitionKey() + " due security policy violation");
+            throw new ActivitiForbiddenException(new StringBuilder().append("Operation not permitted for ").append(processInstance.getProcessDefinitionKey()).append(" due security policy violation").toString());
         }
         runtimeService.setVariables(setProcessVariablesPayload.getProcessInstanceId(),
                 setProcessVariablesPayload.getVariables());
@@ -328,7 +328,7 @@ public class ProcessRuntimeImpl implements ProcessRuntime {
     public ProcessInstance update(UpdateProcessPayload updateProcessPayload) {
         ProcessInstance processInstance = processInstance(updateProcessPayload.getProcessInstanceId());
         if (!securityPoliciesManager.canWrite(processInstance.getProcessDefinitionKey())) {
-            throw new ActivitiForbiddenException("Operation not permitted for " + processInstance.getProcessDefinitionKey() + " due security policy violation");
+            throw new ActivitiForbiddenException(new StringBuilder().append("Operation not permitted for ").append(processInstance.getProcessDefinitionKey()).append(" due security policy violation").toString());
         }
 
         if (updateProcessPayload.getBusinessKey() != null) {

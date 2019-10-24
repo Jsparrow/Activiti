@@ -42,7 +42,7 @@ public class MessageEventReceivedCmd extends NeedsActiveExecutionCmd<Void> {
     this.messageName = messageName;
 
     if (processVariables != null) {
-      this.payload = new HashMap<String, Object>(processVariables);
+      this.payload = new HashMap<>(processVariables);
 
     } else {
       this.payload = null;
@@ -57,7 +57,8 @@ public class MessageEventReceivedCmd extends NeedsActiveExecutionCmd<Void> {
     this.async = async;
   }
 
-  protected Void execute(CommandContext commandContext, ExecutionEntity execution) {
+  @Override
+protected Void execute(CommandContext commandContext, ExecutionEntity execution) {
     if (messageName == null) {
       throw new ActivitiIllegalArgumentException("messageName cannot be null");
     }
@@ -67,7 +68,7 @@ public class MessageEventReceivedCmd extends NeedsActiveExecutionCmd<Void> {
         findEventSubscriptionsByNameAndExecution(MessageEventHandler.EVENT_HANDLER_TYPE, messageName, executionId);
 
     if (eventSubscriptions.isEmpty()) {
-      throw new ActivitiException("Execution with id '" + executionId + "' does not have a subscription to a message event with name '" + messageName + "'");
+      throw new ActivitiException(new StringBuilder().append("Execution with id '").append(executionId).append("' does not have a subscription to a message event with name '").append(messageName).append("'").toString());
     }
 
     // there can be only one:

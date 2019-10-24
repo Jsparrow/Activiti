@@ -49,10 +49,11 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
   /**
    * Handles the parallel case of spawning the instances. Will create child executions accordingly for every instance needed.
    */
-  protected int createInstances(DelegateExecution execution) {
+  @Override
+protected int createInstances(DelegateExecution execution) {
     int nrOfInstances = resolveNrOfInstances(execution);
     if (nrOfInstances < 0) {
-      throw new ActivitiIllegalArgumentException("Invalid number of instances: must be non-negative integer value" + ", but was " + nrOfInstances);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("Invalid number of instances: must be non-negative integer value").append(", but was ").append(nrOfInstances).toString());
     }
 
     execution.setMultiInstanceRoot(true);
@@ -61,7 +62,7 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
     setLoopVariable(execution, NUMBER_OF_COMPLETED_INSTANCES, 0);
     setLoopVariable(execution, NUMBER_OF_ACTIVE_INSTANCES, nrOfInstances);
 
-    List<DelegateExecution> concurrentExecutions = new ArrayList<DelegateExecution>();
+    List<DelegateExecution> concurrentExecutions = new ArrayList<>();
     for (int loopCounter = 0; loopCounter < nrOfInstances; loopCounter++) {
       DelegateExecution concurrentExecution = Context.getCommandContext().getExecutionEntityManager()
           .createChildExecution((ExecutionEntity) execution);
@@ -101,7 +102,8 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
   /**
    * Called when the wrapped {@link ActivityBehavior} calls the {@link AbstractBpmnActivityBehavior#leave(ActivityExecution)} method. Handles the completion of one of the parallel instances
    */
-  public void leave(DelegateExecution execution) {
+  @Override
+public void leave(DelegateExecution execution) {
 
     boolean zeroNrOfInstances = false;
     if (resolveNrOfInstances(execution) == 0) {
@@ -180,16 +182,12 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
         if (activity instanceof CallActivity) {
           ExecutionEntityManager executionEntityManager = Context.getCommandContext().getExecutionEntityManager();
           if (executionToUse != null) {
-            List<String> callActivityExecutionIds = new ArrayList<String>();
+            List<String> callActivityExecutionIds = new ArrayList<>();
 
             // Find all execution entities that are at the call activity
             List<ExecutionEntity> childExecutions = executionEntityManager.collectChildren(executionToUse);
             if (childExecutions != null) {
-              for (ExecutionEntity childExecution : childExecutions) {
-                if (activity.getId().equals(childExecution.getCurrentActivityId())) {
-                  callActivityExecutionIds.add(childExecution.getId());
-                }
-              }
+              childExecutions.stream().filter(childExecution -> activity.getId().equals(childExecution.getCurrentActivityId())).forEach(childExecution -> callActivityExecutionIds.add(childExecution.getId()));
 
               // Now all call activity executions have been collected, loop again and check which should be removed
               for (int i=childExecutions.size()-1; i>=0; i--) {
@@ -244,9 +242,7 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
     ExecutionEntityManager executionEntityManager = commandContext.getExecutionEntityManager();
     Collection<ExecutionEntity> childExecutions = executionEntityManager.findChildExecutionsByParentExecutionId(parentExecution.getId());
     if (CollectionUtil.isNotEmpty(childExecutions)) {
-      for (ExecutionEntity childExecution : childExecutions) {
-        deleteChildExecutions(childExecution, true, commandContext);
-      }
+      childExecutions.forEach(childExecution -> deleteChildExecutions(childExecution, true, commandContext));
     }
 
     if (deleteExecution) {

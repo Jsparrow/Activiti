@@ -38,9 +38,11 @@ public class DelegateExpressionActivitiEventListener extends BaseDelegateEventLi
 
   @Override
   public void onEvent(ActivitiEvent event) {
-    if (isValidEvent(event)) {
-      Object delegate = DelegateExpressionUtil.resolveDelegateExpression(expression, new NoExecutionVariableScope());
-      if (delegate instanceof ActivitiEventListener) {
+    if (!isValidEvent(event)) {
+		return;
+	}
+	Object delegate = DelegateExpressionUtil.resolveDelegateExpression(expression, new NoExecutionVariableScope());
+	if (delegate instanceof ActivitiEventListener) {
         // Cache result of isFailOnException() from delegate-instance
         // until next event is received. This prevents us from having to resolve
         // the expression twice when an error occurs.
@@ -53,9 +55,8 @@ public class DelegateExpressionActivitiEventListener extends BaseDelegateEventLi
         // Force failing, since the exception we're about to throw
         // cannot be ignored, because it did not originate from the listener itself
         failOnException = true;
-        throw new ActivitiIllegalArgumentException("Delegate expression " + expression + " did not resolve to an implementation of " + ActivitiEventListener.class.getName());
+        throw new ActivitiIllegalArgumentException(new StringBuilder().append("Delegate expression ").append(expression).append(" did not resolve to an implementation of ").append(ActivitiEventListener.class.getName()).toString());
       }
-    }
   }
 
   @Override

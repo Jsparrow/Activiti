@@ -63,7 +63,7 @@ public class XMLTokener extends JSONTokener {
    * @throws JSONException
    *           If the <code>]]&gt;</code> is not found.
    */
-  public String nextCDATA() throws JSONException {
+  public String nextCDATA() {
     char c;
     int i;
     StringBuilder sb = new StringBuilder();
@@ -90,9 +90,9 @@ public class XMLTokener extends JSONTokener {
      * source text.
      * @throws JSONException
      */
-  public Object nextContent() throws JSONException {
+  public Object nextContent() {
     char c;
-    StringBuffer sb;
+    StringBuilder sb;
     do {
       c = next();
     } while (Character.isWhitespace(c));
@@ -102,7 +102,7 @@ public class XMLTokener extends JSONTokener {
     if (c == '<') {
       return XML.LT;
     }
-    sb = new StringBuffer();
+    sb = new StringBuilder();
     for (;;) {
       if (c == '<' || c == 0) {
         back();
@@ -126,7 +126,7 @@ public class XMLTokener extends JSONTokener {
    * @throws JSONException
    *           If missing ';' in XML entity.
    */
-  public Object nextEntity(char a) throws JSONException {
+  public Object nextEntity(char a) {
     StringBuilder sb = new StringBuilder();
     for (;;) {
       char c = next();
@@ -140,7 +140,7 @@ public class XMLTokener extends JSONTokener {
     }
     String s = sb.toString();
     Object e = entity.get(s);
-    return e != null ? e : a + s + ";";
+    return e != null ? e : new StringBuilder().append(a).append(s).append(";").toString();
   }
 
   /**
@@ -150,7 +150,7 @@ public class XMLTokener extends JSONTokener {
    * @throws JSONException
    *           If a string is not properly closed or if the XML is badly structured.
    */
-  public Object nextMeta() throws JSONException {
+  public Object nextMeta() {
     char c;
     char q;
     do {
@@ -214,10 +214,10 @@ public class XMLTokener extends JSONTokener {
    * @throws JSONException
    *           If the XML is not well formed.
    */
-  public Object nextToken() throws JSONException {
+  public Object nextToken() {
     char c;
     char q;
-    StringBuffer sb;
+    StringBuilder sb;
     do {
       c = next();
     } while (Character.isWhitespace(c));
@@ -242,7 +242,7 @@ public class XMLTokener extends JSONTokener {
     case '"':
     case '\'':
       q = c;
-      sb = new StringBuffer();
+      sb = new StringBuilder();
       for (;;) {
         c = next();
         if (c == 0) {
@@ -261,7 +261,7 @@ public class XMLTokener extends JSONTokener {
 
       // Name
 
-      sb = new StringBuffer();
+      sb = new StringBuilder();
       for (;;) {
         sb.append(c);
         c = next();
@@ -296,7 +296,7 @@ public class XMLTokener extends JSONTokener {
    *          A string to skip past.
    * @throws JSONException
    */
-  public boolean skipPast(String to) throws JSONException {
+  public boolean skipPast(String to) {
     boolean b;
     char c;
     int i;

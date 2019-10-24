@@ -118,28 +118,27 @@ public class DefaultJobManager implements JobManager {
     
     JobEntity executableJob = createExecutableJobFromOtherJob(timerJob);
     boolean insertSuccesful = processEngineConfiguration.getJobEntityManager().insertJobEntity(executableJob);
-    if (insertSuccesful) {
-      processEngineConfiguration.getTimerJobEntityManager().delete(timerJob);
-      triggerExecutorIfNeeded(executableJob);
-      return executableJob;
-    }
-    return null;
+    if (!insertSuccesful) {
+		return null;
+	}
+	processEngineConfiguration.getTimerJobEntityManager().delete(timerJob);
+	triggerExecutorIfNeeded(executableJob);
+	return executableJob;
   }
   
   @Override
   public TimerJobEntity moveJobToTimerJob(AbstractJobEntity job) {
     TimerJobEntity timerJob = createTimerJobFromOtherJob(job);
     boolean insertSuccesful = processEngineConfiguration.getTimerJobEntityManager().insertTimerJobEntity(timerJob);
-    if (insertSuccesful) {
-      if (job instanceof JobEntity) {
+    if (!insertSuccesful) {
+		return null;
+	}
+	if (job instanceof JobEntity) {
         processEngineConfiguration.getJobEntityManager().delete((JobEntity) job);
       } else if (job instanceof SuspendedJobEntity) {
         processEngineConfiguration.getSuspendedJobEntityManager().delete((SuspendedJobEntity) job);
       }
-      
-      return timerJob;
-    }
-    return null;
+	return timerJob;
   }
   
   @Override
@@ -197,12 +196,12 @@ public class DefaultJobManager implements JobManager {
     JobEntity executableJob = createExecutableJobFromOtherJob(deadLetterJobEntity);
     executableJob.setRetries(retries);
     boolean insertSuccesful = processEngineConfiguration.getJobEntityManager().insertJobEntity(executableJob);
-    if (insertSuccesful) {
-      processEngineConfiguration.getDeadLetterJobEntityManager().delete(deadLetterJobEntity);
-      triggerExecutorIfNeeded(executableJob);
-      return executableJob;
-    }
-    return null;
+    if (!insertSuccesful) {
+		return null;
+	}
+	processEngineConfiguration.getDeadLetterJobEntityManager().delete(deadLetterJobEntity);
+	triggerExecutorIfNeeded(executableJob);
+	return executableJob;
   }
   
   @Override
@@ -284,12 +283,13 @@ public class DefaultJobManager implements JobManager {
       logger.debug("Timer {} fired. Deleting timer.", timerEntity.getId());
     }
     
-    if (timerEntity.getRepeat() != null) {
-      TimerJobEntity newTimerJobEntity = timerJobEntityManager.createAndCalculateNextTimer(timerEntity, variableScope);
-      if (newTimerJobEntity != null) {
+    if (timerEntity.getRepeat() == null) {
+		return;
+	}
+	TimerJobEntity newTimerJobEntity = timerJobEntityManager.createAndCalculateNextTimer(timerEntity, variableScope);
+	if (newTimerJobEntity != null) {
         scheduleTimerJob(newTimerJobEntity);
       }
-    }
   }
   
   protected void executeJobHandler(JobEntity jobEntity) {
@@ -327,8 +327,7 @@ public class DefaultJobManager implements JobManager {
           } else if (endDateValue instanceof Date) {
             timerEntity.setEndDate((Date) endDateValue);
           } else {
-            throw new ActivitiException("Timer '" + ((ExecutionEntity) variableScope).getActivityId()
-                + "' was not configured with a valid duration/time, either hand in a java.util.Date or a String in format 'yyyy-MM-dd'T'hh:mm:ss'");
+            throw new ActivitiException(new StringBuilder().append("Timer '").append(((ExecutionEntity) variableScope).getActivityId()).append("' was not configured with a valid duration/time, either hand in a java.util.Date or a String in format 'yyyy-MM-dd'T'hh:mm:ss'").toString());
           }
 
           if (timerEntity.getEndDate() == null) {
@@ -351,8 +350,8 @@ public class DefaultJobManager implements JobManager {
    
   protected int getMaxIterations(org.activiti.bpmn.model.Process process, String activityId) {
     FlowElement flowElement = process.getFlowElement(activityId, true);
-    if (flowElement != null) {
-      if (flowElement instanceof Event) {
+    boolean condition = flowElement != null && flowElement instanceof Event;
+	if (condition) {
          
         Event event = (Event) flowElement;
         List<EventDefinition> eventDefinitions = event.getEventDefinitions();
@@ -371,7 +370,6 @@ public class DefaultJobManager implements JobManager {
         }
          
       }
-    }
     return -1;
   }
    
@@ -501,7 +499,8 @@ public class DefaultJobManager implements JobManager {
     return processEngineConfiguration;
   }
 
-  public void setProcessEngineConfiguration(ProcessEngineConfigurationImpl processEngineConfiguration) {
+  @Override
+public void setProcessEngineConfiguration(ProcessEngineConfigurationImpl processEngineConfiguration) {
     this.processEngineConfiguration = processEngineConfiguration;
   }
 

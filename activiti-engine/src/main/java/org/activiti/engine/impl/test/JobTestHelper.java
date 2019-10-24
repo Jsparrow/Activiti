@@ -22,6 +22,8 @@ import org.activiti.engine.ManagementService;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.impl.asyncexecutor.AsyncExecutor;
 import org.activiti.engine.test.ActivitiRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -33,7 +35,9 @@ import org.activiti.engine.test.ActivitiRule;
 // between Junit3 and junit 4 test support classes
 public class JobTestHelper {
 
-  public static void waitForJobExecutorToProcessAllJobs(ActivitiRule activitiRule, long maxMillisToWait, long intervalMillis) {
+  private static final Logger logger = LoggerFactory.getLogger(JobTestHelper.class);
+
+public static void waitForJobExecutorToProcessAllJobs(ActivitiRule activitiRule, long maxMillisToWait, long intervalMillis) {
     waitForJobExecutorToProcessAllJobs(activitiRule.getProcessEngine().getProcessEngineConfiguration(), activitiRule.getManagementService(), maxMillisToWait, intervalMillis);
   }
 
@@ -58,17 +62,19 @@ public class JobTestHelper {
           try {
             areJobsAvailable = areJobsAvailable(managementService);
           } catch (Throwable t) {
+			logger.error(t.getMessage(), t);
             // Ignore, possible that exception occurs due to locking/updating of table on MSSQL when
             // isolation level doesn't allow READ of the table
           }
         }
       } catch (InterruptedException e) {
+		logger.error(e.getMessage(), e);
         // ignore
       } finally {
         timer.cancel();
       }
       if (areJobsAvailable) {
-        throw new ActivitiException("time limit of " + maxMillisToWait + " was exceeded");
+        throw new ActivitiException(new StringBuilder().append("time limit of ").append(maxMillisToWait).append(" was exceeded").toString());
       }
 
     } finally {
@@ -100,17 +106,19 @@ public class JobTestHelper {
           try {
             areJobsAvailable = areJobsOrExecutableTimersAvailable(managementService);
           } catch (Throwable t) {
+			logger.error(t.getMessage(), t);
             // Ignore, possible that exception occurs due to locking/updating of table on MSSQL when
             // isolation level doesn't allow READ of the table
           }
         }
       } catch (InterruptedException e) {
+		logger.error(e.getMessage(), e);
         // ignore
       } finally {
         timer.cancel();
       }
       if (areJobsAvailable) {
-        throw new ActivitiException("time limit of " + maxMillisToWait + " was exceeded");
+        throw new ActivitiException(new StringBuilder().append("time limit of ").append(maxMillisToWait).append(" was exceeded").toString());
       }
 
     } finally {
@@ -140,6 +148,7 @@ public class JobTestHelper {
           conditionIsViolated = !condition.call();
         }
       } catch (InterruptedException e) {
+		logger.error(e.getMessage(), e);
         // ignore
       } catch (Exception e) {
         throw new ActivitiException("Exception while waiting on condition: " + e.getMessage(), e);
@@ -148,7 +157,7 @@ public class JobTestHelper {
       }
 
       if (conditionIsViolated) {
-        throw new ActivitiException("time limit of " + maxMillisToWait + " was exceeded");
+        throw new ActivitiException(new StringBuilder().append("time limit of ").append(maxMillisToWait).append(" was exceeded").toString());
       }
 
     } finally {
@@ -173,6 +182,7 @@ public class JobTestHelper {
           Thread.sleep(intervalMillis);
         }
       } catch (InterruptedException e) {
+		logger.error(e.getMessage(), e);
         // ignore
       } finally {
         timer.cancel();
@@ -214,7 +224,8 @@ public class JobTestHelper {
       return timeLimitExceeded;
     }
 
-    public void run() {
+    @Override
+	public void run() {
       timeLimitExceeded = true;
       thread.interrupt();
     }

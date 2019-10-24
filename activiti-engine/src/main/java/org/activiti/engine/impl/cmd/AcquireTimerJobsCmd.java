@@ -34,15 +34,16 @@ public class AcquireTimerJobsCmd implements Command<AcquiredTimerJobEntities> {
     this.asyncExecutor = asyncExecutor;
   }
 
-  public AcquiredTimerJobEntities execute(CommandContext commandContext) {
+  @Override
+public AcquiredTimerJobEntities execute(CommandContext commandContext) {
     AcquiredTimerJobEntities acquiredJobs = new AcquiredTimerJobEntities();
     List<TimerJobEntity> timerJobs = commandContext.getTimerJobEntityManager()
         .findTimerJobsToExecute(new Page(0, asyncExecutor.getMaxAsyncJobsDuePerAcquisition()));
 
-    for (TimerJobEntity job : timerJobs) {
+    timerJobs.forEach(job -> {
       lockJob(commandContext, job, asyncExecutor.getAsyncJobLockTimeInMillis());
       acquiredJobs.addJob(job);
-    }
+    });
 
     return acquiredJobs;
   }

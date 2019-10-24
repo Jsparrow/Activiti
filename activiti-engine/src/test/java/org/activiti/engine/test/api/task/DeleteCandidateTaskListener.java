@@ -4,7 +4,8 @@ import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 
 public class DeleteCandidateTaskListener implements TaskListener {
-  public void notify(DelegateTask delegateTask) {
+  @Override
+public void notify(DelegateTask delegateTask) {
     delegateTask.deleteCandidateUser("admin");
   }
 }

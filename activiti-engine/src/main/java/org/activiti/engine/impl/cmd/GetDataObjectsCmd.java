@@ -60,7 +60,8 @@ public class GetDataObjectsCmd implements Command<Map<String, DataObject>>, Seri
     this.withLocalizationFallback = withLocalizationFallback;
   }
 
-  public Map<String, DataObject> execute(CommandContext commandContext) {
+  @Override
+public Map<String, DataObject> execute(CommandContext commandContext) {
 
     // Verify existance of execution
     if (executionId == null) {
@@ -70,7 +71,7 @@ public class GetDataObjectsCmd implements Command<Map<String, DataObject>>, Seri
     ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(executionId);
 
     if (execution == null) {
-      throw new ActivitiObjectNotFoundException("execution " + executionId + " doesn't exist", Execution.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("execution ").append(executionId).append(" doesn't exist").toString(), Execution.class);
     }
     
     Map<String, VariableInstance> variables = null;

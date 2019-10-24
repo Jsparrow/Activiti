@@ -28,7 +28,8 @@ public class JSONException extends RuntimeException {
     this.cause = t;
   }
 
-  public Throwable getCause() {
+  @Override
+public Throwable getCause() {
     return this.cause;
   }
 }

@@ -27,11 +27,13 @@ import org.activiti.bpmn.model.TerminateEventDefinition;
  */
 public class TerminateEventDefinitionParser extends BaseChildElementParser {
 
-  public String getElementName() {
+  @Override
+public String getElementName() {
     return ELEMENT_EVENT_TERMINATEDEFINITION;
   }
 
-  public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
+  @Override
+public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
     if (!(parentElement instanceof EndEvent)) {
       return;
     }

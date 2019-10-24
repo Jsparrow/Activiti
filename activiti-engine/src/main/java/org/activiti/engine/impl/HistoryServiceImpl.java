@@ -49,19 +49,23 @@ public class HistoryServiceImpl extends ServiceImpl implements HistoryService {
     super(processEngineConfiguration);
   }
 
-  public HistoricProcessInstanceQuery createHistoricProcessInstanceQuery() {
+  @Override
+public HistoricProcessInstanceQuery createHistoricProcessInstanceQuery() {
     return new HistoricProcessInstanceQueryImpl(commandExecutor);
   }
 
-  public HistoricActivityInstanceQuery createHistoricActivityInstanceQuery() {
+  @Override
+public HistoricActivityInstanceQuery createHistoricActivityInstanceQuery() {
     return new HistoricActivityInstanceQueryImpl(commandExecutor);
   }
 
-  public HistoricTaskInstanceQuery createHistoricTaskInstanceQuery() {
+  @Override
+public HistoricTaskInstanceQuery createHistoricTaskInstanceQuery() {
     return new HistoricTaskInstanceQueryImpl(commandExecutor, processEngineConfiguration.getDatabaseType());
   }
 
-  public HistoricDetailQuery createHistoricDetailQuery() {
+  @Override
+public HistoricDetailQuery createHistoricDetailQuery() {
     return new HistoricDetailQueryImpl(commandExecutor);
   }
 
@@ -70,7 +74,8 @@ public class HistoryServiceImpl extends ServiceImpl implements HistoryService {
     return new NativeHistoricDetailQueryImpl(commandExecutor);
   }
 
-  public HistoricVariableInstanceQuery createHistoricVariableInstanceQuery() {
+  @Override
+public HistoricVariableInstanceQuery createHistoricVariableInstanceQuery() {
     return new HistoricVariableInstanceQueryImpl(commandExecutor);
   }
 
@@ -79,23 +84,28 @@ public class HistoryServiceImpl extends ServiceImpl implements HistoryService {
     return new NativeHistoricVariableInstanceQueryImpl(commandExecutor);
   }
 
-  public void deleteHistoricTaskInstance(String taskId) {
+  @Override
+public void deleteHistoricTaskInstance(String taskId) {
     commandExecutor.execute(new DeleteHistoricTaskInstanceCmd(taskId));
   }
 
-  public void deleteHistoricProcessInstance(String processInstanceId) {
+  @Override
+public void deleteHistoricProcessInstance(String processInstanceId) {
     commandExecutor.execute(new DeleteHistoricProcessInstanceCmd(processInstanceId));
   }
 
-  public NativeHistoricProcessInstanceQuery createNativeHistoricProcessInstanceQuery() {
+  @Override
+public NativeHistoricProcessInstanceQuery createNativeHistoricProcessInstanceQuery() {
     return new NativeHistoricProcessInstanceQueryImpl(commandExecutor);
   }
 
-  public NativeHistoricTaskInstanceQuery createNativeHistoricTaskInstanceQuery() {
+  @Override
+public NativeHistoricTaskInstanceQuery createNativeHistoricTaskInstanceQuery() {
     return new NativeHistoricTaskInstanceQueryImpl(commandExecutor);
   }
 
-  public NativeHistoricActivityInstanceQuery createNativeHistoricActivityInstanceQuery() {
+  @Override
+public NativeHistoricActivityInstanceQuery createNativeHistoricActivityInstanceQuery() {
     return new NativeHistoricActivityInstanceQueryImpl(commandExecutor);
   }
 

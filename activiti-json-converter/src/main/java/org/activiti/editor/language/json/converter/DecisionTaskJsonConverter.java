@@ -46,11 +46,13 @@ public class DecisionTaskJsonConverter extends BaseBpmnJsonConverter implements 
   public static void fillBpmnTypes(Map<Class<? extends BaseElement>, Class<? extends BaseBpmnJsonConverter>> convertersToJsonMap) {
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     return STENCIL_TASK_DECISION;
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
 
     ServiceTask serviceTask = new ServiceTask();
     serviceTask.setType(ServiceTask.DMN_TASK);

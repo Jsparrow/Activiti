@@ -37,17 +37,16 @@ public class ProcessDefinitionUtil {
 
   public static ProcessDefinition getProcessDefinition(String processDefinitionId, boolean checkCacheOnly) {
     ProcessEngineConfigurationImpl processEngineConfiguration = Context.getProcessEngineConfiguration();
-    if (checkCacheOnly) {
-      ProcessDefinitionCacheEntry cacheEntry = processEngineConfiguration.getProcessDefinitionCache().get(processDefinitionId);
-      if (cacheEntry != null) {
+    // This will check the cache in the findDeployedProcessDefinitionById method
+	if (!checkCacheOnly) {
+		// This will check the cache in the findDeployedProcessDefinitionById method
+		  return processEngineConfiguration.getDeploymentManager().findDeployedProcessDefinitionById(processDefinitionId);
+	}
+	ProcessDefinitionCacheEntry cacheEntry = processEngineConfiguration.getProcessDefinitionCache().get(processDefinitionId);
+	if (cacheEntry != null) {
         return cacheEntry.getProcessDefinition();
       }
-      return null;
-      
-    } else {
-      // This will check the cache in the findDeployedProcessDefinitionById method
-      return processEngineConfiguration.getDeploymentManager().findDeployedProcessDefinitionById(processDefinitionId);
-    }
+	return null;
   }
 
   public static Process getProcess(String processDefinitionId) {

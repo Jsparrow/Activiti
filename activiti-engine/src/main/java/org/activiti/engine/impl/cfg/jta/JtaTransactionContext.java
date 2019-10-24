@@ -26,23 +26,28 @@ import org.activiti.engine.impl.cfg.TransactionListener;
 import org.activiti.engine.impl.cfg.TransactionState;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.CommandContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class JtaTransactionContext implements TransactionContext {
 
-  protected final TransactionManager transactionManager;
+  private static final Logger logger = LoggerFactory.getLogger(JtaTransactionContext.class);
+protected final TransactionManager transactionManager;
 
   public JtaTransactionContext(TransactionManager transactionManager) {
     this.transactionManager = transactionManager;
   }
 
-  public void commit() {
+  @Override
+public void commit() {
     // managed transaction, ignore
   }
 
-  public void rollback() {
+  @Override
+public void rollback() {
     // managed transaction, mark rollback-only if not done so already.
     try {
       Transaction transaction = getTransaction();
@@ -51,9 +56,11 @@ public class JtaTransactionContext implements TransactionContext {
         transaction.setRollbackOnly();
       }
     } catch (IllegalStateException e) {
-      throw new ActivitiException("Unexpected IllegalStateException while marking transaction rollback only");
+      logger.error(e.getMessage(), e);
+	throw new ActivitiException("Unexpected IllegalStateException while marking transaction rollback only");
     } catch (SystemException e) {
-      throw new ActivitiException("SystemException while marking transaction rollback only");
+      logger.error(e.getMessage(), e);
+	throw new ActivitiException("SystemException while marking transaction rollback only");
     }
   }
 
@@ -65,7 +72,8 @@ public class JtaTransactionContext implements TransactionContext {
     }
   }
 
-  public void addTransactionListener(TransactionState transactionState, final TransactionListener transactionListener) {
+  @Override
+public void addTransactionListener(TransactionState transactionState, final TransactionListener transactionListener) {
     Transaction transaction = getTransaction();
     CommandContext commandContext = Context.getCommandContext();
     try {
@@ -91,16 +99,18 @@ public class JtaTransactionContext implements TransactionContext {
       this.commandContext = commandContext;
     }
 
-    public void beforeCompletion() {
-      if (TransactionState.COMMITTING.equals(transactionState) || TransactionState.ROLLINGBACK.equals(transactionState)) {
+    @Override
+	public void beforeCompletion() {
+      if (TransactionState.COMMITTING == transactionState || TransactionState.ROLLINGBACK == transactionState) {
         transactionListener.execute(commandContext);
       }
     }
 
-    public void afterCompletion(int status) {
-      if (Status.STATUS_ROLLEDBACK == status && TransactionState.ROLLED_BACK.equals(transactionState)) {
+    @Override
+	public void afterCompletion(int status) {
+      if (Status.STATUS_ROLLEDBACK == status && TransactionState.ROLLED_BACK == transactionState) {
         transactionListener.execute(commandContext);
-      } else if (Status.STATUS_COMMITTED == status && TransactionState.COMMITTED.equals(transactionState)) {
+      } else if (Status.STATUS_COMMITTED == status && TransactionState.COMMITTED == transactionState) {
         transactionListener.execute(commandContext);
       }
     }

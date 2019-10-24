@@ -26,7 +26,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class SequenceFlowXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return SequenceFlow.class;
   }
 
@@ -63,11 +64,12 @@ public class SequenceFlowXMLConverter extends BaseBpmnXMLConverter {
   protected void writeAdditionalChildElements(BaseElement element, BpmnModel model, XMLStreamWriter xtw) throws Exception {
     SequenceFlow sequenceFlow = (SequenceFlow) element;
 
-    if (StringUtils.isNotEmpty(sequenceFlow.getConditionExpression())) {
-      xtw.writeStartElement(ELEMENT_FLOW_CONDITION);
-      xtw.writeAttribute(XSI_PREFIX, XSI_NAMESPACE, "type", "tFormalExpression");
-      xtw.writeCData(sequenceFlow.getConditionExpression());
-      xtw.writeEndElement();
-    }
+    if (!StringUtils.isNotEmpty(sequenceFlow.getConditionExpression())) {
+		return;
+	}
+	xtw.writeStartElement(ELEMENT_FLOW_CONDITION);
+	xtw.writeAttribute(XSI_PREFIX, XSI_NAMESPACE, "type", "tFormalExpression");
+	xtw.writeCData(sequenceFlow.getConditionExpression());
+	xtw.writeEndElement();
   }
 }

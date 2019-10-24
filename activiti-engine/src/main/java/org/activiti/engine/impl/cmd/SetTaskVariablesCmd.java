@@ -36,19 +36,16 @@ public class SetTaskVariablesCmd extends NeedsActiveTaskCmd<Object> {
     this.isLocal = isLocal;
   }
 
-  protected Object execute(CommandContext commandContext, TaskEntity task) {
+  @Override
+protected Object execute(CommandContext commandContext, TaskEntity task) {
     if (isLocal) {
       if (variables != null) {
-        for (String variableName : variables.keySet()) {
-          task.setVariableLocal(variableName, variables.get(variableName), false);
-        }
+        variables.keySet().forEach(variableName -> task.setVariableLocal(variableName, variables.get(variableName), false));
       }
 
     } else {
       if (variables != null) {
-        for (String variableName : variables.keySet()) {
-          task.setVariable(variableName, variables.get(variableName), false);
-        }
+        variables.keySet().forEach(variableName -> task.setVariable(variableName, variables.get(variableName), false));
       }
     }
 

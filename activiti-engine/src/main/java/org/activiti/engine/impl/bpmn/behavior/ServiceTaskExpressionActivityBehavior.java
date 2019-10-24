@@ -50,7 +50,8 @@ public class ServiceTaskExpressionActivityBehavior extends TaskActivityBehavior 
     this.resultVariable = resultVariable;
   }
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     Object value = null;
     try {
       boolean isSkipExpressionEnabled = SkipExpressionUtil.isSkipExpressionEnabled(execution, skipExpression);

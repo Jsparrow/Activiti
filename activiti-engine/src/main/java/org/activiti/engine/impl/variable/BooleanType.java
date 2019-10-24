@@ -19,22 +19,26 @@ public class BooleanType implements VariableType {
 
   private static final long serialVersionUID = 1L;
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return "boolean";
   }
 
-  public boolean isCachable() {
+  @Override
+public boolean isCachable() {
     return true;
   }
 
-  public Object getValue(ValueFields valueFields) {
+  @Override
+public Object getValue(ValueFields valueFields) {
     if (valueFields.getLongValue() != null) {
       return valueFields.getLongValue() == 1;
     }
     return null;
   }
 
-  public void setValue(Object value, ValueFields valueFields) {
+  @Override
+public void setValue(Object value, ValueFields valueFields) {
     if (value == null) {
       valueFields.setLongValue(null);
     } else {
@@ -47,7 +51,8 @@ public class BooleanType implements VariableType {
     }
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     if (value == null) {
       return true;
     }

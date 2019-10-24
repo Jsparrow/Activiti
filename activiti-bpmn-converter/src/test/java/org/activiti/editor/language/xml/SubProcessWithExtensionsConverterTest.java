@@ -41,6 +41,119 @@ public class SubProcessWithExtensionsConverterTest extends AbstractConverterTest
   private Localization localization = new Localization();
 
   /*
+   * End of inner classes
+   */
+
+  @Test
+  public void convertXMLToModel() throws Exception {
+    BpmnModel bpmnModel = readXMLFile();
+    validateModel(bpmnModel);
+  }
+
+@Test
+  public void convertModelToXML() throws Exception {
+    BpmnModel bpmnModel = readXMLFile();
+    BpmnModel parsedModel = exportAndReadXMLFile(bpmnModel);
+    validateModel(parsedModel);
+    deployProcess(parsedModel);
+  }
+
+@Override
+protected String getResource() {
+    return "subprocessmodel_with_extensions.bpmn";
+  }
+
+private void validateModel(BpmnModel model) {
+    FlowElement flowElement = model.getMainProcess().getFlowElement("start1");
+    assertNotNull(flowElement);
+    assertTrue(flowElement instanceof StartEvent);
+    assertEquals("start1", flowElement.getId());
+
+    flowElement = model.getMainProcess().getFlowElement("subprocess1");
+    assertNotNull(flowElement);
+    assertTrue(flowElement instanceof SubProcess);
+    assertEquals("subprocess1", flowElement.getId());
+    SubProcess subProcess = (SubProcess) flowElement;
+    assertTrue(subProcess.getLoopCharacteristics().isSequential());
+    assertEquals("10", subProcess.getLoopCharacteristics().getLoopCardinality());
+    assertEquals("${assignee == \"\"}", subProcess.getLoopCharacteristics().getCompletionCondition());
+    assertTrue(subProcess.getFlowElements().size() == 5);
+
+    /*
+     * Verify Subprocess attributes extension
+     */
+    Map<String, String> attributes = getSubprocessAttributes(flowElement);
+    assertEquals(2, attributes.size());
+    attributes.keySet().forEach(key -> {
+      if ("Attr3".equals(key)) {
+        assertTrue("3".equals(attributes.get(key)));
+      } else if ("Attr4".equals(key)) {
+        assertTrue("4".equals(attributes.get(key)));
+      } else {
+        fail("Unknown key value");
+      }
+    });
+
+    /*
+     * Verify Subprocess localization extension
+     */
+    localization = getLocalization(flowElement);
+    assertEquals("rbkfn-2", localization.getResourceBundleKeyForName());
+    assertEquals("rbkfd-2", localization.getResourceBundleKeyForDescription());
+    assertEquals("leifn-2", localization.getLabeledEntityIdForName());
+    assertEquals("leifd-2", localization.getLabeledEntityIdForDescription());
+  }
+
+protected static String getExtensionValue(String key, ValuedDataObject dataObj) {
+    Map<String, List<ExtensionElement>> extensionElements = dataObj.getExtensionElements();
+
+    if (!extensionElements.isEmpty()) {
+      return extensionElements.get(key).get(0).getElementText();
+    }
+    return null;
+  }
+
+protected static ExtensionElement getExtensionElement(String key, ValuedDataObject dataObj) {
+    Map<String, List<ExtensionElement>> extensionElements = dataObj.getExtensionElements();
+
+    if (!extensionElements.isEmpty()) {
+      return extensionElements.get(key).get(0);
+    }
+    return null;
+  }
+
+protected Map<String, String> getSubprocessAttributes(BaseElement bObj) {
+    Map<String, String> attributes = null;
+
+    if (null != bObj) {
+      List<ExtensionElement> attributesExtension = bObj.getExtensionElements().get(ELEMENT_ATTRIBUTES);
+
+      if (null != attributesExtension && !attributesExtension.isEmpty()) {
+        attributes = new HashMap<>();
+        List<ExtensionElement> attributeExtensions = attributesExtension.get(0).getChildElements().get(ELEMENT_ATTRIBUTE);
+
+        for (ExtensionElement attributeExtension : attributeExtensions) {
+          attributes.put(attributeExtension.getAttributeValue(YOURCO_EXTENSIONS_NAMESPACE, ATTRIBUTE_NAME), attributeExtension.getAttributeValue(YOURCO_EXTENSIONS_NAMESPACE, ATTRIBUTE_VALUE));
+        }
+      }
+    }
+    return attributes;
+  }
+
+protected Localization getLocalization(BaseElement bObj) {
+    List<ExtensionElement> i18lnExtension = bObj.getExtensionElements().get(ELEMENT_I18LN_LOCALIZATION);
+
+    if (!i18lnExtension.isEmpty()) {
+      Map<String, List<ExtensionAttribute>> extensionAttributes = i18lnExtension.get(0).getAttributes();
+      localization.setLabeledEntityIdForName(extensionAttributes.get(ATTRIBUTE_LABELED_ENTITY_ID_FOR_NAME).get(0).getValue());
+      localization.setLabeledEntityIdForDescription(extensionAttributes.get(ATTRIBUTE_LABELED_ENTITY_ID_FOR_DESCRIPTION).get(0).getValue());
+      localization.setResourceBundleKeyForName(extensionAttributes.get(ATTRIBUTE_RESOURCE_BUNDLE_KEY_FOR_NAME).get(0).getValue());
+      localization.setResourceBundleKeyForDescription(extensionAttributes.get(ATTRIBUTE_RESOURCE_BUNDLE_KEY_FOR_DESCRIPTION).get(0).getValue());
+    }
+    return localization;
+  }
+
+/*
    * Inner class used to hold localization DataObject extension values
    */
   public class Localization {
@@ -93,117 +206,5 @@ public class SubProcessWithExtensionsConverterTest extends AbstractConverterTest
       sb.append("]");
       return sb.toString();
     }
-  }
-
-  /*
-   * End of inner classes
-   */
-
-  @Test
-  public void convertXMLToModel() throws Exception {
-    BpmnModel bpmnModel = readXMLFile();
-    validateModel(bpmnModel);
-  }
-
-  @Test
-  public void convertModelToXML() throws Exception {
-    BpmnModel bpmnModel = readXMLFile();
-    BpmnModel parsedModel = exportAndReadXMLFile(bpmnModel);
-    validateModel(parsedModel);
-    deployProcess(parsedModel);
-  }
-
-  protected String getResource() {
-    return "subprocessmodel_with_extensions.bpmn";
-  }
-
-  private void validateModel(BpmnModel model) {
-    FlowElement flowElement = model.getMainProcess().getFlowElement("start1");
-    assertNotNull(flowElement);
-    assertTrue(flowElement instanceof StartEvent);
-    assertEquals("start1", flowElement.getId());
-
-    flowElement = model.getMainProcess().getFlowElement("subprocess1");
-    assertNotNull(flowElement);
-    assertTrue(flowElement instanceof SubProcess);
-    assertEquals("subprocess1", flowElement.getId());
-    SubProcess subProcess = (SubProcess) flowElement;
-    assertTrue(subProcess.getLoopCharacteristics().isSequential());
-    assertEquals("10", subProcess.getLoopCharacteristics().getLoopCardinality());
-    assertEquals("${assignee == \"\"}", subProcess.getLoopCharacteristics().getCompletionCondition());
-    assertTrue(subProcess.getFlowElements().size() == 5);
-
-    /*
-     * Verify Subprocess attributes extension
-     */
-    Map<String, String> attributes = getSubprocessAttributes(flowElement);
-    assertEquals(2, attributes.size());
-    for (String key : attributes.keySet()) {
-      if (key.equals("Attr3")) {
-        assertTrue("3".equals(attributes.get(key)));
-      } else if (key.equals("Attr4")) {
-        assertTrue("4".equals(attributes.get(key)));
-      } else {
-        fail("Unknown key value");
-      }
-    }
-
-    /*
-     * Verify Subprocess localization extension
-     */
-    localization = getLocalization(flowElement);
-    assertEquals("rbkfn-2", localization.getResourceBundleKeyForName());
-    assertEquals("rbkfd-2", localization.getResourceBundleKeyForDescription());
-    assertEquals("leifn-2", localization.getLabeledEntityIdForName());
-    assertEquals("leifd-2", localization.getLabeledEntityIdForDescription());
-  }
-
-  protected static String getExtensionValue(String key, ValuedDataObject dataObj) {
-    Map<String, List<ExtensionElement>> extensionElements = dataObj.getExtensionElements();
-
-    if (!extensionElements.isEmpty()) {
-      return extensionElements.get(key).get(0).getElementText();
-    }
-    return null;
-  }
-
-  protected static ExtensionElement getExtensionElement(String key, ValuedDataObject dataObj) {
-    Map<String, List<ExtensionElement>> extensionElements = dataObj.getExtensionElements();
-
-    if (!extensionElements.isEmpty()) {
-      return extensionElements.get(key).get(0);
-    }
-    return null;
-  }
-
-  protected Map<String, String> getSubprocessAttributes(BaseElement bObj) {
-    Map<String, String> attributes = null;
-
-    if (null != bObj) {
-      List<ExtensionElement> attributesExtension = bObj.getExtensionElements().get(ELEMENT_ATTRIBUTES);
-
-      if (null != attributesExtension && !attributesExtension.isEmpty()) {
-        attributes = new HashMap<String, String>();
-        List<ExtensionElement> attributeExtensions = attributesExtension.get(0).getChildElements().get(ELEMENT_ATTRIBUTE);
-
-        for (ExtensionElement attributeExtension : attributeExtensions) {
-          attributes.put(attributeExtension.getAttributeValue(YOURCO_EXTENSIONS_NAMESPACE, ATTRIBUTE_NAME), attributeExtension.getAttributeValue(YOURCO_EXTENSIONS_NAMESPACE, ATTRIBUTE_VALUE));
-        }
-      }
-    }
-    return attributes;
-  }
-
-  protected Localization getLocalization(BaseElement bObj) {
-    List<ExtensionElement> i18lnExtension = bObj.getExtensionElements().get(ELEMENT_I18LN_LOCALIZATION);
-
-    if (!i18lnExtension.isEmpty()) {
-      Map<String, List<ExtensionAttribute>> extensionAttributes = i18lnExtension.get(0).getAttributes();
-      localization.setLabeledEntityIdForName(extensionAttributes.get(ATTRIBUTE_LABELED_ENTITY_ID_FOR_NAME).get(0).getValue());
-      localization.setLabeledEntityIdForDescription(extensionAttributes.get(ATTRIBUTE_LABELED_ENTITY_ID_FOR_DESCRIPTION).get(0).getValue());
-      localization.setResourceBundleKeyForName(extensionAttributes.get(ATTRIBUTE_RESOURCE_BUNDLE_KEY_FOR_NAME).get(0).getValue());
-      localization.setResourceBundleKeyForDescription(extensionAttributes.get(ATTRIBUTE_RESOURCE_BUNDLE_KEY_FOR_DESCRIPTION).get(0).getValue());
-    }
-    return localization;
   }
 }

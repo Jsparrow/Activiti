@@ -5,10 +5,10 @@ import java.util.List;
 
 public class IOSpecification extends BaseElement {
 
-  protected List<DataSpec> dataInputs = new ArrayList<DataSpec>();
-  protected List<DataSpec> dataOutputs = new ArrayList<DataSpec>();
-  protected List<String> dataInputRefs = new ArrayList<String>();
-  protected List<String> dataOutputRefs = new ArrayList<String>();
+  protected List<DataSpec> dataInputs = new ArrayList<>();
+  protected List<DataSpec> dataOutputs = new ArrayList<>();
+  protected List<String> dataInputRefs = new ArrayList<>();
+  protected List<String> dataOutputRefs = new ArrayList<>();
 
   public List<DataSpec> getDataInputs() {
     return dataInputs;
@@ -42,28 +42,25 @@ public class IOSpecification extends BaseElement {
     this.dataOutputRefs = dataOutputRefs;
   }
 
-  public IOSpecification clone() {
+  @Override
+public IOSpecification clone() {
     IOSpecification clone = new IOSpecification();
     clone.setValues(this);
     return clone;
   }
 
   public void setValues(IOSpecification otherSpec) {
-    dataInputs = new ArrayList<DataSpec>();
+    dataInputs = new ArrayList<>();
     if (otherSpec.getDataInputs() != null && !otherSpec.getDataInputs().isEmpty()) {
-      for (DataSpec dataSpec : otherSpec.getDataInputs()) {
-        dataInputs.add(dataSpec.clone());
-      }
+      otherSpec.getDataInputs().forEach(dataSpec -> dataInputs.add(dataSpec.clone()));
     }
 
-    dataOutputs = new ArrayList<DataSpec>();
+    dataOutputs = new ArrayList<>();
     if (otherSpec.getDataOutputs() != null && !otherSpec.getDataOutputs().isEmpty()) {
-      for (DataSpec dataSpec : otherSpec.getDataOutputs()) {
-        dataOutputs.add(dataSpec.clone());
-      }
+      otherSpec.getDataOutputs().forEach(dataSpec -> dataOutputs.add(dataSpec.clone()));
     }
 
-    dataInputRefs = new ArrayList<String>(otherSpec.getDataInputRefs());
-    dataOutputRefs = new ArrayList<String>(otherSpec.getDataOutputRefs());
+    dataInputRefs = new ArrayList<>(otherSpec.getDataInputRefs());
+    dataOutputRefs = new ArrayList<>(otherSpec.getDataOutputRefs());
   }
 }

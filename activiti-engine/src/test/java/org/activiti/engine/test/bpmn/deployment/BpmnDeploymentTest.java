@@ -31,6 +31,8 @@ import org.activiti.engine.impl.util.ReflectUtil;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.test.Deployment;
 import org.activiti.validation.validator.Problems;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -38,7 +40,9 @@ import org.activiti.validation.validator.Problems;
  */
 public class BpmnDeploymentTest extends PluggableActivitiTestCase {
 
-  @Deployment
+  private static final Logger logger = LoggerFactory.getLogger(BpmnDeploymentTest.class);
+
+@Deployment
   public void testGetBpmnXmlFileThroughService() {
     String deploymentId = repositoryService.createDeploymentQuery().singleResult().getId();
     List<String> deploymentResources = repositoryService.getDeploymentResourceNames(deploymentId);
@@ -155,7 +159,8 @@ public class BpmnDeploymentTest extends PluggableActivitiTestCase {
       repositoryService.createDeployment().enableDuplicateFiltering().addClasspathResource(bpmnResourceName).addClasspathResource(bpmnResourceName2).name("duplicateAtTheSameTime").deploy();
       fail();
     } catch (Exception e) {
-      // Verify that nothing is deployed
+      logger.error(e.getMessage(), e);
+	// Verify that nothing is deployed
       assertEquals(0, repositoryService.createDeploymentQuery().count());
     }
   }
@@ -176,9 +181,7 @@ public class BpmnDeploymentTest extends PluggableActivitiTestCase {
     List<org.activiti.engine.repository.Deployment> deploymentList = repositoryService.createDeploymentQuery().list();
     assertEquals(2, deploymentList.size());
 
-    for (org.activiti.engine.repository.Deployment deployment : deploymentList) {
-      repositoryService.deleteDeployment(deployment.getId());
-    }
+    deploymentList.forEach(deployment -> repositoryService.deleteDeployment(deployment.getId()));
   }
 
   @Deployment(resources = { "org/activiti/engine/test/bpmn/deployment/BpmnDeploymentTest.testProcessDiagramResource.bpmn20.xml",
@@ -239,9 +242,7 @@ public class BpmnDeploymentTest extends PluggableActivitiTestCase {
     // each tenant
     assertEquals(2, deploymentList.size());
 
-    for (org.activiti.engine.repository.Deployment deployment : deploymentList) {
-      repositoryService.deleteDeployment(deployment.getId());
-    }
+    deploymentList.forEach(deployment -> repositoryService.deleteDeployment(deployment.getId()));
   }
 
 }

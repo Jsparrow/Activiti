@@ -59,7 +59,8 @@ public class DeleteIdentityLinkForProcessInstanceCmd implements Command<Object>,
     }
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     ExecutionEntity processInstance = commandContext.getExecutionEntityManager().findById(processInstanceId);
 
     if (processInstance == null) {

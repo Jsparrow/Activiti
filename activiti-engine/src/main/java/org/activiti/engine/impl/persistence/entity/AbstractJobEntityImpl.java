@@ -22,6 +22,8 @@ import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.impl.db.BulkDeleteable;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -31,7 +33,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class AbstractJobEntityImpl extends AbstractEntity implements AbstractJobEntity, BulkDeleteable, Serializable {
 
-  private static final long serialVersionUID = 1L;
+  private static final Logger logger = LoggerFactory.getLogger(AbstractJobEntityImpl.class);
+
+private static final long serialVersionUID = 1L;
 
   protected Date duedate;
 
@@ -56,8 +60,9 @@ public abstract class AbstractJobEntityImpl extends AbstractEntity implements Ab
   protected String tenantId = ProcessEngineConfiguration.NO_TENANT_ID;
   protected String jobType;
 
-  public Object getPersistentState() {
-    Map<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    Map<String, Object> persistentState = new HashMap<>();
     persistentState.put("retries", retries);
     persistentState.put("duedate", duedate);
     persistentState.put("exceptionMessage", exceptionMessage);
@@ -71,117 +76,145 @@ public abstract class AbstractJobEntityImpl extends AbstractEntity implements Ab
 
   // getters and setters ////////////////////////////////////////////////////////
 
-  public void setExecution(ExecutionEntity execution) {
+  @Override
+public void setExecution(ExecutionEntity execution) {
     executionId = execution.getId();
     processInstanceId = execution.getProcessInstanceId();
     processDefinitionId = execution.getProcessDefinitionId();
   }
 
-  public Date getDuedate() {
+  @Override
+public Date getDuedate() {
     return duedate;
   }
 
-  public void setDuedate(Date duedate) {
+  @Override
+public void setDuedate(Date duedate) {
     this.duedate = duedate;
   }
 
-  public String getExecutionId() {
+  @Override
+public String getExecutionId() {
     return executionId;
   }
 
-  public void setExecutionId(String executionId) {
+  @Override
+public void setExecutionId(String executionId) {
     this.executionId = executionId;
   }
 
-  public int getRetries() {
+  @Override
+public int getRetries() {
     return retries;
   }
 
-  public void setRetries(int retries) {
+  @Override
+public void setRetries(int retries) {
     this.retries = retries;
   }
 
-  public String getProcessInstanceId() {
+  @Override
+public String getProcessInstanceId() {
     return processInstanceId;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
+  @Override
+public void setProcessInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
   }
 
-  public boolean isExclusive() {
+  @Override
+public boolean isExclusive() {
     return isExclusive;
   }
 
-  public void setExclusive(boolean isExclusive) {
+  @Override
+public void setExclusive(boolean isExclusive) {
     this.isExclusive = isExclusive;
   }
 
-  public String getProcessDefinitionId() {
+  @Override
+public String getProcessDefinitionId() {
     return processDefinitionId;
   }
 
-  public void setProcessDefinitionId(String processDefinitionId) {
+  @Override
+public void setProcessDefinitionId(String processDefinitionId) {
     this.processDefinitionId = processDefinitionId;
   }
 
-  public String getRepeat() {
+  @Override
+public String getRepeat() {
     return repeat;
   }
 
-  public void setRepeat(String repeat) {
+  @Override
+public void setRepeat(String repeat) {
     this.repeat = repeat;
   }
 
-  public Date getEndDate() {
+  @Override
+public Date getEndDate() {
     return endDate;
   }
 
-  public void setEndDate(Date endDate) {
+  @Override
+public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
 
-  public int getMaxIterations() {
+  @Override
+public int getMaxIterations() {
     return maxIterations;
   }
 
-  public void setMaxIterations(int maxIterations) {
+  @Override
+public void setMaxIterations(int maxIterations) {
     this.maxIterations = maxIterations;
   }
   
-  public String getJobHandlerType() {
+  @Override
+public String getJobHandlerType() {
     return jobHandlerType;
   }
 
-  public void setJobHandlerType(String jobHandlerType) {
+  @Override
+public void setJobHandlerType(String jobHandlerType) {
     this.jobHandlerType = jobHandlerType;
   }
 
-  public String getJobHandlerConfiguration() {
+  @Override
+public String getJobHandlerConfiguration() {
     return jobHandlerConfiguration;
   }
 
-  public void setJobHandlerConfiguration(String jobHandlerConfiguration) {
+  @Override
+public void setJobHandlerConfiguration(String jobHandlerConfiguration) {
     this.jobHandlerConfiguration = jobHandlerConfiguration;
   }
 
-  public String getJobType() {
+  @Override
+public String getJobType() {
     return jobType;
   }
   
-  public void setJobType(String jobType) {
+  @Override
+public void setJobType(String jobType) {
     this.jobType = jobType;
   }
   
-  public String getTenantId() {
+  @Override
+public String getTenantId() {
     return tenantId;
   }
 
-  public void setTenantId(String tenantId) {
+  @Override
+public void setTenantId(String tenantId) {
     this.tenantId = tenantId;
   }
   
-  public String getExceptionStacktrace() {
+  @Override
+public String getExceptionStacktrace() {
     if (exceptionByteArrayRef == null) {
       return null;
     }
@@ -194,26 +227,31 @@ public abstract class AbstractJobEntityImpl extends AbstractEntity implements Ab
     try {
       return new String(bytes, "UTF-8");
     } catch (UnsupportedEncodingException e) {
-      throw new ActivitiException("UTF-8 is not a supported encoding");
+      logger.error(e.getMessage(), e);
+	throw new ActivitiException("UTF-8 is not a supported encoding");
     }
   }
 
-  public void setExceptionStacktrace(String exception) {
+  @Override
+public void setExceptionStacktrace(String exception) {
     if (exceptionByteArrayRef == null) {
       exceptionByteArrayRef = new ByteArrayRef();
     }
     exceptionByteArrayRef.setValue("stacktrace", getUtf8Bytes(exception));
   }
 
-  public String getExceptionMessage() {
+  @Override
+public String getExceptionMessage() {
     return exceptionMessage;
   }
 
-  public void setExceptionMessage(String exceptionMessage) {
+  @Override
+public void setExceptionMessage(String exceptionMessage) {
     this.exceptionMessage = StringUtils.abbreviate(exceptionMessage, MAX_EXCEPTION_MESSAGE_LENGTH);
   }
 
-  public ByteArrayRef getExceptionByteArrayRef() {
+  @Override
+public ByteArrayRef getExceptionByteArrayRef() {
     return exceptionByteArrayRef;
   }
   
@@ -224,13 +262,14 @@ public abstract class AbstractJobEntityImpl extends AbstractEntity implements Ab
     try {
       return str.getBytes("UTF-8");
     } catch (UnsupportedEncodingException e) {
-      throw new ActivitiException("UTF-8 is not a supported encoding");
+      logger.error(e.getMessage(), e);
+	throw new ActivitiException("UTF-8 is not a supported encoding");
     }
   }
   
   @Override
   public String toString() {
-    return getClass().getName() + " [id=" + id + "]";
+    return new StringBuilder().append(getClass().getName()).append(" [id=").append(id).append("]").toString();
   }
 
 }

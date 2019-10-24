@@ -36,7 +36,8 @@ public class DataObjectImpl implements DataObject {
     this.dataObjectDefinitionKey = dataObjectDefinitionKey;
   }
   
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
   
@@ -44,7 +45,8 @@ public class DataObjectImpl implements DataObject {
     this.name = name;
   }
   
-  public String getLocalizedName() {
+  @Override
+public String getLocalizedName() {
     if (localizedName != null && localizedName.length() > 0) {
       return localizedName;
     } else {
@@ -56,7 +58,8 @@ public class DataObjectImpl implements DataObject {
     this.localizedName = localizedName;
   }
   
-  public String getDescription() {
+  @Override
+public String getDescription() {
     if (localizedDescription != null && localizedDescription.length() > 0) {
       return localizedDescription;
     } else {
@@ -68,7 +71,8 @@ public class DataObjectImpl implements DataObject {
     this.description = description;
   }
   
-  public Object getValue() {
+  @Override
+public Object getValue() {
     return value;
   }
   
@@ -76,7 +80,8 @@ public class DataObjectImpl implements DataObject {
     this.value = value;
   }
   
-  public String getType() {
+  @Override
+public String getType() {
     return type;
   }
   
@@ -85,7 +90,8 @@ public class DataObjectImpl implements DataObject {
   }
 
   
-  public String getDataObjectDefinitionKey() {
+  @Override
+public String getDataObjectDefinitionKey() {
     return dataObjectDefinitionKey;
   }
 

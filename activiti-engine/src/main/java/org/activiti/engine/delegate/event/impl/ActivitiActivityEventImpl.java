@@ -41,7 +41,8 @@ public class ActivitiActivityEventImpl extends ActivitiEventImpl implements Acti
     this.activityId = activityId;
   }
 
-  public String getActivityName() {
+  @Override
+public String getActivityName() {
     return activityName;
   }
 
@@ -58,7 +59,8 @@ public class ActivitiActivityEventImpl extends ActivitiEventImpl implements Acti
     this.activityType = activityType;
   }
 
-  public String getBehaviorClass() {
+  @Override
+public String getBehaviorClass() {
     return behaviorClass;
   }
 

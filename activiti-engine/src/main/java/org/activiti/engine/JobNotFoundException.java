@@ -15,7 +15,7 @@ public class JobNotFoundException extends ActivitiObjectNotFoundException {
   private String jobId;
 
   public JobNotFoundException(String jobId) {
-    super("No job found with id '" + jobId + "'.", Job.class);
+    super(new StringBuilder().append("No job found with id '").append(jobId).append("'.").toString(), Job.class);
     this.jobId = jobId;
   }
 

@@ -33,12 +33,13 @@ public class GetDeploymentProcessModelCmd implements Command<InputStream>, Seria
 
   public GetDeploymentProcessModelCmd(String processDefinitionId) {
     if (processDefinitionId == null || processDefinitionId.length() < 1) {
-      throw new ActivitiIllegalArgumentException("The process definition id is mandatory, but '" + processDefinitionId + "' has been provided.");
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("The process definition id is mandatory, but '").append(processDefinitionId).append("' has been provided.").toString());
     }
     this.processDefinitionId = processDefinitionId;
   }
 
-  public InputStream execute(CommandContext commandContext) {
+  @Override
+public InputStream execute(CommandContext commandContext) {
     ProcessDefinition processDefinition = commandContext.getProcessEngineConfiguration().getDeploymentManager().findDeployedProcessDefinitionById(processDefinitionId);
     String deploymentId = processDefinition.getDeploymentId();
     String resourceName = processDefinition.getResourceName();

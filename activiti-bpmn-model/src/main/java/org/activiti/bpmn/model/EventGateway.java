@@ -14,7 +14,8 @@ package org.activiti.bpmn.model;
 
 public class EventGateway extends Gateway {
 
-  public EventGateway clone() {
+  @Override
+public EventGateway clone() {
     EventGateway clone = new EventGateway();
     clone.setValues(this);
     return clone;

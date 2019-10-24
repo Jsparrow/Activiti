@@ -33,7 +33,7 @@ public class IntermediateThrowEventValidator extends ProcessLevelValidator {
   @Override
   protected void executeValidation(BpmnModel bpmnModel, Process process, List<ValidationError> errors) {
     List<ThrowEvent> throwEvents = process.findFlowElementsOfType(ThrowEvent.class);
-    for (ThrowEvent throwEvent : throwEvents) {
+    throwEvents.forEach(throwEvent -> {
       EventDefinition eventDefinition = null;
       if (!throwEvent.getEventDefinitions().isEmpty()) {
         eventDefinition = throwEvent.getEventDefinitions().get(0);
@@ -45,7 +45,7 @@ public class IntermediateThrowEventValidator extends ProcessLevelValidator {
           && !(eventDefinition instanceof MessageEventDefinition)) {
         addError(errors, Problems.THROW_EVENT_INVALID_EVENTDEFINITION, process, throwEvent, "Unsupported intermediate throw event type");
       }
-    }
+    });
   }
 
 }

@@ -34,12 +34,17 @@ public class ProcessDefinitionsTest extends PluggableActivitiTestCase {
   private static final String TARGET_NAMESPACE = "targetNamespace='http://activiti.org/BPMN20'";
 
   public void testGetProcessDefinitions() {
-    List<String> deploymentIds = new ArrayList<String>();
-    deploymentIds.add(deployProcessString(("<definitions " + NAMESPACE + " " + TARGET_NAMESPACE + ">" + "  <process id='IDR' name='Insurance Damage Report 1' />" + "</definitions>")));
-    deploymentIds.add(deployProcessString(("<definitions " + NAMESPACE + " " + TARGET_NAMESPACE + ">" + "  <process id='IDR' name='Insurance Damage Report 2' />" + "</definitions>")));
-    deploymentIds.add(deployProcessString(("<definitions " + NAMESPACE + " " + TARGET_NAMESPACE + ">" + "  <process id='IDR' name='Insurance Damage Report 3' />" + "</definitions>")));
-    deploymentIds.add(deployProcessString(("<definitions " + NAMESPACE + " " + TARGET_NAMESPACE + ">" + "  <process id='EN' name='Expense Note 1' />" + "</definitions>")));
-    deploymentIds.add(deployProcessString(("<definitions " + NAMESPACE + " " + TARGET_NAMESPACE + ">" + "  <process id='EN' name='Expense Note 2' />" + "</definitions>")));
+    List<String> deploymentIds = new ArrayList<>();
+    deploymentIds.add(deployProcessString((new StringBuilder().append("<definitions ").append(NAMESPACE).append(" ").append(TARGET_NAMESPACE).append(">").append("  <process id='IDR' name='Insurance Damage Report 1' />").append("</definitions>")
+			.toString())));
+    deploymentIds.add(deployProcessString((new StringBuilder().append("<definitions ").append(NAMESPACE).append(" ").append(TARGET_NAMESPACE).append(">").append("  <process id='IDR' name='Insurance Damage Report 2' />").append("</definitions>")
+			.toString())));
+    deploymentIds.add(deployProcessString((new StringBuilder().append("<definitions ").append(NAMESPACE).append(" ").append(TARGET_NAMESPACE).append(">").append("  <process id='IDR' name='Insurance Damage Report 3' />").append("</definitions>")
+			.toString())));
+    deploymentIds.add(deployProcessString((new StringBuilder().append("<definitions ").append(NAMESPACE).append(" ").append(TARGET_NAMESPACE).append(">").append("  <process id='EN' name='Expense Note 1' />").append("</definitions>")
+			.toString())));
+    deploymentIds.add(deployProcessString((new StringBuilder().append("<definitions ").append(NAMESPACE).append(" ").append(TARGET_NAMESPACE).append(">").append("  <process id='EN' name='Expense Note 2' />").append("</definitions>")
+			.toString())));
 
     List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery().orderByProcessDefinitionKey().asc().orderByProcessDefinitionVersion().desc().list();
 
@@ -77,7 +82,7 @@ public class ProcessDefinitionsTest extends PluggableActivitiTestCase {
     assertTrue(processDefinition.getId().startsWith("IDR:1"));
     assertEquals(1, processDefinition.getVersion());
 
-    Set<String> queryDeploymentIds = new HashSet<String>();
+    Set<String> queryDeploymentIds = new HashSet<>();
     queryDeploymentIds.add(processDefinitions.get(0).getDeploymentId());
     queryDeploymentIds.add(processDefinitions.get(1).getDeploymentId());
     List<ProcessDefinition> queryProcessDefinitions = repositoryService.createProcessDefinitionQuery().deploymentIds(queryDeploymentIds).orderByProcessDefinitionKey().asc()
@@ -92,7 +97,7 @@ public class ProcessDefinitionsTest extends PluggableActivitiTestCase {
     assertEquals("EN", processDefinition.getKey());
     assertEquals("Expense Note 1", processDefinition.getName());
 
-    queryDeploymentIds = new HashSet<String>();
+    queryDeploymentIds = new HashSet<>();
     queryDeploymentIds.add(processDefinitions.get(0).getDeploymentId());
     queryDeploymentIds.add(processDefinitions.get(3).getDeploymentId());
     queryDeploymentIds.add(processDefinitions.get(4).getDeploymentId());
@@ -115,9 +120,11 @@ public class ProcessDefinitionsTest extends PluggableActivitiTestCase {
   }
 
   public void testDeployIdenticalProcessDefinitions() {
-    List<String> deploymentIds = new ArrayList<String>();
-    deploymentIds.add(deployProcessString(("<definitions " + NAMESPACE + " " + TARGET_NAMESPACE + ">" + "  <process id='IDR' name='Insurance Damage Report' />" + "</definitions>")));
-    deploymentIds.add(deployProcessString(("<definitions " + NAMESPACE + " " + TARGET_NAMESPACE + ">" + "  <process id='IDR' name='Insurance Damage Report' />" + "</definitions>")));
+    List<String> deploymentIds = new ArrayList<>();
+    deploymentIds.add(deployProcessString((new StringBuilder().append("<definitions ").append(NAMESPACE).append(" ").append(TARGET_NAMESPACE).append(">").append("  <process id='IDR' name='Insurance Damage Report' />").append("</definitions>")
+			.toString())));
+    deploymentIds.add(deployProcessString((new StringBuilder().append("<definitions ").append(NAMESPACE).append(" ").append(TARGET_NAMESPACE).append(">").append("  <process id='IDR' name='Insurance Damage Report' />").append("</definitions>")
+			.toString())));
 
     List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery().orderByProcessDefinitionKey().asc().orderByProcessDefinitionVersion().desc().list();
 
@@ -140,7 +147,7 @@ public class ProcessDefinitionsTest extends PluggableActivitiTestCase {
   }
 
   public void testProcessDefinitionDescription() {
-    String deploymentId = deployProcessString(("<definitions " + NAMESPACE + " " + TARGET_NAMESPACE + ">" + "  <process id='test' name='test'><documentation>This is a test</documentation></process></definitions>"));
+    String deploymentId = deployProcessString((new StringBuilder().append("<definitions ").append(NAMESPACE).append(" ").append(TARGET_NAMESPACE).append(">").append("  <process id='test' name='test'><documentation>This is a test</documentation></process></definitions>").toString()));
     ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentId).singleResult();
     assertEquals("This is a test", processDefinition.getDescription());
 
@@ -153,8 +160,6 @@ public class ProcessDefinitionsTest extends PluggableActivitiTestCase {
   }
 
   private void deleteDeployments(Collection<String> deploymentIds) {
-    for (String deploymentId : deploymentIds) {
-      repositoryService.deleteDeployment(deploymentId);
-    }
+    deploymentIds.forEach(repositoryService::deleteDeployment);
   }
 }

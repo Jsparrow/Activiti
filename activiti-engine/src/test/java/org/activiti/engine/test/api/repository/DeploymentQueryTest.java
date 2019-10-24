@@ -21,13 +21,17 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DeploymentQuery;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class DeploymentQueryTest extends PluggableActivitiTestCase {
 
-  private String deploymentOneId;
+  private static final Logger logger = LoggerFactory.getLogger(DeploymentQueryTest.class);
+
+private String deploymentOneId;
 
   private String deploymentTwoId;
 
@@ -58,6 +62,7 @@ public class DeploymentQueryTest extends PluggableActivitiTestCase {
       query.singleResult();
       fail();
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
@@ -78,6 +83,7 @@ public class DeploymentQueryTest extends PluggableActivitiTestCase {
       repositoryService.createDeploymentQuery().deploymentId(null);
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
@@ -98,6 +104,7 @@ public class DeploymentQueryTest extends PluggableActivitiTestCase {
       repositoryService.createDeploymentQuery().deploymentName(null);
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
@@ -110,6 +117,7 @@ public class DeploymentQueryTest extends PluggableActivitiTestCase {
       query.singleResult();
       fail();
     } catch (ActivitiException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 
@@ -123,6 +131,7 @@ public class DeploymentQueryTest extends PluggableActivitiTestCase {
       repositoryService.createDeploymentQuery().deploymentNameLike(null);
       fail();
     } catch (ActivitiIllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
     }
   }
 

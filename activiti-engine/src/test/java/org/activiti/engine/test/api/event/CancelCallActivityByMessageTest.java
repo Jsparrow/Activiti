@@ -181,9 +181,7 @@ public class CancelCallActivityByMessageTest extends PluggableActivitiTestCase {
     }
 
     // Remove entries
-    for (EventLogEntry eventLogEntry : managementService.getEventLogEntries(null, null)) {
-      managementService.deleteEventLogEntry(eventLogEntry.getLogNumber());
-    }
+	managementService.getEventLogEntries(null, null).forEach(eventLogEntry -> managementService.deleteEventLogEntry(eventLogEntry.getLogNumber()));
 
     // Database event logger teardown
     runtimeService.removeEventListener(databaseEventLogger);
@@ -202,7 +200,7 @@ public class CancelCallActivityByMessageTest extends PluggableActivitiTestCase {
     private List<ActivitiEvent> eventsReceived;
 
     public CallActivityByMessageEventListener() {
-      eventsReceived = new ArrayList<ActivitiEvent>();
+      eventsReceived = new ArrayList<>();
     }
 
     public List<ActivitiEvent> getEventsReceived() {

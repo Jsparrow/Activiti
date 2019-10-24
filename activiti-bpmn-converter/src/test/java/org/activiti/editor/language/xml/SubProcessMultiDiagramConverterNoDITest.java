@@ -18,10 +18,14 @@ import org.activiti.bpmn.model.StartEvent;
 import org.activiti.bpmn.model.SubProcess;
 import org.activiti.bpmn.model.UserTask;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubProcessMultiDiagramConverterNoDITest extends AbstractConverterTest {
 
-  @Override
+  private static final Logger logger = LoggerFactory.getLogger(SubProcessMultiDiagramConverterNoDITest.class);
+
+@Override
   protected BpmnModel readXMLFile() throws Exception {
     InputStream xmlStream = this.getClass().getClassLoader().getResourceAsStream(getResource());
     XMLInputFactory xif = XMLInputFactory.newInstance();
@@ -33,7 +37,7 @@ public class SubProcessMultiDiagramConverterNoDITest extends AbstractConverterTe
   @Override
   protected BpmnModel exportAndReadXMLFile(BpmnModel bpmnModel) throws Exception {
     byte[] xml = new SubprocessXMLConverter().convertToXML(bpmnModel);
-    System.out.println("xml " + new String(xml, "UTF-8"));
+    logger.info("xml " + new String(xml, "UTF-8"));
     XMLInputFactory xif = XMLInputFactory.newInstance();
     InputStreamReader in = new InputStreamReader(new ByteArrayInputStream(xml), "UTF-8");
     XMLStreamReader xtr = xif.createXMLStreamReader(in);
@@ -54,7 +58,8 @@ public class SubProcessMultiDiagramConverterNoDITest extends AbstractConverterTe
     deployProcess(parsedModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "subprocessmultidiagrammodel-noDI.bpmn";
   }
 

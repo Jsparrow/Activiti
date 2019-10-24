@@ -47,16 +47,13 @@ public class DefaultMessageExecutionContext implements MessageExecutionContext {
     @Override
     public String getMessageName(DelegateExecution execution) {
         return evaluateExpression(Optional.ofNullable(messageEventDefinition.getMessageRef())
-                                          .orElseGet(() -> messageEventDefinition.getMessageExpression()),
+                                          .orElseGet(messageEventDefinition::getMessageExpression),
                                   execution);
     }
 
     public Optional<String> getCorrelationKey(DelegateExecution execution) {
         return Optional.ofNullable(messageEventDefinition.getCorrelationKey())
-                       .map(correlationKey -> {
-                           return evaluateExpression(messageEventDefinition.getCorrelationKey(),
-                                                     execution);
-                       });
+                       .map(correlationKey -> evaluateExpression(messageEventDefinition.getCorrelationKey(), execution));
     }
     
     
@@ -112,7 +109,7 @@ public class DefaultMessageExecutionContext implements MessageExecutionContext {
         return Optional.ofNullable(expressionManager.createExpression(expression))
                        .map(it -> it.getValue(execution))
                        .map(Object::toString)
-                       .orElseThrow(() -> new ActivitiIllegalArgumentException("Expression '" + expression + "' is null"));
+                       .orElseThrow(() -> new ActivitiIllegalArgumentException(new StringBuilder().append("Expression '").append(expression).append("' is null").toString()));
     }
     
     protected void assertNoExistingDuplicateEventSubscriptions(String messageName,
@@ -128,8 +125,7 @@ public class DefaultMessageExecutionContext implements MessageExecutionContext {
                                                        correlationKey))
                 .findFirst()
                 .ifPresent(subscription -> {
-                    throw new ActivitiIllegalArgumentException("Duplicate message subscription '" + subscription.getEventName() + 
-                                                               "' with correlation key '" + subscription.getConfiguration() + "'");
+                    throw new ActivitiIllegalArgumentException(new StringBuilder().append("Duplicate message subscription '").append(subscription.getEventName()).append("' with correlation key '").append(subscription.getConfiguration()).append("'").toString());
                 });
 
     }

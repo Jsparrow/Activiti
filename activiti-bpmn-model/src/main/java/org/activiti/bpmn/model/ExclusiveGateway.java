@@ -14,7 +14,8 @@ package org.activiti.bpmn.model;
 
 public class ExclusiveGateway extends Gateway {
 
-  public ExclusiveGateway clone() {
+  @Override
+public ExclusiveGateway clone() {
     ExclusiveGateway clone = new ExclusiveGateway();
     clone.setValues(this);
     return clone;

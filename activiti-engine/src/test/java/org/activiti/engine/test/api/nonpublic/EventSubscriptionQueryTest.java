@@ -35,8 +35,7 @@ public class EventSubscriptionQueryTest extends PluggableActivitiTestCase {
 
   public void testQueryByEventName() {
 
-    processEngineConfiguration.getCommandExecutor().execute(new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    processEngineConfiguration.getCommandExecutor().execute((CommandContext commandContext) -> {
 
         MessageEventSubscriptionEntity messageEventSubscriptionEntity1 = commandContext.getEventSubscriptionEntityManager().createMessageEventSubscription();
         messageEventSubscriptionEntity1.setEventName("messageName");
@@ -51,8 +50,7 @@ public class EventSubscriptionQueryTest extends PluggableActivitiTestCase {
         commandContext.getEventSubscriptionEntityManager().insert(messageEventSubscriptionEntity3);
 
         return null;
-      }
-    });
+      });
 
     List<EventSubscriptionEntity> list = newEventSubscriptionQuery().eventName("messageName").list();
     assertEquals(2, list.size());
@@ -66,8 +64,7 @@ public class EventSubscriptionQueryTest extends PluggableActivitiTestCase {
 
   public void testQueryByEventType() {
 
-    processEngineConfiguration.getCommandExecutor().execute(new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    processEngineConfiguration.getCommandExecutor().execute((CommandContext commandContext) -> {
 
         MessageEventSubscriptionEntity messageEventSubscriptionEntity1 = commandContext.getEventSubscriptionEntityManager().createMessageEventSubscription();
         messageEventSubscriptionEntity1.setEventName("messageName");
@@ -82,8 +79,7 @@ public class EventSubscriptionQueryTest extends PluggableActivitiTestCase {
         commandContext.getEventSubscriptionEntityManager().insert(signalEventSubscriptionEntity3);
 
         return null;
-      }
-    });
+      });
 
     List<EventSubscriptionEntity> list = newEventSubscriptionQuery().eventType("signal").list();
     assertEquals(1, list.size());
@@ -97,8 +93,7 @@ public class EventSubscriptionQueryTest extends PluggableActivitiTestCase {
 
   public void testQueryByActivityId() {
 
-    processEngineConfiguration.getCommandExecutor().execute(new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    processEngineConfiguration.getCommandExecutor().execute((CommandContext commandContext) -> {
 
         MessageEventSubscriptionEntity messageEventSubscriptionEntity1 = commandContext.getEventSubscriptionEntityManager().createMessageEventSubscription();
         messageEventSubscriptionEntity1.setEventName("messageName");
@@ -116,8 +111,7 @@ public class EventSubscriptionQueryTest extends PluggableActivitiTestCase {
         commandContext.getEventSubscriptionEntityManager().insert(signalEventSubscriptionEntity3);
 
         return null;
-      }
-    });
+      });
 
     List<EventSubscriptionEntity> list = newEventSubscriptionQuery().activityId("someOtherActivity").list();
     assertEquals(1, list.size());
@@ -131,8 +125,7 @@ public class EventSubscriptionQueryTest extends PluggableActivitiTestCase {
 
   public void testQueryByEventSubscriptionId() {
 
-    processEngineConfiguration.getCommandExecutor().execute(new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    processEngineConfiguration.getCommandExecutor().execute((CommandContext commandContext) -> {
 
         MessageEventSubscriptionEntity messageEventSubscriptionEntity1 = commandContext.getEventSubscriptionEntityManager().createMessageEventSubscription();
         messageEventSubscriptionEntity1.setEventName("messageName");
@@ -145,8 +138,7 @@ public class EventSubscriptionQueryTest extends PluggableActivitiTestCase {
         commandContext.getEventSubscriptionEntityManager().insert(messageEventSubscriptionEntity2);
 
         return null;
-      }
-    });
+      });
 
     List<EventSubscriptionEntity> list = newEventSubscriptionQuery().activityId("someOtherActivity").list();
     assertEquals(1, list.size());
@@ -189,16 +181,14 @@ public class EventSubscriptionQueryTest extends PluggableActivitiTestCase {
   }
 
   protected void cleanDb() {
-    processEngineConfiguration.getCommandExecutor().execute(new Command<Void>() {
-      public Void execute(CommandContext commandContext) {
+    processEngineConfiguration.getCommandExecutor().execute((CommandContext commandContext) -> {
         final List<EventSubscriptionEntity> subscriptions = new EventSubscriptionQueryImpl(commandContext).list();
-        for (EventSubscriptionEntity eventSubscriptionEntity : subscriptions) {
+        subscriptions.forEach(eventSubscriptionEntity -> {
           EventSubscriptionEntityManager eventSubscriptionEntityManager = Context.getCommandContext().getEventSubscriptionEntityManager();
           eventSubscriptionEntityManager.delete(eventSubscriptionEntity);
-        }
+        });
         return null;
-      }
-    });
+      });
 
   }
 

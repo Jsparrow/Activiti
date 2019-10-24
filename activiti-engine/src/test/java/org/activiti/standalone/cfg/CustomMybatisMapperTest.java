@@ -22,14 +22,15 @@ public class CustomMybatisMapperTest extends ResourceActivitiTestCase {
     // Create test data
     for (int i = 0; i < 5; i++) {
       Task task = taskService.newTask();
-      task.setName(i + "");
+      task.setName(Integer.toString(i));
       taskService.saveTask(task);
     }
 
     // Fetch the columns we're interested in
     CustomSqlExecution<MyTestMapper, List<Map<String, Object>>> customSqlExecution = new AbstractCustomSqlExecution<MyTestMapper, List<Map<String, Object>>>(MyTestMapper.class) {
 
-      public List<Map<String, Object>> execute(MyTestMapper customMapper) {
+      @Override
+	public List<Map<String, Object>> execute(MyTestMapper customMapper) {
         return customMapper.selectTasks();
       }
     };
@@ -45,10 +46,10 @@ public class CustomMybatisMapperTest extends ResourceActivitiTestCase {
     }
 
     // Cleanup
-    for (Task task : taskService.createTaskQuery().list()) {
+	taskService.createTaskQuery().list().forEach(task -> {
       taskService.deleteTask(task.getId());
       historyService.deleteHistoricTaskInstance(task.getId());
-    }
+    });
 
   }
 
@@ -57,7 +58,7 @@ public class CustomMybatisMapperTest extends ResourceActivitiTestCase {
     // Create test data
     for (int i = 0; i < 5; i++) {
       Task task = taskService.newTask();
-      task.setName(i + "");
+      task.setName(Integer.toString(i));
       taskService.saveTask(task);
 
       taskService.setVariable(task.getId(), "myVar", Long.valueOf(task.getId()) * 2);
@@ -67,7 +68,8 @@ public class CustomMybatisMapperTest extends ResourceActivitiTestCase {
     // Fetch data with custom query
     CustomSqlExecution<MyTestMapper, List<Map<String, Object>>> customSqlExecution = new AbstractCustomSqlExecution<MyTestMapper, List<Map<String, Object>>>(MyTestMapper.class) {
 
-      public List<Map<String, Object>> execute(MyTestMapper customMapper) {
+      @Override
+	public List<Map<String, Object>> execute(MyTestMapper customMapper) {
         return customMapper.selectTaskWithSpecificVariable("myVar");
       }
 
@@ -84,10 +86,10 @@ public class CustomMybatisMapperTest extends ResourceActivitiTestCase {
     }
 
     // Cleanup
-    for (Task task : taskService.createTaskQuery().list()) {
+	taskService.createTaskQuery().list().forEach(task -> {
       taskService.deleteTask(task.getId());
       historyService.deleteHistoricTaskInstance(task.getId());
-    }
+    });
 
   }
 

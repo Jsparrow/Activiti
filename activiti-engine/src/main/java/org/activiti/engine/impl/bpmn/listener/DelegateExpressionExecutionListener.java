@@ -38,14 +38,15 @@ public class DelegateExpressionExecutionListener implements ExecutionListener {
     this.fieldDeclarations = fieldDeclarations;
   }
 
-  public void notify(DelegateExecution execution) {
+  @Override
+public void notify(DelegateExecution execution) {
     Object delegate = DelegateExpressionUtil.resolveDelegateExpression(expression, execution, fieldDeclarations); 
     if (delegate instanceof ExecutionListener) {
       Context.getProcessEngineConfiguration().getDelegateInterceptor().handleInvocation(new ExecutionListenerInvocation((ExecutionListener) delegate, execution));
     } else if (delegate instanceof JavaDelegate) {
       Context.getProcessEngineConfiguration().getDelegateInterceptor().handleInvocation(new JavaDelegateInvocation((JavaDelegate) delegate, execution));
     } else {
-      throw new ActivitiIllegalArgumentException("Delegate expression " + expression + " did not resolve to an implementation of " + ExecutionListener.class + " nor " + JavaDelegate.class);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("Delegate expression ").append(expression).append(" did not resolve to an implementation of ").append(ExecutionListener.class).append(" nor ").append(JavaDelegate.class).toString());
     }
   }
 

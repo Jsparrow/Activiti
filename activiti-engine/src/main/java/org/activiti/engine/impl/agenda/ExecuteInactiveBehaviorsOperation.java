@@ -45,32 +45,26 @@ public class ExecuteInactiveBehaviorsOperation extends AbstractOperation {
      *
      */
 
-    for (ExecutionEntity executionEntity : involvedExecutions) {
+    involvedExecutions.forEach(executionEntity -> {
 
       Process process = ProcessDefinitionUtil.getProcess(executionEntity.getProcessDefinitionId());
-      Collection<String> flowNodeIdsWithInactivatedBehavior = new ArrayList<String>();
-      for (FlowNode flowNode : process.findFlowElementsOfType(FlowNode.class)) {
-        if (flowNode.getBehavior() instanceof InactiveActivityBehavior) {
-          flowNodeIdsWithInactivatedBehavior.add(flowNode.getId());
-        }
-      }
+      Collection<String> flowNodeIdsWithInactivatedBehavior = new ArrayList<>();
+      process.findFlowElementsOfType(FlowNode.class).stream().filter(flowNode -> flowNode.getBehavior() instanceof InactiveActivityBehavior).forEach(flowNode -> flowNodeIdsWithInactivatedBehavior.add(flowNode.getId()));
 
       if (flowNodeIdsWithInactivatedBehavior.size() > 0) {
         Collection<ExecutionEntity> inactiveExecutions = commandContext.getExecutionEntityManager().findInactiveExecutionsByProcessInstanceId(executionEntity.getProcessInstanceId());
-        for (ExecutionEntity inactiveExecution : inactiveExecutions) {
-          if (!inactiveExecution.isActive()
+        inactiveExecutions.stream().filter(inactiveExecution -> !inactiveExecution.isActive()
               && flowNodeIdsWithInactivatedBehavior.contains(inactiveExecution.getActivityId())
-              && !inactiveExecution.isDeleted()) {
+              && !inactiveExecution.isDeleted()).forEach(inactiveExecution -> {
 
-            FlowNode flowNode = (FlowNode) process.getFlowElement(inactiveExecution.getActivityId(), true);
-            InactiveActivityBehavior inactiveActivityBehavior = ((InactiveActivityBehavior) flowNode.getBehavior());
-            logger.debug("Found InactiveActivityBehavior instance of class {} that can be executed on activity '{}'", inactiveActivityBehavior.getClass(), flowNode.getId());
-            inactiveActivityBehavior.executeInactive(inactiveExecution);
-          }
-        }
+		FlowNode flowNode = (FlowNode) process.getFlowElement(inactiveExecution.getActivityId(), true);
+		InactiveActivityBehavior inactiveActivityBehavior = ((InactiveActivityBehavior) flowNode.getBehavior());
+		logger.debug("Found InactiveActivityBehavior instance of class {} that can be executed on activity '{}'", inactiveActivityBehavior.getClass(), flowNode.getId());
+		inactiveActivityBehavior.executeInactive(inactiveExecution);
+        });
       }
 
-    }
+    });
   }
 
 }

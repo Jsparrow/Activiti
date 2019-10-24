@@ -27,42 +27,42 @@ public class ItemDefinition {
 
   protected ItemKind itemKind;
 
-  private ItemDefinition() {
-    this.isCollection = false;
-    this.itemKind = ItemKind.Information;
-  }
-
   public ItemDefinition(String id, StructureDefinition structure) {
     this();
     this.id = id;
     this.structure = structure;
   }
 
-  public ItemInstance createInstance() {
+private ItemDefinition() {
+    this.isCollection = false;
+    this.itemKind = ItemKind.Information;
+  }
+
+public ItemInstance createInstance() {
     return new ItemInstance(this, this.structure.createInstance());
   }
 
-  public StructureDefinition getStructureDefinition() {
+public StructureDefinition getStructureDefinition() {
     return this.structure;
   }
 
-  public boolean isCollection() {
+public boolean isCollection() {
     return isCollection;
   }
 
-  public void setCollection(boolean isCollection) {
+public void setCollection(boolean isCollection) {
     this.isCollection = isCollection;
   }
 
-  public ItemKind getItemKind() {
+public ItemKind getItemKind() {
     return itemKind;
   }
 
-  public void setItemKind(ItemKind itemKind) {
+public void setItemKind(ItemKind itemKind) {
     this.itemKind = itemKind;
   }
 
-  public String getId() {
+public String getId() {
     return this.id;
   }
 }

@@ -31,27 +31,25 @@ public class DiagramInterchangeInfoValidator extends ValidatorImpl {
     if (!bpmnModel.getLocationMap().isEmpty()) {
 
       // Location map
-      for (String bpmnReference : bpmnModel.getLocationMap().keySet()) {
+	bpmnModel.getLocationMap().keySet().forEach(bpmnReference -> {
         if (bpmnModel.getFlowElement(bpmnReference) == null) {
-          // ACT-1625: don't warn when artifacts are referenced from
+          boolean condition = bpmnModel.getArtifact(bpmnReference) == null && bpmnModel.getPool(bpmnReference) == null && bpmnModel.getLane(bpmnReference) == null;
+			// check if it's a Pool or Lane, then DI is ok
+		// ACT-1625: don't warn when artifacts are referenced from
           // DI
-          if (bpmnModel.getArtifact(bpmnReference) == null) {
-            // check if it's a Pool or Lane, then DI is ok
-            if (bpmnModel.getPool(bpmnReference) == null && bpmnModel.getLane(bpmnReference) == null) {
-              addWarning(errors, Problems.DI_INVALID_REFERENCE, null, bpmnModel.getFlowElement(bpmnReference), "Invalid reference in diagram interchange definition: could not find " + bpmnReference);
-            }
-          }
+          if (condition) {
+		  addWarning(errors, Problems.DI_INVALID_REFERENCE, null, bpmnModel.getFlowElement(bpmnReference), "Invalid reference in diagram interchange definition: could not find " + bpmnReference);
+		}
         } else if (!(bpmnModel.getFlowElement(bpmnReference) instanceof FlowNode)) {
-          addWarning(errors, Problems.DI_DOES_NOT_REFERENCE_FLOWNODE, null, bpmnModel.getFlowElement(bpmnReference), "Invalid reference in diagram interchange definition: " + bpmnReference
-              + " does not reference a flow node");
+          addWarning(errors, Problems.DI_DOES_NOT_REFERENCE_FLOWNODE, null, bpmnModel.getFlowElement(bpmnReference), new StringBuilder().append("Invalid reference in diagram interchange definition: ").append(bpmnReference).append(" does not reference a flow node").toString());
         }
-      }
+      });
 
     }
 
     if (!bpmnModel.getFlowLocationMap().isEmpty()) {
       // flowlocation map
-      for (String bpmnReference : bpmnModel.getFlowLocationMap().keySet()) {
+	bpmnModel.getFlowLocationMap().keySet().forEach(bpmnReference -> {
         if (bpmnModel.getFlowElement(bpmnReference) == null) {
           // ACT-1625: don't warn when artifacts are referenced from
           // DI
@@ -59,10 +57,9 @@ public class DiagramInterchangeInfoValidator extends ValidatorImpl {
             addWarning(errors, Problems.DI_INVALID_REFERENCE, null, bpmnModel.getFlowElement(bpmnReference), "Invalid reference in diagram interchange definition: could not find " + bpmnReference);
           }
         } else if (!(bpmnModel.getFlowElement(bpmnReference) instanceof SequenceFlow)) {
-          addWarning(errors, Problems.DI_DOES_NOT_REFERENCE_SEQ_FLOW, null, bpmnModel.getFlowElement(bpmnReference), "Invalid reference in diagram interchange definition: " + bpmnReference
-              + " does not reference a sequence flow");
+          addWarning(errors, Problems.DI_DOES_NOT_REFERENCE_SEQ_FLOW, null, bpmnModel.getFlowElement(bpmnReference), new StringBuilder().append("Invalid reference in diagram interchange definition: ").append(bpmnReference).append(" does not reference a sequence flow").toString());
         }
-      }
+      });
     }
   }
 }

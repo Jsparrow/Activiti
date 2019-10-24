@@ -63,14 +63,14 @@ public class MybatisJobDataManager extends AbstractDataManager<JobEntity> implem
 
   @Override
   public List<JobEntity> findJobsByProcessDefinitionId(final String processDefinitionId) {
-    Map<String, String> params = new HashMap<String, String>(1);
+    Map<String, String> params = new HashMap<>(1);
     params.put("processDefinitionId", processDefinitionId);
     return getDbSqlSession().selectList("selectJobByProcessDefinitionId", params);
   }
 
   @Override
   public List<JobEntity> findJobsByTypeAndProcessDefinitionId(final String jobHandlerType, final String processDefinitionId) {
-    Map<String, String> params = new HashMap<String, String>(2);
+    Map<String, String> params = new HashMap<>(2);
     params.put("handlerType", jobHandlerType);
     params.put("processDefinitionId", processDefinitionId);
     return getDbSqlSession().selectList("selectJobByTypeAndProcessDefinitionId", params);
@@ -103,7 +103,7 @@ public class MybatisJobDataManager extends AbstractDataManager<JobEntity> implem
 
   @Override
   public void updateJobTenantIdForDeployment(String deploymentId, String newTenantId) {
-    HashMap<String, Object> params = new HashMap<String, Object>();
+    HashMap<String, Object> params = new HashMap<>();
     params.put("deploymentId", deploymentId);
     params.put("tenantId", newTenantId);
     getDbSqlSession().update("updateJobTenantIdForDeployment", params);
@@ -111,7 +111,7 @@ public class MybatisJobDataManager extends AbstractDataManager<JobEntity> implem
   
   @Override
   public void resetExpiredJob(String jobId) {
-    Map<String, Object> params = new HashMap<String, Object>(2);
+    Map<String, Object> params = new HashMap<>(2);
     params.put("id", jobId);
     getDbSqlSession().update("resetExpiredJob", params);
   }

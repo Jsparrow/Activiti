@@ -16,7 +16,7 @@ public class ActivityErrorReceivedEventHandler extends AbstractDatabaseEventLogg
   public EventLogEntryEntity generateEventLogEntry(CommandContext commandContext) {
     ActivitiActivityEvent activityEvent = (ActivitiActivityEvent) event;
 
-    Map<String, Object> data = new HashMap<String, Object>();
+    Map<String, Object> data = new HashMap<>();
     putInMapIfNotNull(data, Fields.ACTIVITY_ID, activityEvent.getActivityId());
     putInMapIfNotNull(data, Fields.ACTIVITY_NAME, activityEvent.getActivityName());
     putInMapIfNotNull(data, Fields.PROCESS_DEFINITION_ID, activityEvent.getProcessDefinitionId());

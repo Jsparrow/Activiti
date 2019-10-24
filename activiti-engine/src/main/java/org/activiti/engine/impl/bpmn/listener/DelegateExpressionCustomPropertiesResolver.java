@@ -40,7 +40,7 @@ public class DelegateExpressionCustomPropertiesResolver implements CustomPropert
     if (delegate instanceof CustomPropertiesResolver) {
       return ((CustomPropertiesResolver) delegate).getCustomPropertiesMap(execution);
     } else {
-      throw new ActivitiIllegalArgumentException("Custom properties resolver delegate expression " + expression + " did not resolve to an implementation of " + CustomPropertiesResolver.class);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("Custom properties resolver delegate expression ").append(expression).append(" did not resolve to an implementation of ").append(CustomPropertiesResolver.class).toString());
     }
   }
 

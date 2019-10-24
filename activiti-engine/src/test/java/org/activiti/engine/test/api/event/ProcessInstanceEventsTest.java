@@ -36,6 +36,7 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import java.util.stream.Collectors;
 
 /**
  * Test case for all {@link ActivitiEvent}s related to process instances.
@@ -430,18 +431,15 @@ public class ProcessInstanceEventsTest extends PluggableActivitiTestCase {
     List<ActivitiEvent> activityTerminatedEvents = listener.filterEvents(ActivitiEventType.ACTIVITY_CANCELLED);
     assertThat("There should be exactly two ActivitiEventType.ACTIVITY_CANCELLED event after the task complete.", activityTerminatedEvents.size(), is(2));
 
-    for (ActivitiEvent event : activityTerminatedEvents) {
-      
-      ActivitiActivityCancelledEventImpl activityEvent = (ActivitiActivityCancelledEventImpl) event;
-      if (activityEvent.getActivityId().equals("preNormalTerminateTask")) {
-        assertThat("The user task must be terminated", activityEvent.getActivityId(), is("preNormalTerminateTask"));
-        assertThat("The cause must be terminate end event", ((FlowNode) activityEvent.getCause()).getId(), is("EndEvent_2"));
-      } else if (activityEvent.getActivityId().equals("EndEvent_2")) {
-        assertThat("The end event must be terminated", activityEvent.getActivityId(), is("EndEvent_2"));
-        assertThat("The cause must be terminate end event", ((FlowNode) activityEvent.getCause()).getId(), is("EndEvent_2"));
-      }
-      
-    }
+    activityTerminatedEvents.stream().map(event -> (ActivitiActivityCancelledEventImpl) event).forEach(activityEvent -> {
+		if ("preNormalTerminateTask".equals(activityEvent.getActivityId())) {
+		    assertThat("The user task must be terminated", activityEvent.getActivityId(), is("preNormalTerminateTask"));
+		    assertThat("The cause must be terminate end event", ((FlowNode) activityEvent.getCause()).getId(), is("EndEvent_2"));
+		  } else if ("EndEvent_2".equals(activityEvent.getActivityId())) {
+		    assertThat("The end event must be terminated", activityEvent.getActivityId(), is("EndEvent_2"));
+		    assertThat("The cause must be terminate end event", ((FlowNode) activityEvent.getCause()).getId(), is("EndEvent_2"));
+		  }
+	});
     
   }
 
@@ -480,28 +478,24 @@ public class ProcessInstanceEventsTest extends PluggableActivitiTestCase {
     List<ActivitiEvent> activityTerminatedEvents = listener.filterEvents(ActivitiEventType.ACTIVITY_CANCELLED);
     assertThat("3 activities must be cancelled.", activityTerminatedEvents.size(), is(3));
     
-    for (ActivitiEvent event : activityTerminatedEvents) {
-      
-      ActivitiActivityCancelledEventImpl activityEvent = (ActivitiActivityCancelledEventImpl) event;
-      
-      if (activityEvent.getActivityId().equals("theTask")) {
-        
-        assertThat("The user task must be terminated in the called sub process.", activityEvent.getActivityId(), is("theTask"));
-        assertThat("The cause must be terminate end event", ((FlowNode) activityEvent.getCause()).getId(), is("EndEvent_3"));
-        
-      } else if (activityEvent.getActivityId().equals("CallActivity_1")) {
-        
-        assertThat("The call activity must be terminated", activityEvent.getActivityId(), is("CallActivity_1"));
-        assertThat("The cause must be terminate end event", ((FlowNode) activityEvent.getCause()).getId(), is("EndEvent_3"));
-        
-      } else if (activityEvent.getActivityId().equals("EndEvent_3")) {
-        
-        assertThat("The end event must be terminated", activityEvent.getActivityId(), is("EndEvent_3"));
-        assertThat("The cause must be terminate end event", ((FlowNode) activityEvent.getCause()).getId(), is("EndEvent_3"));
-        
-      }
-      
-    }
+    activityTerminatedEvents.stream().map(event -> (ActivitiActivityCancelledEventImpl) event).forEach(activityEvent -> {
+		if ("theTask".equals(activityEvent.getActivityId())) {
+		    
+		    assertThat("The user task must be terminated in the called sub process.", activityEvent.getActivityId(), is("theTask"));
+		    assertThat("The cause must be terminate end event", ((FlowNode) activityEvent.getCause()).getId(), is("EndEvent_3"));
+		    
+		  } else if ("CallActivity_1".equals(activityEvent.getActivityId())) {
+		    
+		    assertThat("The call activity must be terminated", activityEvent.getActivityId(), is("CallActivity_1"));
+		    assertThat("The cause must be terminate end event", ((FlowNode) activityEvent.getCause()).getId(), is("EndEvent_3"));
+		    
+		  } else if ("EndEvent_3".equals(activityEvent.getActivityId())) {
+		    
+		    assertThat("The end event must be terminated", activityEvent.getActivityId(), is("EndEvent_3"));
+		    assertThat("The cause must be terminate end event", ((FlowNode) activityEvent.getCause()).getId(), is("EndEvent_3"));
+		    
+		  }
+	});
     
   }
 
@@ -563,10 +557,11 @@ public class ProcessInstanceEventsTest extends PluggableActivitiTestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
 
-    if (listener != null) {
-      listener.clearEventsReceived();
-      processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
-    }
+    if (listener == null) {
+		return;
+	}
+	listener.clearEventsReceived();
+	processEngineConfiguration.getEventDispatcher().removeEventListener(listener);
   }
 
   private class TestInitializedEntityEventListener implements ActivitiEventListener {
@@ -575,7 +570,7 @@ public class ProcessInstanceEventsTest extends PluggableActivitiTestCase {
 
     public TestInitializedEntityEventListener() {
 
-      eventsReceived = new ArrayList<ActivitiEvent>();
+      eventsReceived = new ArrayList<>();
     }
 
     public List<ActivitiEvent> getEventsReceived() {
@@ -593,7 +588,7 @@ public class ProcessInstanceEventsTest extends PluggableActivitiTestCase {
         // adding to the list.
         assertNotNull(((ExecutionEntity) ((ActivitiEntityEvent) event).getEntity()).getId());
         eventsReceived.add(event);
-      } else if (ActivitiEventType.PROCESS_CANCELLED.equals(event.getType()) || ActivitiEventType.ACTIVITY_CANCELLED.equals(event.getType())) {
+      } else if (ActivitiEventType.PROCESS_CANCELLED == event.getType() || ActivitiEventType.ACTIVITY_CANCELLED == event.getType()) {
         eventsReceived.add(event);
       }
     }
@@ -607,13 +602,9 @@ public class ProcessInstanceEventsTest extends PluggableActivitiTestCase {
                                                                           // timer
                                                                           // cancelled
                                                                           // events
-      List<ActivitiEvent> filteredEvents = new ArrayList<ActivitiEvent>();
+      List<ActivitiEvent> filteredEvents = new ArrayList<>();
       List<ActivitiEvent> eventsReceived = listener.getEventsReceived();
-      for (ActivitiEvent eventReceived : eventsReceived) {
-        if (eventType.equals(eventReceived.getType())) {
-          filteredEvents.add(eventReceived);
-        }
-      }
+      filteredEvents.addAll(eventsReceived.stream().filter(eventReceived -> eventType == eventReceived.getType()).collect(Collectors.toList()));
       return filteredEvents;
     }
 

@@ -38,47 +38,56 @@ public class ProcessDefinitionInfoEntityManagerImpl extends
     return processDefinitionInfoDataManager;
   }
   
-  public void insertProcessDefinitionInfo(ProcessDefinitionInfoEntity processDefinitionInfo) {
+  @Override
+public void insertProcessDefinitionInfo(ProcessDefinitionInfoEntity processDefinitionInfo) {
     insert(processDefinitionInfo);
   }
   
-  public void updateProcessDefinitionInfo(ProcessDefinitionInfoEntity updatedProcessDefinitionInfo) {
+  @Override
+public void updateProcessDefinitionInfo(ProcessDefinitionInfoEntity updatedProcessDefinitionInfo) {
     update(updatedProcessDefinitionInfo, true);
   }
 
-  public void deleteProcessDefinitionInfo(String processDefinitionId) {
+  @Override
+public void deleteProcessDefinitionInfo(String processDefinitionId) {
     ProcessDefinitionInfoEntity processDefinitionInfo = findProcessDefinitionInfoByProcessDefinitionId(processDefinitionId);
-    if (processDefinitionInfo != null) {
-      delete(processDefinitionInfo);
-      deleteInfoJson(processDefinitionInfo);
-    }
+    if (processDefinitionInfo == null) {
+		return;
+	}
+	delete(processDefinitionInfo);
+	deleteInfoJson(processDefinitionInfo);
   }
   
-  public void updateInfoJson(String id, byte[] json) {
+  @Override
+public void updateInfoJson(String id, byte[] json) {
     ProcessDefinitionInfoEntity processDefinitionInfo = findById(id);
-    if (processDefinitionInfo != null) {
-      ByteArrayRef ref = new ByteArrayRef(processDefinitionInfo.getInfoJsonId());
-      ref.setValue("json", json);
-      
-      if (processDefinitionInfo.getInfoJsonId() == null) {
+    if (processDefinitionInfo == null) {
+		return;
+	}
+	ByteArrayRef ref = new ByteArrayRef(processDefinitionInfo.getInfoJsonId());
+	ref.setValue("json", json);
+	if (processDefinitionInfo.getInfoJsonId() == null) {
         processDefinitionInfo.setInfoJsonId(ref.getId());
         updateProcessDefinitionInfo(processDefinitionInfo);
       }
-    }
   }
   
-  public void deleteInfoJson(ProcessDefinitionInfoEntity processDefinitionInfo) {
-    if (processDefinitionInfo.getInfoJsonId() != null) {
-      ByteArrayRef ref = new ByteArrayRef(processDefinitionInfo.getInfoJsonId());
-      ref.delete();
-    }
+  @Override
+public void deleteInfoJson(ProcessDefinitionInfoEntity processDefinitionInfo) {
+    if (processDefinitionInfo.getInfoJsonId() == null) {
+		return;
+	}
+	ByteArrayRef ref = new ByteArrayRef(processDefinitionInfo.getInfoJsonId());
+	ref.delete();
   }
   
-  public ProcessDefinitionInfoEntity findProcessDefinitionInfoByProcessDefinitionId(String processDefinitionId) {
+  @Override
+public ProcessDefinitionInfoEntity findProcessDefinitionInfoByProcessDefinitionId(String processDefinitionId) {
     return processDefinitionInfoDataManager.findProcessDefinitionInfoByProcessDefinitionId(processDefinitionId);
   }
   
-  public byte[] findInfoJsonById(String infoJsonId) {
+  @Override
+public byte[] findInfoJsonById(String infoJsonId) {
     ByteArrayRef ref = new ByteArrayRef(infoJsonId);
     return ref.getBytes();
   }

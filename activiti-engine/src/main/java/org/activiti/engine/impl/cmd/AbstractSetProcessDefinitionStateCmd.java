@@ -64,7 +64,8 @@ public abstract class AbstractSetProcessDefinitionStateCmd implements Command<Vo
     this.tenantId = tenantId;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
 
     List<ProcessDefinitionEntity> processDefinitions = findProcessDefinition(commandContext);
 
@@ -90,14 +91,14 @@ public abstract class AbstractSetProcessDefinitionStateCmd implements Command<Vo
       throw new ActivitiIllegalArgumentException("Process definition id or key cannot be null");
     }
 
-    List<ProcessDefinitionEntity> processDefinitionEntities = new ArrayList<ProcessDefinitionEntity>();
+    List<ProcessDefinitionEntity> processDefinitionEntities = new ArrayList<>();
     ProcessDefinitionEntityManager processDefinitionManager = commandContext.getProcessDefinitionEntityManager();
 
     if (processDefinitionId != null) {
 
       ProcessDefinitionEntity processDefinitionEntity = processDefinitionManager.findById(processDefinitionId);
       if (processDefinitionEntity == null) {
-        throw new ActivitiObjectNotFoundException("Cannot find process definition for id '" + processDefinitionId + "'", ProcessDefinition.class);
+        throw new ActivitiObjectNotFoundException(new StringBuilder().append("Cannot find process definition for id '").append(processDefinitionId).append("'").toString(), ProcessDefinition.class);
       }
       processDefinitionEntities.add(processDefinitionEntity);
 
@@ -113,19 +114,17 @@ public abstract class AbstractSetProcessDefinitionStateCmd implements Command<Vo
 
       List<ProcessDefinition> processDefinitions = query.list();
       if (processDefinitions.isEmpty()) {
-        throw new ActivitiException("Cannot find process definition for key '" + processDefinitionKey + "'");
+        throw new ActivitiException(new StringBuilder().append("Cannot find process definition for key '").append(processDefinitionKey).append("'").toString());
       }
 
-      for (ProcessDefinition processDefinition : processDefinitions) {
-        processDefinitionEntities.add((ProcessDefinitionEntity) processDefinition);
-      }
+      processDefinitions.forEach(processDefinition -> processDefinitionEntities.add((ProcessDefinitionEntity) processDefinition));
 
     }
     return processDefinitionEntities;
   }
 
   protected void createTimerForDelayedExecution(CommandContext commandContext, List<ProcessDefinitionEntity> processDefinitions) {
-    for (ProcessDefinitionEntity processDefinition : processDefinitions) {
+    processDefinitions.forEach(processDefinition -> {
       
       TimerJobEntity timer = commandContext.getTimerJobEntityManager().create();
       timer.setJobType(JobEntity.JOB_TYPE_TIMER);
@@ -140,11 +139,11 @@ public abstract class AbstractSetProcessDefinitionStateCmd implements Command<Vo
       timer.setJobHandlerType(getDelayedExecutionJobHandlerType());
       timer.setJobHandlerConfiguration(TimerChangeProcessDefinitionSuspensionStateJobHandler.createJobHandlerConfiguration(includeProcessInstances));
       commandContext.getJobManager().scheduleTimerJob(timer);
-    }
+    });
   }
 
   protected void changeProcessDefinitionState(CommandContext commandContext, List<ProcessDefinitionEntity> processDefinitions) {
-    for (ProcessDefinitionEntity processDefinition : processDefinitions) {
+    processDefinitions.forEach(processDefinition -> {
 
       SuspensionStateUtil.setSuspensionState(processDefinition, getProcessDefinitionSuspensionState());
 
@@ -158,17 +157,14 @@ public abstract class AbstractSetProcessDefinitionStateCmd implements Command<Vo
         List<ProcessInstance> processInstances = fetchProcessInstancesPage(commandContext, processDefinition, currentStartIndex);
         while (!processInstances.isEmpty()) {
 
-          for (ProcessInstance processInstance : processInstances) {
-            AbstractSetProcessInstanceStateCmd processInstanceCmd = getProcessInstanceChangeStateCmd(processInstance);
-            processInstanceCmd.execute(commandContext);
-          }
+          processInstances.stream().map(this::getProcessInstanceChangeStateCmd).forEach(processInstanceCmd -> processInstanceCmd.execute(commandContext));
 
           // Fetch new batch of process instances
           currentStartIndex += processInstances.size();
           processInstances = fetchProcessInstancesPage(commandContext, processDefinition, currentStartIndex);
         }
       }
-    }
+    });
   }
 
   protected List<ProcessInstance> fetchProcessInstancesPage(CommandContext commandContext, ProcessDefinition processDefinition, int currentPageStartIndex) {

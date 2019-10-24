@@ -195,12 +195,14 @@ public class SequenceFlowJsonConverter extends BaseBpmnJsonConverter {
       value = expressionNode.get("value").asText();
     }
 
-    if (fieldId != null && operator != null && value != null) {
-      flow.setConditionExpression("${" + fieldId + " " + operator + " " + value + "}");
-      addExtensionElement("conditionFieldId", fieldId, flow);
-      addExtensionElement("conditionOperator", operator, flow);
-      addExtensionElement("conditionValue", value, flow);
-    }
+    if (!(fieldId != null && operator != null && value != null)) {
+		return;
+	}
+	flow.setConditionExpression(new StringBuilder().append("${").append(fieldId).append(" ").append(operator).append(" ").append(value).append("}")
+			.toString());
+	addExtensionElement("conditionFieldId", fieldId, flow);
+	addExtensionElement("conditionOperator", operator, flow);
+	addExtensionElement("conditionValue", value, flow);
   }
 
   protected void setOutcomeConditionExpression(SequenceFlow flow, JsonNode expressionNode) {
@@ -219,12 +221,14 @@ public class SequenceFlowJsonConverter extends BaseBpmnJsonConverter {
       outcomeName = expressionNode.get("outcomeName").asText();
     }
 
-    if (formId != null && operator != null && outcomeName != null) {
-      flow.setConditionExpression("${form" + formId + "outcome " + operator + " " + outcomeName + "}");
-      addExtensionElement("conditionFormId", String.valueOf(formId), flow);
-      addExtensionElement("conditionOperator", operator, flow);
-      addExtensionElement("conditionOutcomeName", outcomeName, flow);
-    }
+    if (!(formId != null && operator != null && outcomeName != null)) {
+		return;
+	}
+	flow.setConditionExpression(new StringBuilder().append("${form").append(formId).append("outcome ").append(operator).append(" ").append(outcomeName).append("}")
+			.toString());
+	addExtensionElement("conditionFormId", String.valueOf(formId), flow);
+	addExtensionElement("conditionOperator", operator, flow);
+	addExtensionElement("conditionOutcomeName", outcomeName, flow);
   }
 
   protected void addExtensionElement(String name, String value, SequenceFlow flow) {

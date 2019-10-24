@@ -39,7 +39,8 @@ public class IntermediateCatchMessageEventActivityBehavior extends IntermediateC
     this.messageExecutionContext = messageExecutionContext;
   }
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     CommandContext commandContext = Context.getCommandContext();
     
     MessageEventSubscriptionEntity subscription = messageExecutionContext.createMessageEventSubscription(commandContext,
@@ -72,11 +73,7 @@ public class IntermediateCatchMessageEventActivityBehavior extends IntermediateC
     
     EventSubscriptionEntityManager eventSubscriptionEntityManager = Context.getCommandContext().getEventSubscriptionEntityManager();
     List<EventSubscriptionEntity> eventSubscriptions = executionEntity.getEventSubscriptions();
-    for (EventSubscriptionEntity eventSubscription : eventSubscriptions) {
-      if (eventSubscription instanceof MessageEventSubscriptionEntity && eventSubscription.getEventName().equals(messageName)) {
-        eventSubscriptionEntityManager.delete(eventSubscription);
-      }
-    }
+    eventSubscriptions.stream().filter(eventSubscription -> eventSubscription instanceof MessageEventSubscriptionEntity && eventSubscription.getEventName().equals(messageName)).forEach(eventSubscriptionEntityManager::delete);
     return executionEntity;
   }
 

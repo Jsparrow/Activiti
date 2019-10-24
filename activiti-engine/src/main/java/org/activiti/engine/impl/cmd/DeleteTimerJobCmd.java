@@ -30,7 +30,8 @@ public class DeleteTimerJobCmd implements Command<Object>, Serializable {
     this.timerJobId = timerJobId;
   }
 
-  public Object execute(CommandContext commandContext) {
+  @Override
+public Object execute(CommandContext commandContext) {
     TimerJobEntity jobToDelete = getJobToDelete(commandContext);
     
     sendCancelEvent(jobToDelete);
@@ -55,7 +56,7 @@ public class DeleteTimerJobCmd implements Command<Object>, Serializable {
 
     TimerJobEntity job = commandContext.getTimerJobEntityManager().findById(timerJobId);
     if (job == null) {
-      throw new ActivitiObjectNotFoundException("No timer job found with id '" + timerJobId + "'", Job.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("No timer job found with id '").append(timerJobId).append("'").toString(), Job.class);
     }
 
     // We need to check if the job was locked, ie acquired by the job acquisition thread

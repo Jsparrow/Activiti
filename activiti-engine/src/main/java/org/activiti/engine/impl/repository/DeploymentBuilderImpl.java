@@ -72,9 +72,10 @@ public class DeploymentBuilderImpl implements DeploymentBuilder, Serializable {
     this.resourceEntityManager = resourceEntityManager;
   }
 
-  public DeploymentBuilder addInputStream(String resourceName, InputStream inputStream) {
+  @Override
+public DeploymentBuilder addInputStream(String resourceName, InputStream inputStream) {
     if (inputStream == null) {
-      throw new ActivitiIllegalArgumentException("inputStream for resource '" + resourceName + "' is null");
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("inputStream for resource '").append(resourceName).append("' is null").toString());
     }
     byte[] bytes = IoUtil.readInputStream(inputStream, resourceName);
     ResourceEntity resource = resourceEntityManager.create();
@@ -84,7 +85,8 @@ public class DeploymentBuilderImpl implements DeploymentBuilder, Serializable {
     return this;
   }
 
-  public DeploymentBuilder setProjectManifest(ProjectManifest projectManifest) {
+  @Override
+public DeploymentBuilder setProjectManifest(ProjectManifest projectManifest) {
       this.projectManifest = projectManifest;
       return this;
   }
@@ -112,20 +114,22 @@ public class DeploymentBuilderImpl implements DeploymentBuilder, Serializable {
         }
       }
     } catch (IOException e) {
-      throw new ActivitiException("Couldn't auto deploy resource '" + resource + "': " + e.getMessage(), e);
+      throw new ActivitiException(new StringBuilder().append("Couldn't auto deploy resource '").append(resource).append("': ").append(e.getMessage()).toString(), e);
     }
     return this;
   }
 
-  public DeploymentBuilder addClasspathResource(String resource) {
+  @Override
+public DeploymentBuilder addClasspathResource(String resource) {
     InputStream inputStream = ReflectUtil.getResourceAsStream(resource);
     if (inputStream == null) {
-      throw new ActivitiIllegalArgumentException("resource '" + resource + "' not found");
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("resource '").append(resource).append("' not found").toString());
     }
     return addInputStream(resource, inputStream);
   }
 
-  public DeploymentBuilder addString(String resourceName, String text) {
+  @Override
+public DeploymentBuilder addString(String resourceName, String text) {
     if (text == null) {
       throw new ActivitiIllegalArgumentException("text is null");
     }
@@ -140,7 +144,8 @@ public class DeploymentBuilderImpl implements DeploymentBuilder, Serializable {
     return this;
   }
   
-  public DeploymentBuilder addBytes(String resourceName, byte[] bytes) {
+  @Override
+public DeploymentBuilder addBytes(String resourceName, byte[] bytes) {
     if (bytes == null) {
       throw new ActivitiIllegalArgumentException("bytes is null");
     }
@@ -152,7 +157,8 @@ public class DeploymentBuilderImpl implements DeploymentBuilder, Serializable {
     return this;
   }
 
-  public DeploymentBuilder addZipInputStream(ZipInputStream zipInputStream) {
+  @Override
+public DeploymentBuilder addZipInputStream(ZipInputStream zipInputStream) {
     try {
       ZipEntry entry = zipInputStream.getNextEntry();
       while (entry != null) {
@@ -172,7 +178,8 @@ public class DeploymentBuilderImpl implements DeploymentBuilder, Serializable {
     return this;
   }
 
-  public DeploymentBuilder addBpmnModel(String resourceName, BpmnModel bpmnModel) {
+  @Override
+public DeploymentBuilder addBpmnModel(String resourceName, BpmnModel bpmnModel) {
     BpmnXMLConverter bpmnXMLConverter = new BpmnXMLConverter();
     try {
       String bpmn20Xml = new String(bpmnXMLConverter.convertToXML(bpmnModel), "UTF-8");
@@ -183,42 +190,50 @@ public class DeploymentBuilderImpl implements DeploymentBuilder, Serializable {
     return this;
   }
 
-  public DeploymentBuilder name(String name) {
+  @Override
+public DeploymentBuilder name(String name) {
     deployment.setName(name);
     return this;
   }
 
-  public DeploymentBuilder category(String category) {
+  @Override
+public DeploymentBuilder category(String category) {
     deployment.setCategory(category);
     return this;
   }
   
-  public DeploymentBuilder key(String key) {
+  @Override
+public DeploymentBuilder key(String key) {
     deployment.setKey(key);
     return this;
   }
 
-  public DeploymentBuilder disableBpmnValidation() {
+  @Override
+public DeploymentBuilder disableBpmnValidation() {
     this.isProcessValidationEnabled = false;
     return this;
   }
 
-  public DeploymentBuilder disableSchemaValidation() {
+  @Override
+public DeploymentBuilder disableSchemaValidation() {
     this.isBpmn20XsdValidationEnabled = false;
     return this;
   }
 
-  public DeploymentBuilder tenantId(String tenantId) {
+  @Override
+public DeploymentBuilder tenantId(String tenantId) {
     deployment.setTenantId(tenantId);
     return this;
   }
 
-  public DeploymentBuilder enableDuplicateFiltering() {
+  @Override
+public DeploymentBuilder enableDuplicateFiltering() {
     this.isDuplicateFilterEnabled = true;
     return this;
   }
 
-  public DeploymentBuilder activateProcessDefinitionsOn(Date date) {
+  @Override
+public DeploymentBuilder activateProcessDefinitionsOn(Date date) {
     this.processDefinitionsActivationDate = date;
     return this;
   }
@@ -229,7 +244,8 @@ public class DeploymentBuilderImpl implements DeploymentBuilder, Serializable {
     return this;
   }
 
-  public Deployment deploy() {
+  @Override
+public Deployment deploy() {
     return repositoryService.deploy(this);
   }
 

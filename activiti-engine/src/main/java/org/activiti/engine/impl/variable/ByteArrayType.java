@@ -19,23 +19,28 @@ public class ByteArrayType implements VariableType {
 
   private static final long serialVersionUID = 1L;
 
-  public String getTypeName() {
+  @Override
+public String getTypeName() {
     return "bytes";
   }
 
-  public boolean isCachable() {
+  @Override
+public boolean isCachable() {
     return true;
   }
 
-  public Object getValue(ValueFields valueFields) {
+  @Override
+public Object getValue(ValueFields valueFields) {
     return valueFields.getBytes();
   }
 
-  public void setValue(Object value, ValueFields valueFields) {
+  @Override
+public void setValue(Object value, ValueFields valueFields) {
     valueFields.setBytes((byte[]) value);
   }
 
-  public boolean isAbleToStore(Object value) {
+  @Override
+public boolean isAbleToStore(Object value) {
     if (value == null) {
       return true;
     }

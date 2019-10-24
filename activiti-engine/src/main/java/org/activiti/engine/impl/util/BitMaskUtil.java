@@ -34,7 +34,7 @@ public class BitMaskUtil {
   private static final int FLAG_BIT_7 = 64; // 000...01000000
   private static final int FLAG_BIT_8 = 128; // 000...10000000
 
-  private static int[] MASKS = { FLAG_BIT_1, FLAG_BIT_2, FLAG_BIT_3, FLAG_BIT_4, FLAG_BIT_5, FLAG_BIT_6, FLAG_BIT_7, FLAG_BIT_8 };
+  private static int[] masks = { FLAG_BIT_1, FLAG_BIT_2, FLAG_BIT_3, FLAG_BIT_4, FLAG_BIT_5, FLAG_BIT_6, FLAG_BIT_7, FLAG_BIT_8 };
 
   /**
    * Set bit to '1' in the given int.
@@ -50,7 +50,7 @@ public class BitMaskUtil {
     }
 
     // To turn on, OR with the correct mask
-    return value | MASKS[bitNumber - 1];
+    return value | masks[bitNumber - 1];
   }
 
   /**
@@ -67,7 +67,7 @@ public class BitMaskUtil {
     }
 
     // To turn on, OR with the correct mask
-    return value & ~MASKS[bitNumber - 1];
+    return value & ~masks[bitNumber - 1];
   }
 
   /**
@@ -83,7 +83,7 @@ public class BitMaskUtil {
       throw new IllegalArgumentException("Only bits 1 through 8 are supported");
     }
 
-    return ((value & MASKS[bitNumber - 1]) == MASKS[bitNumber - 1]);
+    return ((value & masks[bitNumber - 1]) == masks[bitNumber - 1]);
   }
 
   /**

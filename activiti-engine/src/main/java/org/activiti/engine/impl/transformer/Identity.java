@@ -21,18 +21,18 @@ public class Identity extends AbstractTransformer {
 
   private static Identity instance = new Identity();
 
-  public static synchronized Identity getInstance() {
+  private Identity() {
+
+  }
+
+public static synchronized Identity getInstance() {
     if (instance == null) {
       instance = new Identity();
     }
     return instance;
   }
 
-  private Identity() {
-
-  }
-
-  /**
+/**
    * {@inheritDoc}
    */
   @Override

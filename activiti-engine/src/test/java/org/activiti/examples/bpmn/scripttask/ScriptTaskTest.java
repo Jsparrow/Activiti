@@ -33,7 +33,7 @@ public class ScriptTaskTest extends PluggableActivitiTestCase {
 
   @Deployment
   public void testSetScriptResultToProcessVariable() {
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
     variables.put("echo", "hello");
     variables.put("existingProcessVariableName", "one");
 

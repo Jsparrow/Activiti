@@ -44,17 +44,13 @@ public class VariableInitializingList extends ArrayList<VariableInstanceEntity> 
 
   @Override
   public boolean addAll(Collection<? extends VariableInstanceEntity> c) {
-    for (VariableInstanceEntity e : c) {
-      initializeVariable(e);
-    }
+    c.forEach(this::initializeVariable);
     return super.addAll(c);
   }
 
   @Override
   public boolean addAll(int index, Collection<? extends VariableInstanceEntity> c) {
-    for (VariableInstanceEntity e : c) {
-      initializeVariable(e);
-    }
+    c.forEach(this::initializeVariable);
     return super.addAll(index, c);
   }
 
@@ -62,13 +58,13 @@ public class VariableInitializingList extends ArrayList<VariableInstanceEntity> 
    * If the passed {@link VariableInstanceEntity} is a binary variable and the command-context is active, the variable value is fetched to ensure the byte-array is populated.
    */
   protected void initializeVariable(VariableInstanceEntity e) {
-    if (Context.getCommandContext() != null && e != null && e.getType() != null) {
-      e.getValue();
-
-      // make sure JPA entities are cached for later retrieval
+    if (!(Context.getCommandContext() != null && e != null && e.getType() != null)) {
+		return;
+	}
+	e.getValue();
+	// make sure JPA entities are cached for later retrieval
       if (JPAEntityVariableType.TYPE_NAME.equals(e.getType().getTypeName()) || JPAEntityListVariableType.TYPE_NAME.equals(e.getType().getTypeName())) {
         ((CacheableVariable) e.getType()).setForceCacheable(true);
       }
-    }
   }
 }

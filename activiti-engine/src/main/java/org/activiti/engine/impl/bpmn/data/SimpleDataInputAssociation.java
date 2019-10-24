@@ -27,7 +27,7 @@ public class SimpleDataInputAssociation extends AbstractDataAssociation {
 
   private static final long serialVersionUID = 1L;
 
-  protected List<Assignment> assignments = new ArrayList<Assignment>();
+  protected List<Assignment> assignments = new ArrayList<>();
 
   public SimpleDataInputAssociation(Expression sourceExpression, String target) {
     super(sourceExpression, target);
@@ -41,9 +41,8 @@ public class SimpleDataInputAssociation extends AbstractDataAssociation {
     this.assignments.add(assignment);
   }
 
-  public void evaluate(DelegateExecution execution) {
-    for (Assignment assignment : this.assignments) {
-      assignment.evaluate(execution);
-    }
+  @Override
+public void evaluate(DelegateExecution execution) {
+    this.assignments.forEach(assignment -> assignment.evaluate(execution));
   }
 }

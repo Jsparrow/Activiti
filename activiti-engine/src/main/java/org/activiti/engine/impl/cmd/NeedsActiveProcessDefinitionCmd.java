@@ -35,15 +35,16 @@ public abstract class NeedsActiveProcessDefinitionCmd<T> implements Command<T>, 
     this.processDefinitionId = processDefinitionId;
   }
 
-  public T execute(CommandContext commandContext) {
+  @Override
+public T execute(CommandContext commandContext) {
     ProcessDefinitionEntity processDefinition = ProcessDefinitionUtil.getProcessDefinitionFromDatabase(processDefinitionId);
 
     if (processDefinition == null) {
-      throw new ActivitiObjectNotFoundException("No process definition found for id = '" + processDefinitionId + "'", ProcessDefinition.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("No process definition found for id = '").append(processDefinitionId).append("'").toString(), ProcessDefinition.class);
     }
 
     if (processDefinition.isSuspended()) {
-      throw new ActivitiException("Cannot execute operation because process definition '" + processDefinition.getName() + "' (id=" + processDefinition.getId() + ") is suspended");
+      throw new ActivitiException(new StringBuilder().append("Cannot execute operation because process definition '").append(processDefinition.getName()).append("' (id=").append(processDefinition.getId()).append(") is suspended").toString());
     }
 
     return execute(commandContext, processDefinition);

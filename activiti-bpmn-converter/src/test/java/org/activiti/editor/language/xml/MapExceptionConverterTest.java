@@ -12,7 +12,8 @@ public class MapExceptionConverterTest extends AbstractConverterTest {
 
     String resourceName;
 
-    protected String getResource() {
+    @Override
+	protected String getResource() {
         return resourceName;
     }
 
@@ -23,9 +24,9 @@ public class MapExceptionConverterTest extends AbstractConverterTest {
             readXMLFile();
             fail("No exception is thrown for mapExecution with invalid boolean for hasChildren");
         } catch (XMLException x) {
-            assertTrue(x.getMessage().indexOf("is not valid boolean") != -1);
+            assertTrue(x.getMessage().contains("is not valid boolean"));
         } catch (Exception e) {
-            fail("wrong exception thrown. XmlException expected, " + e.getClass() + " thrown");
+            fail(new StringBuilder().append("wrong exception thrown. XmlException expected, ").append(e.getClass()).append(" thrown").toString());
         }
     }
 
@@ -37,9 +38,9 @@ public class MapExceptionConverterTest extends AbstractConverterTest {
             readXMLFile();
             fail("No exception is thrown for mapExecution with no Error Code");
         } catch (XMLException x) {
-            assertTrue(x.getMessage().indexOf("No errorCode defined") != -1);
+            assertTrue(x.getMessage().contains("No errorCode defined"));
         } catch (Exception e) {
-            fail("wrong exception thrown. XmlException expected, " + e.getClass() + " thrown");
+            fail(new StringBuilder().append("wrong exception thrown. XmlException expected, ").append(e.getClass()).append(" thrown").toString());
         }
     }
 

@@ -25,7 +25,8 @@ import org.activiti.bpmn.model.EventGateway;
  */
 public class EventGatewayXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return EventGateway.class;
   }
 

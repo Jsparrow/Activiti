@@ -32,8 +32,9 @@ public class ProcessDefinitionInfoEntityImpl extends AbstractEntity implements P
     
   }
 
-  public Object getPersistentState() {
-    Map<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    Map<String, Object> persistentState = new HashMap<>();
     persistentState.put("processDefinitionId", this.processDefinitionId);
     persistentState.put("infoJsonId", this.infoJsonId);
     return persistentState;
@@ -41,19 +42,23 @@ public class ProcessDefinitionInfoEntityImpl extends AbstractEntity implements P
 
   // getters and setters //////////////////////////////////////////////////////
 
-  public String getProcessDefinitionId() {
+  @Override
+public String getProcessDefinitionId() {
     return processDefinitionId;
   }
 
-  public void setProcessDefinitionId(String processDefinitionId) {
+  @Override
+public void setProcessDefinitionId(String processDefinitionId) {
     this.processDefinitionId = processDefinitionId;
   }
 
-  public String getInfoJsonId() {
+  @Override
+public String getInfoJsonId() {
     return infoJsonId;
   }
 
-  public void setInfoJsonId(String infoJsonId) {
+  @Override
+public void setInfoJsonId(String infoJsonId) {
     this.infoJsonId = infoJsonId;
   }
 }

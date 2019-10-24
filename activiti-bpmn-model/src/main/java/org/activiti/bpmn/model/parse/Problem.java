@@ -30,7 +30,9 @@ public class Problem {
     this.column = graphicInfo.getXmlColumnNumber();
   }
 
-  public String toString() {
-    return errorMessage + (resource != null ? " | " + resource : "") + " | line " + line + " | column " + column;
+  @Override
+public String toString() {
+    return new StringBuilder().append(errorMessage).append(resource != null ? " | " + resource : "").append(" | line ").append(line).append(" | column ")
+			.append(column).toString();
   }
 }

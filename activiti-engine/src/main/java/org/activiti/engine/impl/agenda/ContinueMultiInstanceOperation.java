@@ -39,7 +39,7 @@ public class ContinueMultiInstanceOperation extends AbstractOperation {
     if (currentFlowElement instanceof FlowNode) {
       continueThroughMultiInstanceFlowNode((FlowNode) currentFlowElement);
     } else {
-      throw new RuntimeException("Programmatic error: no valid multi instance flow node, type: " + currentFlowElement + ". Halting.");
+      throw new RuntimeException(new StringBuilder().append("Programmatic error: no valid multi instance flow node, type: ").append(currentFlowElement).append(". Halting.").toString());
     }
   }
   

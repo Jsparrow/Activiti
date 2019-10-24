@@ -55,7 +55,7 @@ public abstract class TestHelper {
 
   public static final List<String> TABLENAMES_EXCLUDED_FROM_DB_CLEAN_CHECK = Collections.singletonList("ACT_GE_PROPERTY");
 
-  static Map<String, ProcessEngine> processEngines = new HashMap<String, ProcessEngine>();
+  static Map<String, ProcessEngine> processEngines = new HashMap<>();
 
   // Assertion methods ///////////////////////////////////////////////////
 
@@ -63,7 +63,7 @@ public abstract class TestHelper {
     ProcessInstance processInstance = processEngine.getRuntimeService().createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
 
     if (processInstance != null) {
-      throw new AssertionFailedError("expected finished process instance '" + processInstanceId + "' but it was still in the db");
+      throw new AssertionFailedError(new StringBuilder().append("expected finished process instance '").append(processInstanceId).append("' but it was still in the db").toString());
     }
   }
 
@@ -88,7 +88,7 @@ public abstract class TestHelper {
         resources = new String[] { resource };
       }
 
-      DeploymentBuilder deploymentBuilder = processEngine.getRepositoryService().createDeployment().name(testClass.getSimpleName() + "." + methodName);
+      DeploymentBuilder deploymentBuilder = processEngine.getRepositoryService().createDeployment().name(new StringBuilder().append(testClass.getSimpleName()).append(".").append(methodName).toString());
 
       for (String resource : resources) {
         deploymentBuilder.addClasspathResource(resource);
@@ -110,6 +110,7 @@ public abstract class TestHelper {
       try {
         processEngine.getRepositoryService().deleteDeployment(deploymentId, true);
       } catch (ActivitiObjectNotFoundException e) {
+		log.error(e.getMessage(), e);
         // Deployment was already deleted by the test case. Ignore.
       }
     }
@@ -153,13 +154,13 @@ public abstract class TestHelper {
 
   protected static void handleNoOpServiceTasksAnnotation(ActivitiMockSupport mockSupport, Method method) {
     NoOpServiceTasks noOpServiceTasks = method.getAnnotation(NoOpServiceTasks.class);
-    if (noOpServiceTasks != null) {
-
-      String[] ids = noOpServiceTasks.ids();
-      Class<?>[] classes = noOpServiceTasks.classes();
-      String[] classNames = noOpServiceTasks.classNames();
-
-      if ((ids == null || ids.length == 0) && (classes == null || classes.length == 0) && (classNames == null || classNames.length == 0)) {
+    if (noOpServiceTasks == null) {
+		return;
+	}
+	String[] ids = noOpServiceTasks.ids();
+	Class<?>[] classes = noOpServiceTasks.classes();
+	String[] classNames = noOpServiceTasks.classNames();
+	if ((ids == null || ids.length == 0) && (classes == null || classes.length == 0) && (classNames == null || classNames.length == 0)) {
         mockSupport.setAllServiceTasksNoOp();
       } else {
 
@@ -182,8 +183,6 @@ public abstract class TestHelper {
         }
 
       }
-
-    }
   }
 
   public static void annotationMockSupportTeardown(ActivitiMockSupport mockSupport) {
@@ -196,7 +195,7 @@ public abstract class TestHelper {
    */
   public static String getBpmnProcessDefinitionResource(Class<?> type, String name) {
     for (String suffix : ResourceNameUtil.BPMN_RESOURCE_SUFFIXES) {
-      String resource = type.getName().replace('.', '/') + "." + name + "." + suffix;
+      String resource = new StringBuilder().append(type.getName().replace('.', '/')).append(".").append(name).append(".").append(suffix).toString();
       InputStream inputStream = ReflectUtil.getResourceAsStream(resource);
       if (inputStream == null) {
         continue;
@@ -204,7 +203,7 @@ public abstract class TestHelper {
         return resource;
       }
     }
-    return type.getName().replace('.', '/') + "." + name + "." + ResourceNameUtil.BPMN_RESOURCE_SUFFIXES[0];
+    return new StringBuilder().append(type.getName().replace('.', '/')).append(".").append(name).append(".").append(ResourceNameUtil.BPMN_RESOURCE_SUFFIXES[0]).toString();
   }
 
   // Engine startup and shutdown helpers
@@ -222,9 +221,7 @@ public abstract class TestHelper {
   }
 
   public static void closeProcessEngines() {
-    for (ProcessEngine processEngine : processEngines.values()) {
-      processEngine.close();
-    }
+    processEngines.values().forEach(ProcessEngine::close);
     processEngines.clear();
   }
 
@@ -236,30 +233,25 @@ public abstract class TestHelper {
     log.debug("verifying that db is clean after test");
     Map<String, Long> tableCounts = processEngine.getManagementService().getTableCount();
     StringBuilder outputMessage = new StringBuilder();
-    for (String tableName : tableCounts.keySet()) {
-      if (!TABLENAMES_EXCLUDED_FROM_DB_CLEAN_CHECK.contains(tableName)) {
+    tableCounts.keySet().stream().filter(tableName -> !TABLENAMES_EXCLUDED_FROM_DB_CLEAN_CHECK.contains(tableName)).forEach(tableName -> {
         Long count = tableCounts.get(tableName);
         if (count != 0L) {
           outputMessage.append("  ").append(tableName).append(": ").append(count).append(" record(s) ");
         }
-      }
-    }
-    if (outputMessage.length() > 0) {
-      outputMessage.insert(0, "DB NOT CLEAN: \n");
-      log.error(EMPTY_LINE);
-      log.error(outputMessage.toString());
-
-      ((ProcessEngineImpl) processEngine).getProcessEngineConfiguration().getCommandExecutor().execute(new Command<Object>() {
-        public Object execute(CommandContext commandContext) {
-          DbSqlSession dbSqlSession = commandContext.getDbSqlSession();
-          dbSqlSession.dbSchemaDrop();
-          dbSqlSession.dbSchemaCreate();
-          return null;
-        }
       });
-
-      throw new AssertionError(outputMessage.toString());
-    }
+    if (outputMessage.length() <= 0) {
+		return;
+	}
+	outputMessage.insert(0, "DB NOT CLEAN: \n");
+	log.error(EMPTY_LINE);
+	log.error(outputMessage.toString());
+	((ProcessEngineImpl) processEngine).getProcessEngineConfiguration().getCommandExecutor().execute((CommandContext commandContext) -> {
+	  DbSqlSession dbSqlSession = commandContext.getDbSqlSession();
+	  dbSqlSession.dbSchemaDrop();
+	  dbSqlSession.dbSchemaCreate();
+	  return null;
+	});
+	throw new AssertionError(outputMessage.toString());
   }
 
   // Mockup support ////////////////////////////////////////////////////////

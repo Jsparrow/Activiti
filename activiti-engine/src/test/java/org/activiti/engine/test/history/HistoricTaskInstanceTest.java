@@ -30,12 +30,16 @@ import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HistoricTaskInstanceTest extends PluggableActivitiTestCase {
 
-    @Deployment
+    private static final Logger logger = LoggerFactory.getLogger(HistoricTaskInstanceTest.class);
+
+	@Deployment
     public void testHistoricTaskInstance() throws Exception {
-        Map<String, Object> varMap = new HashMap<String, Object>();
+        Map<String, Object> varMap = new HashMap<>();
         varMap.put("formKeyVar",
                    "expressionFormKey");
         String processInstanceId = runtimeService.startProcessInstanceByKey("HistoricTaskInstanceTest",
@@ -231,7 +235,7 @@ public class HistoricTaskInstanceTest extends PluggableActivitiTestCase {
                      historyService.createHistoricTaskInstanceQuery().processDefinitionKey("unexistingdefinitionkey").count());
 
         // Process definition key in
-        List<String> includeIds = new ArrayList<String>();
+        List<String> includeIds = new ArrayList<>();
         assertEquals(1,
                      historyService.createHistoricTaskInstanceQuery().processDefinitionKeyIn(includeIds).count());
         includeIds.add("unexistingProcessDefinition");
@@ -429,7 +433,7 @@ public class HistoricTaskInstanceTest extends PluggableActivitiTestCase {
                      historyService.createHistoricTaskInstanceQuery().or().taskNameLike("Clean u%").endOr().count());
         assertEquals(0,
                      historyService.createHistoricTaskInstanceQuery().or().taskNameLike("%unexistingname%").endOr().count());
-        final List<String> taskNameList = new ArrayList<String>(1);
+        final List<String> taskNameList = new ArrayList<>(1);
         taskNameList.add("Clean up");
         assertEquals(1,
                      historyService.createHistoricTaskInstanceQuery().or().taskNameIn(taskNameList).endOr().count());
@@ -519,7 +523,7 @@ public class HistoricTaskInstanceTest extends PluggableActivitiTestCase {
                                true);
 
         // Process definition key in
-        List<String> includeIds = new ArrayList<String>();
+        List<String> includeIds = new ArrayList<>();
         assertEquals(0,
                      historyService.createHistoricTaskInstanceQuery().or().processDefinitionKey("unexistingdefinitionkey").processDefinitionKeyIn(includeIds).endOr().count());
         includeIds.add("unexistingProcessDefinition");
@@ -773,7 +777,10 @@ public class HistoricTaskInstanceTest extends PluggableActivitiTestCase {
                      historicIdentityLinks.size());
 
         // Validate all links
-        boolean foundCandidateUser = false, foundCandidateGroup = false, foundAssignee = false, foundCustom = false;
+        boolean foundCandidateUser = false;
+		boolean foundCandidateGroup = false;
+		boolean foundAssignee = false;
+		boolean foundCustom = false;
         for (HistoricIdentityLink link : historicIdentityLinks) {
             assertEquals(task.getId(),
                          link.getTaskId());
@@ -782,15 +789,15 @@ public class HistoricTaskInstanceTest extends PluggableActivitiTestCase {
                              link.getGroupId());
                 foundCandidateGroup = true;
             } else {
-                if (link.getType().equals("candidate")) {
+                if ("candidate".equals(link.getType())) {
                     assertEquals("fozzie",
                                  link.getUserId());
                     foundCandidateUser = true;
-                } else if (link.getType().equals("assignee")) {
+                } else if ("assignee".equals(link.getType())) {
                     assertEquals("kermit",
                                  link.getUserId());
                     foundAssignee = true;
-                } else if (link.getType().equals("customUseridentityLink")) {
+                } else if ("customUseridentityLink".equals(link.getType())) {
                     assertEquals("gonzo",
                                  link.getUserId());
                     foundCustom = true;
@@ -826,6 +833,7 @@ public class HistoricTaskInstanceTest extends PluggableActivitiTestCase {
             historyService.createHistoricTaskInstanceQuery().asc();
             fail();
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
 
         }
 
@@ -833,6 +841,7 @@ public class HistoricTaskInstanceTest extends PluggableActivitiTestCase {
             historyService.createHistoricTaskInstanceQuery().desc();
             fail();
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
 
         }
 
@@ -840,6 +849,7 @@ public class HistoricTaskInstanceTest extends PluggableActivitiTestCase {
             historyService.createHistoricTaskInstanceQuery().orderByProcessInstanceId().list();
             fail();
         } catch (ActivitiIllegalArgumentException e) {
+			logger.error(e.getMessage(), e);
 
         }
     }

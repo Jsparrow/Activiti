@@ -44,9 +44,7 @@ public class JsonListConverter<T> {
 
   private JSONArray toJsonArray(List<T> objects) {
     JSONArray jsonArray = new JSONArray();
-    for (T object : objects) {
-      jsonArray.put(jsonObjectConverter.toJsonObject(object));
-    }
+    objects.forEach(object -> jsonArray.put(jsonObjectConverter.toJsonObject(object)));
     return jsonArray;
   }
 

@@ -109,33 +109,8 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
   protected static final String BPMN_XSD = "org/activiti/impl/bpmn/parser/BPMN20.xsd";
   protected static final String DEFAULT_ENCODING = "UTF-8";
 
-  protected static Map<String, BaseBpmnXMLConverter> convertersToBpmnMap = new HashMap<String, BaseBpmnXMLConverter>();
-  protected static Map<Class<? extends BaseElement>, BaseBpmnXMLConverter> convertersToXMLMap = new HashMap<Class<? extends BaseElement>, BaseBpmnXMLConverter>();
-
-  protected ClassLoader classloader;
-  protected List<String> userTaskFormTypes;
-  protected List<String> startEventFormTypes;
-
-  protected BpmnEdgeParser bpmnEdgeParser = new BpmnEdgeParser();
-  protected BpmnShapeParser bpmnShapeParser = new BpmnShapeParser();
-  protected DefinitionsParser definitionsParser = new DefinitionsParser();
-  protected DocumentationParser documentationParser = new DocumentationParser();
-  protected ExtensionElementsParser extensionElementsParser = new ExtensionElementsParser();
-  protected ImportParser importParser = new ImportParser();
-  protected InterfaceParser interfaceParser = new InterfaceParser();
-  protected ItemDefinitionParser itemDefinitionParser = new ItemDefinitionParser();
-  protected IOSpecificationParser ioSpecificationParser = new IOSpecificationParser();
-  protected DataStoreParser dataStoreParser = new DataStoreParser();
-  protected LaneParser laneParser = new LaneParser();
-  protected MessageParser messageParser = new MessageParser();
-  protected MessageFlowParser messageFlowParser = new MessageFlowParser();
-  protected MultiInstanceParser multiInstanceParser = new MultiInstanceParser();
-  protected ParticipantParser participantParser = new ParticipantParser();
-  protected PotentialStarterParser potentialStarterParser = new PotentialStarterParser();
-  protected ProcessParser processParser = new ProcessParser();
-  protected ResourceParser resourceParser = new ResourceParser();
-  protected SignalParser signalParser = new SignalParser();
-  protected SubProcessParser subProcessParser = new SubProcessParser();
+  protected static Map<String, BaseBpmnXMLConverter> convertersToBpmnMap = new HashMap<>();
+  protected static Map<Class<? extends BaseElement>, BaseBpmnXMLConverter> convertersToXMLMap = new HashMap<>();
 
   static {
     // events
@@ -188,42 +163,88 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
     addConverter(new AlfrescoUserTaskXMLConverter());
   }
 
-  public static void addConverter(BaseBpmnXMLConverter converter) {
+protected ClassLoader classloader;
+
+protected List<String> userTaskFormTypes;
+
+protected List<String> startEventFormTypes;
+
+protected BpmnEdgeParser bpmnEdgeParser = new BpmnEdgeParser();
+
+protected BpmnShapeParser bpmnShapeParser = new BpmnShapeParser();
+
+protected DefinitionsParser definitionsParser = new DefinitionsParser();
+
+protected DocumentationParser documentationParser = new DocumentationParser();
+
+protected ExtensionElementsParser extensionElementsParser = new ExtensionElementsParser();
+
+protected ImportParser importParser = new ImportParser();
+
+protected InterfaceParser interfaceParser = new InterfaceParser();
+
+protected ItemDefinitionParser itemDefinitionParser = new ItemDefinitionParser();
+
+protected IOSpecificationParser ioSpecificationParser = new IOSpecificationParser();
+
+protected DataStoreParser dataStoreParser = new DataStoreParser();
+
+protected LaneParser laneParser = new LaneParser();
+
+protected MessageParser messageParser = new MessageParser();
+
+protected MessageFlowParser messageFlowParser = new MessageFlowParser();
+
+protected MultiInstanceParser multiInstanceParser = new MultiInstanceParser();
+
+protected ParticipantParser participantParser = new ParticipantParser();
+
+protected PotentialStarterParser potentialStarterParser = new PotentialStarterParser();
+
+protected ProcessParser processParser = new ProcessParser();
+
+protected ResourceParser resourceParser = new ResourceParser();
+
+protected SignalParser signalParser = new SignalParser();
+
+protected SubProcessParser subProcessParser = new SubProcessParser();
+
+public static void addConverter(BaseBpmnXMLConverter converter) {
     addConverter(converter, converter.getBpmnElementType());
   }
 
-  public static void addConverter(BaseBpmnXMLConverter converter, Class<? extends BaseElement> elementType) {
+public static void addConverter(BaseBpmnXMLConverter converter, Class<? extends BaseElement> elementType) {
     convertersToBpmnMap.put(converter.getXMLElementName(), converter);
     convertersToXMLMap.put(elementType, converter);
   }
 
-  public void setClassloader(ClassLoader classloader) {
+public void setClassloader(ClassLoader classloader) {
     this.classloader = classloader;
   }
 
-  public void setUserTaskFormTypes(List<String> userTaskFormTypes) {
+public void setUserTaskFormTypes(List<String> userTaskFormTypes) {
     this.userTaskFormTypes = userTaskFormTypes;
   }
 
-  public void setStartEventFormTypes(List<String> startEventFormTypes) {
+public void setStartEventFormTypes(List<String> startEventFormTypes) {
     this.startEventFormTypes = startEventFormTypes;
   }
 
-  public void validateModel(InputStreamProvider inputStreamProvider) throws Exception {
+public void validateModel(InputStreamProvider inputStreamProvider) throws Exception {
     Schema schema = createSchema();
 
     Validator validator = schema.newValidator();
     validator.validate(new StreamSource(inputStreamProvider.getInputStream()));
   }
 
-  public void validateModel(XMLStreamReader xmlStreamReader) throws Exception {
+public void validateModel(XMLStreamReader xmlStreamReader) throws Exception {
     Schema schema = createSchema();
 
     Validator validator = schema.newValidator();
     validator.validate(new StAXSource(xmlStreamReader));
   }
 
-  protected Schema createSchema() throws SAXException {
+protected Schema createSchema() throws SAXException {
     SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     Schema schema = null;
     if (classloader != null) {
@@ -240,11 +261,11 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
     return schema;
   }
 
-  public BpmnModel convertToBpmnModel(InputStreamProvider inputStreamProvider, boolean validateSchema, boolean enableSafeBpmnXml) {
+public BpmnModel convertToBpmnModel(InputStreamProvider inputStreamProvider, boolean validateSchema, boolean enableSafeBpmnXml) {
     return convertToBpmnModel(inputStreamProvider, validateSchema, enableSafeBpmnXml, DEFAULT_ENCODING);
   }
 
-  public BpmnModel convertToBpmnModel(InputStreamProvider inputStreamProvider, boolean validateSchema, boolean enableSafeBpmnXml, String encoding) {
+public BpmnModel convertToBpmnModel(InputStreamProvider inputStreamProvider, boolean validateSchema, boolean enableSafeBpmnXml, String encoding) {
     XMLInputFactory xif = XMLInputFactory.newInstance();
 
     if (xif.isPropertySupported(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES)) {
@@ -299,13 +320,13 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
     }
   }
 
-  public BpmnModel convertToBpmnModel(XMLStreamReader xtr) {
+public BpmnModel convertToBpmnModel(XMLStreamReader xtr) {
     BpmnModel model = new BpmnModel();
     model.setStartEventFormTypes(startEventFormTypes);
     model.setUserTaskFormTypes(userTaskFormTypes);
     try {
       Process activeProcess = null;
-      List<SubProcess> activeSubProcessList = new ArrayList<SubProcess>();
+      List<SubProcess> activeSubProcessList = new ArrayList<>();
       while (xtr.hasNext()) {
         try {
           xtr.next();
@@ -437,14 +458,10 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
         }
       }
 
-      for (Process process : model.getProcesses()) {
-        for (Pool pool : model.getPools()) {
-          if (process.getId().equals(pool.getProcessRef())) {
-            pool.setExecutable(process.isExecutable());
-          }
-        }
+      model.getProcesses().forEach(process -> {
+        model.getPools().stream().filter(pool -> process.getId().equals(pool.getProcessRef())).forEach(pool -> pool.setExecutable(process.isExecutable()));
         processFlowElements(process.getFlowElements(), process);
-      }
+      });
 
     } catch (XMLException e) {
       throw e;
@@ -456,8 +473,8 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
     return model;
   }
 
-  protected void processFlowElements(Collection<FlowElement> flowElementList, BaseElement parentScope) {
-    for (FlowElement flowElement : flowElementList) {
+protected void processFlowElements(Collection<FlowElement> flowElementList, BaseElement parentScope) {
+    flowElementList.forEach(flowElement -> {
       if (flowElement instanceof SequenceFlow) {
         SequenceFlow sequenceFlow = (SequenceFlow) flowElement;
         FlowNode sourceNode = getFlowNodeFromScope(sequenceFlow.getSourceRef(), parentScope);
@@ -485,10 +502,10 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
         SubProcess subProcess = (SubProcess) flowElement;
         processFlowElements(subProcess.getFlowElements(), subProcess);
       }
-    }
+    });
   }
 
-  protected FlowNode getFlowNodeFromScope(String elementId, BaseElement scope) {
+protected FlowNode getFlowNodeFromScope(String elementId, BaseElement scope) {
     FlowNode flowNode = null;
     if (StringUtils.isNotEmpty(elementId)) {
       if (scope instanceof Process) {
@@ -500,11 +517,11 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
     return flowNode;
   }
 
-  public byte[] convertToXML(BpmnModel model) {
+public byte[] convertToXML(BpmnModel model) {
     return convertToXML(model, DEFAULT_ENCODING);
   }
 
-  public byte[] convertToXML(BpmnModel model, String encoding) {
+public byte[] convertToXML(BpmnModel model, String encoding) {
     try {
 
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -561,7 +578,7 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
     }
   }
 
-  protected void createXML(FlowElement flowElement, BpmnModel model, XMLStreamWriter xtw) throws Exception {
+protected void createXML(FlowElement flowElement, BpmnModel model, XMLStreamWriter xtw) throws Exception {
 
     if (flowElement instanceof SubProcess) {
 
@@ -641,19 +658,19 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
       BaseBpmnXMLConverter converter = convertersToXMLMap.get(flowElement.getClass());
 
       if (converter == null) {
-        throw new XMLException("No converter for " + flowElement.getClass() + " found");
+        throw new XMLException(new StringBuilder().append("No converter for ").append(flowElement.getClass()).append(" found").toString());
       }
 
       converter.convertToXML(xtw, flowElement, model);
     }
   }
 
-  protected void createXML(Artifact artifact, BpmnModel model, XMLStreamWriter xtw) throws Exception {
+protected void createXML(Artifact artifact, BpmnModel model, XMLStreamWriter xtw) throws Exception {
 
     BaseBpmnXMLConverter converter = convertersToXMLMap.get(artifact.getClass());
 
     if (converter == null) {
-      throw new XMLException("No converter for " + artifact.getClass() + " found");
+      throw new XMLException(new StringBuilder().append("No converter for ").append(artifact.getClass()).append(" found").toString());
     }
 
     converter.convertToXML(xtw, artifact, model);

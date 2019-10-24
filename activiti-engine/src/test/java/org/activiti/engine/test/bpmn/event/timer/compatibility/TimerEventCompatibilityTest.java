@@ -35,20 +35,15 @@ public abstract class TimerEventCompatibilityTest extends PluggableActivitiTestC
     CommandExecutor commandExecutor = ((ProcessEngineImpl) processEngine).getProcessEngineConfiguration().getCommandExecutor();
     CommandConfig config = new CommandConfig().transactionNotSupported();
     final String finalActivityId = activityId;
-    commandExecutor.execute(config, new Command<Object>() {
-
-      public Object execute(CommandContext commandContext) {
+    commandExecutor.execute(config, (CommandContext commandContext) -> {
         DbSqlSession session = commandContext.getDbSqlSession();
         session.delete(finalJob);
         session.flush();
         session.commit();
         return null;
-      }
-    });
+      });
 
-    commandExecutor.execute(config, new Command<Object>() {
-
-      public Object execute(CommandContext commandContext) {
+    commandExecutor.execute(config, (CommandContext commandContext) -> {
         DbSqlSession session = commandContext.getDbSqlSession();
 
         finalJob.setJobHandlerConfiguration(finalActivityId);
@@ -58,8 +53,7 @@ public abstract class TimerEventCompatibilityTest extends PluggableActivitiTestC
         session.flush();
         session.commit();
         return null;
-      }
-    });
+      });
   }
 
   protected void moveByMinutes(int minutes) throws Exception {

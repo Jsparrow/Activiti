@@ -78,8 +78,9 @@ public class HistoricTaskInstanceEntityImpl extends HistoricScopeInstanceEntityI
 
   // persistence //////////////////////////////////////////////////////////////
 
-  public Object getPersistentState() {
-    Map<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    Map<String, Object> persistentState = new HashMap<>();
     persistentState.put("name", name);
     persistentState.put("owner", owner);
     persistentState.put("assignee", assignee);
@@ -106,30 +107,36 @@ public class HistoricTaskInstanceEntityImpl extends HistoricScopeInstanceEntityI
 
   // getters and setters ////////////////////////////////////////////////////////
   
-  public String getExecutionId() {
+  @Override
+public String getExecutionId() {
     return executionId;
   }
 
-  public void setExecutionId(String executionId) {
+  @Override
+public void setExecutionId(String executionId) {
     this.executionId = executionId;
   }
 
-  public String getName() {
+  @Override
+public String getName() {
     if (localizedName != null && localizedName.length() > 0) {
       return localizedName;
     } else {
       return name;
     }
   }
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
   
-  public void setLocalizedName(String name) {
+  @Override
+public void setLocalizedName(String name) {
     this.localizedName = name;
   }
   
-  public String getDescription() {
+  @Override
+public String getDescription() {
     if (localizedDescription != null && localizedDescription.length() > 0) {
       return localizedDescription;
     } else {
@@ -137,27 +144,33 @@ public class HistoricTaskInstanceEntityImpl extends HistoricScopeInstanceEntityI
     }
   }
   
-  public void setDescription(String description) {
+  @Override
+public void setDescription(String description) {
     this.description = description;
   }
   
-  public void setLocalizedDescription(String description) {
+  @Override
+public void setLocalizedDescription(String description) {
     this.localizedDescription = description;
   }
 
-  public String getAssignee() {
+  @Override
+public String getAssignee() {
     return assignee;
   }
 
-  public void setAssignee(String assignee) {
+  @Override
+public void setAssignee(String assignee) {
     this.assignee = assignee;
   }
 
-  public String getTaskDefinitionKey() {
+  @Override
+public String getTaskDefinitionKey() {
     return taskDefinitionKey;
   }
 
-  public void setTaskDefinitionKey(String taskDefinitionKey) {
+  @Override
+public void setTaskDefinitionKey(String taskDefinitionKey) {
     this.taskDefinitionKey = taskDefinitionKey;
   }
 
@@ -166,113 +179,127 @@ public class HistoricTaskInstanceEntityImpl extends HistoricScopeInstanceEntityI
     return getStartTime(); // For backwards compatible reason implemented with createTime and startTime
   }
 
-  public String getFormKey() {
+  @Override
+public String getFormKey() {
     return formKey;
   }
 
-  public void setFormKey(String formKey) {
+  @Override
+public void setFormKey(String formKey) {
     this.formKey = formKey;
   }
 
-  public int getPriority() {
+  @Override
+public int getPriority() {
     return priority;
   }
 
-  public void setPriority(int priority) {
+  @Override
+public void setPriority(int priority) {
     this.priority = priority;
   }
 
-  public Date getDueDate() {
+  @Override
+public Date getDueDate() {
     return dueDate;
   }
 
-  public void setDueDate(Date dueDate) {
+  @Override
+public void setDueDate(Date dueDate) {
     this.dueDate = dueDate;
   }
 
-  public String getCategory() {
+  @Override
+public String getCategory() {
     return category;
   }
 
-  public void setCategory(String category) {
+  @Override
+public void setCategory(String category) {
     this.category = category;
   }
 
-  public String getOwner() {
+  @Override
+public String getOwner() {
     return owner;
   }
 
-  public void setOwner(String owner) {
+  @Override
+public void setOwner(String owner) {
     this.owner = owner;
   }
 
-  public String getParentTaskId() {
+  @Override
+public String getParentTaskId() {
     return parentTaskId;
   }
 
-  public void setParentTaskId(String parentTaskId) {
+  @Override
+public void setParentTaskId(String parentTaskId) {
     this.parentTaskId = parentTaskId;
   }
 
-  public Date getClaimTime() {
+  @Override
+public Date getClaimTime() {
     return claimTime;
   }
 
-  public void setClaimTime(Date claimTime) {
+  @Override
+public void setClaimTime(Date claimTime) {
     this.claimTime = claimTime;
   }
 
-  public String getTenantId() {
+  @Override
+public String getTenantId() {
     return tenantId;
   }
 
-  public void setTenantId(String tenantId) {
+  @Override
+public void setTenantId(String tenantId) {
     this.tenantId = tenantId;
   }
 
-  public Date getTime() {
+  @Override
+public Date getTime() {
     return getStartTime();
   }
 
-  public Long getWorkTimeInMillis() {
+  @Override
+public Long getWorkTimeInMillis() {
     if (endTime == null || claimTime == null) {
       return null;
     }
     return endTime.getTime() - claimTime.getTime();
   }
 
-  public Map<String, Object> getTaskLocalVariables() {
-    Map<String, Object> variables = new HashMap<String, Object>();
+  @Override
+public Map<String, Object> getTaskLocalVariables() {
+    Map<String, Object> variables = new HashMap<>();
     if (queryVariables != null) {
-      for (HistoricVariableInstanceEntity variableInstance : queryVariables) {
-        if (variableInstance.getId() != null && variableInstance.getTaskId() != null) {
-          variables.put(variableInstance.getName(), variableInstance.getValue());
-        }
-      }
+      queryVariables.stream().filter(variableInstance -> variableInstance.getId() != null && variableInstance.getTaskId() != null).forEach(variableInstance -> variables.put(variableInstance.getName(), variableInstance.getValue()));
     }
     return variables;
   }
 
-  public Map<String, Object> getProcessVariables() {
-    Map<String, Object> variables = new HashMap<String, Object>();
+  @Override
+public Map<String, Object> getProcessVariables() {
+    Map<String, Object> variables = new HashMap<>();
     if (queryVariables != null) {
-      for (HistoricVariableInstanceEntity variableInstance : queryVariables) {
-        if (variableInstance.getId() != null && variableInstance.getTaskId() == null) {
-          variables.put(variableInstance.getName(), variableInstance.getValue());
-        }
-      }
+      queryVariables.stream().filter(variableInstance -> variableInstance.getId() != null && variableInstance.getTaskId() == null).forEach(variableInstance -> variables.put(variableInstance.getName(), variableInstance.getValue()));
     }
     return variables;
   }
 
-  public List<HistoricVariableInstanceEntity> getQueryVariables() {
+  @Override
+public List<HistoricVariableInstanceEntity> getQueryVariables() {
     if (queryVariables == null && Context.getCommandContext() != null) {
       queryVariables = new HistoricVariableInitializingList();
     }
     return queryVariables;
   }
 
-  public void setQueryVariables(List<HistoricVariableInstanceEntity> queryVariables) {
+  @Override
+public void setQueryVariables(List<HistoricVariableInstanceEntity> queryVariables) {
     this.queryVariables = queryVariables;
   }
   

@@ -34,7 +34,8 @@ public class SetDeploymentKeyCmd implements Command<Void> {
     this.key = key;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
 
     if (deploymentId == null) {
       throw new ActivitiIllegalArgumentException("Deployment id is null");
@@ -43,7 +44,7 @@ public class SetDeploymentKeyCmd implements Command<Void> {
     DeploymentEntity deployment = commandContext.getDeploymentEntityManager().findById(deploymentId);
 
     if (deployment == null) {
-      throw new ActivitiObjectNotFoundException("No deployment found for id = '" + deploymentId + "'", Deployment.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("No deployment found for id = '").append(deploymentId).append("'").toString(), Deployment.class);
     }
     
     // Update category

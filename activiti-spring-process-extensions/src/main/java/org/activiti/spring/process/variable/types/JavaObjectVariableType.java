@@ -31,10 +31,11 @@ public class JavaObjectVariableType extends VariableType {
     public void validate(Object var,List<ActivitiException> errors) {
 
 
-        if (!(var).getClass().isAssignableFrom(clazz)){
-            String message = var.getClass()+" is not assignable from "+clazz;
-            errors.add(new ActivitiException(message));
-            logger.error(message);
-        }
+        if ((var).getClass().isAssignableFrom(clazz)) {
+			return;
+		}
+		String message = new StringBuilder().append(var.getClass()).append(" is not assignable from ").append(clazz).toString();
+		errors.add(new ActivitiException(message));
+		logger.error(message);
     }
 }

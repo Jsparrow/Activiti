@@ -14,21 +14,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MessageTestConfiguration {
 
-    public static List<BPMNMessageEvent> messageEvents = new ArrayList<BPMNMessageEvent>();
+    public static List<BPMNMessageEvent> messageEvents = new ArrayList<>();
 
     @Bean
     public BPMNElementEventListener<BPMNMessageSentEvent> messageSentEventListener() {
-        return bpmnMessageSentEvent -> messageEvents.add(bpmnMessageSentEvent);
+        return messageEvents::add;
     }
     
     @Bean
     public BPMNElementEventListener<BPMNMessageReceivedEvent> messageReceivedEventListener() {
-        return bpmnMessageReceivedEvent -> messageEvents.add(bpmnMessageReceivedEvent);
+        return messageEvents::add;
     }
     
     @Bean
     public BPMNElementEventListener<BPMNMessageWaitingEvent> messageWaitingEventListener() {
-        return bpmnMessageWaitingEvent -> messageEvents.add(bpmnMessageWaitingEvent);
+        return messageEvents::add;
     }  
  
 }

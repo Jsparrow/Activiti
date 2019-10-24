@@ -33,7 +33,7 @@ public class IntermediateCatchEventValidator extends ProcessLevelValidator {
   @Override
   protected void executeValidation(BpmnModel bpmnModel, Process process, List<ValidationError> errors) {
     List<IntermediateCatchEvent> intermediateCatchEvents = process.findFlowElementsOfType(IntermediateCatchEvent.class);
-    for (IntermediateCatchEvent intermediateCatchEvent : intermediateCatchEvents) {
+    intermediateCatchEvents.forEach(intermediateCatchEvent -> {
       EventDefinition eventDefinition = null;
       if (!intermediateCatchEvent.getEventDefinitions().isEmpty()) {
         eventDefinition = intermediateCatchEvent.getEventDefinitions().get(0);
@@ -46,7 +46,7 @@ public class IntermediateCatchEventValidator extends ProcessLevelValidator {
           addError(errors, Problems.INTERMEDIATE_CATCH_EVENT_INVALID_EVENTDEFINITION, process, intermediateCatchEvent, "Unsupported intermediate catch event type");
         }
       }
-    }
+    });
   }
 
 }

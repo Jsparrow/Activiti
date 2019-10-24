@@ -21,11 +21,7 @@ import java.util.Comparator;
  */
 public class ErrorEventDefinition implements Serializable {
 
-  public static Comparator<ErrorEventDefinition> comparator = new Comparator<ErrorEventDefinition>() {
-    public int compare(ErrorEventDefinition o1, ErrorEventDefinition o2) {
-      return o2.getPrecedence().compareTo(o1.getPrecedence());
-    }
-  };
+  public static Comparator<ErrorEventDefinition> comparator = (ErrorEventDefinition o1, ErrorEventDefinition o2) -> o2.getPrecedence().compareTo(o1.getPrecedence());
 
   private static final long serialVersionUID = 1L;
 

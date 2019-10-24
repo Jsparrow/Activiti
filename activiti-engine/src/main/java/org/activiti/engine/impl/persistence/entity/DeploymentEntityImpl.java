@@ -53,28 +53,29 @@ public class DeploymentEntityImpl extends AbstractEntityNoRevision implements De
     
   }
 
-  public void addResource(ResourceEntity resource) {
+  @Override
+public void addResource(ResourceEntity resource) {
     if (resources == null) {
-      resources = new HashMap<String, ResourceEntity>();
+      resources = new HashMap<>();
     }
     resources.put(resource.getName(), resource);
   }
 
   // lazy loading ///////////////////////////////////////////////////////////////
   
-  public Map<String, ResourceEntity> getResources() {
+  @Override
+public Map<String, ResourceEntity> getResources() {
     if (resources == null && id != null) {
       List<ResourceEntity> resourcesList = Context.getCommandContext().getResourceEntityManager().findResourcesByDeploymentId(id);
-      resources = new HashMap<String, ResourceEntity>();
-      for (ResourceEntity resource : resourcesList) {
-        resources.put(resource.getName(), resource);
-      }
+      resources = new HashMap<>();
+      resourcesList.forEach(resource -> resources.put(resource.getName(), resource));
     }
     return resources;
   }
 
-  public Object getPersistentState() {
-    Map<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    Map<String, Object> persistentState = new HashMap<>();
     persistentState.put("category", this.category);
     persistentState.put("key", this.key);
     persistentState.put("tenantId", tenantId);
@@ -83,22 +84,24 @@ public class DeploymentEntityImpl extends AbstractEntityNoRevision implements De
 
   // Deployed artifacts manipulation ////////////////////////////////////////////
   
-  public void addDeployedArtifact(Object deployedArtifact) {
+  @Override
+public void addDeployedArtifact(Object deployedArtifact) {
     if (deployedArtifacts == null) {
-      deployedArtifacts = new HashMap<Class<?>, List<Object>>();
+      deployedArtifacts = new HashMap<>();
     }
 
     Class<?> clazz = deployedArtifact.getClass();
     List<Object> artifacts = deployedArtifacts.get(clazz);
     if (artifacts == null) {
-      artifacts = new ArrayList<Object>();
+      artifacts = new ArrayList<>();
       deployedArtifacts.put(clazz, artifacts);
     }
 
     artifacts.add(deployedArtifact);
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
+@SuppressWarnings("unchecked")
   public <T> List<T> getDeployedArtifacts(Class<T> clazz) {
     for (Class<?> deployedArtifactsClass : deployedArtifacts.keySet()) {
       if (clazz.isAssignableFrom(deployedArtifactsClass)) {
@@ -110,79 +113,98 @@ public class DeploymentEntityImpl extends AbstractEntityNoRevision implements De
 
   // getters and setters ////////////////////////////////////////////////////////
 
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
 
-  public String getCategory() {
+  @Override
+public String getCategory() {
     return category;
   }
 
-  public void setCategory(String category) {
+  @Override
+public void setCategory(String category) {
     this.category = category;
   }
   
-  public String getKey() {
+  @Override
+public String getKey() {
     return key;
   }
 
-  public void setKey(String key) {
+  @Override
+public void setKey(String key) {
     this.key = key;
   }
 
-  public String getTenantId() {
+  @Override
+public String getTenantId() {
     return tenantId;
   }
 
-  public void setTenantId(String tenantId) {
+  @Override
+public void setTenantId(String tenantId) {
     this.tenantId = tenantId;
   }
 
-  public void setResources(Map<String, ResourceEntity> resources) {
+  @Override
+public void setResources(Map<String, ResourceEntity> resources) {
     this.resources = resources;
   }
 
-  public Date getDeploymentTime() {
+  @Override
+public Date getDeploymentTime() {
     return deploymentTime;
   }
 
-  public void setDeploymentTime(Date deploymentTime) {
+  @Override
+public void setDeploymentTime(Date deploymentTime) {
     this.deploymentTime = deploymentTime;
   }
 
-  public boolean isNew() {
+  @Override
+public boolean isNew() {
     return isNew;
   }
 
-  public void setNew(boolean isNew) {
+  @Override
+public void setNew(boolean isNew) {
     this.isNew = isNew;
   }
 
-  public String getEngineVersion() {
+  @Override
+public String getEngineVersion() {
     return engineVersion;
   }
 
-  public void setEngineVersion(String engineVersion) {
+  @Override
+public void setEngineVersion(String engineVersion) {
     this.engineVersion = engineVersion;
   }
 
-  public Integer getVersion(){
+  @Override
+public Integer getVersion(){
       return version;
   }
 
-  public void setVersion(Integer version){
+  @Override
+public void setVersion(Integer version){
       this.version = version;
   }
 
-  public String getProjectReleaseVersion() {
+  @Override
+public String getProjectReleaseVersion() {
       return projectReleaseVersion;
   }
 
-  public void setProjectReleaseVersion(String projectReleaseVersion) {
+  @Override
+public void setProjectReleaseVersion(String projectReleaseVersion) {
       this.projectReleaseVersion = projectReleaseVersion;
   }
 
@@ -190,7 +212,7 @@ public class DeploymentEntityImpl extends AbstractEntityNoRevision implements De
 
   @Override
   public String toString() {
-    return "DeploymentEntity[id=" + id + ", name=" + name + "]";
+    return new StringBuilder().append("DeploymentEntity[id=").append(id).append(", name=").append(name).append("]").toString();
   }
 
 }

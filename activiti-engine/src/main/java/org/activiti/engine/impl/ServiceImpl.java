@@ -22,22 +22,21 @@ import org.activiti.engine.impl.interceptor.CommandExecutor;
 public class ServiceImpl {
 
   protected ProcessEngineConfigurationImpl processEngineConfiguration;
+protected CommandExecutor commandExecutor;
 
-  public ServiceImpl() {
+public ServiceImpl() {
 
   }
 
-  public ServiceImpl(ProcessEngineConfigurationImpl processEngineConfiguration) {
+public ServiceImpl(ProcessEngineConfigurationImpl processEngineConfiguration) {
     this.processEngineConfiguration = processEngineConfiguration;
   }
 
-  protected CommandExecutor commandExecutor;
-
-  public CommandExecutor getCommandExecutor() {
+public CommandExecutor getCommandExecutor() {
     return commandExecutor;
   }
 
-  public void setCommandExecutor(CommandExecutor commandExecutor) {
+public void setCommandExecutor(CommandExecutor commandExecutor) {
     this.commandExecutor = commandExecutor;
   }
 }

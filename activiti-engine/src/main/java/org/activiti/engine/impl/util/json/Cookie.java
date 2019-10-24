@@ -69,7 +69,7 @@ public class Cookie {
    * @return A JSONObject containing "name", "value", and possibly other members.
    * @throws JSONException
    */
-  public static JSONObject toJSONObject(String string) throws JSONException {
+  public static JSONObject toJSONObject(String string) {
     String n;
     JSONObject o = new JSONObject();
     Object v;
@@ -81,7 +81,7 @@ public class Cookie {
     while (x.more()) {
       n = unescape(x.nextTo("=;"));
       if (x.next() != '=') {
-        if (n.equals("secure")) {
+        if ("secure".equals(n)) {
           v = Boolean.TRUE;
         } else {
           throw x.syntaxError("Missing '=' in cookie parameter.");
@@ -104,7 +104,7 @@ public class Cookie {
    * @return A cookie specification string
    * @throws JSONException
    */
-  public static String toString(JSONObject o) throws JSONException {
+  public static String toString(JSONObject o) {
     StringBuilder sb = new StringBuilder();
 
     sb.append(escape(o.getString("name")));

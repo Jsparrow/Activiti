@@ -22,11 +22,13 @@ public class NativeDeploymentQueryImpl extends AbstractNativeQuery<NativeDeploym
 
   // results ////////////////////////////////////////////////////////////////
 
-  public List<Deployment> executeList(CommandContext commandContext, Map<String, Object> parameterMap, int firstResult, int maxResults) {
+  @Override
+public List<Deployment> executeList(CommandContext commandContext, Map<String, Object> parameterMap, int firstResult, int maxResults) {
     return commandContext.getDeploymentEntityManager().findDeploymentsByNativeQuery(parameterMap, firstResult, maxResults);
   }
 
-  public long executeCount(CommandContext commandContext, Map<String, Object> parameterMap) {
+  @Override
+public long executeCount(CommandContext commandContext, Map<String, Object> parameterMap) {
     return commandContext.getDeploymentEntityManager().findDeploymentCountByNativeQuery(parameterMap);
   }
 

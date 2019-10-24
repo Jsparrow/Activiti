@@ -30,7 +30,8 @@ public class JtaTransactionContextFactory implements TransactionContextFactory {
     this.transactionManager = transactionManager;
   }
 
-  public TransactionContext openTransactionContext(CommandContext commandContext) {
+  @Override
+public TransactionContext openTransactionContext(CommandContext commandContext) {
     return new JtaTransactionContext(transactionManager);
   }
 

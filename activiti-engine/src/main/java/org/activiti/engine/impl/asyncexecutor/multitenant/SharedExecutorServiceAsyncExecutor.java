@@ -40,35 +40,26 @@ public class SharedExecutorServiceAsyncExecutor extends DefaultAsyncJobExecutor 
   
   protected TenantInfoHolder tenantInfoHolder;
   
-  protected Map<String, Thread> timerJobAcquisitionThreads = new HashMap<String, Thread>();
+  protected Map<String, Thread> timerJobAcquisitionThreads = new HashMap<>();
   protected Map<String, TenantAwareAcquireTimerJobsRunnable> timerJobAcquisitionRunnables 
-    = new HashMap<String, TenantAwareAcquireTimerJobsRunnable>();
+    = new HashMap<>();
   
-  protected Map<String, Thread> asyncJobAcquisitionThreads = new HashMap<String, Thread>();
+  protected Map<String, Thread> asyncJobAcquisitionThreads = new HashMap<>();
   protected Map<String, TenantAwareAcquireAsyncJobsDueRunnable> asyncJobAcquisitionRunnables 
-    = new HashMap<String, TenantAwareAcquireAsyncJobsDueRunnable>();
+    = new HashMap<>();
   
-  protected Map<String, Thread> resetExpiredJobsThreads = new HashMap<String, Thread>();
+  protected Map<String, Thread> resetExpiredJobsThreads = new HashMap<>();
   protected Map<String, TenantAwareResetExpiredJobsRunnable> resetExpiredJobsRunnables
-    = new HashMap<String, TenantAwareResetExpiredJobsRunnable>();
+    = new HashMap<>();
   
   public SharedExecutorServiceAsyncExecutor(TenantInfoHolder tenantInfoHolder) {
     this.tenantInfoHolder = tenantInfoHolder;
     
-    setExecuteAsyncRunnableFactory(new ExecuteAsyncRunnableFactory() {
-      
-      @Override
-      public Runnable createExecuteAsyncRunnable(Job job, ProcessEngineConfigurationImpl processEngineConfiguration) {
-        
-        // Here, the runnable will be created by for example the acquire thread, which has already set the current id.
-        // But it will be executed later on, by the executorService and thus we need to set it explicitely again then
-        
-        return new TenantAwareExecuteAsyncRunnable(job, processEngineConfiguration, 
-            SharedExecutorServiceAsyncExecutor.this.tenantInfoHolder, 
-            SharedExecutorServiceAsyncExecutor.this.tenantInfoHolder.getCurrentTenantId());
-      }
-      
-    });
+    // Here, the runnable will be created by for example the acquire thread, which has already set the current id.
+	// But it will be executed later on, by the executorService and thus we need to set it explicitely again then
+	setExecuteAsyncRunnableFactory((Job job, ProcessEngineConfigurationImpl processEngineConfiguration) -> new TenantAwareExecuteAsyncRunnable(job, processEngineConfiguration,
+			SharedExecutorServiceAsyncExecutor.this.tenantInfoHolder,
+			SharedExecutorServiceAsyncExecutor.this.tenantInfoHolder.getCurrentTenantId()));
   }
   
   @Override
@@ -76,7 +67,8 @@ public class SharedExecutorServiceAsyncExecutor extends DefaultAsyncJobExecutor 
     return timerJobAcquisitionRunnables.keySet();
   }
 
-  public void addTenantAsyncExecutor(String tenantId, boolean startExecutor) {
+  @Override
+public void addTenantAsyncExecutor(String tenantId, boolean startExecutor) {
     
     TenantAwareAcquireTimerJobsRunnable timerRunnable = new TenantAwareAcquireTimerJobsRunnable(this, tenantInfoHolder, tenantId);
     timerJobAcquisitionRunnables.put(tenantId, timerRunnable);
@@ -90,11 +82,12 @@ public class SharedExecutorServiceAsyncExecutor extends DefaultAsyncJobExecutor 
     resetExpiredJobsRunnables.put(tenantId, resetExpiredJobsRunnable);
     resetExpiredJobsThreads.put(tenantId, new Thread(resetExpiredJobsRunnable));
     
-    if (startExecutor) {
-      startTimerJobAcquisitionForTenant(tenantId);
-      startAsyncJobAcquisitionForTenant(tenantId);
-      startResetExpiredJobsForTenant(tenantId);
-    }
+    if (!startExecutor) {
+		return;
+	}
+	startTimerJobAcquisitionForTenant(tenantId);
+	startAsyncJobAcquisitionForTenant(tenantId);
+	startResetExpiredJobsForTenant(tenantId);
   }
   
   @Override
@@ -104,11 +97,11 @@ public class SharedExecutorServiceAsyncExecutor extends DefaultAsyncJobExecutor 
   
   @Override
   public void start() {
-    for (String tenantId : timerJobAcquisitionRunnables.keySet()) {
+    timerJobAcquisitionRunnables.keySet().forEach(tenantId -> {
       startTimerJobAcquisitionForTenant(tenantId);
       startAsyncJobAcquisitionForTenant(tenantId);
       startResetExpiredJobsForTenant(tenantId);
-    }
+    });
   }
 
   protected  void startTimerJobAcquisitionForTenant(String tenantId) {
@@ -125,9 +118,7 @@ public class SharedExecutorServiceAsyncExecutor extends DefaultAsyncJobExecutor 
   
   @Override
   protected void stopJobAcquisitionThread() {
-    for (String tenantId : timerJobAcquisitionRunnables.keySet()) {
-      stopThreadsForTenant(tenantId);
-    }
+    timerJobAcquisitionRunnables.keySet().forEach(this::stopThreadsForTenant);
   }
   
   protected void stopThreadsForTenant(String tenantId) {

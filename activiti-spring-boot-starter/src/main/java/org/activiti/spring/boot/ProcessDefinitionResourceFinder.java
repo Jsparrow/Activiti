@@ -49,7 +49,7 @@ public class ProcessDefinitionResourceFinder {
                 resources.addAll(Arrays.asList(resourceLoader.getResources(path)));
             }
             if (resources.isEmpty()) {
-                LOGGER.info("No process definitions were found for auto-deployment in the location `" + activitiProperties.getProcessDefinitionLocationPrefix() + "`");
+                LOGGER.info(new StringBuilder().append("No process definitions were found for auto-deployment in the location `").append(activitiProperties.getProcessDefinitionLocationPrefix()).append("`").toString());
             } else {
                 List<String> resourcesNames = resources.stream().map(Resource::getFilename).collect(Collectors.toList());
                 LOGGER.info("The following process definition files will be deployed: " + resourcesNames);

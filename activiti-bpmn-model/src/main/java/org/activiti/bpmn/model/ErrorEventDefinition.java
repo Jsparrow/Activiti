@@ -24,7 +24,8 @@ public class ErrorEventDefinition extends EventDefinition {
     this.errorRef = errorRef;
   }
 
-  public ErrorEventDefinition clone() {
+  @Override
+public ErrorEventDefinition clone() {
     ErrorEventDefinition clone = new ErrorEventDefinition();
     clone.setValues(this);
     return clone;

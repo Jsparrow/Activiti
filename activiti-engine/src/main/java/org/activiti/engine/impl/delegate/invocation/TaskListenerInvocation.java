@@ -30,11 +30,13 @@ public class TaskListenerInvocation extends DelegateInvocation {
     this.delegateTask = delegateTask;
   }
 
-  protected void invoke() {
+  @Override
+protected void invoke() {
     executionListenerInstance.notify(delegateTask);
   }
 
-  public Object getTarget() {
+  @Override
+public Object getTarget() {
     return executionListenerInstance;
   }
 

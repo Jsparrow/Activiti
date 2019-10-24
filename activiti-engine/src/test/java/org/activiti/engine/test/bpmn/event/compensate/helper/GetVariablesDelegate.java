@@ -22,7 +22,8 @@ import org.activiti.engine.delegate.JavaDelegate;
  */
 public class GetVariablesDelegate implements JavaDelegate {
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     Integer nrOfCompletedInstances = (Integer) execution.getVariable("nrOfCompletedInstances");
     Integer variable = SetVariablesDelegate.variablesMap.get(nrOfCompletedInstances);
     Object variableLocal = execution.getVariable("variable");

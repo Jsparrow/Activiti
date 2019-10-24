@@ -36,7 +36,8 @@ public class SetProcessDefinitionCategoryCmd implements Command<Void> {
     this.category = category;
   }
 
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
 
     if (processDefinitionId == null) {
       throw new ActivitiIllegalArgumentException("Process definition id is null");
@@ -45,7 +46,7 @@ public class SetProcessDefinitionCategoryCmd implements Command<Void> {
     ProcessDefinitionEntity processDefinition = commandContext.getProcessDefinitionEntityManager().findById(processDefinitionId);
 
     if (processDefinition == null) {
-      throw new ActivitiObjectNotFoundException("No process definition found for id = '" + processDefinitionId + "'", ProcessDefinition.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("No process definition found for id = '").append(processDefinitionId).append("'").toString(), ProcessDefinition.class);
     }
     
     // Update category

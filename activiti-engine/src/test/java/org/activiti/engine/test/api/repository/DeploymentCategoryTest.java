@@ -20,6 +20,8 @@ import java.util.Set;
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DeploymentQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
@@ -27,7 +29,9 @@ import org.activiti.engine.repository.DeploymentQuery;
  */
 public class DeploymentCategoryTest extends PluggableActivitiTestCase {
 
-  public void testDeploymentCategory() {
+  private static final Logger logger = LoggerFactory.getLogger(DeploymentCategoryTest.class);
+
+public void testDeploymentCategory() {
     String noCategoryDeploymentId = null;
     String deploymentOneId = null;
     String deploymentTwoV1Id = null;
@@ -48,7 +52,7 @@ public class DeploymentCategoryTest extends PluggableActivitiTestCase {
 
       Set<String> deploymentNames = getDeploymentNames(repositoryService.createDeploymentQuery().deploymentCategory("one").list());
 
-      Set<String> expectedDeploymentNames = new HashSet<String>();
+      Set<String> expectedDeploymentNames = new HashSet<>();
       expectedDeploymentNames.add("1");
 
       assertEquals(expectedDeploymentNames, deploymentNames);
@@ -69,16 +73,21 @@ public class DeploymentCategoryTest extends PluggableActivitiTestCase {
       assertEquals("newCategory", deploymentNoCategory.getCategory());
 
     } finally {
-      if (noCategoryDeploymentId != null)
-        undeploy(noCategoryDeploymentId);
-      if (deploymentOneId != null)
-        undeploy(deploymentOneId);
-      if (deploymentTwoV1Id != null)
-        undeploy(deploymentTwoV1Id);
-      if (deploymentTwoV2Id != null)
-        undeploy(deploymentTwoV2Id);
-      if (deploymentTwoNoCategory != null)
-        undeploy(deploymentTwoNoCategory);
+      if (noCategoryDeploymentId != null) {
+		undeploy(noCategoryDeploymentId);
+	}
+      if (deploymentOneId != null) {
+		undeploy(deploymentOneId);
+	}
+      if (deploymentTwoV1Id != null) {
+		undeploy(deploymentTwoV1Id);
+	}
+      if (deploymentTwoV2Id != null) {
+		undeploy(deploymentTwoV2Id);
+	}
+      if (deploymentTwoNoCategory != null) {
+		undeploy(deploymentTwoNoCategory);
+	}
     }
   }
   
@@ -103,7 +112,7 @@ public class DeploymentCategoryTest extends PluggableActivitiTestCase {
 
       Set<String> deploymentNames = getDeploymentNames(repositoryService.createDeploymentQuery().deploymentKey("one").list());
 
-      Set<String> expectedDeploymentNames = new HashSet<String>();
+      Set<String> expectedDeploymentNames = new HashSet<>();
       expectedDeploymentNames.add("1");
 
       assertEquals(expectedDeploymentNames, deploymentNames);
@@ -118,24 +127,27 @@ public class DeploymentCategoryTest extends PluggableActivitiTestCase {
       assertEquals("newKey", deploymentNoCategory.getKey());
 
     } finally {
-      if (noKeyDeploymentId != null)
-        undeploy(noKeyDeploymentId);
-      if (deploymentOneId != null)
-        undeploy(deploymentOneId);
-      if (deploymentTwoV1Id != null)
-        undeploy(deploymentTwoV1Id);
-      if (deploymentTwoV2Id != null)
-        undeploy(deploymentTwoV2Id);
-      if (deploymentTwoNoKey != null)
-        undeploy(deploymentTwoNoKey);
+      if (noKeyDeploymentId != null) {
+		undeploy(noKeyDeploymentId);
+	}
+      if (deploymentOneId != null) {
+		undeploy(deploymentOneId);
+	}
+      if (deploymentTwoV1Id != null) {
+		undeploy(deploymentTwoV1Id);
+	}
+      if (deploymentTwoV2Id != null) {
+		undeploy(deploymentTwoV2Id);
+	}
+      if (deploymentTwoNoKey != null) {
+		undeploy(deploymentTwoNoKey);
+	}
     }
   }
 
   private Set<String> getDeploymentNames(List<Deployment> deployments) {
-    Set<String> deploymentNames = new HashSet<String>();
-    for (Deployment deployment : deployments) {
-      deploymentNames.add(deployment.getName());
-    }
+    Set<String> deploymentNames = new HashSet<>();
+    deployments.forEach(deployment -> deploymentNames.add(deployment.getName()));
     return deploymentNames;
   }
 
@@ -143,7 +155,7 @@ public class DeploymentCategoryTest extends PluggableActivitiTestCase {
     try {
       repositoryService.deleteDeployment(deploymentId);
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error(e.getMessage(), e);
     }
   }
 }

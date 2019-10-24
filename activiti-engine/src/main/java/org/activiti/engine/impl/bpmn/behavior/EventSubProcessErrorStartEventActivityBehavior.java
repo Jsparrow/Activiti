@@ -33,7 +33,8 @@ public class EventSubProcessErrorStartEventActivityBehavior extends AbstractBpmn
 
   private static final long serialVersionUID = 1L;
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
     StartEvent startEvent = (StartEvent) execution.getCurrentFlowElement();
     EventSubProcess eventSubProcess = (EventSubProcess) startEvent.getSubProcess();
     execution.setCurrentFlowElement(eventSubProcess);
@@ -52,12 +53,10 @@ public class EventSubProcessErrorStartEventActivityBehavior extends AbstractBpmn
   }
 
   protected Map<String, Object> processDataObjects(Collection<ValuedDataObject> dataObjects) {
-    Map<String, Object> variablesMap = new HashMap<String, Object>();
+    Map<String, Object> variablesMap = new HashMap<>();
     // convert data objects to process variables
     if (dataObjects != null) {
-      for (ValuedDataObject dataObject : dataObjects) {
-        variablesMap.put(dataObject.getName(), dataObject.getValue());
-      }
+      dataObjects.forEach(dataObject -> variablesMap.put(dataObject.getName(), dataObject.getValue()));
     }
     return variablesMap;
   }

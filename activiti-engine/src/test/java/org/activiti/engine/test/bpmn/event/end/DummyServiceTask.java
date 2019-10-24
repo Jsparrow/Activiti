@@ -18,7 +18,6 @@ import org.activiti.engine.impl.bpmn.behavior.TaskActivityBehavior;
 public class DummyServiceTask extends TaskActivityBehavior {
 
     public DummyServiceTask() {
-        super();
     }
 
     @Override

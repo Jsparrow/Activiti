@@ -35,13 +35,13 @@ public class BpmnModelValidator extends ValidatorImpl {
 		
     // If at least one process definition is executable, show a warning for each of the none-executables
     if (isAtLeastOneExecutable) {
-      for (Process process : bpmnModel.getProcesses()) {
+      bpmnModel.getProcesses().forEach(process -> {
         if (!process.isExecutable()) {
           addWarning(errors, Problems.PROCESS_DEFINITION_NOT_EXECUTABLE, process, process,
               "Process definition is not executable. Please verify that this is intentional.");
         }
         handleProcessConstraints(bpmnModel, process, errors);
-      }
+      });
     }
     handleBPMNModelConstraints(bpmnModel, errors);
   }
@@ -49,22 +49,22 @@ public class BpmnModelValidator extends ValidatorImpl {
   protected void handleProcessConstraints(BpmnModel bpmnModel, Process process, List<ValidationError> errors) {
     if (process.getId() != null && process.getId().length() > Constraints.PROCESS_DEFINITION_ID_MAX_LENGTH) {
       addError(errors, Problems.PROCESS_DEFINITION_ID_TOO_LONG, process,
-          "The id of the process definition must not contain more than " + Constraints.PROCESS_DEFINITION_ID_MAX_LENGTH + " characters");
+          new StringBuilder().append("The id of the process definition must not contain more than ").append(Constraints.PROCESS_DEFINITION_ID_MAX_LENGTH).append(" characters").toString());
     }
     if (process.getName() != null && process.getName().length() > Constraints.PROCESS_DEFINITION_NAME_MAX_LENGTH) {
       addError(errors, Problems.PROCESS_DEFINITION_NAME_TOO_LONG, process,
-          "The name of the process definition must not contain more than " + Constraints.PROCESS_DEFINITION_NAME_MAX_LENGTH + " characters");
+          new StringBuilder().append("The name of the process definition must not contain more than ").append(Constraints.PROCESS_DEFINITION_NAME_MAX_LENGTH).append(" characters").toString());
     }
     if (process.getDocumentation() != null && process.getDocumentation().length() > Constraints.PROCESS_DEFINITION_DOCUMENTATION_MAX_LENGTH) {
       addError(errors, Problems.PROCESS_DEFINITION_DOCUMENTATION_TOO_LONG, process,
-          "The documentation of the process definition must not contain more than " + Constraints.PROCESS_DEFINITION_DOCUMENTATION_MAX_LENGTH + " characters");
+          new StringBuilder().append("The documentation of the process definition must not contain more than ").append(Constraints.PROCESS_DEFINITION_DOCUMENTATION_MAX_LENGTH).append(" characters").toString());
     }
   }
 
   protected void handleBPMNModelConstraints(BpmnModel bpmnModel, List<ValidationError> errors) {
     if (bpmnModel.getTargetNamespace() != null && bpmnModel.getTargetNamespace().length() > Constraints.BPMN_MODEL_TARGET_NAMESPACE_MAX_LENGTH) {
       addError(errors, Problems.BPMN_MODEL_TARGET_NAMESPACE_TOO_LONG,
-          "The targetNamespace of the bpmn model must not contain more than " + Constraints.BPMN_MODEL_TARGET_NAMESPACE_MAX_LENGTH + " characters");
+          new StringBuilder().append("The targetNamespace of the bpmn model must not contain more than ").append(Constraints.BPMN_MODEL_TARGET_NAMESPACE_MAX_LENGTH).append(" characters").toString());
     }
   }
 

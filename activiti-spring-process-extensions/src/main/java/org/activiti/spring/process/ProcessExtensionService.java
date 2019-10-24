@@ -36,17 +36,17 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 
 public class ProcessExtensionService {
 
-    private String processExtensionsRoot;
-    private String processExtensionsSuffix;
-    private final ObjectMapper objectMapper;
-    private ResourcePatternResolver resourceLoader;
-    private Map<String, VariableType> variableTypeMap;
-    private Map<String, ProcessExtensionModel> processExtensionModelMap;
-    private Map<String, String> procDefIdToKey = new ConcurrentHashMap<>();
     private static final ProcessExtensionModel EMPTY_EXTENSIONS = new ProcessExtensionModel();
-    private RepositoryService repositoryService;
+	private String processExtensionsRoot;
+	private String processExtensionsSuffix;
+	private final ObjectMapper objectMapper;
+	private ResourcePatternResolver resourceLoader;
+	private Map<String, VariableType> variableTypeMap;
+	private Map<String, ProcessExtensionModel> processExtensionModelMap;
+	private Map<String, String> procDefIdToKey = new ConcurrentHashMap<>();
+	private RepositoryService repositoryService;
 
-    public ProcessExtensionService(String processExtensionsRoot, String processExtensionsSuffix,
+	public ProcessExtensionService(String processExtensionsRoot, String processExtensionsSuffix,
                                    ObjectMapper objectMapper, ResourcePatternResolver resourceLoader,
                                    Map<String, VariableType> variableTypeMap) {
 
@@ -57,7 +57,7 @@ public class ProcessExtensionService {
         this.variableTypeMap = variableTypeMap;
     }
 
-    private Optional<Resource[]> retrieveResources() throws IOException {
+	private Optional<Resource[]> retrieveResources() throws IOException {
         Optional<Resource[]> resources = Optional.empty();
         Resource processExtensionsResource = resourceLoader.getResource(processExtensionsRoot);
         if (processExtensionsResource.exists()) {
@@ -66,14 +66,14 @@ public class ProcessExtensionService {
         return resources;
     }
 
-    private ProcessExtensionModel read(InputStream inputStream) throws IOException {
+	private ProcessExtensionModel read(InputStream inputStream) throws IOException {
         objectMapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
         ProcessExtensionModel mappedModel = objectMapper.readValue(inputStream,
                 ProcessExtensionModel.class);
         return convertJsonVariables(mappedModel);
     }
 
-    /**
+	/**
      * Json variables need to be represented as JsonNode for engine to handle as Json
      * Do this for any var marked as json or whose type is not recognised from the extension file
      */
@@ -82,7 +82,7 @@ public class ProcessExtensionService {
                 && processExtensionModel.getExtensions().getProperties()!=null ){
 
             for(VariableDefinition variableDefinition:processExtensionModel.getExtensions().getProperties().values()){
-                if(!variableTypeMap.keySet().contains(variableDefinition.getType())||variableDefinition.getType().equals("json")){
+                if(!variableTypeMap.keySet().contains(variableDefinition.getType())||"json".equals(variableDefinition.getType())){
                     variableDefinition.setValue(objectMapper.convertValue(variableDefinition.getValue(), JsonNode.class));
                 }
             }
@@ -90,7 +90,7 @@ public class ProcessExtensionService {
         return processExtensionModel;
     }
 
-    public Map<String, ProcessExtensionModel> readProcessExtensions() throws IOException {
+	public Map<String, ProcessExtensionModel> readProcessExtensions() throws IOException {
         List<ProcessExtensionModel> processExtensionModels = new ArrayList<>();
         Optional<Resource[]> resourcesOptional = retrieveResources();
         if (resourcesOptional.isPresent()) {
@@ -102,45 +102,45 @@ public class ProcessExtensionService {
         return processExtensionModelMap;
     }
 
-    public void cache(ProcessDefinition processDefinition) {
+	public void cache(ProcessDefinition processDefinition) {
         procDefIdToKey.put(processDefinition.getId(), processDefinition.getKey());
     }
 
-    public boolean hasExtensionsFor(ProcessDefinition processDefinition) {
+	public boolean hasExtensionsFor(ProcessDefinition processDefinition) {
         return hasExtensionsFor(processDefinition.getKey());
     }
 
-    public boolean hasExtensionsFor(String processDefinitionKey) {
+	public boolean hasExtensionsFor(String processDefinitionKey) {
         return processExtensionModelMap.containsKey(processDefinitionKey);
     }
 
-    public ProcessExtensionModel getExtensionsFor(ProcessDefinition processDefinition) {
+	public ProcessExtensionModel getExtensionsFor(ProcessDefinition processDefinition) {
         return getProcessExtensionModelForKey(processDefinition.getKey());
     }
 
-    private ProcessExtensionModel getProcessExtensionModelForKey(String processDefinitionKey) {
+	private ProcessExtensionModel getProcessExtensionModelForKey(String processDefinitionKey) {
         ProcessExtensionModel processExtensionModel = processExtensionModelMap.get(processDefinitionKey);
         return processExtensionModel != null? processExtensionModel : EMPTY_EXTENSIONS;
     }
 
-    public ProcessExtensionModel getExtensionsForId(String processDefinitionId) {
+	public ProcessExtensionModel getExtensionsForId(String processDefinitionId) {
         return getProcessExtensionModelForKey(procDefIdToKey.getOrDefault(processDefinitionId,
                                                                           getProcessDefinionKey(processDefinitionId)));
     }
-    
-    private String getProcessDefinionKey(String processDefinitionId) {
+
+	private String getProcessDefinionKey(String processDefinitionId) {
         return Optional.ofNullable(repositoryService.getProcessDefinition(processDefinitionId))
-                       .map(it -> it.getKey())
+                       .map(ProcessDefinition::getKey)
                        .orElse(null);
     }
 
-    private Map<String, ProcessExtensionModel> convertToMap(List<ProcessExtensionModel> processExtensionModelList){
+	private Map<String, ProcessExtensionModel> convertToMap(List<ProcessExtensionModel> processExtensionModelList){
         return processExtensionModelList.stream()
                 .collect(Collectors.toMap(ProcessExtensionModel::getId,
                         Function.identity()));
     }
 
-    public void setRepositoryService(RepositoryService repositoryService) {
+	public void setRepositoryService(RepositoryService repositoryService) {
         this.repositoryService = repositoryService;
     }
 }

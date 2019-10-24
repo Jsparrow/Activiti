@@ -41,11 +41,7 @@ public class TaskCandidateGroupRemovedListenerDelegate implements ActivitiEventL
     public void onEvent(ActivitiEvent event) {
         if (event instanceof ActivitiEntityEvent) {
             converter.from((ActivitiEntityEvent) event)
-                    .ifPresent(convertedEvent -> {
-                        for (TaskRuntimeEventListener<TaskCandidateGroupRemovedEvent> listener : listeners) {
-                            listener.onEvent(convertedEvent);
-                        }
-                    });
+                    .ifPresent(convertedEvent -> listeners.forEach(listener -> listener.onEvent(convertedEvent)));
         }
     }
 

@@ -32,7 +32,7 @@ public class SequenceflowValidator extends ProcessLevelValidator {
   @Override
   protected void executeValidation(BpmnModel bpmnModel, Process process, List<ValidationError> errors) {
     List<SequenceFlow> sequenceFlows = process.findFlowElementsOfType(SequenceFlow.class);
-    for (SequenceFlow sequenceFlow : sequenceFlows) {
+    sequenceFlows.forEach(sequenceFlow -> {
 
       String sourceRef = sequenceFlow.getSourceRef();
       String targetRef = sequenceFlow.getTargetRef();
@@ -72,7 +72,7 @@ public class SequenceflowValidator extends ProcessLevelValidator {
           addError(errors, Problems.SEQ_FLOW_INVALID_TARGET, process, sequenceFlow, "Invalid target for sequenceflow, the target isn't defined in the same scope as the source");
         }
       }
-    }
+    });
   }
 
 }

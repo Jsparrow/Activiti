@@ -31,58 +31,71 @@ public abstract class HistoricDetailEntityImpl extends AbstractEntityNoRevision 
   protected Date time;
   protected String detailType;
 
-  public Object getPersistentState() {
+  @Override
+public Object getPersistentState() {
     // details are not updatable so we always provide the same object as the state
     return HistoricDetailEntityImpl.class;
   }
 
   // getters and setters //////////////////////////////////////////////////////
 
-  public String getProcessInstanceId() {
+  @Override
+public String getProcessInstanceId() {
     return processInstanceId;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
+  @Override
+public void setProcessInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
   }
 
-  public String getActivityInstanceId() {
+  @Override
+public String getActivityInstanceId() {
     return activityInstanceId;
   }
 
-  public void setActivityInstanceId(String activityInstanceId) {
+  @Override
+public void setActivityInstanceId(String activityInstanceId) {
     this.activityInstanceId = activityInstanceId;
   }
 
-  public String getTaskId() {
+  @Override
+public String getTaskId() {
     return taskId;
   }
 
-  public void setTaskId(String taskId) {
+  @Override
+public void setTaskId(String taskId) {
     this.taskId = taskId;
   }
 
-  public String getExecutionId() {
+  @Override
+public String getExecutionId() {
     return executionId;
   }
 
-  public void setExecutionId(String executionId) {
+  @Override
+public void setExecutionId(String executionId) {
     this.executionId = executionId;
   }
 
-  public Date getTime() {
+  @Override
+public Date getTime() {
     return time;
   }
 
-  public void setTime(Date time) {
+  @Override
+public void setTime(Date time) {
     this.time = time;
   }
 
-  public String getDetailType() {
+  @Override
+public String getDetailType() {
     return detailType;
   }
   
-  public void setDetailType(String detailType) {
+  @Override
+public void setDetailType(String detailType) {
     this.detailType = detailType;
   }
   

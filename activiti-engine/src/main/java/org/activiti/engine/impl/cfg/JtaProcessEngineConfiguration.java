@@ -33,7 +33,7 @@ public class JtaProcessEngineConfiguration extends ProcessEngineConfigurationImp
   @Override
   public CommandInterceptor createTransactionInterceptor() {
     if (transactionManager == null) {
-      throw new ActivitiException("transactionManager is required property for JtaProcessEngineConfiguration, use " + StandaloneProcessEngineConfiguration.class.getName() + " otherwise");
+      throw new ActivitiException(new StringBuilder().append("transactionManager is required property for JtaProcessEngineConfiguration, use ").append(StandaloneProcessEngineConfiguration.class.getName()).append(" otherwise").toString());
     }
 
     return new JtaTransactionInterceptor(transactionManager);

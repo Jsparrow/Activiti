@@ -34,6 +34,7 @@ import org.activiti.validation.validator.ValidatorSetNames;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.stream.Collectors;
 
 /**
 
@@ -236,23 +237,17 @@ public class DefaultProcessValidatorTest {
 
   @Test
   public void testWarningError() throws UnsupportedEncodingException, XMLStreamException {
-    String flowWithoutConditionNoDefaultFlow = "<?xml version='1.0' encoding='UTF-8'?>"
-        + "<definitions id='definitions' xmlns='http://www.omg.org/spec/BPMN/20100524/MODEL' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:activiti='http://activiti.org/bpmn' targetNamespace='Examples'>"
-        + "  <process id='exclusiveGwDefaultSequenceFlow'> " + "    <startEvent id='theStart' /> " + "    <sequenceFlow id='flow1' sourceRef='theStart' targetRef='exclusiveGw' /> " +
-
-        "    <exclusiveGateway id='exclusiveGw' name='Exclusive Gateway' /> "
-        + // no default = "flow3" !!
-        "    <sequenceFlow id='flow2' sourceRef='exclusiveGw' targetRef='theTask1'> " + "      <conditionExpression xsi:type='tFormalExpression'>${input == 1}</conditionExpression> "
-        + "    </sequenceFlow> " + "    <sequenceFlow id='flow3' sourceRef='exclusiveGw' targetRef='theTask2'/> " + // one
-                                                                                                                    // would
-                                                                                                                    // be
-                                                                                                                    // OK
-        "    <sequenceFlow id='flow4' sourceRef='exclusiveGw' targetRef='theTask2'/> " + // but
-                                                                                         // two
-                                                                                         // unconditional
-                                                                                         // not!
-
-        "    <userTask id='theTask1' name='Input is one' /> " + "    <userTask id='theTask2' name='Default input' /> " + "  </process>" + "</definitions>";
+    // one
+	// but
+	// two
+	// unconditional
+	// not!
+	String flowWithoutConditionNoDefaultFlow = new StringBuilder().append("<?xml version='1.0' encoding='UTF-8'?>").append("<definitions id='definitions' xmlns='http://www.omg.org/spec/BPMN/20100524/MODEL' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:activiti='http://activiti.org/bpmn' targetNamespace='Examples'>").append("  <process id='exclusiveGwDefaultSequenceFlow'> ").append("    <startEvent id='theStart' /> ").append("    <sequenceFlow id='flow1' sourceRef='theStart' targetRef='exclusiveGw' /> ").append("    <exclusiveGateway id='exclusiveGw' name='Exclusive Gateway' /> ").append(// no default = "flow3" !!
+	"    <sequenceFlow id='flow2' sourceRef='exclusiveGw' targetRef='theTask1'> ").append("      <conditionExpression xsi:type='tFormalExpression'>${input == 1}</conditionExpression> ")
+			.append("    </sequenceFlow> ").append("    <sequenceFlow id='flow3' sourceRef='exclusiveGw' targetRef='theTask2'/> ").append(// would
+			                                                                                                            // be
+			                                                                                                            // OK
+			"    <sequenceFlow id='flow4' sourceRef='exclusiveGw' targetRef='theTask2'/> ").append("    <userTask id='theTask1' name='Input is one' /> ").append("    <userTask id='theTask2' name='Default input' /> ").append("  </process>").append("</definitions>").toString();
 
     XMLInputFactory xif = XMLInputFactory.newInstance();
     InputStreamReader in = new InputStreamReader(new ByteArrayInputStream(flowWithoutConditionNoDefaultFlow.getBytes()), "UTF-8");
@@ -306,12 +301,12 @@ public class DefaultProcessValidatorTest {
 
     List<ValidationError> errors = processValidator.validate(bpmnModel);
     Assert.assertEquals(3, errors.size());
-    for (ValidationError error : errors) {
+    errors.forEach(error -> {
       Assert.assertTrue(error.isWarning());
       Assert.assertNotNull(error.getValidatorSetName());
       Assert.assertNotNull(error.getProblem());
       Assert.assertNotNull(error.getDefaultDescription());
-    }
+    });
   }
 
   protected void assertCommonProblemFieldForActivity(ValidationError error) {
@@ -341,20 +336,16 @@ public class DefaultProcessValidatorTest {
   protected List<ValidationError> findErrors(List<ValidationError> errors, String validatorSetName, String problemName, int expectedNrOfProblems) {
     List<ValidationError> results = findErrors(errors, validatorSetName, problemName);
     Assert.assertEquals(expectedNrOfProblems, results.size());
-    for (ValidationError result : results) {
+    results.forEach(result -> {
       Assert.assertEquals(validatorSetName, result.getValidatorSetName());
       Assert.assertEquals(problemName, result.getProblem());
-    }
+    });
     return results;
   }
 
   protected List<ValidationError> findErrors(List<ValidationError> errors, String validatorSetName, String problemName) {
-    List<ValidationError> results = new ArrayList<ValidationError>();
-    for (ValidationError error : errors) {
-      if (error.getValidatorSetName().equals(validatorSetName) && error.getProblem().equals(problemName)) {
-        results.add(error);
-      }
-    }
+    List<ValidationError> results = new ArrayList<>();
+    results.addAll(errors.stream().filter(error -> error.getValidatorSetName().equals(validatorSetName) && error.getProblem().equals(problemName)).collect(Collectors.toList()));
     return results;
   }
 

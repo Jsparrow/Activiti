@@ -40,7 +40,8 @@ public class MoveDeadLetterJobToExecutableJobCmd implements Command<JobEntity>, 
     this.retries = retries;
   }
 
-  public JobEntity execute(CommandContext commandContext) {
+  @Override
+public JobEntity execute(CommandContext commandContext) {
 
     if (jobId == null) {
       throw new ActivitiIllegalArgumentException("jobId and job is null");

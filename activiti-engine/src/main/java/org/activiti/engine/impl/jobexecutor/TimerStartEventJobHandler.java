@@ -32,11 +32,13 @@ public class TimerStartEventJobHandler extends TimerEventHandler implements JobH
 
   public static final String TYPE = "timer-start-event";
 
-  public String getType() {
+  @Override
+public String getType() {
     return TYPE;
   }
 
-  public void execute(JobEntity job, String configuration, ExecutionEntity execution, CommandContext commandContext) {
+  @Override
+public void execute(JobEntity job, String configuration, ExecutionEntity execution, CommandContext commandContext) {
     
     ProcessDefinitionEntity processDefinitionEntity = ProcessDefinitionUtil
         .getProcessDefinitionFromDatabase(job.getProcessDefinitionId()); // From DB -> need to get latest suspended state

@@ -16,13 +16,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class CountingServiceTaskTestDelegate implements JavaDelegate {
 
-  public static AtomicInteger CALL_COUNT = new AtomicInteger(0);
+  private static final Logger logger = LoggerFactory.getLogger(CountingServiceTaskTestDelegate.class);
+public static AtomicInteger CALL_COUNT = new AtomicInteger(0);
 
   @Override
   public void execute(DelegateExecution execution) {
@@ -31,7 +34,7 @@ public class CountingServiceTaskTestDelegate implements JavaDelegate {
     execution.setVariable("counter", counter);
 
     if (CALL_COUNT.get() % 1000 == 0) {
-      System.out.println("Call count: " + CALL_COUNT);
+      logger.info("Call count: " + CALL_COUNT);
     }
 
     CALL_COUNT.incrementAndGet();

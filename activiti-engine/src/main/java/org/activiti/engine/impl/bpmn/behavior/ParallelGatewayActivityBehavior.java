@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the Parallel Gateway/AND gateway as defined in the BPMN 2.0 specification.
@@ -52,7 +53,8 @@ public class ParallelGatewayActivityBehavior extends GatewayActivityBehavior {
 
   private static Logger log = LoggerFactory.getLogger(ParallelGatewayActivityBehavior.class);
 
-  public void execute(DelegateExecution execution) {
+  @Override
+public void execute(DelegateExecution execution) {
 
     // First off all, deactivate the execution
     execution.inactivate();
@@ -63,7 +65,7 @@ public class ParallelGatewayActivityBehavior extends GatewayActivityBehavior {
     if (flowElement instanceof ParallelGateway) {
       parallelGateway = (ParallelGateway) flowElement;
     } else {
-      throw new ActivitiException("Programmatic error: parallel gateway behaviour can only be applied" + " to a ParallelGateway instance, but got an instance of " + flowElement);
+      throw new ActivitiException(new StringBuilder().append("Programmatic error: parallel gateway behaviour can only be applied").append(" to a ParallelGateway instance, but got an instance of ").append(flowElement).toString());
     }
 
     lockFirstParentScope(execution);
@@ -96,15 +98,9 @@ public class ParallelGatewayActivityBehavior extends GatewayActivityBehavior {
 
       if (parallelGateway.getIncomingFlows().size() > 1) {
 
-        // All (now inactive) children are deleted.
-        for (ExecutionEntity joinedExecution : joinedExecutions) {
-
-          // The current execution will be reused and not deleted
-          if (!joinedExecution.getId().equals(execution.getId())) {
-            executionEntityManager.deleteExecutionAndRelatedData(joinedExecution, null, false);
-          }
-
-        }
+        // The current execution will be reused and not deleted
+		// All (now inactive) children are deleted.
+		joinedExecutions.stream().filter(joinedExecution -> !joinedExecution.getId().equals(execution.getId())).forEach(joinedExecution -> executionEntityManager.deleteExecutionAndRelatedData(joinedExecution, null, false));
       }
 
       // TODO: potential optimization here: reuse more then 1 execution, only 1 currently
@@ -117,12 +113,8 @@ public class ParallelGatewayActivityBehavior extends GatewayActivityBehavior {
   }
 
   protected Collection<ExecutionEntity> cleanJoinedExecutions(Collection<ExecutionEntity> joinedExecutions, DelegateExecution multiInstanceExecution) {
-    List<ExecutionEntity> cleanedExecutions = new ArrayList<ExecutionEntity>();
-    for (ExecutionEntity executionEntity : joinedExecutions) {
-      if (isChildOfMultiInstanceExecution(executionEntity, multiInstanceExecution)) {
-        cleanedExecutions.add(executionEntity);
-      }
-    }
+    List<ExecutionEntity> cleanedExecutions = new ArrayList<>();
+    cleanedExecutions.addAll(joinedExecutions.stream().filter(executionEntity -> isChildOfMultiInstanceExecution(executionEntity, multiInstanceExecution)).collect(Collectors.toList()));
     return cleanedExecutions;
   }
 

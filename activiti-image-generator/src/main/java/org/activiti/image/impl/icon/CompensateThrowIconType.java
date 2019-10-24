@@ -30,7 +30,8 @@ public class CompensateThrowIconType extends CompensateIconType {
                                                                     SVGGraphics2D.SVG_G_TAG);
         gTag.setAttributeNS(null,
                             "transform",
-                            "translate(" + (imageX - 8) + "," + (imageY - 6) + ")");
+                            new StringBuilder().append("translate(").append(imageX - 8).append(",")
+									.append(imageY - 6).append(")").toString());
 
         Element polygonTag1 = svgGenerator.getDOMFactory().createElementNS(null,
                                                                            SVGGraphics2D.SVG_POLYGON_TAG);

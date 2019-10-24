@@ -31,11 +31,14 @@ import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ProcessInstanceMigrationTest extends PluggableActivitiTestCase {
 
-  private static final String TEST_PROCESS_WITH_PARALLEL_GATEWAY = "org/activiti/examples/bpmn/gateway/ParallelGatewayTest.testForkJoin.bpmn20.xml";
+  private static final Logger logger = LoggerFactory.getLogger(ProcessInstanceMigrationTest.class);
+private static final String TEST_PROCESS_WITH_PARALLEL_GATEWAY = "org/activiti/examples/bpmn/gateway/ParallelGatewayTest.testForkJoin.bpmn20.xml";
   private static final String TEST_PROCESS = "org/activiti/engine/test/db/ProcessInstanceMigrationTest.testSetProcessDefinitionVersion.bpmn20.xml";
   private static final String TEST_PROCESS_ACTIVITY_MISSING = "org/activiti/engine/test/db/ProcessInstanceMigrationTest.testSetProcessDefinitionVersionActivityMissing.bpmn20.xml";
 
@@ -97,8 +100,8 @@ public class ProcessInstanceMigrationTest extends PluggableActivitiTestCase {
       commandExecutor.execute(command);
       fail("ActivitiException expected");
     } catch (ActivitiException ae) {
-      assertTextPresent("A process instance id is required, but the provided id '" + execution.getId() + "' points to a child execution of process instance '" + pi.getId() + "'. Please invoke the "
-          + command.getClass().getSimpleName() + " with a root execution id.", ae.getMessage());
+      assertTextPresent(new StringBuilder().append("A process instance id is required, but the provided id '").append(execution.getId()).append("' points to a child execution of process instance '").append(pi.getId()).append("'. Please invoke the ").append(command.getClass().getSimpleName())
+			.append(" with a root execution id.").toString(), ae.getMessage());
     }
   }
 
@@ -207,9 +210,7 @@ public class ProcessInstanceMigrationTest extends PluggableActivitiTestCase {
     // definition version
     ProcessDefinition newProcessDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionVersion(2).singleResult();
     List<Execution> executions = runtimeService.createExecutionQuery().processInstanceId(pi.getId()).list();
-    for (Execution execution : executions) {
-      assertEquals(newProcessDefinition.getId(), ((ExecutionEntity) execution).getProcessDefinitionId());
-    }
+    executions.forEach(execution -> assertEquals(newProcessDefinition.getId(), ((ExecutionEntity) execution).getProcessDefinitionId()));
 
     // undeploy "manually" deployed process definition
     repositoryService.deleteDeployment(deployment.getId(), true);
@@ -277,7 +278,7 @@ public class ProcessInstanceMigrationTest extends PluggableActivitiTestCase {
       // undeploy "manually" deployed process definition
       repositoryService.deleteDeployment(deployment.getId(), true);
     } catch (Exception ex) {
-      ex.printStackTrace();
+      logger.error(ex.getMessage(), ex);
     }
   }
 
@@ -301,9 +302,7 @@ public class ProcessInstanceMigrationTest extends PluggableActivitiTestCase {
     // definition version
     ProcessDefinition newProcessDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionVersion(2).singleResult();
     List<Execution> executions = runtimeService.createExecutionQuery().processInstanceId(pi.getId()).list();
-    for (Execution execution : executions) {
-      assertEquals(newProcessDefinition.getId(), ((ExecutionEntity) execution).getProcessDefinitionId());
-    }
+    executions.forEach(execution -> assertEquals(newProcessDefinition.getId(), ((ExecutionEntity) execution).getProcessDefinitionId()));
 
     // undeploy "manually" deployed process definition
     repositoryService.deleteDeployment(deployment.getId(), true);

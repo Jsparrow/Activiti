@@ -24,11 +24,13 @@ public class SequenceFlowParseHandler extends AbstractBpmnParseHandler<SequenceF
   public static final String PROPERTYNAME_CONDITION = "condition";
   public static final String PROPERTYNAME_CONDITION_TEXT = "conditionText";
 
-  public Class<? extends BaseElement> getHandledType() {
+  @Override
+public Class<? extends BaseElement> getHandledType() {
     return SequenceFlow.class;
   }
 
-  protected void executeParse(BpmnParse bpmnParse, SequenceFlow sequenceFlow) {
+  @Override
+protected void executeParse(BpmnParse bpmnParse, SequenceFlow sequenceFlow) {
     org.activiti.bpmn.model.Process process = bpmnParse.getCurrentProcess();
     sequenceFlow.setSourceFlowElement(process.getFlowElement(sequenceFlow.getSourceRef(), true));
     sequenceFlow.setTargetFlowElement(process.getFlowElement(sequenceFlow.getTargetRef(), true));

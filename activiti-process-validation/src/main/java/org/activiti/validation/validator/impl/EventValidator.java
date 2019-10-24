@@ -37,23 +37,17 @@ public class EventValidator extends ProcessLevelValidator {
   @Override
   protected void executeValidation(BpmnModel bpmnModel, Process process, List<ValidationError> errors) {
     List<Event> events = process.findFlowElementsOfType(Event.class);
-    for (Event event : events) {
-      if (event.getEventDefinitions() != null) {
-        for (EventDefinition eventDefinition : event.getEventDefinitions()) {
-
-          if (eventDefinition instanceof MessageEventDefinition) {
-            handleMessageEventDefinition(bpmnModel, process, event, eventDefinition, errors);
-          } else if (eventDefinition instanceof SignalEventDefinition) {
-            handleSignalEventDefinition(bpmnModel, process, event, eventDefinition, errors);
-          } else if (eventDefinition instanceof TimerEventDefinition) {
-            handleTimerEventDefinition(process, event, eventDefinition, errors);
-          } else if (eventDefinition instanceof CompensateEventDefinition) {
-            handleCompensationEventDefinition(bpmnModel, process, event, eventDefinition, errors);
-          }
-
-        }
-      }
-    }
+    events.stream().filter(event -> event.getEventDefinitions() != null).forEach(event -> event.getEventDefinitions().forEach(eventDefinition -> {
+		if (eventDefinition instanceof MessageEventDefinition) {
+			handleMessageEventDefinition(bpmnModel, process, event, eventDefinition, errors);
+		} else if (eventDefinition instanceof SignalEventDefinition) {
+			handleSignalEventDefinition(bpmnModel, process, event, eventDefinition, errors);
+		} else if (eventDefinition instanceof TimerEventDefinition) {
+			handleTimerEventDefinition(process, event, eventDefinition, errors);
+		} else if (eventDefinition instanceof CompensateEventDefinition) {
+			handleCompensationEventDefinition(bpmnModel, process, event, eventDefinition, errors);
+		}
+	}));
   }
 
   protected void handleMessageEventDefinition(BpmnModel bpmnModel, Process process, Event event, EventDefinition eventDefinition, List<ValidationError> errors) {

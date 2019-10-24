@@ -39,9 +39,9 @@ public class BpmnMessagePayloadMappingProviderFactory implements MessagePayloadM
     
     public List<FieldDeclaration> createFieldDeclarations(List<FieldExtension> fieldList, 
                                                           ExpressionManager expressionManager) {
-        List<FieldDeclaration> fieldDeclarations = new ArrayList<FieldDeclaration>();
+        List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
 
-        for (FieldExtension fieldExtension : fieldList) {
+        fieldList.forEach(fieldExtension -> {
           FieldDeclaration fieldDeclaration = null;
           if (StringUtils.isNotEmpty(fieldExtension.getExpression())) {
             fieldDeclaration = new FieldDeclaration(fieldExtension.getFieldName(), Expression.class.getName(), expressionManager.createExpression(fieldExtension.getExpression()));
@@ -50,7 +50,7 @@ public class BpmnMessagePayloadMappingProviderFactory implements MessagePayloadM
           }
 
           fieldDeclarations.add(fieldDeclaration);
-        }
+        });
         return fieldDeclarations;
       }    
 

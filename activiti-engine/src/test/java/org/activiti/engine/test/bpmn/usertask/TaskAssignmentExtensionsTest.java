@@ -21,6 +21,9 @@ import org.activiti.engine.impl.test.TestHelper;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 import org.activiti.engine.test.Deployment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Collections;
 
 /**
  * Testcase for the non-spec extensions to the task candidate use case.
@@ -29,14 +32,15 @@ import org.activiti.engine.test.Deployment;
  */
 public class TaskAssignmentExtensionsTest extends PluggableActivitiTestCase {
 
-  private static final String KERMIT = "kermit";
+  private static final Logger logger = LoggerFactory.getLogger(TaskAssignmentExtensionsTest.class);
+private static final String KERMIT = "kermit";
   private static final List<String> KERMITSGROUPS = Arrays.asList("management","accountancy");
 
   private static final String GONZO = "gonzo";
-  private static final List<String> GONZOSGROUPS = Arrays.asList();
+  private static final List<String> GONZOSGROUPS = Collections.emptyList();
 
   private static final String FOZZIE = "fozzie";
-  private static final List<String> FOZZIESGROUPS = Arrays.asList("management");
+  private static final List<String> FOZZIESGROUPS = Collections.singletonList("management");
 
   @Deployment
   public void testAssigneeExtension() {
@@ -52,6 +56,7 @@ public class TaskAssignmentExtensionsTest extends PluggableActivitiTestCase {
       repositoryService.createDeployment().addClasspathResource(resource).deploy();
       fail("Invalid BPMN 2.0 process should not parse, but it gets parsed successfully");
     } catch (XMLException e) {
+		logger.error(e.getMessage(), e);
       // Exception is to be expected
     }
   }

@@ -24,7 +24,8 @@ public class MessageFlowConverterTest extends AbstractConverterTest {
     validateModel(parsedModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "messageflow.bpmn";
   }
 

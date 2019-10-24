@@ -30,7 +30,8 @@ public class StrongUuidGenerator implements IdGenerator {
     }
   }
 
-  public String getNextId() {
+  @Override
+public String getNextId() {
     return timeBasedGenerator.generate().toString();
   }
 

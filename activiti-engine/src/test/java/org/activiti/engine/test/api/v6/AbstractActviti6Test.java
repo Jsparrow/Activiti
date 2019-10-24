@@ -37,28 +37,32 @@ public class AbstractActviti6Test {
 
   public static String H2_TEST_JDBC_URL = "jdbc:h2:mem:activiti;DB_CLOSE_DELAY=1000";
 
-  @Rule
+protected static ProcessEngine cachedProcessEngine;
+
+@Rule
   public ActivitiRule activitiRule = new ActivitiRule();
 
-  protected static ProcessEngine cachedProcessEngine;
-  protected ProcessEngineConfigurationImpl processEngineConfiguration;
-  protected RepositoryService repositoryService;
-  protected RuntimeService runtimeService;
-  protected TaskService taskService;
-  protected HistoryService historyService;
-  protected ManagementService managementService;
+protected ProcessEngineConfigurationImpl processEngineConfiguration;
 
-  @Before
+protected RepositoryService repositoryService;
+
+protected RuntimeService runtimeService;
+
+protected TaskService taskService;
+
+protected HistoryService historyService;
+
+protected ManagementService managementService;
+
+@Before
   public void initProcessEngine() {
     if (cachedProcessEngine == null) {
       cachedProcessEngine = activitiRule.getProcessEngine();
 
       // Boot up H2 webapp
-      if (cachedProcessEngine instanceof ProcessEngineImpl) {
-        if (((ProcessEngineImpl) cachedProcessEngine).getProcessEngineConfiguration().getJdbcUrl().equals(H2_TEST_JDBC_URL)) {
-          initializeH2WebApp(cachedProcessEngine);
-        }
-      }
+      if (cachedProcessEngine instanceof ProcessEngineImpl && ((ProcessEngineImpl) cachedProcessEngine).getProcessEngineConfiguration().getJdbcUrl().equals(H2_TEST_JDBC_URL)) {
+	  initializeH2WebApp(cachedProcessEngine);
+	}
     }
 
     this.processEngineConfiguration = (ProcessEngineConfigurationImpl) cachedProcessEngine.getProcessEngineConfiguration();
@@ -69,31 +73,26 @@ public class AbstractActviti6Test {
     this.managementService = cachedProcessEngine.getManagementService();
   }
 
-  @After
+@After
   public void resetClock() {
     activitiRule.getProcessEngine().getProcessEngineConfiguration().getClock().reset();
   }
 
-  @After
+@After
   public void logCommandInvokerDebugInfo() {
 
-    ProcessExecutionLoggerConfigurator loggerConfigurator = null;
     List<ProcessEngineConfigurator> configurators = ((ProcessEngineImpl) cachedProcessEngine).getProcessEngineConfiguration().getConfigurators();
-    if (configurators != null && configurators.size() > 0) {
-      for (ProcessEngineConfigurator configurator : configurators) {
-        if (configurator instanceof ProcessExecutionLoggerConfigurator) {
-          loggerConfigurator = (ProcessExecutionLoggerConfigurator) configurator;
-          break;
-        }
-      }
-
-      if (loggerConfigurator != null) {
+    if (!(configurators != null && configurators.size() > 0)) {
+		return;
+	}
+	ProcessExecutionLoggerConfigurator loggerConfigurator = configurators.stream().filter(configurator -> configurator instanceof ProcessExecutionLoggerConfigurator).findFirst().map(configurator -> (ProcessExecutionLoggerConfigurator) configurator)
+			.orElse(null);
+	if (loggerConfigurator != null) {
         loggerConfigurator.getProcessExecutionLogger().logDebugInfo(true);
       }
-    }
   }
 
-  protected void initializeH2WebApp(ProcessEngine processEngine) {
+protected void initializeH2WebApp(ProcessEngine processEngine) {
     try {
       final Server server = Server.createWebServer("-web");
 

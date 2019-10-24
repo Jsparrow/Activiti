@@ -91,11 +91,7 @@ public class StartTimerEventTest extends PluggableActivitiTestCase {
         moveByMinutes(5);
         waitForJobExecutorOnCondition(10000,
                                       500,
-                                      new Callable<Boolean>() {
-                                          public Boolean call() throws Exception {
-                                              return 1 == piq.count();
-                                          }
-                                      });
+                                      () -> 1 == piq.count());
 
         assertEquals(1,
                      jobQuery.count());
@@ -103,11 +99,7 @@ public class StartTimerEventTest extends PluggableActivitiTestCase {
         moveByMinutes(5);
         waitForJobExecutorOnCondition(10000,
                                       500,
-                                      new Callable<Boolean>() {
-                                          public Boolean call() throws Exception {
-                                              return 2 == piq.count();
-                                          }
-                                      });
+                                      () -> 2 == piq.count());
 
         assertEquals(1,
                      jobQuery.count());
@@ -184,30 +176,22 @@ public class StartTimerEventTest extends PluggableActivitiTestCase {
         moveByMinutes(5);
         waitForJobExecutorOnCondition(10000,
                                       500,
-                                      new Callable<Boolean>() {
-                                          public Boolean call() throws Exception {
-                                              // we check that correct version was started
-                                              ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processDefinitionKey("startTimerEventExample").singleResult();
-                                              if (processInstance != null) {
-                                                  String pi = processInstance.getId();
-                                                  List<Execution> executions = runtimeService.createExecutionQuery().processInstanceId(pi).list();
-                                                  Execution activityExecution = null;
-                                                  for (Execution execution : executions) {
-                                                      if (!execution.getProcessInstanceId().equals(execution.getId())) {
-                                                          activityExecution = execution;
-                                                          break;
-                                                      }
-                                                  }
-                                                  if (activityExecution != null) {
-                                                      return "changed".equals(activityExecution.getActivityId());
-                                                  } else {
-                                                      return false;
-                                                  }
-                                              } else {
-                                                  return false;
-                                              }
-                                          }
-                                      });
+                                      () -> {
+									      // we check that correct version was started
+									      ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processDefinitionKey("startTimerEventExample").singleResult();
+									      if (processInstance != null) {
+									          String pi = processInstance.getId();
+									          List<Execution> executions = runtimeService.createExecutionQuery().processInstanceId(pi).list();
+									          Execution activityExecution = executions.stream().filter(execution -> !execution.getProcessInstanceId().equals(execution.getId())).findFirst().orElse(null);
+									          if (activityExecution != null) {
+									              return "changed".equals(activityExecution.getActivityId());
+									          } else {
+									              return false;
+									          }
+									      } else {
+									          return false;
+									      }
+									  });
         assertEquals(1,
                      jobQuery.count());
 
@@ -292,10 +276,7 @@ public class StartTimerEventTest extends PluggableActivitiTestCase {
         }
 
         // Cleanup
-        for (ProcessDefinition processDefinition : repositoryService.createProcessDefinitionQuery().processDefinitionKey("timer").orderByProcessDefinitionVersion().desc().list()) {
-            repositoryService.deleteDeployment(processDefinition.getDeploymentId(),
-                                               true);
-        }
+		repositoryService.createProcessDefinitionQuery().processDefinitionKey("timer").orderByProcessDefinitionVersion().desc().list().forEach(processDefinition -> repositoryService.deleteDeployment(processDefinition.getDeploymentId(), true));
 
         assertEquals(0,
                      managementService.createTimerJobQuery().count());
@@ -389,10 +370,7 @@ public class StartTimerEventTest extends PluggableActivitiTestCase {
                      managementService.createTimerJobQuery().count());
 
         // Cleanup
-        for (ProcessDefinition processDefinition : repositoryService.createProcessDefinitionQuery().processDefinitionKey("timer").orderByProcessDefinitionVersion().desc().list()) {
-            repositoryService.deleteDeployment(processDefinition.getDeploymentId(),
-                                               true);
-        }
+		repositoryService.createProcessDefinitionQuery().processDefinitionKey("timer").orderByProcessDefinitionVersion().desc().list().forEach(processDefinition -> repositoryService.deleteDeployment(processDefinition.getDeploymentId(), true));
 
         assertEquals(0,
                      managementService.createTimerJobQuery().count());
@@ -404,7 +382,7 @@ public class StartTimerEventTest extends PluggableActivitiTestCase {
         // Deploy 4 versions without tenantId
         for (int i = 1; i <= 4; i++) {
             repositoryService.createDeployment()
-                    .addClasspathResource("org/activiti/engine/test/bpmn/event/timer/StartTimerEventTest.testTimersRecreatedOnDeploymentDelete_v" + i + ".bpmn20.xml")
+                    .addClasspathResource(new StringBuilder().append("org/activiti/engine/test/bpmn/event/timer/StartTimerEventTest.testTimersRecreatedOnDeploymentDelete_v").append(i).append(".bpmn20.xml").toString())
                     .deploy();
         }
 
@@ -493,10 +471,7 @@ public class StartTimerEventTest extends PluggableActivitiTestCase {
                      managementService.createTimerJobQuery().jobTenantId(testTenant).count());
 
         // Cleanup
-        for (ProcessDefinition processDefinition : repositoryService.createProcessDefinitionQuery().processDefinitionKey("timer").orderByProcessDefinitionVersion().desc().list()) {
-            repositoryService.deleteDeployment(processDefinition.getDeploymentId(),
-                                               true);
-        }
+		repositoryService.createProcessDefinitionQuery().processDefinitionKey("timer").orderByProcessDefinitionVersion().desc().list().forEach(processDefinition -> repositoryService.deleteDeployment(processDefinition.getDeploymentId(), true));
 
         assertEquals(0,
                      managementService.createTimerJobQuery().count());
@@ -640,10 +615,10 @@ public class StartTimerEventTest extends PluggableActivitiTestCase {
     }
 
     private void executeJobs(List<Job> jobs) {
-        for (Job job : jobs) {
+        jobs.forEach(job -> {
             managementService.moveTimerToExecutableJob(job.getId());
             managementService.executeJob(job.getId());
-        }
+        });
     }
 
     private void cleanDB() {

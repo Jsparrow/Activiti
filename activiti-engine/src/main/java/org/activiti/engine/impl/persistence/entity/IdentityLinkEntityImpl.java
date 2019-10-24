@@ -41,8 +41,9 @@ public class IdentityLinkEntityImpl extends AbstractEntityNoRevision implements 
     
   }
 
-  public Object getPersistentState() {
-    Map<String, Object> persistentState = new HashMap<String, Object>();
+  @Override
+public Object getPersistentState() {
+    Map<String, Object> persistentState = new HashMap<>();
     persistentState.put("id", this.id);
     persistentState.put("type", this.type);
 
@@ -69,100 +70,120 @@ public class IdentityLinkEntityImpl extends AbstractEntityNoRevision implements 
     return persistentState;
   }
 
-  public boolean isUser() {
+  @Override
+public boolean isUser() {
     return userId != null;
   }
 
-  public boolean isGroup() {
+  @Override
+public boolean isGroup() {
     return groupId != null;
   }
 
-  public String getType() {
+  @Override
+public String getType() {
     return type;
   }
 
-  public void setType(String type) {
+  @Override
+public void setType(String type) {
     this.type = type;
   }
 
-  public String getUserId() {
+  @Override
+public String getUserId() {
     return userId;
   }
 
-  public void setUserId(String userId) {
+  @Override
+public void setUserId(String userId) {
     if (this.groupId != null && userId != null) {
       throw new ActivitiException("Cannot assign a userId to a task assignment that already has a groupId");
     }
     this.userId = userId;
   }
 
-  public String getGroupId() {
+  @Override
+public String getGroupId() {
     return groupId;
   }
 
-  public void setGroupId(String groupId) {
+  @Override
+public void setGroupId(String groupId) {
     if (this.userId != null && groupId != null) {
       throw new ActivitiException("Cannot assign a groupId to a task assignment that already has a userId");
     }
     this.groupId = groupId;
   }
 
-  public String getTaskId() {
+  @Override
+public String getTaskId() {
     return taskId;
   }
 
-  public void setTaskId(String taskId) {
+  @Override
+public void setTaskId(String taskId) {
     this.taskId = taskId;
   }
 
-  public String getProcessInstanceId() {
+  @Override
+public String getProcessInstanceId() {
     return processInstanceId;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
+  @Override
+public void setProcessInstanceId(String processInstanceId) {
     this.processInstanceId = processInstanceId;
   }
 
-  public String getProcessDefId() {
+  @Override
+public String getProcessDefId() {
     return processDefId;
   }
 
-  public void setProcessDefId(String processDefId) {
+  @Override
+public void setProcessDefId(String processDefId) {
     this.processDefId = processDefId;
   }
 
-  public TaskEntity getTask() {
+  @Override
+public TaskEntity getTask() {
     if ((task == null) && (taskId != null)) {
       this.task = Context.getCommandContext().getTaskEntityManager().findById(taskId);
     }
     return task;
   }
 
-  public void setTask(TaskEntity task) {
+  @Override
+public void setTask(TaskEntity task) {
     this.task = task;
     this.taskId = task.getId();
   }
 
-  public ExecutionEntity getProcessInstance() {
+  @Override
+public ExecutionEntity getProcessInstance() {
     if ((processInstance == null) && (processInstanceId != null)) {
       this.processInstance = Context.getCommandContext().getExecutionEntityManager().findById(processInstanceId);
     }
     return processInstance;
   }
 
-  public void setProcessInstance(ExecutionEntity processInstance) {
+  @Override
+public void setProcessInstance(ExecutionEntity processInstance) {
     this.processInstance = processInstance;
     this.processInstanceId = processInstance.getId();
   }
 
-  public ProcessDefinitionEntity getProcessDef() {
+  @Override
+public ProcessDefinitionEntity getProcessDef() {
     if ((processDef == null) && (processDefId != null)) {
       this.processDef = Context.getCommandContext().getProcessDefinitionEntityManager().findById(processDefId);
     }
     return processDef;
   }
 
-  public void setProcessDef(ProcessDefinitionEntity processDef) {
+  @Override
+public void setProcessDef(ProcessDefinitionEntity processDef) {
     this.processDef = processDef;
     this.processDefId = processDef.getId();
   }

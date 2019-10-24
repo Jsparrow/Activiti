@@ -11,7 +11,6 @@ public class Resource extends BaseElement {
   protected String name;
 
   public Resource(String resourceId, String resourceName) {
-    super();
     setId(resourceId);
     setName(resourceName);
   }

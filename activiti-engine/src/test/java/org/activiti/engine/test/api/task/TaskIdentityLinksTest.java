@@ -233,7 +233,7 @@ public class TaskIdentityLinksTest extends PluggableActivitiTestCase {
     List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(tasks.get(0).getId());
     assertEquals(2, identityLinks.size());
 
-    for (IdentityLink idLink : identityLinks) {
+    identityLinks.forEach(idLink -> {
       assertEquals("businessAdministrator", idLink.getType());
       String userId = idLink.getUserId();
       if (userId == null) {
@@ -241,6 +241,6 @@ public class TaskIdentityLinksTest extends PluggableActivitiTestCase {
       } else {
         assertEquals("kermit", userId);
       }
-    }
+    });
   }
 }

@@ -42,11 +42,11 @@ public class VariablesMappingProvider {
                                                     DelegateExecution execution,
                                                     ProcessExtensionModel extensions) {
         if (inputMapping != null) {
-            if (Mapping.SourceMappingType.VALUE.equals(inputMapping.getType())) {
+            if (Mapping.SourceMappingType.VALUE == inputMapping.getType()) {
                 return Optional.of(inputMapping.getValue());
             }
 
-            if (Mapping.SourceMappingType.VARIABLE.equals(inputMapping.getType())) {
+            if (Mapping.SourceMappingType.VARIABLE == inputMapping.getType()) {
                 String name = inputMapping.getValue().toString();
 
                 VariableDefinition processVariableDefinition = extensions.getExtensions().getPropertyByName(name);
@@ -85,9 +85,7 @@ public class VariablesMappingProvider {
         Map<String, Object> constants = new HashMap<>();
 
         ProcessConstantsMapping processConstantsMapping = extensions.getExtensions().getConstantForFlowElement(execution.getCurrentActivityId());
-        for (Map.Entry<String, ConstantDefinition> mapping : processConstantsMapping.entrySet()) {
-            constants.put(mapping.getKey(), mapping.getValue().getValue());
-        }
+        processConstantsMapping.entrySet().forEach(mapping -> constants.put(mapping.getKey(), mapping.getValue().getValue()));
         return constants;
     }
 
@@ -98,23 +96,23 @@ public class VariablesMappingProvider {
         ProcessVariablesMapping processVariablesMapping = extensions.getExtensions().getMappingForFlowElement(execution.getCurrentActivityId());
 
         Map<String, Mapping> inputMappings = processVariablesMapping.getInputs();
-        for (Map.Entry<String, Mapping> mapping : inputMappings.entrySet()) {
+        inputMappings.entrySet().forEach(mapping -> {
             Optional<Object> mappedValue = calculateMappedValue(mapping.getValue(),
                     execution,
                     extensions);
             mappedValue.ifPresent(value -> inboundVariables.put(mapping.getKey(),
                     value));
-        }
+        });
         return inboundVariables;
     }
 
     private Optional<Object> calculateOutPutMappedValue(Mapping mapping,
                                                         Map<String, Object> currentContextVariables) {
         if (mapping != null) {
-            if (Mapping.SourceMappingType.VALUE.equals(mapping.getType())) {
+            if (Mapping.SourceMappingType.VALUE == mapping.getType()) {
                 return Optional.of(mapping.getValue());
             } else {
-                if (Mapping.SourceMappingType.VARIABLE.equals(mapping.getType())) {
+                if (Mapping.SourceMappingType.VARIABLE == mapping.getType()) {
                     String name = mapping.getValue().toString();
 
                     return currentContextVariables != null ?
@@ -153,7 +151,7 @@ public class VariablesMappingProvider {
         ProcessVariablesMapping processVariablesMapping = extensions.getExtensions().getMappingForFlowElement(execution.getActivityId());
         Map<String, Mapping> outputMappings = processVariablesMapping.getOutputs();
 
-        for (Map.Entry<String, Mapping> mapping : outputMappings.entrySet()) {
+        outputMappings.entrySet().forEach(mapping -> {
 
             String name = mapping.getKey();
 
@@ -164,7 +162,7 @@ public class VariablesMappingProvider {
                 outboundVariables.put(name, calculateOutPutMappedValue(mapping.getValue(),
                         availableVariables).get());
             }
-        }
+        });
 
         return outboundVariables;
     }

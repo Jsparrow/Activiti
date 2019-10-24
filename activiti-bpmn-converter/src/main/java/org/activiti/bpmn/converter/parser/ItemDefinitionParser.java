@@ -26,10 +26,12 @@ import org.apache.commons.lang3.StringUtils;
 public class ItemDefinitionParser implements BpmnXMLConstants {
 
   public void parse(XMLStreamReader xtr, BpmnModel model) throws Exception {
-    if (StringUtils.isNotEmpty(xtr.getAttributeValue(null, ATTRIBUTE_ID))) {
-      String itemDefinitionId = model.getTargetNamespace() + ":" + xtr.getAttributeValue(null, ATTRIBUTE_ID);
-      String structureRef = xtr.getAttributeValue(null, ATTRIBUTE_STRUCTURE_REF);
-      if (StringUtils.isNotEmpty(structureRef)) {
+    if (!StringUtils.isNotEmpty(xtr.getAttributeValue(null, ATTRIBUTE_ID))) {
+		return;
+	}
+	String itemDefinitionId = new StringBuilder().append(model.getTargetNamespace()).append(":").append(xtr.getAttributeValue(null, ATTRIBUTE_ID)).toString();
+	String structureRef = xtr.getAttributeValue(null, ATTRIBUTE_STRUCTURE_REF);
+	if (StringUtils.isNotEmpty(structureRef)) {
         ItemDefinition item = new ItemDefinition();
         item.setId(itemDefinitionId);
         BpmnXMLUtil.addXMLLocation(item, xtr);
@@ -38,9 +40,9 @@ public class ItemDefinitionParser implements BpmnXMLConstants {
         if (indexOfP != -1) {
           String prefix = structureRef.substring(0, indexOfP);
           String resolvedNamespace = model.getNamespace(prefix);
-          structureRef = resolvedNamespace + ":" + structureRef.substring(indexOfP + 1);
+          structureRef = new StringBuilder().append(resolvedNamespace).append(":").append(structureRef.substring(indexOfP + 1)).toString();
         } else {
-          structureRef = model.getTargetNamespace() + ":" + structureRef;
+          structureRef = new StringBuilder().append(model.getTargetNamespace()).append(":").append(structureRef).toString();
         }
 
         item.setStructureRef(structureRef);
@@ -48,6 +50,5 @@ public class ItemDefinitionParser implements BpmnXMLConstants {
         BpmnXMLUtil.parseChildElements(ELEMENT_ITEM_DEFINITION, item, xtr, model);
         model.addItemDefinition(itemDefinitionId, item);
       }
-    }
   }
 }

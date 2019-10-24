@@ -32,11 +32,14 @@ import org.activiti.engine.impl.util.TimeZoneUtil;
 import org.activiti.engine.runtime.ClockReader;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Internal
 public class DurationHelper {
 
-    private Calendar start;
+    private static final Logger logger = LoggerFactory.getLogger(DurationHelper.class);
+	private Calendar start;
     private Calendar end;
     private Duration period;
     private boolean isRepeat;
@@ -45,30 +48,9 @@ public class DurationHelper {
     private boolean repeatWithNoBounds;
 
     private DatatypeFactory datatypeFactory;
+	protected ClockReader clockReader;
 
-    public Calendar getStart() {
-        return start;
-    }
-
-    public Calendar getEnd() {
-        return end;
-    }
-
-    public Duration getPeriod() {
-        return period;
-    }
-
-    public boolean isRepeat() {
-        return isRepeat;
-    }
-
-    public int getTimes() {
-        return times;
-    }
-
-    protected ClockReader clockReader;
-
-    public DurationHelper(String expressionS,
+	public DurationHelper(String expressionS,
                           int maxIterations,
                           ClockReader clockReader) throws Exception {
         this.clockReader = clockReader;
@@ -83,7 +65,7 @@ public class DurationHelper {
             isRepeat = true;
             times = expression.get(0).length() == 1 ? Integer.MAX_VALUE - 1 : Integer.parseInt(expression.get(0).substring(1));
 
-            if (expression.get(0).equals("R")) { // R without params
+            if ("R".equals(expression.get(0))) { // R without params
                 repeatWithNoBounds = true;
             }
 
@@ -108,18 +90,38 @@ public class DurationHelper {
         }
     }
 
-    public DurationHelper(String expressionS,
+	public DurationHelper(String expressionS,
                           ClockReader clockReader) throws Exception {
         this(expressionS,
              -1,
              clockReader);
     }
 
-    public Calendar getCalendarAfter() {
+	public Calendar getStart() {
+        return start;
+    }
+
+	public Calendar getEnd() {
+        return end;
+    }
+
+	public Duration getPeriod() {
+        return period;
+    }
+
+	public boolean isRepeat() {
+        return isRepeat;
+    }
+
+	public int getTimes() {
+        return times;
+    }
+
+	public Calendar getCalendarAfter() {
         return getCalendarAfter(clockReader.getCurrentCalendar());
     }
 
-    public Calendar getCalendarAfter(Calendar time) {
+	public Calendar getCalendarAfter(Calendar time) {
         if (isRepeat) {
             return getDateAfterRepeat(time);
         }
@@ -131,17 +133,17 @@ public class DurationHelper {
                    period);
     }
 
-    public Boolean isValidDate(Date newTimer) {
+	public Boolean isValidDate(Date newTimer) {
         return end == null || end.getTime().after(newTimer) || end.getTime().equals(newTimer);
     }
 
-    public Date getDateAfter() {
+	public Date getDateAfter() {
         Calendar date = getCalendarAfter();
 
         return date == null ? null : date.getTime();
     }
 
-    private Calendar getDateAfterRepeat(Calendar date) {
+	private Calendar getDateAfterRepeat(Calendar date) {
         Calendar current = TimeZoneUtil.convertToTimeZone(start,
                                                           date.getTimeZone());
 
@@ -170,7 +172,7 @@ public class DurationHelper {
                                                                             clockReader.getCurrentTimeZone());
     }
 
-    protected Calendar add(Calendar date,
+	protected Calendar add(Calendar date,
                            Duration duration) {
         Calendar calendar = (Calendar) date.clone();
 
@@ -192,13 +194,14 @@ public class DurationHelper {
         return calendar;
     }
 
-    protected Calendar parseDate(String date) throws Exception {
+	protected Calendar parseDate(String date) throws Exception {
         Calendar dateCalendar = null;
         try {
             dateCalendar = ISODateTimeFormat.dateTimeParser().withZone(DateTimeZone.forTimeZone(
                     clockReader.getCurrentTimeZone())).parseDateTime(date).toCalendar(null);
         } catch (IllegalArgumentException e) {
-            // try to parse a java.util.date to string back to a java.util.date
+            logger.error(e.getMessage(), e);
+			// try to parse a java.util.date to string back to a java.util.date
             dateCalendar = new GregorianCalendar();
             DateFormat DATE_FORMAT = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy",
                                                           Locale.ENGLISH);
@@ -208,11 +211,11 @@ public class DurationHelper {
         return dateCalendar;
     }
 
-    protected Duration parsePeriod(String period) throws Exception {
+	protected Duration parsePeriod(String period) throws Exception {
         return datatypeFactory.newDuration(period);
     }
 
-    protected boolean isDuration(String time) {
+	protected boolean isDuration(String time) {
         return time.startsWith("P");
     }
 }

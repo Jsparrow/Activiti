@@ -61,12 +61,13 @@ public class VariableInstanceEntityManagerImpl extends AbstractEntityManager<Var
   public void insert(VariableInstanceEntity entity, boolean fireCreateEvent) {
     super.insert(entity, fireCreateEvent);
     
-    if (entity.getExecutionId() != null && isExecutionRelatedEntityCountEnabledGlobally()) {
-      CountingExecutionEntity executionEntity = (CountingExecutionEntity) getExecutionEntityManager().findById(entity.getExecutionId());
-      if (isExecutionRelatedEntityCountEnabled(executionEntity)) {
+    if (!(entity.getExecutionId() != null && isExecutionRelatedEntityCountEnabledGlobally())) {
+		return;
+	}
+	CountingExecutionEntity executionEntity = (CountingExecutionEntity) getExecutionEntityManager().findById(entity.getExecutionId());
+	if (isExecutionRelatedEntityCountEnabled(executionEntity)) {
         executionEntity.setVariableCount(executionEntity.getVariableCount() + 1);
       }
-    }
   }
   
   @Override
@@ -126,11 +127,11 @@ public class VariableInstanceEntityManagerImpl extends AbstractEntityManager<Var
     }
 
     ActivitiEventDispatcher eventDispatcher =  getEventDispatcher();
-    if (fireDeleteEvent && eventDispatcher.isEnabled()) {
-      eventDispatcher.dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_DELETED, entity));
-      
-      eventDispatcher.dispatchEvent(createVariableDeleteEvent(entity));
-    }
+    if (!(fireDeleteEvent && eventDispatcher.isEnabled())) {
+		return;
+	}
+	eventDispatcher.dispatchEvent(ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_DELETED, entity));
+	eventDispatcher.dispatchEvent(createVariableDeleteEvent(entity));
     
   }
   
@@ -147,11 +148,13 @@ public class VariableInstanceEntityManagerImpl extends AbstractEntityManager<Var
     Object variableValue=null;
     boolean getValue=true;
     
-    if (variableInstance.getType().getTypeName().equals("jpa-entity")) {
+    if ("jpa-entity".equals(variableInstance.getType().getTypeName())) {
         getValue=false;
     }
 
-    if (getValue) variableValue=variableInstance.getValue();
+    if (getValue) {
+		variableValue=variableInstance.getValue();
+	}
     
     return ActivitiEventBuilder.createVariableEvent(ActivitiEventType.VARIABLE_DELETED, 
         variableInstance.getName(), 
@@ -167,9 +170,7 @@ public class VariableInstanceEntityManagerImpl extends AbstractEntityManager<Var
   public void deleteVariableInstanceByTask(TaskEntity task) {
     Map<String, VariableInstanceEntity> variableInstances = task.getVariableInstanceEntities();
     if (variableInstances != null) {
-      for (VariableInstanceEntity variableInstance : variableInstances.values()) {
-        delete(variableInstance);
-      }
+      variableInstances.values().forEach(variableInstance -> delete(variableInstance));
     }
   }
 

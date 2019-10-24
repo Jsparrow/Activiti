@@ -41,11 +41,7 @@ public class TaskCancelledListenerDelegate implements ActivitiEventListener {
     public void onEvent(ActivitiEvent event) {
         if (event instanceof ActivitiActivityCancelledEvent) {
             toTaskCancelledConverter.from((ActivitiActivityCancelledEvent) event)
-                    .ifPresent(convertedEvent -> {
-                        for (TaskRuntimeEventListener<TaskCancelledEvent> listener : listeners) {
-                            listener.onEvent(convertedEvent);
-                        }
-                    });
+                    .ifPresent(convertedEvent -> listeners.forEach(listener -> listener.onEvent(convertedEvent)));
         }
     }
 

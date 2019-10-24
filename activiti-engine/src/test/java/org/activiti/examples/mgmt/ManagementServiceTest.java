@@ -32,13 +32,13 @@ public class ManagementServiceTest extends PluggableActivitiTestCase {
 
     String tablePrefix = processEngineConfiguration.getDatabaseTablePrefix();
 
-    assertEquals(new Long(4), tableCount.get(tablePrefix + "ACT_GE_PROPERTY"));
-    assertEquals(new Long(0), tableCount.get(tablePrefix + "ACT_GE_BYTEARRAY"));
-    assertEquals(new Long(0), tableCount.get(tablePrefix + "ACT_RE_DEPLOYMENT"));
-    assertEquals(new Long(0), tableCount.get(tablePrefix + "ACT_RU_EXECUTION"));
-    assertEquals(new Long(0), tableCount.get(tablePrefix + "ACT_RE_PROCDEF"));
-    assertEquals(new Long(0), tableCount.get(tablePrefix + "ACT_RU_TASK"));
-    assertEquals(new Long(0), tableCount.get(tablePrefix + "ACT_RU_IDENTITYLINK"));
+    assertEquals(Long.valueOf(4), tableCount.get(tablePrefix + "ACT_GE_PROPERTY"));
+    assertEquals(Long.valueOf(0), tableCount.get(tablePrefix + "ACT_GE_BYTEARRAY"));
+    assertEquals(Long.valueOf(0), tableCount.get(tablePrefix + "ACT_RE_DEPLOYMENT"));
+    assertEquals(Long.valueOf(0), tableCount.get(tablePrefix + "ACT_RU_EXECUTION"));
+    assertEquals(Long.valueOf(0), tableCount.get(tablePrefix + "ACT_RE_PROCDEF"));
+    assertEquals(Long.valueOf(0), tableCount.get(tablePrefix + "ACT_RU_TASK"));
+    assertEquals(Long.valueOf(0), tableCount.get(tablePrefix + "ACT_RU_IDENTITYLINK"));
   }
 
   public void testGetTableMetaData() {
@@ -65,7 +65,7 @@ public class ManagementServiceTest extends PluggableActivitiTestCase {
         return;
       }
     }
-    fail("Value '" + currentValue + "' should be one of: " + Arrays.deepToString(possibleValues));
+    fail(new StringBuilder().append("Value '").append(currentValue).append("' should be one of: ").append(Arrays.deepToString(possibleValues)).toString());
   }
 
 }

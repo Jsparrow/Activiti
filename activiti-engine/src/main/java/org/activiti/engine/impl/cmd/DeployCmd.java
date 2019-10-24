@@ -43,7 +43,8 @@ public class DeployCmd<T> implements Command<Deployment>, Serializable {
     this.deploymentBuilder = deploymentBuilder;
   }
 
-  public Deployment execute(CommandContext commandContext) {
+  @Override
+public Deployment execute(CommandContext commandContext) {
     return executeDeploy(commandContext);
   }
 
@@ -57,7 +58,7 @@ public class DeployCmd<T> implements Command<Deployment>, Serializable {
 
       if (deploymentBuilder.isDuplicateFilterEnabled()) {
 
-      List<Deployment> existingDeployments = new ArrayList<Deployment>();
+      List<Deployment> existingDeployments = new ArrayList<>();
       if (deployment.getTenantId() == null || ProcessEngineConfiguration.NO_TENANT_ID.equals(deployment.getTenantId())) {
         DeploymentEntity existingDeployment = commandContext.getDeploymentEntityManager().findLatestDeploymentByName(deployment.getName());
         if (existingDeployment != null) {
@@ -97,7 +98,7 @@ public class DeployCmd<T> implements Command<Deployment>, Serializable {
     }
 
     // Deployment settings
-    Map<String, Object> deploymentSettings = new HashMap<String, Object>();
+    Map<String, Object> deploymentSettings = new HashMap<>();
     deploymentSettings.put(DeploymentSettings.IS_BPMN20_XSD_VALIDATION_ENABLED, deploymentBuilder.isBpmn20XsdValidationEnabled());
     deploymentSettings.put(DeploymentSettings.IS_PROCESS_VALIDATION_ENABLED, deploymentBuilder.isProcessValidationEnabled());
 
@@ -159,7 +160,7 @@ public class DeployCmd<T> implements Command<Deployment>, Serializable {
   }
 
   protected void scheduleProcessDefinitionActivation(CommandContext commandContext, DeploymentEntity deployment) {
-    for (ProcessDefinitionEntity processDefinitionEntity : deployment.getDeployedArtifacts(ProcessDefinitionEntity.class)) {
+    deployment.getDeployedArtifacts(ProcessDefinitionEntity.class).forEach(processDefinitionEntity -> {
 
       // If activation date is set, we first suspend all the process
       // definition
@@ -170,7 +171,7 @@ public class DeployCmd<T> implements Command<Deployment>, Serializable {
       ActivateProcessDefinitionCmd activateProcessDefinitionCmd = new ActivateProcessDefinitionCmd(processDefinitionEntity, false, deploymentBuilder.getProcessDefinitionsActivationDate(),
           deployment.getTenantId());
       activateProcessDefinitionCmd.execute(commandContext);
-    }
+    });
   }
   
 }

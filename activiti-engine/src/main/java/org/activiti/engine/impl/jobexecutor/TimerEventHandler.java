@@ -2,10 +2,13 @@ package org.activiti.engine.impl.jobexecutor;
 
 import org.activiti.engine.impl.util.json.JSONException;
 import org.activiti.engine.impl.util.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TimerEventHandler {
 
-  public static final String PROPERTYNAME_TIMER_ACTIVITY_ID = "activityId";
+  private static final Logger logger = LoggerFactory.getLogger(TimerEventHandler.class);
+public static final String PROPERTYNAME_TIMER_ACTIVITY_ID = "activityId";
   public static final String PROPERTYNAME_END_DATE_EXPRESSION = "timerEndDate";
   public static final String PROPERTYNAME_CALENDAR_NAME_EXPRESSION = "calendarName";
   
@@ -27,7 +30,8 @@ public class TimerEventHandler {
       cfgJson.put(PROPERTYNAME_TIMER_ACTIVITY_ID, activityId);
       return cfgJson.toString();
     } catch (JSONException ex) {
-      return jobHandlerConfiguration;
+      logger.error(ex.getMessage(), ex);
+	return jobHandlerConfiguration;
     }
   }
 
@@ -36,7 +40,8 @@ public class TimerEventHandler {
       JSONObject cfgJson = new JSONObject(jobHandlerConfiguration);
       return cfgJson.get(PROPERTYNAME_TIMER_ACTIVITY_ID).toString();
     } catch (JSONException ex) {
-      return jobHandlerConfiguration;
+      logger.error(ex.getMessage(), ex);
+	return jobHandlerConfiguration;
     }
   }
   
@@ -45,7 +50,8 @@ public class TimerEventHandler {
       JSONObject cfgJson = new JSONObject(jobHandlerConfiguration);
       return cfgJson.get(PROPERTYNAME_CALENDAR_NAME_EXPRESSION).toString();
     } catch (JSONException ex) {
-      // calendar name is not specified
+      logger.error(ex.getMessage(), ex);
+	// calendar name is not specified
       return "";
     }
   }
@@ -55,7 +61,8 @@ public class TimerEventHandler {
     try {
       cfgJson = new JSONObject(jobHandlerConfiguration);
     } catch (JSONException ex) {
-      // create the json config
+      logger.error(ex.getMessage(), ex);
+	// create the json config
       cfgJson = new JSONObject();
       cfgJson.put(PROPERTYNAME_TIMER_ACTIVITY_ID, jobHandlerConfiguration);
     }
@@ -71,7 +78,8 @@ public class TimerEventHandler {
       JSONObject cfgJson = new JSONObject(jobHandlerConfiguration);
       return cfgJson.get(PROPERTYNAME_END_DATE_EXPRESSION).toString();
     } catch (JSONException ex) {
-      return null;
+      logger.error(ex.getMessage(), ex);
+	return null;
     }
   }
 

@@ -41,11 +41,7 @@ public class ActivityCompletedListenerDelegate implements ActivitiEventListener 
     public void onEvent(ActivitiEvent event) {
         if (event instanceof ActivitiActivityEvent) {
             converter.from((ActivitiActivityEvent) event)
-                    .ifPresent(convertedEvent -> {
-                        for ( BPMNElementEventListener<BPMNActivityCompletedEvent> listener : processRuntimeEventListeners ) {
-                            listener.onEvent(convertedEvent);
-                        }
-                    });
+                    .ifPresent(convertedEvent -> processRuntimeEventListeners.forEach(listener -> listener.onEvent(convertedEvent)));
         }
     }
 

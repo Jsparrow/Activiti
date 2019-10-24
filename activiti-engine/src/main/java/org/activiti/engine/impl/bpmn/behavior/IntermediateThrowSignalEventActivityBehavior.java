@@ -53,7 +53,8 @@ public class IntermediateThrowSignalEventActivityBehavior extends AbstractBpmnAc
         this.signalEventDefinition = signalEventDefinition;
     }
 
-    public void execute(DelegateExecution execution) {
+    @Override
+	public void execute(DelegateExecution execution) {
 
         CommandContext commandContext = Context.getCommandContext();
 
@@ -77,7 +78,7 @@ public class IntermediateThrowSignalEventActivityBehavior extends AbstractBpmnAc
                                                              execution.getTenantId());
         }
 
-        for (SignalEventSubscriptionEntity signalEventSubscriptionEntity : subscriptionEntities) {
+        subscriptionEntities.forEach(signalEventSubscriptionEntity -> {
             Map<String, Object> signalVariables = Optional.ofNullable(execution.getVariables())
                                                           .filter(it -> !it.isEmpty())
                                                           .orElse(null);
@@ -85,7 +86,7 @@ public class IntermediateThrowSignalEventActivityBehavior extends AbstractBpmnAc
             eventSubscriptionEntityManager.eventReceived(signalEventSubscriptionEntity,
                                                          signalVariables,
                                                          signalEventDefinition.isAsync());
-        }
+        });
 
         Context.getAgenda().planTakeOutgoingSequenceFlowsOperation((ExecutionEntity) execution,
                                                                    true);

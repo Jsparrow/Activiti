@@ -31,7 +31,8 @@ public class GetDeploymentResourceNamesCmd implements Command<List>, Serializabl
     this.deploymentId = deploymentId;
   }
 
-  public List execute(CommandContext commandContext) {
+  @Override
+public List execute(CommandContext commandContext) {
     if (deploymentId == null) {
       throw new ActivitiIllegalArgumentException("deploymentId is null");
     }

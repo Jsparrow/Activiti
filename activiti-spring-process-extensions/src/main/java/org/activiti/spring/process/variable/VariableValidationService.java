@@ -13,18 +13,17 @@ import org.slf4j.LoggerFactory;
 public class VariableValidationService {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableValidationService.class);
+	private Map<String, VariableType> variableTypeMap;
 
-    public VariableValidationService(Map<String, VariableType> variableTypeMap) {
+	public VariableValidationService(Map<String, VariableType> variableTypeMap) {
         this.variableTypeMap = variableTypeMap;
     }
 
-    private Map<String, VariableType> variableTypeMap;
-
-    public boolean validate(Object var, VariableDefinition variableDefinition){
+	public boolean validate(Object var, VariableDefinition variableDefinition){
         return validateWithErrors(var,variableDefinition).isEmpty();
     }
 
-    public List<ActivitiException> validateWithErrors(Object var, VariableDefinition variableDefinition){
+	public List<ActivitiException> validateWithErrors(Object var, VariableDefinition variableDefinition){
 
         List<ActivitiException> errors = new ArrayList<>();
 

@@ -104,7 +104,8 @@ public class OptimisticLockingExceptionTest extends PluggableActivitiTestCase {
       this.executionId = executionid;
     }
     
-    public void run() {
+    @Override
+	public void run() {
       try {
         processEngine.getManagementService().executeCommand(new TestTriggerCommand(executionId, null));
       } catch (Exception e) {
@@ -151,9 +152,7 @@ public class OptimisticLockingExceptionTest extends PluggableActivitiTestCase {
     public void closing(CommandContext commandContext) {
       try {
         TEST_BARRIER_BEFORE_CLOSE.await();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      } catch (BrokenBarrierException e) {
+      } catch (BrokenBarrierException | InterruptedException e) {
         throw new RuntimeException(e);
       }
     }

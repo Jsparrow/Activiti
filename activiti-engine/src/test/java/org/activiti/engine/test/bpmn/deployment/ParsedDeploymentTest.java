@@ -41,15 +41,15 @@ public class ParsedDeploymentTest extends PluggableActivitiTestCase {
   private static final String ID1_ID = "id1";
   private static final String ID2_ID = "id2";
   private static final String IDR_PROCESS_XML = aseembleXmlResourceString(
-      "<process id='" + ID1_ID + "' name='Insurance Damage Report 1' />",
-      "<process id='" + ID2_ID + "' name='Insurance Damager Report 2' />");
+      new StringBuilder().append("<process id='").append(ID1_ID).append("' name='Insurance Damage Report 1' />").toString(),
+      new StringBuilder().append("<process id='").append(ID2_ID).append("' name='Insurance Damager Report 2' />").toString());
   private static final String IDR_XML_NAME = "idr." + ResourceNameUtil.BPMN_RESOURCE_SUFFIXES[0];
   
   private static final String EN1_ID = "en1";
   private static final String EN2_ID = "en2";
   private static final String EN_PROCESS_XML = aseembleXmlResourceString(
-      "<process id='" + EN1_ID + "' name='Expense Note 1' />",
-      "<process id='" + EN2_ID + "' name='Expense Note 2' />");
+      new StringBuilder().append("<process id='").append(EN1_ID).append("' name='Expense Note 1' />").toString(),
+      new StringBuilder().append("<process id='").append(EN2_ID).append("' name='Expense Note 2' />").toString());
   private static final String EN_XML_NAME = "en." + ResourceNameUtil.BPMN_RESOURCE_SUFFIXES[1];
       
   @Override
@@ -93,12 +93,7 @@ public class ParsedDeploymentTest extends PluggableActivitiTestCase {
   }
   
   private ProcessDefinitionEntity getProcessDefinitionEntityFromList(List<ProcessDefinitionEntity> list, String idString) {
-    for (ProcessDefinitionEntity possible : list) {
-      if (possible.getKey().equals(idString)) {
-        return possible;
-      }
-    }
-    return null;
+    return list.stream().filter(possible -> possible.getKey().equals(idString)).findFirst().orElse(null);
   }
   
   private DeploymentEntity assembleUnpersistedDeploymentEntity() throws UnsupportedEncodingException {

@@ -35,21 +35,25 @@ public interface AbstractJobEntity extends Job, Entity, HasRevision {
 
   void setProcessInstanceId(String processInstanceId);
 
-  boolean isExclusive();
+  @Override
+boolean isExclusive();
 
   void setExclusive(boolean isExclusive);
 
   void setProcessDefinitionId(String processDefinitionId);
 
-  String getJobHandlerType();
+  @Override
+String getJobHandlerType();
 
   void setJobHandlerType(String jobHandlerType);
 
-  String getJobHandlerConfiguration();
+  @Override
+String getJobHandlerConfiguration();
 
   void setJobHandlerConfiguration(String jobHandlerConfiguration);
 
-  String getJobType();
+  @Override
+String getJobType();
 
   void setJobType(String jobType);
   

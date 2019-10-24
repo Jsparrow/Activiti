@@ -34,21 +34,19 @@ public class ExecutionListenerValidator extends ProcessLevelValidator {
 
     validateListeners(process, process, process.getExecutionListeners(), errors);
 
-    for (FlowElement flowElement : process.getFlowElements()) {
-      validateListeners(process, flowElement, flowElement.getExecutionListeners(), errors);
-    }
+    process.getFlowElements().forEach(flowElement -> validateListeners(process, flowElement, flowElement.getExecutionListeners(), errors));
   }
 
   protected void validateListeners(Process process, BaseElement baseElement, List<ActivitiListener> listeners, List<ValidationError> errors) {
     if (listeners != null) {
-      for (ActivitiListener listener : listeners) {
+      listeners.forEach(listener -> {
         if (listener.getImplementation() == null || listener.getImplementationType() == null) {
           addError(errors, Problems.EXECUTION_LISTENER_IMPLEMENTATION_MISSING, process, baseElement, "Element 'class' or 'expression' is mandatory on executionListener");
         }
         if (listener.getOnTransaction() != null && ImplementationType.IMPLEMENTATION_TYPE_EXPRESSION.equals(listener.getImplementationType())) {
           addError(errors, Problems.EXECUTION_LISTENER_INVALID_IMPLEMENTATION_TYPE, process, baseElement, "Expression cannot be used when using 'onTransaction'");
         }
-      }
+      });
     }
   }
 }

@@ -40,7 +40,7 @@ public class DelegateExpressionTransactionDependentTaskListener implements Trans
     if (delegate instanceof TransactionDependentTaskListener) {
       ((TransactionDependentTaskListener) delegate).notify(processInstanceId, executionId, task, executionVariables, customPropertiesMap);
     } else {
-      throw new ActivitiIllegalArgumentException("Delegate expression " + expression + " did not resolve to an implementation of " + TransactionDependentTaskListener.class);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("Delegate expression ").append(expression).append(" did not resolve to an implementation of ").append(TransactionDependentTaskListener.class).toString());
     }
 
   }

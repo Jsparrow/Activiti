@@ -9,16 +9,20 @@ import org.activiti.engine.runtime.Job;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
 import org.activiti.engine.runtime.TimerJobQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProcessInstanceQueryAndWithExceptionTest extends PluggableActivitiTestCase {
 
-  private static final String PROCESS_DEFINITION_KEY_NO_EXCEPTION = "oneTaskProcess";
+  private static final Logger logger = LoggerFactory.getLogger(ProcessInstanceQueryAndWithExceptionTest.class);
+private static final String PROCESS_DEFINITION_KEY_NO_EXCEPTION = "oneTaskProcess";
   private static final String PROCESS_DEFINITION_KEY_WITH_EXCEPTION_1 = "JobErrorCheck";
   private static final String PROCESS_DEFINITION_KEY_WITH_EXCEPTION_2 = "JobErrorDoubleCheck";
 
   private org.activiti.engine.repository.Deployment deployment;
 
-  protected void setUp() throws Exception {
+  @Override
+protected void setUp() throws Exception {
     super.setUp();
     deployment = repositoryService.createDeployment()
           .addClasspathResource("org/activiti/engine/test/api/runtime/oneTaskProcess.bpmn20.xml")
@@ -27,7 +31,8 @@ public class ProcessInstanceQueryAndWithExceptionTest extends PluggableActivitiT
           .deploy();
   }
 
-  protected void tearDown() throws Exception {
+  @Override
+protected void tearDown() throws Exception {
     repositoryService.deleteDeployment(deployment.getId(), true);
     super.tearDown();
   }
@@ -70,19 +75,21 @@ public class ProcessInstanceQueryAndWithExceptionTest extends PluggableActivitiT
       .processInstanceId(processInstance.getId())
       .list();
 
-    for(Job job : jobList){
+    jobList.forEach(job -> {
         try {
           managementService.executeJob(job.getId());
           fail("RuntimeException");
         } catch(RuntimeException re) {
+			logger.error(re.getMessage(), re);
       }
-    }
+    });
     return processInstance;
   }
 
   // Test delegate
   public static class TestJavaDelegate implements JavaDelegate {
-    public void execute(DelegateExecution execution){
+    @Override
+	public void execute(DelegateExecution execution){
       throw new RuntimeException();
     }
   }

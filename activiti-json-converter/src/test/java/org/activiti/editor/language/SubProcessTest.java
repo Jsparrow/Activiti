@@ -19,7 +19,8 @@ public class SubProcessTest extends AbstractConverterTest {
     assertEquals(model.getMainProcess().getFlowElementMap().keySet().size(), 10);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "test.subprocess.xml";
   }
 

@@ -22,11 +22,13 @@ import org.activiti.bpmn.model.DataAssociation;
 
 public class DataInputAssociationParser extends BaseChildElementParser {
 
-    public String getElementName() {
+    @Override
+	public String getElementName() {
         return ELEMENT_INPUT_ASSOCIATION;
     }
 
-    public void parseChildElement(XMLStreamReader xtr,
+    @Override
+	public void parseChildElement(XMLStreamReader xtr,
                                   BaseElement parentElement,
                                   BpmnModel model) throws Exception {
 

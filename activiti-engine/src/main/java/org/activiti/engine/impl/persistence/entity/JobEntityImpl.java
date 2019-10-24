@@ -28,7 +28,8 @@ public class JobEntityImpl extends AbstractJobEntityImpl implements JobEntity {
   protected String lockOwner;
   protected Date lockExpirationTime;
 
-  @SuppressWarnings("unchecked")
+  @Override
+@SuppressWarnings("unchecked")
   public Object getPersistentState() {
     Map<String, Object> persistentState = (Map<String, Object>) super.getPersistentState();
     persistentState.put("lockOwner", lockOwner);
@@ -39,30 +40,35 @@ public class JobEntityImpl extends AbstractJobEntityImpl implements JobEntity {
 
   // getters and setters ////////////////////////////////////////////////////////
 
-  public void setExecution(ExecutionEntity execution) {
+  @Override
+public void setExecution(ExecutionEntity execution) {
     super.setExecution(execution);
     execution.getJobs().add(this);
   }
 
-  public String getLockOwner() {
+  @Override
+public String getLockOwner() {
     return lockOwner;
   }
 
-  public void setLockOwner(String claimedBy) {
+  @Override
+public void setLockOwner(String claimedBy) {
     this.lockOwner = claimedBy;
   }
 
-  public Date getLockExpirationTime() {
+  @Override
+public Date getLockExpirationTime() {
     return lockExpirationTime;
   }
 
-  public void setLockExpirationTime(Date claimedUntil) {
+  @Override
+public void setLockExpirationTime(Date claimedUntil) {
     this.lockExpirationTime = claimedUntil;
   }
 
   @Override
   public String toString() {
-    return "JobEntity [id=" + id + "]";
+    return new StringBuilder().append("JobEntity [id=").append(id).append("]").toString();
   }
 
 }

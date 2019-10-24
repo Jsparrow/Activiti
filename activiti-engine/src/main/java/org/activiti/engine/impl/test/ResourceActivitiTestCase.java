@@ -49,7 +49,7 @@ public abstract class ResourceActivitiTestCase extends AbstractActivitiTestCase 
   protected void initializeProcessEngine() {
     ProcessEngineConfiguration config = ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(activitiConfigurationResource);
     if (processEngineName != null) {
-      logger.info("Initializing process engine with name '" + processEngineName + "'");
+      logger.info(new StringBuilder().append("Initializing process engine with name '").append(processEngineName).append("'").toString());
       config.setProcessEngineName(processEngineName);
     }
     additionalConfiguration(config);

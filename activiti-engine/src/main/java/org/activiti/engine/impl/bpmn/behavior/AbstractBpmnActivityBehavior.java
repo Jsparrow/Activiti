@@ -27,6 +27,7 @@ import org.activiti.engine.impl.delegate.ActivityBehavior;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.util.CollectionUtil;
 import org.activiti.engine.impl.util.ProcessDefinitionUtil;
+import java.util.stream.Collectors;
 
 /**
  * Denotes an 'activity' in the sense of BPMN 2.0: a parent class for all tasks, subprocess and callActivity.
@@ -43,7 +44,8 @@ public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
    * Subclasses that call leave() will first pass through this method, before the regular {@link FlowNodeActivityBehavior#leave(ActivityExecution)} is called. This way, we can check if the activity
    * has loop characteristics, and delegate to the behavior if this is the case.
    */
-  public void leave(DelegateExecution execution) {
+  @Override
+public void leave(DelegateExecution execution) {
     FlowElement currentFlowElement = execution.getCurrentFlowElement();
     Collection<BoundaryEvent> boundaryEvents = findBoundaryEventsForFlowNode(execution.getProcessDefinitionId(), currentFlowElement);
     if (CollectionUtil.isNotEmpty(boundaryEvents)) {
@@ -84,13 +86,9 @@ public class AbstractBpmnActivityBehavior extends FlowNodeActivityBehavior {
     Process process = getProcessDefinition(processDefinitionId);
 
     // This could be cached or could be done at parsing time
-    List<BoundaryEvent> results = new ArrayList<BoundaryEvent>(1);
+    List<BoundaryEvent> results = new ArrayList<>(1);
     Collection<BoundaryEvent> boundaryEvents = process.findFlowElementsOfType(BoundaryEvent.class, true);
-    for (BoundaryEvent boundaryEvent : boundaryEvents) {
-      if (boundaryEvent.getAttachedToRefId() != null && boundaryEvent.getAttachedToRefId().equals(flowElement.getId())) {
-        results.add(boundaryEvent);
-      }
-    }
+    results.addAll(boundaryEvents.stream().filter(boundaryEvent -> boundaryEvent.getAttachedToRefId() != null && boundaryEvent.getAttachedToRefId().equals(flowElement.getId())).collect(Collectors.toList()));
     return results;
   }
 

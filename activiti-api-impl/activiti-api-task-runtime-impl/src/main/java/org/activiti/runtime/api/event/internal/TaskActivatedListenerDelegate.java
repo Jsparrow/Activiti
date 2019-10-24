@@ -41,11 +41,7 @@ public class TaskActivatedListenerDelegate implements ActivitiEventListener {
     public void onEvent(ActivitiEvent event) {
         if (event instanceof ActivitiEntityEvent) {
             taskActivatedConverter.from((ActivitiEntityEvent) event)
-                    .ifPresent(convertedEvent -> {
-                        for (TaskRuntimeEventListener<TaskActivatedEvent> listener : listeners) {
-                            listener.onEvent(convertedEvent);
-                        }
-                    });
+                    .ifPresent(convertedEvent -> listeners.forEach(listener -> listener.onEvent(convertedEvent)));
         }
     }
 

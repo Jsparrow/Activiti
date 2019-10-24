@@ -56,136 +56,136 @@ import org.activiti.engine.task.Task;
 
  */
 public class DefaultListenerFactory extends AbstractBehaviorFactory implements ListenerFactory {
-  private final ClassDelegateFactory classDelegateFactory;
+  public static final Map<String, Class<?>> ENTITY_MAPPING = new HashMap<>();
+	static {
+	    ENTITY_MAPPING.put("attachment", Attachment.class);
+	    ENTITY_MAPPING.put("comment", Comment.class);
+	    ENTITY_MAPPING.put("execution", Execution.class);
+	    ENTITY_MAPPING.put("identity-link", IdentityLink.class);
+	    ENTITY_MAPPING.put("job", Job.class);
+	    ENTITY_MAPPING.put("process-definition", ProcessDefinition.class);
+	    ENTITY_MAPPING.put("process-instance", ProcessInstance.class);
+	    ENTITY_MAPPING.put("task", Task.class);
+	  }
 
-  public DefaultListenerFactory(ClassDelegateFactory classDelegateFactory) {
-    this.classDelegateFactory = classDelegateFactory;
-  }
+	private final ClassDelegateFactory classDelegateFactory;
 
-  public DefaultListenerFactory() {
-    this(new DefaultClassDelegateFactory());
-  }
+	public DefaultListenerFactory(ClassDelegateFactory classDelegateFactory) {
+	    this.classDelegateFactory = classDelegateFactory;
+	  }
 
-  public static final Map<String, Class<?>> ENTITY_MAPPING = new HashMap<String, Class<?>>();
-  static {
-    ENTITY_MAPPING.put("attachment", Attachment.class);
-    ENTITY_MAPPING.put("comment", Comment.class);
-    ENTITY_MAPPING.put("execution", Execution.class);
-    ENTITY_MAPPING.put("identity-link", IdentityLink.class);
-    ENTITY_MAPPING.put("job", Job.class);
-    ENTITY_MAPPING.put("process-definition", ProcessDefinition.class);
-    ENTITY_MAPPING.put("process-instance", ProcessInstance.class);
-    ENTITY_MAPPING.put("task", Task.class);
-  }
+	public DefaultListenerFactory() {
+	    this(new DefaultClassDelegateFactory());
+	  }
 
-  @Override
-  public TaskListener createClassDelegateTaskListener(ActivitiListener activitiListener) {
-    return classDelegateFactory.create(activitiListener.getImplementation(),
-        createFieldDeclarations(activitiListener.getFieldExtensions()));
-  }
+	@Override
+	  public TaskListener createClassDelegateTaskListener(ActivitiListener activitiListener) {
+	    return classDelegateFactory.create(activitiListener.getImplementation(),
+	        createFieldDeclarations(activitiListener.getFieldExtensions()));
+	  }
 
-  @Override
-  public TaskListener createExpressionTaskListener(ActivitiListener activitiListener) {
-    return new ExpressionTaskListener(expressionManager.createExpression(activitiListener.getImplementation()));
-  }
+	@Override
+	  public TaskListener createExpressionTaskListener(ActivitiListener activitiListener) {
+	    return new ExpressionTaskListener(expressionManager.createExpression(activitiListener.getImplementation()));
+	  }
 
-  @Override
-  public TaskListener createDelegateExpressionTaskListener(ActivitiListener activitiListener) {
-    return new DelegateExpressionTaskListener(expressionManager.createExpression(activitiListener.getImplementation()), createFieldDeclarations(activitiListener.getFieldExtensions()));
-  }
+	@Override
+	  public TaskListener createDelegateExpressionTaskListener(ActivitiListener activitiListener) {
+	    return new DelegateExpressionTaskListener(expressionManager.createExpression(activitiListener.getImplementation()), createFieldDeclarations(activitiListener.getFieldExtensions()));
+	  }
 
-  @Override
-  public TransactionDependentTaskListener createTransactionDependentDelegateExpressionTaskListener(ActivitiListener activitiListener) {
-    return new DelegateExpressionTransactionDependentTaskListener(expressionManager.createExpression(activitiListener.getImplementation()));
-  }
+	@Override
+	  public TransactionDependentTaskListener createTransactionDependentDelegateExpressionTaskListener(ActivitiListener activitiListener) {
+	    return new DelegateExpressionTransactionDependentTaskListener(expressionManager.createExpression(activitiListener.getImplementation()));
+	  }
 
-  @Override
-  public ExecutionListener createClassDelegateExecutionListener(ActivitiListener activitiListener) {
-    return classDelegateFactory.create(activitiListener.getImplementation(), createFieldDeclarations(activitiListener.getFieldExtensions()));
-  }
+	@Override
+	  public ExecutionListener createClassDelegateExecutionListener(ActivitiListener activitiListener) {
+	    return classDelegateFactory.create(activitiListener.getImplementation(), createFieldDeclarations(activitiListener.getFieldExtensions()));
+	  }
 
-  @Override
-  public ExecutionListener createExpressionExecutionListener(ActivitiListener activitiListener) {
-    return new ExpressionExecutionListener(expressionManager.createExpression(activitiListener.getImplementation()));
-  }
+	@Override
+	  public ExecutionListener createExpressionExecutionListener(ActivitiListener activitiListener) {
+	    return new ExpressionExecutionListener(expressionManager.createExpression(activitiListener.getImplementation()));
+	  }
 
-  @Override
-  public ExecutionListener createDelegateExpressionExecutionListener(ActivitiListener activitiListener) {
-    return new DelegateExpressionExecutionListener(expressionManager.createExpression(activitiListener.getImplementation()), createFieldDeclarations(activitiListener.getFieldExtensions()));
-  }
+	@Override
+	  public ExecutionListener createDelegateExpressionExecutionListener(ActivitiListener activitiListener) {
+	    return new DelegateExpressionExecutionListener(expressionManager.createExpression(activitiListener.getImplementation()), createFieldDeclarations(activitiListener.getFieldExtensions()));
+	  }
 
-  @Override
-  public DelegateExpressionTransactionDependentExecutionListener createTransactionDependentDelegateExpressionExecutionListener(ActivitiListener activitiListener) {
-    return new DelegateExpressionTransactionDependentExecutionListener(expressionManager.createExpression(activitiListener.getImplementation()));
-  }
+	@Override
+	  public DelegateExpressionTransactionDependentExecutionListener createTransactionDependentDelegateExpressionExecutionListener(ActivitiListener activitiListener) {
+	    return new DelegateExpressionTransactionDependentExecutionListener(expressionManager.createExpression(activitiListener.getImplementation()));
+	  }
 
-  @Override
-  public ActivitiEventListener createClassDelegateEventListener(EventListener eventListener) {
-    return new DelegateActivitiEventListener(eventListener.getImplementation(), getEntityType(eventListener.getEntityType()));
-  }
+	@Override
+	  public ActivitiEventListener createClassDelegateEventListener(EventListener eventListener) {
+	    return new DelegateActivitiEventListener(eventListener.getImplementation(), getEntityType(eventListener.getEntityType()));
+	  }
 
-  @Override
-  public ActivitiEventListener createDelegateExpressionEventListener(EventListener eventListener) {
-    return new DelegateExpressionActivitiEventListener(expressionManager.createExpression(eventListener.getImplementation()), getEntityType(eventListener.getEntityType()));
-  }
+	@Override
+	  public ActivitiEventListener createDelegateExpressionEventListener(EventListener eventListener) {
+	    return new DelegateExpressionActivitiEventListener(expressionManager.createExpression(eventListener.getImplementation()), getEntityType(eventListener.getEntityType()));
+	  }
 
-  @Override
-  public ActivitiEventListener createEventThrowingEventListener(EventListener eventListener) {
-    BaseDelegateEventListener result = null;
-    if (ImplementationType.IMPLEMENTATION_TYPE_THROW_SIGNAL_EVENT.equals(eventListener.getImplementationType())) {
-      result = new SignalThrowingEventListener();
-      ((SignalThrowingEventListener) result).setSignalName(eventListener.getImplementation());
-      ((SignalThrowingEventListener) result).setProcessInstanceScope(true);
-    } else if (ImplementationType.IMPLEMENTATION_TYPE_THROW_GLOBAL_SIGNAL_EVENT.equals(eventListener.getImplementationType())) {
-      result = new SignalThrowingEventListener();
-      ((SignalThrowingEventListener) result).setSignalName(eventListener.getImplementation());
-      ((SignalThrowingEventListener) result).setProcessInstanceScope(false);
-    } else if (ImplementationType.IMPLEMENTATION_TYPE_THROW_MESSAGE_EVENT.equals(eventListener.getImplementationType())) {
-      result = new MessageThrowingEventListener();
-      ((MessageThrowingEventListener) result).setMessageName(eventListener.getImplementation());
-    } else if (ImplementationType.IMPLEMENTATION_TYPE_THROW_ERROR_EVENT.equals(eventListener.getImplementationType())) {
-      result = new ErrorThrowingEventListener();
-      ((ErrorThrowingEventListener) result).setErrorCode(eventListener.getImplementation());
-    }
+	@Override
+	  public ActivitiEventListener createEventThrowingEventListener(EventListener eventListener) {
+	    BaseDelegateEventListener result = null;
+	    if (ImplementationType.IMPLEMENTATION_TYPE_THROW_SIGNAL_EVENT.equals(eventListener.getImplementationType())) {
+	      result = new SignalThrowingEventListener();
+	      ((SignalThrowingEventListener) result).setSignalName(eventListener.getImplementation());
+	      ((SignalThrowingEventListener) result).setProcessInstanceScope(true);
+	    } else if (ImplementationType.IMPLEMENTATION_TYPE_THROW_GLOBAL_SIGNAL_EVENT.equals(eventListener.getImplementationType())) {
+	      result = new SignalThrowingEventListener();
+	      ((SignalThrowingEventListener) result).setSignalName(eventListener.getImplementation());
+	      ((SignalThrowingEventListener) result).setProcessInstanceScope(false);
+	    } else if (ImplementationType.IMPLEMENTATION_TYPE_THROW_MESSAGE_EVENT.equals(eventListener.getImplementationType())) {
+	      result = new MessageThrowingEventListener();
+	      ((MessageThrowingEventListener) result).setMessageName(eventListener.getImplementation());
+	    } else if (ImplementationType.IMPLEMENTATION_TYPE_THROW_ERROR_EVENT.equals(eventListener.getImplementationType())) {
+	      result = new ErrorThrowingEventListener();
+	      ((ErrorThrowingEventListener) result).setErrorCode(eventListener.getImplementation());
+	    }
+	
+	    if (result == null) {
+	      throw new ActivitiIllegalArgumentException("Cannot create an event-throwing event-listener, unknown implementation type: " + eventListener.getImplementationType());
+	    }
+	
+	    result.setEntityClass(getEntityType(eventListener.getEntityType()));
+	    return result;
+	  }
 
-    if (result == null) {
-      throw new ActivitiIllegalArgumentException("Cannot create an event-throwing event-listener, unknown implementation type: " + eventListener.getImplementationType());
-    }
+	@Override
+	  public CustomPropertiesResolver createClassDelegateCustomPropertiesResolver(ActivitiListener activitiListener) {
+	    return classDelegateFactory.create(activitiListener.getCustomPropertiesResolverImplementation(), null);
+	  }
 
-    result.setEntityClass(getEntityType(eventListener.getEntityType()));
-    return result;
-  }
+	@Override
+	  public CustomPropertiesResolver createExpressionCustomPropertiesResolver(ActivitiListener activitiListener) {
+	    return new ExpressionCustomPropertiesResolver(expressionManager.createExpression(activitiListener.getCustomPropertiesResolverImplementation()));
+	  }
 
-  @Override
-  public CustomPropertiesResolver createClassDelegateCustomPropertiesResolver(ActivitiListener activitiListener) {
-    return classDelegateFactory.create(activitiListener.getCustomPropertiesResolverImplementation(), null);
-  }
+	@Override
+	  public CustomPropertiesResolver createDelegateExpressionCustomPropertiesResolver(ActivitiListener activitiListener) {
+	    return new DelegateExpressionCustomPropertiesResolver(expressionManager.createExpression(activitiListener.getCustomPropertiesResolverImplementation()));
+	  }
 
-  @Override
-  public CustomPropertiesResolver createExpressionCustomPropertiesResolver(ActivitiListener activitiListener) {
-    return new ExpressionCustomPropertiesResolver(expressionManager.createExpression(activitiListener.getCustomPropertiesResolverImplementation()));
-  }
-
-  @Override
-  public CustomPropertiesResolver createDelegateExpressionCustomPropertiesResolver(ActivitiListener activitiListener) {
-    return new DelegateExpressionCustomPropertiesResolver(expressionManager.createExpression(activitiListener.getCustomPropertiesResolverImplementation()));
-  }
-
-  /**
-   * @param entityType
-   *          the name of the entity
-   * @return
-   * @throws ActivitiIllegalArgumentException
-   *           when the given entity name
-   */
-  protected Class<?> getEntityType(String entityType) {
-    if (entityType != null) {
-      Class<?> entityClass = ENTITY_MAPPING.get(entityType.trim());
-      if (entityClass == null) {
-        throw new ActivitiIllegalArgumentException("Unsupported entity-type for an ActivitiEventListener: " + entityType);
-      }
-      return entityClass;
-    }
-    return null;
-  }
+	/**
+	   * @param entityType
+	   *          the name of the entity
+	   * @return
+	   * @throws ActivitiIllegalArgumentException
+	   *           when the given entity name
+	   */
+	  protected Class<?> getEntityType(String entityType) {
+	    if (entityType == null) {
+			return null;
+		}
+		Class<?> entityClass = ENTITY_MAPPING.get(entityType.trim());
+		if (entityClass == null) {
+	        throw new ActivitiIllegalArgumentException("Unsupported entity-type for an ActivitiEventListener: " + entityType);
+	      }
+		return entityClass;
+	  }
 }

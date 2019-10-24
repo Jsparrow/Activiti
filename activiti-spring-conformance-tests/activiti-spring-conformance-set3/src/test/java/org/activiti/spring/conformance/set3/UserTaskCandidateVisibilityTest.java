@@ -305,9 +305,7 @@ public class UserTaskCandidateVisibilityTest {
     public void cleanup(){
         securityUtil.logInAs("admin");
         Page<ProcessInstance> processInstancePage = processAdminRuntime.processInstances(Pageable.of(0, 50));
-        for(ProcessInstance pi : processInstancePage.getContent()){
-            processAdminRuntime.delete(ProcessPayloadBuilder.delete(pi.getId()));
-        }
+        processInstancePage.getContent().forEach(pi -> processAdminRuntime.delete(ProcessPayloadBuilder.delete(pi.getId())));
         clearEvents();
     }
     

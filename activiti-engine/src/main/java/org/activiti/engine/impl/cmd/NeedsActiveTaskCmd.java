@@ -37,7 +37,8 @@ public abstract class NeedsActiveTaskCmd<T> implements Command<T>, Serializable 
     this.taskId = taskId;
   }
 
-  public T execute(CommandContext commandContext) {
+  @Override
+public T execute(CommandContext commandContext) {
 
     if (taskId == null) {
       throw new ActivitiIllegalArgumentException("taskId is null");

@@ -27,7 +27,7 @@ public class TestActivitiEntityEventListener implements ActivitiEventListener {
   public TestActivitiEntityEventListener(Class<?> entityClass) {
     this.entityClass = entityClass;
 
-    eventsReceived = new ArrayList<ActivitiEvent>();
+    eventsReceived = new ArrayList<>();
   }
 
   public List<ActivitiEvent> getEventsReceived() {

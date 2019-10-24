@@ -23,9 +23,11 @@ import org.activiti.engine.impl.variable.VariableType;
 @Internal
 public interface VariableInstanceEntity extends VariableInstance {
   
-  void setDeleted(boolean isDeleted);
+  @Override
+void setDeleted(boolean isDeleted);
 
-  boolean isDeleted();
+  @Override
+boolean isDeleted();
   
   void setExecution(ExecutionEntity execution);
 

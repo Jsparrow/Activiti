@@ -25,7 +25,8 @@ public class PoolConverterTest extends AbstractConverterTest {
     validateModel(bpmnModel);
   }
 
-  protected String getResource() {
+  @Override
+protected String getResource() {
     return "test.poolmodel.json";
   }
 

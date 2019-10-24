@@ -25,7 +25,8 @@ public class AlfrescoUserTask extends UserTask {
     this.scriptProcessor = scriptProcessor;
   }
 
-  public AlfrescoUserTask clone() {
+  @Override
+public AlfrescoUserTask clone() {
     AlfrescoUserTask clone = new AlfrescoUserTask();
     clone.setValues(this);
     return clone;

@@ -37,7 +37,7 @@ public class JPAEntityMappings {
   private JPAEntityScanner enitityScanner;
 
   public JPAEntityMappings() {
-    classMetaDatamap = new HashMap<String, EntityMetaData>();
+    classMetaDatamap = new HashMap<>();
     enitityScanner = new JPAEntityScanner();
   }
 
@@ -73,7 +73,7 @@ public class JPAEntityMappings {
 
     EntityMetaData metaData = getEntityMetaData(value.getClass());
     if (!metaData.isJPAEntity()) {
-      throw new ActivitiIllegalArgumentException("Object is not a JPA Entity: class='" + value.getClass() + "', " + value);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("Object is not a JPA Entity: class='").append(value.getClass()).append("', ").append(value).toString());
     }
 
     // Extract the class from the Entity instance
@@ -83,7 +83,7 @@ public class JPAEntityMappings {
   public String getJPAIdString(Object value) {
     EntityMetaData metaData = getEntityMetaData(value.getClass());
     if (!metaData.isJPAEntity()) {
-      throw new ActivitiIllegalArgumentException("Object is not a JPA Entity: class='" + value.getClass() + "', " + value);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("Object is not a JPA Entity: class='").append(value.getClass()).append("', ").append(value).toString());
     }
     Object idValue = getIdValue(value, metaData);
     return getIdString(idValue);
@@ -124,7 +124,7 @@ public class JPAEntityMappings {
 
     Object entity = em.find(entityClass, primaryKey);
     if (entity == null) {
-      throw new ActivitiException("Entity does not exist: " + entityClass.getName() + " - " + primaryKey);
+      throw new ActivitiException(new StringBuilder().append("Entity does not exist: ").append(entityClass.getName()).append(" - ").append(primaryKey).toString());
     }
     return entity;
   }
@@ -149,7 +149,7 @@ public class JPAEntityMappings {
     } else if (type == Double.class || type == double.class) {
       return Double.parseDouble(string);
     } else if (type == Character.class || type == char.class) {
-      return new Character(string.charAt(0));
+      return Character.valueOf(string.charAt(0));
     } else if (type == java.util.Date.class) {
       return new java.util.Date(Long.parseLong(string));
     } else if (type == java.sql.Date.class) {
@@ -173,9 +173,9 @@ public class JPAEntityMappings {
     // other types
     // can just use toString()
     if (value instanceof java.util.Date) {
-      return "" + ((java.util.Date) value).getTime();
+      return Long.toString(((java.util.Date) value).getTime());
     } else if (value instanceof java.sql.Date) {
-      return "" + ((java.sql.Date) value).getTime();
+      return Long.toString(((java.sql.Date) value).getTime());
     } else if (value instanceof Long || value instanceof String || value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Float || value instanceof Double
         || value instanceof Character || value instanceof BigDecimal || value instanceof BigInteger || value instanceof UUID) {
       return value.toString();

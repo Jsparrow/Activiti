@@ -34,24 +34,25 @@ public class ActivitiMapExceptionParser extends BaseChildElementParser {
 
   @Override
   public void parseChildElement(XMLStreamReader xtr, BaseElement parentElement, BpmnModel model) throws Exception {
-    if (!(parentElement instanceof Activity))
-      return;
+    if (!(parentElement instanceof Activity)) {
+		return;
+	}
 
     String errorCode = xtr.getAttributeValue(null, MAP_EXCEPTION_ERRORCODE);
     String andChildren = xtr.getAttributeValue(null, MAP_EXCEPTION_ANDCHILDREN);
     String exceptionClass = xtr.getElementText();
     boolean hasChildrenBool = false;
 
-    if (StringUtils.isEmpty(andChildren) || andChildren.toLowerCase().equals("false")) {
+    if (StringUtils.isEmpty(andChildren) || "false".equals(andChildren.toLowerCase())) {
       hasChildrenBool = false;
-    } else if (andChildren.toLowerCase().equals("true")) {
+    } else if ("true".equals(andChildren.toLowerCase())) {
       hasChildrenBool = true;
     } else {
-      throw new XMLException("'" + andChildren + "' is not valid boolean in mapException with errorCode=" + errorCode + " and class=" + exceptionClass);
+      throw new XMLException(new StringBuilder().append("'").append(andChildren).append("' is not valid boolean in mapException with errorCode=").append(errorCode).append(" and class=").append(exceptionClass).toString());
     }
     
     if (StringUtils.isEmpty(errorCode) || StringUtils.isEmpty(errorCode.trim())) {
-      throw new XMLException("No errorCode defined mapException with errorCode=" + errorCode + " and class=" + exceptionClass);
+      throw new XMLException(new StringBuilder().append("No errorCode defined mapException with errorCode=").append(errorCode).append(" and class=").append(exceptionClass).toString());
     }
 
     ((Activity) parentElement).getMapExceptions().add(new MapExceptionEntry(errorCode, exceptionClass, hasChildrenBool));

@@ -42,7 +42,8 @@ public class JobExecutorExceptionsTest extends PluggableActivitiTestCase {
     // The execution is waiting in the first usertask. This contains a
     // boundary timer event which we will execute manual for testing purposes.
     JobTestHelper.waitForJobExecutorOnCondition(processEngineConfiguration, 5000L, 100L, new Callable<Boolean>() {
-      public Boolean call() throws Exception {
+      @Override
+	public Boolean call() throws Exception {
         return managementService.createTimerJobQuery().withException().count() == 1;
       }
     });

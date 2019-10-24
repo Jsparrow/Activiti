@@ -16,6 +16,8 @@ import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.interceptor.Command;
 import org.activiti.engine.impl.interceptor.CommandContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -26,7 +28,9 @@ import org.activiti.engine.impl.interceptor.CommandContext;
 @Deprecated
 public class ExecuteSchemaOperationCommand implements Command<Void> {
   
-  protected String schemaOperation;
+  private static final Logger logger = LoggerFactory.getLogger(ExecuteSchemaOperationCommand.class);
+
+protected String schemaOperation;
   
   protected TenantInfoHolder tenantInfoHolder;
   
@@ -34,11 +38,13 @@ public class ExecuteSchemaOperationCommand implements Command<Void> {
     this.schemaOperation = schemaOperation;
   }
   
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     if (ProcessEngineConfigurationImpl.DB_SCHEMA_UPDATE_DROP_CREATE.equals(schemaOperation)) {
       try {
         commandContext.getDbSqlSession().dbSchemaDrop();
       } catch (RuntimeException e) {
+		logger.error(e.getMessage(), e);
         // ignore
       }
     }

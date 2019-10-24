@@ -25,6 +25,7 @@ import org.activiti.bpmn.model.TimerEventDefinition;
 import org.activiti.validation.ValidationError;
 import org.activiti.validation.validator.Problems;
 import org.activiti.validation.validator.ProcessLevelValidator;
+import java.util.stream.Collectors;
 
 /**
 
@@ -39,8 +40,7 @@ public class StartEventValidator extends ProcessLevelValidator {
   }
 
   protected void validateEventDefinitionTypes(List<StartEvent> startEvents, Process process, List<ValidationError> errors) {
-    for (StartEvent startEvent : startEvents) {
-      if (startEvent.getEventDefinitions() != null && !startEvent.getEventDefinitions().isEmpty()) {
+    startEvents.stream().filter(startEvent -> startEvent.getEventDefinitions() != null && !startEvent.getEventDefinitions().isEmpty()).forEach(startEvent -> {
         EventDefinition eventDefinition = startEvent.getEventDefinitions().get(0);
         if (!(eventDefinition instanceof MessageEventDefinition) && 
             !(eventDefinition instanceof TimerEventDefinition) && 
@@ -49,30 +49,18 @@ public class StartEventValidator extends ProcessLevelValidator {
                 process, startEvent,
                 "Unsupported event definition on start event");
           }
-        }
-      
-    }
+        });
   }
   
   protected void validateMultipleStartEvents(List<StartEvent> startEvents, Process process, List<ValidationError> errors) {
     
     // Multiple none events are not supported
-    List<StartEvent> noneStartEvents = new ArrayList<StartEvent>();
-    for (StartEvent startEvent : startEvents) {
-      if (startEvent.getEventDefinitions() == null || startEvent.getEventDefinitions().isEmpty()) {
-        noneStartEvents.add(startEvent);
-      }
-    }
+    List<StartEvent> noneStartEvents = new ArrayList<>();
+    noneStartEvents.addAll(startEvents.stream().filter(startEvent -> startEvent.getEventDefinitions() == null || startEvent.getEventDefinitions().isEmpty()).collect(Collectors.toList()));
     
     if (noneStartEvents.size() > 1) {
-      for (StartEvent startEvent : noneStartEvents) {
-        addError(
-            errors,
-            Problems.START_EVENT_MULTIPLE_FOUND,
-            process,
-            startEvent,
-            "Multiple none start events are not supported");
-      }
+      noneStartEvents.forEach(startEvent -> addError(errors, Problems.START_EVENT_MULTIPLE_FOUND, process, startEvent,
+			"Multiple none start events are not supported"));
     }
     
   }

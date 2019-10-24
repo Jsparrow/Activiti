@@ -102,23 +102,23 @@ public class JPAEnhancedVariableTest extends AbstractActivitiTestCase {
     }
 
     // start process with enhanced jpa variables
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = new HashMap<>();
     params.put("fieldEntity", fieldEntity);
     params.put("propertyEntity", propertyEntity);
     ProcessInstance instance = processEngine.getRuntimeService().startProcessInstanceByKey("JPAVariableProcess", params);
 
     Task task = getTask(instance);
-    for (Map.Entry<String, Object> entry : task.getProcessVariables().entrySet()) {
+    task.getProcessVariables().entrySet().forEach(entry -> {
       String name = entry.getKey();
       Object value = entry.getValue();
-      if (name.equals("fieldEntity")) {
+      if ("fieldEntity".equals(name)) {
         assertTrue(value instanceof FieldAccessJPAEntity);
-      } else if (name.equals("propertyEntity")) {
+      } else if ("propertyEntity".equals(name)) {
         assertTrue(value instanceof PropertyAccessJPAEntity);
       } else {
         fail();
       }
-    }
+    });
   }
 
   @Deployment(resources = { "org/activiti/standalone/jpa/JPAVariableTest.testStoreJPAEntityAsVariable.bpmn20.xml" })
@@ -130,7 +130,7 @@ public class JPAEnhancedVariableTest extends AbstractActivitiTestCase {
     }
 
     // start process with lists of enhanced jpa variables
-    Map<String, Object> params = new HashMap<String, Object>();
+    Map<String, Object> params = new HashMap<>();
     params.put("list1", Arrays.asList(fieldEntity, fieldEntity));
     params.put("list2", Arrays.asList(propertyEntity, propertyEntity));
     ProcessInstance instance = processEngine.getRuntimeService().startProcessInstanceByKey("JPAVariableProcess", params);
@@ -173,11 +173,12 @@ public class JPAEnhancedVariableTest extends AbstractActivitiTestCase {
 
     // start process with mixed jpa entities in list
     try {
-      params = new HashMap<String, Object>();
+      params = new HashMap<>();
       params.put("list", Arrays.asList(fieldEntity, propertyEntity));
       instance = processEngine.getRuntimeService().startProcessInstanceByKey("JPAVariableProcess", params);
       fail();
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
       /* do nothing */
     }
   }

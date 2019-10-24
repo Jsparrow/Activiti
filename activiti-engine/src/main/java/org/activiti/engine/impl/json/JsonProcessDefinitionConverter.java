@@ -23,7 +23,8 @@ import org.activiti.engine.repository.ProcessDefinition;
  */
 public class JsonProcessDefinitionConverter extends JsonObjectConverter<ProcessDefinition> {
 
-  public JSONObject toJsonObject(ProcessDefinition processDefinition) {
+  @Override
+public JSONObject toJsonObject(ProcessDefinition processDefinition) {
     ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity) processDefinition;
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("id", processDefinitionEntity.getId());
@@ -36,7 +37,8 @@ public class JsonProcessDefinitionConverter extends JsonObjectConverter<ProcessD
     return jsonObject;
   }
 
-  public ProcessDefinition toObject(Reader reader) {
+  @Override
+public ProcessDefinition toObject(Reader reader) {
     return null;
   }
 }

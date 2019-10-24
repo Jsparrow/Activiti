@@ -28,7 +28,8 @@ import org.activiti.engine.task.Task;
 @Internal
 public interface TaskEntity extends VariableScope, Task, DelegateTask, Entity, HasRevision {
 
-  ExecutionEntity getExecution();
+  @Override
+ExecutionEntity getExecution();
   
   void setExecutionId(String executionId);
   
@@ -60,11 +61,14 @@ public interface TaskEntity extends VariableScope, Task, DelegateTask, Entity, H
 
   void forceUpdate();
   
-  boolean isDeleted();
+  @Override
+boolean isDeleted();
   
-  void setDeleted(boolean isDeleted);
+  @Override
+void setDeleted(boolean isDeleted);
 
-  Date getClaimTime();
+  @Override
+Date getClaimTime();
 
   void setClaimTime(Date claimTime);
   

@@ -91,7 +91,7 @@ public class BpmnParse implements BpmnXMLConstants {
   protected DeploymentEntity deployment;
 
   /** The end result of the parsing: a list of process definition. */
-  protected List<ProcessDefinitionEntity> processDefinitions = new ArrayList<ProcessDefinitionEntity>();
+  protected List<ProcessDefinitionEntity> processDefinitions = new ArrayList<>();
 
   /** A map for storing sequence flow based on their id during parsing. */
   protected Map<String, SequenceFlow> sequenceFlows;
@@ -104,14 +104,14 @@ public class BpmnParse implements BpmnXMLConstants {
 
   protected FlowElement currentFlowElement;
 
-  protected LinkedList<SubProcess> currentSubprocessStack = new LinkedList<SubProcess>();
+  protected LinkedList<SubProcess> currentSubprocessStack = new LinkedList<>();
 
   /**
    * Mapping containing values stored during the first phase of parsing since other elements can reference these messages.
    * 
    * All the map's elements are defined outside the process definition(s), which means that this map doesn't need to be re-initialized for each new process definition.
    */
-  protected Map<String, String> prefixs = new HashMap<String, String>();
+  protected Map<String, String> prefixs = new HashMap<>();
 
   // Factories
   protected ActivityBehaviorFactory activityBehaviorFactory;
@@ -162,7 +162,7 @@ public class BpmnParse implements BpmnXMLConstants {
             StringBuilder warningBuilder = new StringBuilder();
             StringBuilder errorBuilder = new StringBuilder();
 
-            for (ValidationError error : validationErrors) {
+            validationErrors.forEach(error -> {
               if (error.isWarning()) {
                 warningBuilder.append(error.toString());
                 warningBuilder.append("\n");
@@ -170,7 +170,7 @@ public class BpmnParse implements BpmnXMLConstants {
                 errorBuilder.append(error.toString());
                 errorBuilder.append("\n");
               }
-            }
+            });
 
             // Throw exception if there is any error
             if (errorBuilder.length() > 0) {
@@ -261,7 +261,7 @@ public class BpmnParse implements BpmnXMLConstants {
 
   protected void setStreamSource(StreamSource streamSource) {
     if (this.streamSource != null) {
-      throw new ActivitiIllegalArgumentException("invalid: multiple sources " + this.streamSource + " and " + streamSource);
+      throw new ActivitiIllegalArgumentException(new StringBuilder().append("invalid: multiple sources ").append(this.streamSource).append(" and ").append(streamSource).toString());
     }
     this.streamSource = streamSource;
   }
@@ -275,13 +275,13 @@ public class BpmnParse implements BpmnXMLConstants {
    * Parses the 'definitions' root element
    */
   protected void applyParseHandlers() {
-    sequenceFlows = new HashMap<String, SequenceFlow>();
-    for (Process process : bpmnModel.getProcesses()) {
+    sequenceFlows = new HashMap<>();
+    bpmnModel.getProcesses().forEach(process -> {
       currentProcess = process;
       if (process.isExecutable()) {
         bpmnParserHandlers.parseElement(this, process);
       }
-    }
+    });
   }
 
   public void processFlowElements(Collection<FlowElement> flowElements) {
@@ -291,14 +291,14 @@ public class BpmnParse implements BpmnXMLConstants {
     // a certain type.
 
     // Using lists as we want to keep the order in which they are defined
-    List<SequenceFlow> sequenceFlowToParse = new ArrayList<SequenceFlow>();
-    List<BoundaryEvent> boundaryEventsToParse = new ArrayList<BoundaryEvent>();
+    List<SequenceFlow> sequenceFlowToParse = new ArrayList<>();
+    List<BoundaryEvent> boundaryEventsToParse = new ArrayList<>();
 
     // Flow elements that depend on other elements are parse after the first run-through
-    List<FlowElement> defferedFlowElementsToParse = new ArrayList<FlowElement>();
+    List<FlowElement> defferedFlowElementsToParse = new ArrayList<>();
 
     // Activities are parsed first
-    for (FlowElement flowElement : flowElements) {
+	flowElements.forEach(flowElement -> {
 
       // Sequence flow are also flow elements, but are only parsed once every activity is found
       if (flowElement instanceof SequenceFlow) {
@@ -311,22 +311,16 @@ public class BpmnParse implements BpmnXMLConstants {
         bpmnParserHandlers.parseElement(this, flowElement);
       }
 
-    }
+    });
 
     // Deferred elements
-    for (FlowElement flowElement : defferedFlowElementsToParse) {
-      bpmnParserHandlers.parseElement(this, flowElement);
-    }
+	defferedFlowElementsToParse.forEach(flowElement -> bpmnParserHandlers.parseElement(this, flowElement));
 
     // Boundary events are parsed after all the regular activities are parsed
-    for (BoundaryEvent boundaryEvent : boundaryEventsToParse) {
-      bpmnParserHandlers.parseElement(this, boundaryEvent);
-    }
+	boundaryEventsToParse.forEach(boundaryEvent -> bpmnParserHandlers.parseElement(this, boundaryEvent));
 
     // sequence flows
-    for (SequenceFlow sequenceFlow : sequenceFlowToParse) {
-      bpmnParserHandlers.parseElement(this, sequenceFlow);
-    }
+	sequenceFlowToParse.forEach(sequenceFlow -> bpmnParserHandlers.parseElement(this, sequenceFlow));
 
   }
 
@@ -339,35 +333,33 @@ public class BpmnParse implements BpmnXMLConstants {
       return;
     }
 
-    if (!bpmnModel.getLocationMap().isEmpty()) {
-
-      // Verify if all referenced elements exist
-      for (String bpmnReference : bpmnModel.getLocationMap().keySet()) {
+    if (bpmnModel.getLocationMap().isEmpty()) {
+		return;
+	}
+	// Verify if all referenced elements exist
+	bpmnModel.getLocationMap().keySet().forEach(bpmnReference -> {
         if (bpmnModel.getFlowElement(bpmnReference) == null) {
-          // ACT-1625: don't warn when artifacts are referenced from DI
-          if (bpmnModel.getArtifact(bpmnReference) == null) {
-            // Check if it's a Pool or Lane, then DI is ok
-            if (bpmnModel.getPool(bpmnReference) == null && bpmnModel.getLane(bpmnReference) == null) {
-              LOGGER.warn("Invalid reference in diagram interchange definition: could not find " + bpmnReference);
-            }
-          }
+          boolean condition = bpmnModel.getArtifact(bpmnReference) == null && bpmnModel.getPool(bpmnReference) == null && bpmnModel.getLane(bpmnReference) == null;
+			// Check if it's a Pool or Lane, then DI is ok
+		// ACT-1625: don't warn when artifacts are referenced from DI
+          if (condition) {
+		  LOGGER.warn("Invalid reference in diagram interchange definition: could not find " + bpmnReference);
+		}
         } else if (!(bpmnModel.getFlowElement(bpmnReference) instanceof FlowNode)) {
-          LOGGER.warn("Invalid reference in diagram interchange definition: " + bpmnReference + " does not reference a flow node");
+          LOGGER.warn(new StringBuilder().append("Invalid reference in diagram interchange definition: ").append(bpmnReference).append(" does not reference a flow node").toString());
         }
-      }
-      
-      for (String bpmnReference : bpmnModel.getFlowLocationMap().keySet()) {
+      });
+	bpmnModel.getFlowLocationMap().keySet().forEach(bpmnReference -> {
         if (bpmnModel.getFlowElement(bpmnReference) == null) {
           // ACT-1625: don't warn when artifacts are referenced from DI
           if (bpmnModel.getArtifact(bpmnReference) == null) {
             LOGGER.warn("Invalid reference in diagram interchange definition: could not find " + bpmnReference);
           }
         } else if (!(bpmnModel.getFlowElement(bpmnReference) instanceof SequenceFlow)) {
-          LOGGER.warn("Invalid reference in diagram interchange definition: " + bpmnReference + " does not reference a sequence flow");
+          LOGGER.warn(new StringBuilder().append("Invalid reference in diagram interchange definition: ").append(bpmnReference).append(" does not reference a sequence flow").toString());
         }
-      }
-
-      for (Process process : bpmnModel.getProcesses()) {
+      });
+	for (Process process : bpmnModel.getProcesses()) {
         if (!process.isExecutable()) {
           continue;
         }
@@ -377,41 +369,31 @@ public class BpmnParse implements BpmnXMLConstants {
         if (processDefinition != null) {
           processDefinition.setGraphicalNotationDefined(true);
           
-          for (String edgeId : bpmnModel.getFlowLocationMap().keySet()) {
-            if (bpmnModel.getFlowElement(edgeId) != null) {
-              createBPMNEdge(edgeId, bpmnModel.getFlowLocationGraphicInfo(edgeId));
-            }
-          }
+          bpmnModel.getFlowLocationMap().keySet().stream().filter(edgeId -> bpmnModel.getFlowElement(edgeId) != null).forEach(edgeId -> createBPMNEdge(edgeId, bpmnModel.getFlowLocationGraphicInfo(edgeId)));
         }
       }
-    }
   }
 
   public void createBPMNEdge(String key, List<GraphicInfo> graphicList) {
     FlowElement flowElement = bpmnModel.getFlowElement(key);
     if (flowElement instanceof SequenceFlow) {
       SequenceFlow sequenceFlow = (SequenceFlow) flowElement;
-      List<Integer> waypoints = new ArrayList<Integer>();
-      for (GraphicInfo waypointInfo : graphicList) {
+      List<Integer> waypoints = new ArrayList<>();
+      graphicList.forEach(waypointInfo -> {
         waypoints.add((int) waypointInfo.getX());
         waypoints.add((int) waypointInfo.getY());
-      }
+      });
       sequenceFlow.setWaypoints(waypoints);
       
     } else if (bpmnModel.getArtifact(key) != null) {
       // it's an association, so nothing to do
     } else {
-      LOGGER.warn("Invalid reference in 'bpmnElement' attribute, sequenceFlow " + key + " not found");
+      LOGGER.warn(new StringBuilder().append("Invalid reference in 'bpmnElement' attribute, sequenceFlow ").append(key).append(" not found").toString());
     }
   }
 
   public ProcessDefinitionEntity getProcessDefinition(String processDefinitionKey) {
-    for (ProcessDefinitionEntity processDefinition : processDefinitions) {
-      if (processDefinition.getKey().equals(processDefinitionKey)) {
-        return processDefinition;
-      }
-    }
-    return null;
+    return processDefinitions.stream().filter(processDefinition -> processDefinition.getKey().equals(processDefinitionKey)).findFirst().orElse(null);
   }
 
   /*

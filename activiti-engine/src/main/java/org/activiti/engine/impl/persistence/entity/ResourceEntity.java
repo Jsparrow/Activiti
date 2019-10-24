@@ -34,7 +34,8 @@ public interface ResourceEntity extends Entity {
 
   void setDeploymentId(String deploymentId);
 
-  Object getPersistentState();
+  @Override
+Object getPersistentState();
 
   void setGenerated(boolean generated);
 

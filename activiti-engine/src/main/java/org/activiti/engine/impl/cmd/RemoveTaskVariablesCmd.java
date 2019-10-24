@@ -22,7 +22,8 @@ public class RemoveTaskVariablesCmd extends NeedsActiveTaskCmd<Void> {
     this.isLocal = isLocal;
   }
 
-  protected Void execute(CommandContext commandContext, TaskEntity task) {
+  @Override
+protected Void execute(CommandContext commandContext, TaskEntity task) {
     if (isLocal) {
       task.removeVariablesLocal(variableNames);
     } else {

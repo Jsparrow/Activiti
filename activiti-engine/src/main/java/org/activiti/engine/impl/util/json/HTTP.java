@@ -83,7 +83,7 @@ public class HTTP {
    * @return A JSONObject containing the elements and attributes of the XML string.
    * @throws JSONException
    */
-  public static JSONObject toJSONObject(String string) throws JSONException {
+  public static JSONObject toJSONObject(String string) {
     JSONObject o = new JSONObject();
     HTTPTokener x = new HTTPTokener(string);
     String t;
@@ -148,7 +148,7 @@ public class HTTP {
    *           if the object does not contain enough information.
    */
   @SuppressWarnings("unchecked")
-  public static String toString(JSONObject o) throws JSONException {
+  public static String toString(JSONObject o) {
     Iterator keys = o.keys();
     String s;
     StringBuilder sb = new StringBuilder();
@@ -172,7 +172,7 @@ public class HTTP {
     sb.append(CRLF);
     while (keys.hasNext()) {
       s = keys.next().toString();
-      if (!s.equals("HTTP-Version") && !s.equals("Status-Code") && !s.equals("Reason-Phrase") && !s.equals("Method") && !s.equals("Request-URI") && !o.isNull(s)) {
+      if (!"HTTP-Version".equals(s) && !"Status-Code".equals(s) && !"Reason-Phrase".equals(s) && !"Method".equals(s) && !"Request-URI".equals(s) && !o.isNull(s)) {
         sb.append(s);
         sb.append(": ");
         sb.append(o.getString(s));

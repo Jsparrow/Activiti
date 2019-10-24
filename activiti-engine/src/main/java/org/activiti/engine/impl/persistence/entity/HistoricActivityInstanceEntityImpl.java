@@ -41,7 +41,8 @@ public class HistoricActivityInstanceEntityImpl extends HistoricScopeInstanceEnt
     
   }
 
-  public Object getPersistentState() {
+  @Override
+public Object getPersistentState() {
     Map<String, Object> persistentState = (Map<String, Object>) new HashMap<String, Object>();
     persistentState.put("endTime", endTime);
     persistentState.put("durationInMillis", durationInMillis);
@@ -53,71 +54,88 @@ public class HistoricActivityInstanceEntityImpl extends HistoricScopeInstanceEnt
 
   // getters and setters //////////////////////////////////////////////////////
 
-  public String getActivityId() {
+  @Override
+public String getActivityId() {
     return activityId;
   }
 
-  public void setActivityId(String activityId) {
+  @Override
+public void setActivityId(String activityId) {
     this.activityId = activityId;
   }
 
-  public String getActivityName() {
+  @Override
+public String getActivityName() {
     return activityName;
   }
 
-  public void setActivityName(String activityName) {
+  @Override
+public void setActivityName(String activityName) {
     this.activityName = activityName;
   }
 
-  public String getActivityType() {
+  @Override
+public String getActivityType() {
     return activityType;
   }
 
-  public void setActivityType(String activityType) {
+  @Override
+public void setActivityType(String activityType) {
     this.activityType = activityType;
   }
 
-  public String getExecutionId() {
+  @Override
+public String getExecutionId() {
     return executionId;
   }
 
-  public void setExecutionId(String executionId) {
+  @Override
+public void setExecutionId(String executionId) {
     this.executionId = executionId;
   }
 
-  public String getAssignee() {
+  @Override
+public String getAssignee() {
     return assignee;
   }
 
-  public void setAssignee(String assignee) {
+  @Override
+public void setAssignee(String assignee) {
     this.assignee = assignee;
   }
 
-  public String getTaskId() {
+  @Override
+public String getTaskId() {
     return taskId;
   }
 
-  public void setTaskId(String taskId) {
+  @Override
+public void setTaskId(String taskId) {
     this.taskId = taskId;
   }
 
-  public String getCalledProcessInstanceId() {
+  @Override
+public String getCalledProcessInstanceId() {
     return calledProcessInstanceId;
   }
 
-  public void setCalledProcessInstanceId(String calledProcessInstanceId) {
+  @Override
+public void setCalledProcessInstanceId(String calledProcessInstanceId) {
     this.calledProcessInstanceId = calledProcessInstanceId;
   }
 
-  public String getTenantId() {
+  @Override
+public String getTenantId() {
     return tenantId;
   }
 
-  public void setTenantId(String tenantId) {
+  @Override
+public void setTenantId(String tenantId) {
     this.tenantId = tenantId;
   }
 
-  public Date getTime() {
+  @Override
+public Date getTime() {
     return getStartTime();
   }
 
@@ -125,7 +143,8 @@ public class HistoricActivityInstanceEntityImpl extends HistoricScopeInstanceEnt
 
   @Override
   public String toString() {
-    return "HistoricActivityInstanceEntity[id=" + id + ", activityId=" + activityId + ", activityName=" + activityName + "]";
+    return new StringBuilder().append("HistoricActivityInstanceEntity[id=").append(id).append(", activityId=").append(activityId).append(", activityName=").append(activityName).append("]")
+			.toString();
   }
 
 }

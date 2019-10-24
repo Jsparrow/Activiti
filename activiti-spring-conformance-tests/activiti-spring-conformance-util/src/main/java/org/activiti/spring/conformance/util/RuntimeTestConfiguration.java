@@ -107,105 +107,105 @@ public class RuntimeTestConfiguration {
     
     @Bean
     public BPMNElementEventListener<BPMNActivityStartedEvent> bpmnActivityStartedListener() {
-        return bpmnActivityStartedEvent -> collectedEvents.add(bpmnActivityStartedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public BPMNElementEventListener<BPMNActivityCompletedEvent> bpmnActivityCompletedListener() {
-        return bpmnActivityCompletedEvent -> collectedEvents.add(bpmnActivityCompletedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public BPMNElementEventListener<BPMNActivityCancelledEvent> bpmnActivityCancelledListener() {
-        return bpmnActivityCancelledEvent -> collectedEvents.add(bpmnActivityCancelledEvent);
+        return collectedEvents::add;
     }
 
 
     @Bean
     public BPMNElementEventListener<BPMNSequenceFlowTakenEvent> bpmnSequenceFlowTakenListener() {
-        return bpmnSequenceFlowTakenEvent -> collectedEvents.add(bpmnSequenceFlowTakenEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public ProcessRuntimeEventListener<ProcessCreatedEvent> processCreatedListener() {
-        return processCreatedEvent -> collectedEvents.add(processCreatedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public ProcessRuntimeEventListener<ProcessStartedEvent> processStartedListener() {
-        return processStartedEvent -> collectedEvents.add(processStartedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public ProcessRuntimeEventListener<ProcessCompletedEvent> processCompletedListener() {
-        return processCompletedEvent -> collectedEvents.add(processCompletedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public ProcessRuntimeEventListener<ProcessResumedEvent> processResumedListener() {
-        return processResumedEvent -> collectedEvents.add(processResumedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public ProcessRuntimeEventListener<ProcessSuspendedEvent> processSuspendedListener() {
-        return processSuspendedEvent -> collectedEvents.add(processSuspendedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public ProcessRuntimeEventListener<ProcessCancelledEvent> processCancelledListener() {
-        return processCancelledEvent -> collectedEvents.add(processCancelledEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public VariableEventListener<VariableCreatedEvent> variableCreatedEventListener() {
-        return variableCreatedEvent -> collectedEvents.add(variableCreatedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     @Primary
     public VariableEventListener<VariableDeletedEvent> variableDeletedEventListener() {
-        return variableDeletedEvent -> collectedEvents.add(variableDeletedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public VariableEventListener<VariableUpdatedEvent> variableUpdatedEventListener() {
-        return variableUpdatedEvent -> collectedEvents.add(variableUpdatedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public TaskEventListener<TaskCreatedEvent> taskCreatedEventListener() {
-        return taskCreatedEvent -> collectedEvents.add(taskCreatedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public TaskEventListener<TaskUpdatedEvent> taskUpdatedEventListener() {
-        return taskUpdatedEvent -> collectedEvents.add(taskUpdatedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public TaskEventListener<TaskCompletedEvent> taskCompletedEventListener() {
-        return taskCompletedEvent -> collectedEvents.add(taskCompletedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public TaskEventListener<TaskSuspendedEvent> taskSuspendedEventListener() {
-        return taskSuspendedEvent -> collectedEvents.add(taskSuspendedEvent);
+        return collectedEvents::add;
     }
 
     @Bean
     public TaskEventListener<TaskAssignedEvent> taskAssignedEventListener() {
-        return taskAssignedEvent -> collectedEvents.add(taskAssignedEvent);
+        return collectedEvents::add;
     }
     
     @Bean
     public TaskEventListener<TaskCancelledEvent> taskCancelledEventListener() {
-        return taskCancelledEvent -> collectedEvents.add(taskCancelledEvent);
+        return collectedEvents::add;
     }
     
     
     @Bean
     public BPMNElementEventListener<BPMNSignalReceivedEvent> bpmnSignalReceivedListener() {
-        return bpmnSignalReceivedEvent -> collectedEvents.add(bpmnSignalReceivedEvent);
+        return collectedEvents::add;
     }
 
 }

@@ -56,7 +56,8 @@ public class CreateAttachmentCmd implements Command<Attachment> {
     this.url = url;
   }
 
-  public Attachment execute(CommandContext commandContext) {
+  @Override
+public Attachment execute(CommandContext commandContext) {
 
     if (taskId != null) {
       verifyTaskParameters(commandContext);
@@ -127,7 +128,7 @@ public class CreateAttachmentCmd implements Command<Attachment> {
     ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(processInstanceId);
 
     if (execution == null) {
-      throw new ActivitiObjectNotFoundException("Process instance " + processInstanceId + " doesn't exist", ProcessInstance.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("Process instance ").append(processInstanceId).append(" doesn't exist").toString(), ProcessInstance.class);
     }
 
     if (execution.isSuspended()) {

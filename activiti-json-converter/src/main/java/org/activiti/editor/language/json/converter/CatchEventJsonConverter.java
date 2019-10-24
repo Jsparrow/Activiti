@@ -46,7 +46,8 @@ public class CatchEventJsonConverter extends BaseBpmnJsonConverter {
     convertersToJsonMap.put(IntermediateCatchEvent.class, CatchEventJsonConverter.class);
   }
 
-  protected String getStencilId(BaseElement baseElement) {
+  @Override
+protected String getStencilId(BaseElement baseElement) {
     IntermediateCatchEvent catchEvent = (IntermediateCatchEvent) baseElement;
     List<EventDefinition> eventDefinitions = catchEvent.getEventDefinitions();
     if (eventDefinitions.size() != 1) {
@@ -64,12 +65,14 @@ public class CatchEventJsonConverter extends BaseBpmnJsonConverter {
     }
   }
 
-  protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
+  @Override
+protected void convertElementToJson(ObjectNode propertiesNode, BaseElement baseElement) {
     IntermediateCatchEvent catchEvent = (IntermediateCatchEvent) baseElement;
     addEventProperties(catchEvent, propertiesNode);
   }
 
-  protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
+  @Override
+protected FlowElement convertJsonToElement(JsonNode elementNode, JsonNode modelNode, Map<String, JsonNode> shapeMap) {
     IntermediateCatchEvent catchEvent = new IntermediateCatchEvent();
     String stencilId = BpmnJsonConverterUtil.getStencilId(elementNode);
     if (STENCIL_EVENT_CATCH_TIMER.equals(stencilId)) {

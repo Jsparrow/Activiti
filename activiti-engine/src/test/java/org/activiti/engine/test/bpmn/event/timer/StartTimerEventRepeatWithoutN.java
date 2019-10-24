@@ -30,22 +30,6 @@ public class StartTimerEventRepeatWithoutN extends PluggableActivitiTestCase {
 	protected long counter = 0;
 	protected StartEventListener startEventListener;
 	
-	class StartEventListener implements ActivitiEventListener {
-
-		@Override
-		public void onEvent(ActivitiEvent event) {
-			if (event.getType().equals(ActivitiEventType.TIMER_FIRED)) {
-				counter++;
-			}
-		}
-
-		@Override
-		public boolean isFailOnException() {
-			return false;
-		}
-		
-	}
-
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -53,8 +37,8 @@ public class StartTimerEventRepeatWithoutN extends PluggableActivitiTestCase {
 		startEventListener = new StartEventListener();
 		processEngineConfiguration.getEventDispatcher().addEventListener(startEventListener);
 	}
-	
-	
+
+
 
 	@Override
   protected void tearDown() throws Exception {
@@ -64,17 +48,35 @@ public class StartTimerEventRepeatWithoutN extends PluggableActivitiTestCase {
 
 
 
-  @Deployment
-	public void testStartTimerEventRepeatWithoutN() {
-		counter = 0;
-		
-		try {
-			waitForJobExecutorToProcessAllJobs(5500, 500);
-			fail("job is finished sooner than expected");
-		} catch (ActivitiException e) {
-			assertTrue(e.getMessage().startsWith("time limit"));
-			assertTrue(counter >= 2);
+	@Deployment
+		public void testStartTimerEventRepeatWithoutN() {
+			counter = 0;
+			
+			try {
+				waitForJobExecutorToProcessAllJobs(5500, 500);
+				fail("job is finished sooner than expected");
+			} catch (ActivitiException e) {
+				assertTrue(e.getMessage().startsWith("time limit"));
+				assertTrue(counter >= 2);
+			}
 		}
+
+
+
+	class StartEventListener implements ActivitiEventListener {
+
+		@Override
+		public void onEvent(ActivitiEvent event) {
+			if (event.getType() == ActivitiEventType.TIMER_FIRED) {
+				counter++;
+			}
+		}
+
+		@Override
+		public boolean isFailOnException() {
+			return false;
+		}
+		
 	}
 
 }

@@ -21,7 +21,7 @@ public class Lane extends BaseElement {
 
   protected String name;
   protected Process parentProcess;
-  protected List<String> flowReferences = new ArrayList<String>();
+  protected List<String> flowReferences = new ArrayList<>();
 
   public String getName() {
     return name;
@@ -48,7 +48,8 @@ public class Lane extends BaseElement {
     this.flowReferences = flowReferences;
   }
 
-  public Lane clone() {
+  @Override
+public Lane clone() {
     Lane clone = new Lane();
     clone.setValues(this);
     return clone;
@@ -59,7 +60,7 @@ public class Lane extends BaseElement {
     setName(otherElement.getName());
     setParentProcess(otherElement.getParentProcess());
 
-    flowReferences = new ArrayList<String>();
+    flowReferences = new ArrayList<>();
     if (otherElement.getFlowReferences() != null && !otherElement.getFlowReferences().isEmpty()) {
       flowReferences.addAll(otherElement.getFlowReferences());
     }

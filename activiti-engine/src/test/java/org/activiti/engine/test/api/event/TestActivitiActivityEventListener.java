@@ -31,7 +31,7 @@ public class TestActivitiActivityEventListener implements ActivitiEventListener 
   private boolean ignoreRawActivityEvents;
 
   public TestActivitiActivityEventListener(boolean ignoreRawActivityEvents) {
-    eventsReceived = new ArrayList<ActivitiEvent>();
+    eventsReceived = new ArrayList<>();
     this.ignoreRawActivityEvents = ignoreRawActivityEvents;
   }
 
@@ -45,11 +45,10 @@ public class TestActivitiActivityEventListener implements ActivitiEventListener 
 
   @Override
   public void onEvent(ActivitiEvent event) {
-    if (event instanceof ActivitiActivityEvent) {
-      if (!ignoreRawActivityEvents || (event.getType() != ActivitiEventType.ACTIVITY_STARTED && event.getType() != ActivitiEventType.ACTIVITY_COMPLETED)) {
+    boolean condition = event instanceof ActivitiActivityEvent && (!ignoreRawActivityEvents || (event.getType() != ActivitiEventType.ACTIVITY_STARTED && event.getType() != ActivitiEventType.ACTIVITY_COMPLETED));
+	if (condition) {
         eventsReceived.add(event);
       }
-    }
   }
 
   public void setIgnoreRawActivityEvents(boolean ignoreRawActivityEvents) {

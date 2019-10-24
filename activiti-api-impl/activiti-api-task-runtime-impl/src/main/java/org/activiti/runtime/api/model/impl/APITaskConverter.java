@@ -20,7 +20,7 @@ import org.activiti.api.task.model.Task;
 import org.activiti.api.task.model.impl.TaskImpl;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 
-public class APITaskConverter extends ListConverter<org.activiti.engine.task.Task, Task> implements ModelConverter<org.activiti.engine.task.Task, Task> {
+public class APITaskConverter extends ListConverter<org.activiti.engine.task.Task, Task> {
 
     @Override
     public Task from(org.activiti.engine.task.Task internalTask) {

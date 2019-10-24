@@ -41,29 +41,23 @@ public class DuplicateVariableInsertTest extends PluggableActivitiTestCase {
     final CyclicBarrier startBarrier = new CyclicBarrier(2);
     final CyclicBarrier endBarrier = new CyclicBarrier(2);
 
-    final List<Exception> exceptions = new ArrayList<Exception>();
+    final List<Exception> exceptions = new ArrayList<>();
 
-    Thread firstInsertThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
+    Thread firstInsertThread = new Thread(() -> {
         try {
           managementService.executeCommand(new SetVariableWithBarriersCommand(startBarrier, endBarrier, processInstance.getId()));
         } catch (Exception e) {
           exceptions.add(e);
         }
-      }
-    });
+      });
 
-    Thread secondInsertThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
+    Thread secondInsertThread = new Thread(() -> {
         try {
           managementService.executeCommand(new SetVariableWithBarriersCommand(startBarrier, endBarrier, processInstance.getId()));
         } catch (Exception e) {
           exceptions.add(e);
         }
-      }
-    });
+      });
 
     firstInsertThread.start();
     secondInsertThread.start();
@@ -94,29 +88,23 @@ public class DuplicateVariableInsertTest extends PluggableActivitiTestCase {
     final CyclicBarrier startBarrier = new CyclicBarrier(2);
     final CyclicBarrier endBarrier = new CyclicBarrier(2);
 
-    final List<Exception> exceptions = new ArrayList<Exception>();
+    final List<Exception> exceptions = new ArrayList<>();
 
-    Thread firstInsertThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
+    Thread firstInsertThread = new Thread(() -> {
         try {
           managementService.executeCommand(new SetTaskVariableWithBarriersCommand(startBarrier, endBarrier, task.getId()));
         } catch (Exception e) {
           exceptions.add(e);
         }
-      }
-    });
+      });
 
-    Thread secondInsertThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
+    Thread secondInsertThread = new Thread(() -> {
         try {
           managementService.executeCommand(new SetTaskVariableWithBarriersCommand(startBarrier, endBarrier, task.getId()));
         } catch (Exception e) {
           exceptions.add(e);
         }
-      }
-    });
+      });
 
     firstInsertThread.start();
     secondInsertThread.start();
@@ -158,9 +146,7 @@ public class DuplicateVariableInsertTest extends PluggableActivitiTestCase {
     public Void execute(CommandContext commandContext) {
       try {
         startBarrier.await();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      } catch (BrokenBarrierException e) {
+      } catch (BrokenBarrierException | InterruptedException e) {
         throw new RuntimeException(e);
       }
 
@@ -168,9 +154,7 @@ public class DuplicateVariableInsertTest extends PluggableActivitiTestCase {
 
       try {
         endBarrier.await();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      } catch (BrokenBarrierException e) {
+      } catch (BrokenBarrierException | InterruptedException e) {
         throw new RuntimeException(e);
       }
       return null;
@@ -199,9 +183,7 @@ public class DuplicateVariableInsertTest extends PluggableActivitiTestCase {
     public Void execute(CommandContext commandContext) {
       try {
         startBarrier.await();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      } catch (BrokenBarrierException e) {
+      } catch (BrokenBarrierException | InterruptedException e) {
         throw new RuntimeException(e);
       }
 
@@ -209,9 +191,7 @@ public class DuplicateVariableInsertTest extends PluggableActivitiTestCase {
 
       try {
         endBarrier.await();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      } catch (BrokenBarrierException e) {
+      } catch (BrokenBarrierException | InterruptedException e) {
         throw new RuntimeException(e);
       }
       return null;

@@ -41,7 +41,8 @@ public class GetTaskVariablesCmd implements Command<Map<String, Object>>, Serial
     this.isLocal = isLocal;
   }
 
-  public Map<String, Object> execute(CommandContext commandContext) {
+  @Override
+public Map<String, Object> execute(CommandContext commandContext) {
     if (taskId == null) {
       throw new ActivitiIllegalArgumentException("taskId is null");
     }
@@ -49,7 +50,7 @@ public class GetTaskVariablesCmd implements Command<Map<String, Object>>, Serial
     TaskEntity task = commandContext.getTaskEntityManager().findById(taskId);
 
     if (task == null) {
-      throw new ActivitiObjectNotFoundException("task " + taskId + " doesn't exist", Task.class);
+      throw new ActivitiObjectNotFoundException(new StringBuilder().append("task ").append(taskId).append(" doesn't exist").toString(), Task.class);
     }
 
     if (variableNames == null) {

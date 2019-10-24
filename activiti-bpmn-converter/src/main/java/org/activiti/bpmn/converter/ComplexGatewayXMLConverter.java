@@ -26,7 +26,8 @@ import org.activiti.bpmn.model.ExclusiveGateway;
  */
 public class ComplexGatewayXMLConverter extends BaseBpmnXMLConverter {
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     // complex gateway is not supported so transform it to exclusive gateway
     return ComplexGateway.class;
   }

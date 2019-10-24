@@ -1,21 +1,21 @@
 package org.activiti.examples.bpmn.usertask;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import java.util.Collections;
 
 public class FinancialReportProcessTest extends PluggableActivitiTestCase {
 
 
   private static final String KERMIT = "kermit";
-  private static final List<String> KERMITSGROUPS = Arrays.asList("management");
+  private static final List<String> KERMITSGROUPS = Collections.singletonList("management");
 
   private static final String FOZZIE = "fozzie";
-  private static final List<String> FOZZIESGROUPS = Arrays.asList("accountancy");
+  private static final List<String> FOZZIESGROUPS = Collections.singletonList("accountancy");
 
 
   @Deployment(resources = { "org/activiti/examples/bpmn/usertask/FinancialReportProcess.bpmn20.xml" })

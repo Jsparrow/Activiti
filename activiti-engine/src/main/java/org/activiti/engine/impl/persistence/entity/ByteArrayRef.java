@@ -68,25 +68,27 @@ public class ByteArrayRef implements Serializable {
   }
 
   public void delete() {
-    if (!deleted && id != null) {
-      if (entity != null) {
+    if (!(!deleted && id != null)) {
+		return;
+	}
+	if (entity != null) {
         // if the entity has been loaded already,
         // we might as well use the safer optimistic locking delete.
         Context.getCommandContext().getByteArrayEntityManager().delete(entity);
       } else {
         Context.getCommandContext().getByteArrayEntityManager().deleteByteArrayById(id);
       }
-      entity = null;
-      id = null;
-      deleted = true;
-    }
+	entity = null;
+	id = null;
+	deleted = true;
   }
 
   private void ensureInitialized() {
-    if (id != null && entity == null) {
-      entity = Context.getCommandContext().getByteArrayEntityManager().findById(id);
-      name = entity.getName();
-    }
+    if (!(id != null && entity == null)) {
+		return;
+	}
+	entity = Context.getCommandContext().getByteArrayEntityManager().findById(id);
+	name = entity.getName();
   }
 
   public boolean isDeleted() {
@@ -95,6 +97,7 @@ public class ByteArrayRef implements Serializable {
 
   @Override
   public String toString() {
-    return "ByteArrayRef[id=" + id + ", name=" + name + ", entity=" + entity + (deleted ? ", deleted]" : "]");
+    return new StringBuilder().append("ByteArrayRef[id=").append(id).append(", name=").append(name).append(", entity=").append(entity)
+			.append(deleted ? ", deleted]" : "]").toString();
   }
 }

@@ -10,34 +10,37 @@ import org.activiti.engine.impl.persistence.entity.JobEntity;
 import org.activiti.engine.impl.persistence.entity.JobEntityImpl;
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.runtime.Job;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class JobExecutorCmdExceptionTest extends PluggableActivitiTestCase {
 
-  protected TweetExceptionHandler tweetExceptionHandler = new TweetExceptionHandler();
+  private static final Logger logger = LoggerFactory.getLogger(JobExecutorCmdExceptionTest.class);
+
+protected TweetExceptionHandler tweetExceptionHandler = new TweetExceptionHandler();
 
   private CommandExecutor commandExecutor;
 
-  public void setUp() throws Exception {
+  @Override
+public void setUp() throws Exception {
     processEngineConfiguration.getJobHandlers().put(tweetExceptionHandler.getType(), tweetExceptionHandler);
     this.commandExecutor = processEngineConfiguration.getCommandExecutor();
   }
 
-  public void tearDown() throws Exception {
+  @Override
+public void tearDown() throws Exception {
     processEngineConfiguration.getJobHandlers().remove(tweetExceptionHandler.getType());
   }
 
   public void testJobCommandsWith2Exceptions() {
-    commandExecutor.execute(new Command<String>() {
-
-      public String execute(CommandContext commandContext) {
+    commandExecutor.execute((CommandContext commandContext) -> {
         JobEntity message = createTweetExceptionMessage();
         commandContext.getJobManager().scheduleAsyncJob(message);
         return message.getId();
-      }
-    });
+      });
 
     Job job = managementService.createJobQuery().singleResult();
     assertEquals(3, job.getRetries());
@@ -46,6 +49,7 @@ public class JobExecutorCmdExceptionTest extends PluggableActivitiTestCase {
       managementService.executeJob(job.getId());
       fail("exception expected");
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
       // exception expected;
     }
 
@@ -57,6 +61,7 @@ public class JobExecutorCmdExceptionTest extends PluggableActivitiTestCase {
       managementService.executeJob(job.getId());
       fail("exception expected");
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
       // exception expected;
     }
 
@@ -70,14 +75,11 @@ public class JobExecutorCmdExceptionTest extends PluggableActivitiTestCase {
   public void testJobCommandsWith3Exceptions() {
     tweetExceptionHandler.setExceptionsRemaining(3);
 
-    commandExecutor.execute(new Command<String>() {
-
-      public String execute(CommandContext commandContext) {
+    commandExecutor.execute((CommandContext commandContext) -> {
         JobEntity message = createTweetExceptionMessage();
         commandContext.getJobManager().scheduleAsyncJob(message);
         return message.getId();
-      }
-    });
+      });
 
     Job job = managementService.createJobQuery().singleResult();
     assertEquals(3, job.getRetries());
@@ -86,6 +88,7 @@ public class JobExecutorCmdExceptionTest extends PluggableActivitiTestCase {
       managementService.executeJob(job.getId());
       fail("exception expected");
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
       // exception expected;
     }
 
@@ -97,6 +100,7 @@ public class JobExecutorCmdExceptionTest extends PluggableActivitiTestCase {
       managementService.executeJob(job.getId());
       fail("exception expected");
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
       // exception expected;
     }
 
@@ -108,6 +112,7 @@ public class JobExecutorCmdExceptionTest extends PluggableActivitiTestCase {
       managementService.executeJob(job.getId());
       fail("exception expected");
     } catch (Exception e) {
+		logger.error(e.getMessage(), e);
       // exception expected;
     }
 

@@ -67,7 +67,7 @@ public class ContinueProcessOperation extends AbstractOperation {
         } else if (currentFlowElement instanceof SequenceFlow) {
             continueThroughSequenceFlow((SequenceFlow) currentFlowElement);
         } else {
-            throw new ActivitiException("Programmatic error: no current flow element found or invalid type: " + currentFlowElement + ". Halting.");
+            throw new ActivitiException(new StringBuilder().append("Programmatic error: no current flow element found or invalid type: ").append(currentFlowElement).append(". Halting.").toString());
         }
     }
 

@@ -32,42 +32,51 @@ public class ResourceEntityImpl extends AbstractEntityNoRevision implements Reso
     
   }
   
-  public String getName() {
+  @Override
+public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+  @Override
+public void setName(String name) {
     this.name = name;
   }
 
-  public byte[] getBytes() {
+  @Override
+public byte[] getBytes() {
     return bytes;
   }
 
-  public void setBytes(byte[] bytes) {
+  @Override
+public void setBytes(byte[] bytes) {
     this.bytes = bytes;
   }
 
-  public String getDeploymentId() {
+  @Override
+public String getDeploymentId() {
     return deploymentId;
   }
 
-  public void setDeploymentId(String deploymentId) {
+  @Override
+public void setDeploymentId(String deploymentId) {
     this.deploymentId = deploymentId;
   }
 
-  public Object getPersistentState() {
+  @Override
+public Object getPersistentState() {
     return ResourceEntityImpl.class;
   }
 
-  public void setGenerated(boolean generated) {
+  @Override
+public void setGenerated(boolean generated) {
     this.generated = generated;
   }
 
   /**
    * Indicated whether or not the resource has been generated while deploying rather than being actual part of the deployment.
    */
-  public boolean isGenerated() {
+  @Override
+public boolean isGenerated() {
     return generated;
   }
 
@@ -75,6 +84,6 @@ public class ResourceEntityImpl extends AbstractEntityNoRevision implements Reso
 
   @Override
   public String toString() {
-    return "ResourceEntity[id=" + id + ", name=" + name + "]";
+    return new StringBuilder().append("ResourceEntity[id=").append(id).append(", name=").append(name).append("]").toString();
   }
 }

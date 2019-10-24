@@ -47,7 +47,7 @@ public class GetExecutionVariableInstanceCmd implements Command<VariableInstance
         ExecutionEntity execution = commandContext.getExecutionEntityManager().findById(executionId);
 
         if (execution == null) {
-            throw new ActivitiObjectNotFoundException("execution " + executionId + " doesn't exist", Execution.class);
+            throw new ActivitiObjectNotFoundException(new StringBuilder().append("execution ").append(executionId).append(" doesn't exist").toString(), Execution.class);
         }
 
         VariableInstance variableEntity = null;

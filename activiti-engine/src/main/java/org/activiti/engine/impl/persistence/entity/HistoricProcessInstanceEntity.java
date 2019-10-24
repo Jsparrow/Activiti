@@ -45,19 +45,23 @@ public interface HistoricProcessInstanceEntity extends HistoricScopeInstanceEnti
   
   void setLocalizedDescription(String localizedDescription);
   
-  String getProcessDefinitionKey();
+  @Override
+String getProcessDefinitionKey();
 
   void setProcessDefinitionKey(String processDefinitionKey);
 
-  String getProcessDefinitionName();
+  @Override
+String getProcessDefinitionName();
 
   void setProcessDefinitionName(String processDefinitionName);
 
-  Integer getProcessDefinitionVersion();
+  @Override
+Integer getProcessDefinitionVersion();
 
   void setProcessDefinitionVersion(Integer processDefinitionVersion);
 
-  String getDeploymentId();
+  @Override
+String getDeploymentId();
 
   void setDeploymentId(String deploymentId);
 

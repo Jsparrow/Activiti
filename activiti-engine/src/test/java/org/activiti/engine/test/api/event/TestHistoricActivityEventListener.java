@@ -27,7 +27,7 @@ public class TestHistoricActivityEventListener implements ActivitiEventListener 
 	private List<ActivitiEvent> eventsReceived;
 	
 	public TestHistoricActivityEventListener() {
-		eventsReceived = new ArrayList<ActivitiEvent>();
+		eventsReceived = new ArrayList<>();
   }
 	
 	public List<ActivitiEvent> getEventsReceived() {
@@ -40,10 +40,10 @@ public class TestHistoricActivityEventListener implements ActivitiEventListener 
 	
 	@Override
 	public void onEvent(ActivitiEvent event) {
-		if (event.getType().equals(ActivitiEventType.HISTORIC_PROCESS_INSTANCE_CREATED)
-				|| event.getType().equals(ActivitiEventType.HISTORIC_PROCESS_INSTANCE_ENDED)
-				|| event.getType().equals(ActivitiEventType.HISTORIC_ACTIVITY_INSTANCE_CREATED)
-			  || event.getType().equals(ActivitiEventType.HISTORIC_ACTIVITY_INSTANCE_ENDED)) {
+		if (event.getType() == ActivitiEventType.HISTORIC_PROCESS_INSTANCE_CREATED
+				|| event.getType() == ActivitiEventType.HISTORIC_PROCESS_INSTANCE_ENDED
+				|| event.getType() == ActivitiEventType.HISTORIC_ACTIVITY_INSTANCE_CREATED
+			  || event.getType() == ActivitiEventType.HISTORIC_ACTIVITY_INSTANCE_ENDED) {
 					eventsReceived.add(event);
 				}
 	}

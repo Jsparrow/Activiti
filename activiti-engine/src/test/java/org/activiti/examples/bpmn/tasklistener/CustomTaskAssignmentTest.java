@@ -12,13 +12,13 @@
  */
 package org.activiti.examples.bpmn.tasklistener;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.activiti.engine.impl.test.PluggableActivitiTestCase;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
+import java.util.Collections;
 
 /**
 
@@ -32,7 +32,7 @@ public class CustomTaskAssignmentTest extends PluggableActivitiTestCase {
   public void testCandidateGroupAssignment() {
     runtimeService.startProcessInstanceByKey("customTaskAssignment");
     assertEquals(1, taskService.createTaskQuery().taskCandidateGroup("management").count());
-    assertEquals(1, taskService.createTaskQuery().taskCandidateUser("kermit", Arrays.asList("management")).count());
+    assertEquals(1, taskService.createTaskQuery().taskCandidateUser("kermit", Collections.singletonList("management")).count());
     assertEquals(0, taskService.createTaskQuery().taskCandidateUser("fozzie",null).count());
   }
 
@@ -63,10 +63,10 @@ public class CustomTaskAssignmentTest extends PluggableActivitiTestCase {
   @Deployment
   public void testOverwriteExistingAssignmentsFromVariable() {
     // prepare variables
-    Map<String, String> assigneeMappingTable = new HashMap<String, String>();
+    Map<String, String> assigneeMappingTable = new HashMap<>();
     assigneeMappingTable.put("fozzie", "gonzo");
 
-    Map<String, Object> variables = new HashMap<String, Object>();
+    Map<String, Object> variables = new HashMap<>();
     variables.put("assigneeMappingTable", assigneeMappingTable);
 
     // start process instance

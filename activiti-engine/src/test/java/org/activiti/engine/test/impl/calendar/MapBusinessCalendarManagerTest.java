@@ -26,14 +26,18 @@ import org.activiti.engine.impl.calendar.CycleBusinessCalendar;
 import org.activiti.engine.impl.calendar.MapBusinessCalendarManager;
 
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by martin.grofcik
  */
 public class MapBusinessCalendarManagerTest extends TestCase {
 
-  public void testMapConstructor() {
-    Map<String, BusinessCalendar> calendars = new HashMap<String, BusinessCalendar>(1);
+  private static final Logger logger = LoggerFactory.getLogger(MapBusinessCalendarManagerTest.class);
+
+public void testMapConstructor() {
+    Map<String, BusinessCalendar> calendars = new HashMap<>(1);
     CycleBusinessCalendar calendar = new CycleBusinessCalendar(null);
     calendars.put("someKey", calendar);
     MapBusinessCalendarManager businessCalendarManager = new MapBusinessCalendarManager(calendars);
@@ -57,6 +61,7 @@ public class MapBusinessCalendarManagerTest extends TestCase {
       new MapBusinessCalendarManager(null);
       fail("AssertionError expected");
     } catch(IllegalArgumentException e) {
+		logger.error(e.getMessage(), e);
       // Expected error
     }
   }

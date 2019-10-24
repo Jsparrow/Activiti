@@ -21,20 +21,22 @@ public class DatabaseEventFlusher extends AbstractEventFlusher {
     }
     
     EventLogEntryEntityManager eventLogEntryEntityManager = commandContext.getEventLogEntryEntityManager();
-    for (EventLoggerEventHandler eventHandler : eventHandlers) {
+    eventHandlers.forEach(eventHandler -> {
       try {
         eventLogEntryEntityManager.insert(eventHandler.generateEventLogEntry(commandContext), false);
       } catch (Exception e) {
         logger.warn("Could not create event log", e);
       }
-    }
+    });
   }
 
-  public void afterSessionsFlush(CommandContext commandContext) {
+  @Override
+public void afterSessionsFlush(CommandContext commandContext) {
     
   }
 
-  public void closeFailure(CommandContext commandContext) {
+  @Override
+public void closeFailure(CommandContext commandContext) {
     
   }
 

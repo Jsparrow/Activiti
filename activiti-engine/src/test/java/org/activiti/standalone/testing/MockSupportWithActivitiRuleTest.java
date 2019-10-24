@@ -31,7 +31,8 @@ public class MockSupportWithActivitiRuleTest {
   @Rule
   public ActivitiRule activitiRule = new ActivitiRule() {
 
-    protected void configureProcessEngine() {
+    @Override
+	protected void configureProcessEngine() {
       ServiceTaskTestMock.CALL_COUNT.set(0);
 
       activitiRule.mockSupport().mockServiceTaskWithClassDelegate("com.yourcompany.delegate", ServiceTaskTestMock.class);

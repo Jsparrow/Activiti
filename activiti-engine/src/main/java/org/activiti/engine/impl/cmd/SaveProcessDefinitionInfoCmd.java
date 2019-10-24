@@ -23,6 +23,8 @@ import org.activiti.engine.impl.persistence.entity.ProcessDefinitionInfoEntityMa
 
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -30,7 +32,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class SaveProcessDefinitionInfoCmd implements Command<Void>, Serializable {
   
-  private static final long serialVersionUID = 1L;
+  private static final Logger logger = LoggerFactory.getLogger(SaveProcessDefinitionInfoCmd.class);
+
+private static final long serialVersionUID = 1L;
 
   protected String processDefinitionId;
   protected ObjectNode infoNode;
@@ -40,7 +44,8 @@ public class SaveProcessDefinitionInfoCmd implements Command<Void>, Serializable
     this.infoNode = infoNode;
   }
   
-  public Void execute(CommandContext commandContext) {
+  @Override
+public Void execute(CommandContext commandContext) {
     if (processDefinitionId == null) {
       throw new ActivitiIllegalArgumentException("process definition id is null");
     }
@@ -62,7 +67,8 @@ public class SaveProcessDefinitionInfoCmd implements Command<Void>, Serializable
         ObjectWriter writer = commandContext.getProcessEngineConfiguration().getObjectMapper().writer();
         commandContext.getProcessDefinitionInfoEntityManager().updateInfoJson(definitionInfoEntity.getId(), writer.writeValueAsBytes(infoNode));
       } catch (Exception e) {
-        throw new ActivitiException("Unable to serialize info node " + infoNode);
+        logger.error(e.getMessage(), e);
+		throw new ActivitiException("Unable to serialize info node " + infoNode);
       }
     }
     

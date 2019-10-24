@@ -29,13 +29,17 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.Deployment;
 import org.activiti.validation.validator.Problems;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 
  */
 public class SignalEventTest extends PluggableActivitiTestCase {
 
-  @Deployment(resources = { "org/activiti/engine/test/bpmn/event/signal/SignalEventTests.catchAlertSignal.bpmn20.xml",
+  private static final Logger logger = LoggerFactory.getLogger(SignalEventTest.class);
+
+@Deployment(resources = { "org/activiti/engine/test/bpmn/event/signal/SignalEventTests.catchAlertSignal.bpmn20.xml",
       "org/activiti/engine/test/bpmn/event/signal/SignalEventTests.throwAlertSignal.bpmn20.xml" })
   public void testSignalCatchIntermediate() {
     runtimeService.startProcessInstanceByKey("catchSignal");
@@ -52,7 +56,7 @@ public class SignalEventTest extends PluggableActivitiTestCase {
   @Deployment(resources = { "org/activiti/engine/test/bpmn/event/signal/SignalEventTests.catchAlertSignalExpression.bpmn20.xml",
       "org/activiti/engine/test/bpmn/event/signal/SignalEventTests.throwAlertSignalExpression.bpmn20.xml" })
   public void testSignalCatchIntermediateExpression() {
-    Map<String, Object> variableMap = new HashMap<String, Object>();
+    Map<String, Object> variableMap = new HashMap<>();
     variableMap.put("mySignalName", "testSignal");
     runtimeService.startProcessInstanceByKey("catchSignal", variableMap);
     
@@ -82,11 +86,11 @@ public class SignalEventTest extends PluggableActivitiTestCase {
   @Deployment(resources = { "org/activiti/engine/test/bpmn/event/signal/SignalEventTests.catchAlertSignalBoundaryWithReceiveTask.bpmn20.xml",
       "org/activiti/engine/test/bpmn/event/signal/SignalEventTests.throwAlertSignal.bpmn20.xml" })
   public void testSignalCatchBoundaryWithVariables() {
-    HashMap<String, Object> variables1 = new HashMap<String, Object>();
+    HashMap<String, Object> variables1 = new HashMap<>();
     variables1.put("processName", "catchSignal");
     ProcessInstance pi = runtimeService.startProcessInstanceByKey("catchSignal", variables1);
 
-    HashMap<String, Object> variables2 = new HashMap<String, Object>();
+    HashMap<String, Object> variables2 = new HashMap<>();
     variables2.put("processName", "throwSignal");
     runtimeService.startProcessInstanceByKey("throwSignal", variables2);
 
@@ -222,11 +226,7 @@ public class SignalEventTest extends PluggableActivitiTestCase {
     tasks = taskService.createTaskQuery().processInstanceId(pi.getProcessInstanceId()).list();
     assertEquals(2, tasks.size());
 
-    for (Task task : tasks) {
-      if (!task.getName().equals("My User Task") && !task.getName().equals("My Second User Task")) {
-        fail("Expected: <My User Task> or <My Second User Task> but was <" + task.getName() + ">.");
-      }
-    }
+    tasks.stream().filter(task -> !"My User Task".equals(task.getName()) && !"My Second User Task".equals(task.getName())).forEach(task -> fail(new StringBuilder().append("Expected: <My User Task> or <My Second User Task> but was <").append(task.getName()).append(">.").toString()));
 
     taskService.complete(taskService.createTaskQuery().taskName("My User Task").singleResult().getId());
 
@@ -253,11 +253,7 @@ public class SignalEventTest extends PluggableActivitiTestCase {
     tasks = taskService.createTaskQuery().processInstanceId(pi.getProcessInstanceId()).list();
     assertEquals(2, tasks.size());
 
-    for (Task task : tasks) {
-      if (!task.getName().equals("Approve") && !task.getName().equals("Review")) {
-        fail("Expected: <Approve> or <Review> but was <" + task.getName() + ">.");
-      }
-    }
+    tasks.stream().filter(task -> !"Approve".equals(task.getName()) && !"Review".equals(task.getName())).forEach(task -> fail(new StringBuilder().append("Expected: <Approve> or <Review> but was <").append(task.getName()).append(">.").toString()));
 
     taskService.complete(taskService.createTaskQuery().taskName("Approve").singleResult().getId());
 
@@ -363,6 +359,7 @@ public class SignalEventTest extends PluggableActivitiTestCase {
       runtimeService.trigger(execution.getId());
       fail("ActivitiException expected");
     } catch (ActivitiException ae) {
+		logger.error(ae.getMessage(), ae);
       // Exception expected
     }
 
@@ -401,9 +398,7 @@ public class SignalEventTest extends PluggableActivitiTestCase {
     assertEquals(1, taskService.createTaskQuery().taskName("Task after signal").count());
 
     // Cleanup
-    for (org.activiti.engine.repository.Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+	repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
 
   }
 
@@ -421,9 +416,7 @@ public class SignalEventTest extends PluggableActivitiTestCase {
     assertEquals(0, taskService.createTaskQuery().count());
 
     assertEquals(3, managementService.createJobQuery().count());
-    for (Job job : managementService.createJobQuery().list()) {
-      managementService.executeJob(job.getId());
-    }
+    managementService.createJobQuery().list().forEach(job -> managementService.executeJob(job.getId()));
     assertEquals(3, runtimeService.createProcessInstanceQuery().count());
     assertEquals(3, taskService.createTaskQuery().count());
 
@@ -443,17 +436,13 @@ public class SignalEventTest extends PluggableActivitiTestCase {
     runtimeService.startProcessInstanceByKey("processWithSignalThrow");
 
     assertEquals(4, managementService.createJobQuery().count());
-    for (Job job : managementService.createJobQuery().list()) {
-      managementService.executeJob(job.getId());
-    }
+    managementService.createJobQuery().list().forEach(job -> managementService.executeJob(job.getId()));
     assertEquals(7, runtimeService.createProcessInstanceQuery().count());
     assertEquals(7, taskService.createTaskQuery().count());
     assertEquals(1, taskService.createTaskQuery().taskName("Task after signal").count());
 
     // Cleanup
-    for (org.activiti.engine.repository.Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+	repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
 
   }
 
@@ -488,9 +477,7 @@ public class SignalEventTest extends PluggableActivitiTestCase {
     assertEquals(1, taskService.createTaskQuery().taskName("Task after signal").count());
 
     // Cleanup
-    for (org.activiti.engine.repository.Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+	repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
 
   }
 
@@ -502,9 +489,7 @@ public class SignalEventTest extends PluggableActivitiTestCase {
     runtimeService.signalEventReceivedAsync("The Signal");
 
     assertEquals(3, managementService.createJobQuery().count());
-    for (Job job : managementService.createJobQuery().list()) {
-      managementService.executeJob(job.getId());
-    }
+    managementService.createJobQuery().list().forEach(job -> managementService.executeJob(job.getId()));
     assertEquals(3, runtimeService.createProcessInstanceQuery().count());
     assertEquals(3, taskService.createTaskQuery().count());
 
@@ -524,17 +509,13 @@ public class SignalEventTest extends PluggableActivitiTestCase {
     runtimeService.signalEventReceivedAsync("The Signal");
 
     assertEquals(4, managementService.createJobQuery().count());
-    for (Job job : managementService.createJobQuery().list()) {
-      managementService.executeJob(job.getId());
-    }
+    managementService.createJobQuery().list().forEach(job -> managementService.executeJob(job.getId()));
     assertEquals(7, runtimeService.createProcessInstanceQuery().count());
     assertEquals(7, taskService.createTaskQuery().count());
     assertEquals(1, taskService.createTaskQuery().taskName("Task after signal").count());
 
     // Cleanup
-    for (org.activiti.engine.repository.Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+	repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
 
   }
   
@@ -551,13 +532,12 @@ public class SignalEventTest extends PluggableActivitiTestCase {
          runtimeService.signalEventReceived("The Signal");
          fail("ActivitiException expected. Process definition is suspended");
        } catch (ActivitiException ae) {
+		logger.error(ae.getMessage(), ae);
          // ignore
        }
        
        // Cleanup
-       for (org.activiti.engine.repository.Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-         repositoryService.deleteDeployment(deployment.getId(), true);
-       }
+	repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
        
       }
 
@@ -599,9 +579,7 @@ public class SignalEventTest extends PluggableActivitiTestCase {
     assertEquals(3, runtimeService.createProcessInstanceQuery().count());
 
     // Cleanup
-    for (org.activiti.engine.repository.Deployment deployment : repositoryService.createDeploymentQuery().list()) {
-      repositoryService.deleteDeployment(deployment.getId(), true);
-    }
+	repositoryService.createDeploymentQuery().list().forEach(deployment -> repositoryService.deleteDeployment(deployment.getId(), true));
   }
 
   @Deployment

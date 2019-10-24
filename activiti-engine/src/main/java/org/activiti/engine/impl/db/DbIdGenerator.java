@@ -30,7 +30,8 @@ public class DbIdGenerator implements IdGenerator {
   protected CommandExecutor commandExecutor;
   protected CommandConfig commandConfig;
 
-  public synchronized String getNextId() {
+  @Override
+public synchronized String getNextId() {
     if (lastId < nextId) {
       getNewBlock();
     }

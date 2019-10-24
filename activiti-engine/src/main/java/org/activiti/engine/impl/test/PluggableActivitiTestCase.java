@@ -42,7 +42,8 @@ public abstract class PluggableActivitiTestCase extends AbstractActivitiTestCase
 
   protected static ProcessEngine cachedProcessEngine;
   
-  protected void initializeProcessEngine() {
+  @Override
+protected void initializeProcessEngine() {
     if (cachedProcessEngine == null) {
 
       pluggableActivitiTestCaseLogger.info("No cached process engine found for test. Retrieving the default engine.");
@@ -102,8 +103,7 @@ public abstract class PluggableActivitiTestCase extends AbstractActivitiTestCase
       }
       
     } else {
-      pluggableActivitiTestCaseLogger.warn("Not using " + CommandExecutorImpl.class + ", ignoring the " 
-          + EnableVerboseExecutionTreeLogging.class + " annotation");
+      pluggableActivitiTestCaseLogger.warn(new StringBuilder().append("Not using ").append(CommandExecutorImpl.class).append(", ignoring the ").append(EnableVerboseExecutionTreeLogging.class).append(" annotation").toString());
     }
   }
   

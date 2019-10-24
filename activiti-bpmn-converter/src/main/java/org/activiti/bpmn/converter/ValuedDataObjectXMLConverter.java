@@ -31,7 +31,8 @@ public class ValuedDataObjectXMLConverter extends BaseBpmnXMLConverter {
   private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   protected boolean didWriteExtensionStartElement = false;
 
-  public Class<? extends BaseElement> getBpmnElementType() {
+  @Override
+public Class<? extends BaseElement> getBpmnElementType() {
     return ValuedDataObject.class;
   }
 
@@ -49,17 +50,17 @@ public class ValuedDataObjectXMLConverter extends BaseBpmnXMLConverter {
     if (StringUtils.isNotEmpty(structureRef) && structureRef.contains(":")) {
       String dataType = structureRef.substring(structureRef.indexOf(':') + 1);
 
-      if (dataType.equals("string")) {
+      if ("string".equals(dataType)) {
         dataObject = new StringDataObject();
-      } else if (dataType.equals("int")) {
+      } else if ("int".equals(dataType)) {
         dataObject = new IntegerDataObject();
-      } else if (dataType.equals("long")) {
+      } else if ("long".equals(dataType)) {
         dataObject = new LongDataObject();
-      } else if (dataType.equals("double")) {
+      } else if ("double".equals(dataType)) {
         dataObject = new DoubleDataObject();
-      } else if (dataType.equals("boolean")) {
+      } else if ("boolean".equals(dataType)) {
         dataObject = new BooleanDataObject();
-      } else if (dataType.equals("datetime")) {
+      } else if ("datetime".equals(dataType)) {
         dataObject = new DateDataObject();
       } else {
         LOGGER.error("Error converting {}, invalid data type: " + dataType, xtr.getAttributeValue(null, ATTRIBUTE_DATA_NAME));

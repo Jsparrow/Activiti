@@ -20,11 +20,13 @@ import org.activiti.bpmn.model.TimerEventDefinition;
 
 public class TimeDateParser extends BaseChildElementParser {
 
-    public String getElementName() {
+    @Override
+	public String getElementName() {
         return ATTRIBUTE_TIMER_DATE;
     }
 
-    public void parseChildElement(XMLStreamReader xtr,
+    @Override
+	public void parseChildElement(XMLStreamReader xtr,
                                   BaseElement parentElement,
                                   BpmnModel model) throws Exception {
         if (!(parentElement instanceof TimerEventDefinition)) {
